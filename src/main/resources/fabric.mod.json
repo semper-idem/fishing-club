@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "fishing-club",
+  "version": "${version}",
+  "name": "fishing-club",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": ""
+  },
+  "license": "MPL-2.0",
+  "icon": "assets/fishing-club/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.semperidem.fishingclub.client.FishingClubClient"
+    ],
+    "main": [
+      "net.semperidem.fishingclub.FishingClub"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  },
+  "mixins": [
+    "fishingclub.mixins.json"
+  ]
+}
