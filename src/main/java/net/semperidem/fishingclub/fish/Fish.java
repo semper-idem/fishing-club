@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fish;
 
 import net.semperidem.fishingclub.util.Point;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Fish {
@@ -45,12 +46,18 @@ public class Fish {
     public static Fish getFishOnHook(int fisherLevel){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
-        for (FishType fishType : FishTypes.EASY_FISHES) {
+        ArrayList<FishType> availableFish = new ArrayList<>();
+        for (FishType fishType : FishType.allFishTypes) {
+            if (fisherLevel > fishType.fishMinLevel) {
+                availableFish.add(fishType);
+            }
+        }
+        for (FishType fishType : availableFish) {
             totalRarity += fishType.fishRarity;
             fishTypeToThreshold.put(fishType, totalRarity);
         }
         int randomFish = (int) (Math.random() * totalRarity);
-        for (FishType fishType : FishTypes.EASY_FISHES) {
+        for (FishType fishType : availableFish) {
             if (randomFish < fishTypeToThreshold.get(fishType)) {
                 return new Fish(fishType);
             }

@@ -1,6 +1,9 @@
 package net.semperidem.fishingclub.fish;
 
+import java.util.ArrayList;
+
 public class FishType {
+    public static ArrayList<FishType> allFishTypes = new ArrayList<>();
     String name;
     FishPattern fishPattern;
     int fishMinLevel;
@@ -39,6 +42,7 @@ public class FishType {
         this.fishMinWeight = fishMinWeight;
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
+        allFishTypes.add(this);
     }
     public FishType(
             String name,
