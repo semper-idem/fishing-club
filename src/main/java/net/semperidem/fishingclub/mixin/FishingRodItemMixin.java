@@ -38,7 +38,7 @@ public class FishingRodItemMixin {
                 // Handle your mini-game start here
                 startFishingMinigame(user);
             } else {
-                MinecraftClient.getInstance().setScreen(new FishingScreen(Text.of("Fishing  ")));
+                MinecraftClient.getInstance().setScreen(new FishingScreen(Text.of("Fishing")));
             }
 
             // Cancel the original method to prevent the standard behavior
@@ -59,6 +59,5 @@ public class FishingRodItemMixin {
     }
 
     private void startFishingMinigame(PlayerEntity player) {
-        player.sendMessage(Text.of("Fishing"), false);
     }
 }

@@ -2,10 +2,14 @@ package net.semperidem.fishingclub.fish;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
 
 public class FishGameLogic {
+    PlayerEntity player;
     float health = 100;
     float progress = 0;
     float bobberPos = 0;
@@ -20,8 +24,9 @@ public class FishGameLogic {
     boolean isWon = false;
 
 
-    public FishGameLogic(){
-        this.fish = new Fish();
+    public FishGameLogic(PlayerEntity player){
+        this.player = player;
+        this.fish = Fish.getFishOnHook(0);
     }
 
     public boolean isFinished() {
@@ -79,6 +84,7 @@ public class FishGameLogic {
             } else {
                 this.isFinished = true;
                 this.isWon = true;
+                grantExperience(player);
             }
         } else {
             if (progress > 0) {
@@ -149,5 +155,26 @@ public class FishGameLogic {
 
     public int getLevel() {
         return fish.fishLevel;
+    }
+
+    public String getName() {
+        return fish.fishType.name;
+    }
+    public int getExperience() {
+        return fish.experience;
+    }
+
+    public void grantExperience(PlayerEntity player){
+        double playerExp = player.getAttributeInstance(FishingClub.FISHING_EXP).getValue();
+        double playerLevel = player.getAttributeInstance(FishingClub.FISHING_LEVEL).getValue();
+        playerExp += fish.experience;
+        while(playerExp > playerLevel * 100) {
+            player.sendMessage(Text.of("Fishing Skill Level up!"));
+            playerExp -= playerLevel * 100;
+            playerLevel++;
+        }
+        player.sendMessage(Text.of("Current Fish Skill: Lv:" + playerLevel + "  ["+ playerExp +"/" + playerLevel * 100+"]"));
+        player.getAttributeInstance(FishingClub.FISHING_EXP).setBaseValue(playerExp);
+        player.getAttributeInstance(FishingClub.FISHING_LEVEL).setBaseValue(playerLevel);
     }
 }

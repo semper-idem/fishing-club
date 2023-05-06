@@ -39,6 +39,8 @@ public class FishPatterns {
     public static final FishPattern EASY1;
     public static final FishPattern EASY2;
     public static final FishPattern EASY3;
+    public static final FishPattern EASY4;
+    public static final FishPattern EASY5;
     public static final FishPattern MID1;
     public static final FishPattern MID2;
     public static final FishPattern MID3;
@@ -83,6 +85,24 @@ public class FishPatterns {
                         new Point(50, 200),
                         new Point(100, 0),
                         new Point(150, 200),
+                        new Point(200, 0)
+                }
+        );
+        EASY4 = new FishPattern(
+                new Point[]{
+                        new Point(0, 0),
+                        new Point(50, 300),
+                        new Point(100, 100),
+                        new Point(150, 200),
+                        new Point(200, 0)
+                }
+        );
+        EASY5 = new FishPattern(
+                new Point[]{
+                        new Point(0, 0),
+                        new Point(50, 300),
+                        new Point(100, 400),
+                        new Point(150, 100),
                         new Point(200, 0)
                 }
         );
