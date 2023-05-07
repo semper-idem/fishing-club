@@ -8,6 +8,7 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -16,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.screen.FishingScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,8 +39,6 @@ public class FishingRodItemMixin {
             if (!world.isClient) {
                 // Handle your mini-game start here
                 startFishingMinigame(user);
-            } else {
-                MinecraftClient.getInstance().setScreen(new FishingScreen(Text.of("Fishing")));
             }
 
             // Cancel the original method to prevent the standard behavior
@@ -59,5 +59,7 @@ public class FishingRodItemMixin {
     }
 
     private void startFishingMinigame(PlayerEntity player) {
+        ServerPacketSender.sendFishingSkillSyncPacket((ServerPlayerEntity)player);
+        ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity)player);
     }
 }

@@ -1,35 +1,7 @@
 package net.semperidem.fishingclub.fish;
 
-import java.util.ArrayList;
 
 public class FishTypes {
-    /*
-    *
-            String name,
-            FishPattern fishPattern,
-            int fishMinLevel,
-            int fishRandomLevel,
-            int fishMinEnergyLevel,
-            int fishMinEnergy,
-            int fishRandomEnergy,
-            float fishMinLength,
-            float fishRandomLength,
-            float fishMinWeight,
-            float fishRandomWeight,
-            float fishRarity)
-    * */
-
-    /*
-     Fresh
-    * Largemouth bass 5kg
-    * Lake trout 18kg
-    *
-    * Ocean
-    * Rainbow trout 12kg
-    * */
-
-    public static ArrayList<FishType> EASY_FISHES = new ArrayList<>();
-
     public static final FishType COD;
     public static final FishType L_BASS;
     public static final FishType S_BASS;
@@ -125,16 +97,9 @@ public class FishTypes {
                 75
         );
 
-        EASY_FISHES.add(COD);
-        EASY_FISHES.add(SALMON);
-        EASY_FISHES.add(SHRIMP);
-        EASY_FISHES.add(SARDINE);
-        EASY_FISHES.add(S_BASS);
-        EASY_FISHES.add(L_BASS);
-
         EEL = new FishType(
                 "Eel",
-                FishPatterns.DEFAULT,
+                FishPatterns.HARD3,
                 40,
                 60,
                 4,
@@ -147,7 +112,7 @@ public class FishTypes {
 
         PIKE = new FishType(
                 "Pike",
-                FishPatterns.DEFAULT,
+                FishPatterns.HARD2,
                 35,
                 65,
                 4,
@@ -160,7 +125,7 @@ public class FishTypes {
 
         PUFFERFISH = new FishType(
                 "Pufferfish",
-                FishPatterns.DEFAULT,
+                FishPatterns.HARD1,
                 30,
                 70,
                 3,
@@ -173,7 +138,7 @@ public class FishTypes {
 
         RED_SNAPPER = new FishType(
                 "Red Snapper",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID6,
                 25,
                 50,
                 3,
@@ -186,7 +151,7 @@ public class FishTypes {
 
         BREAM = new FishType(
                 "Bream",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID5,
                 20,
                 30,
                 2,
@@ -199,7 +164,7 @@ public class FishTypes {
 
         CARP = new FishType(
                 "Carp",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID4,
                 15,
                 35,
                 3,
@@ -212,7 +177,7 @@ public class FishTypes {
 
         CATFISH = new FishType(
                 "Catfish",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID3,
                 15,
                 25,
                 4,
@@ -225,7 +190,7 @@ public class FishTypes {
 
         RAINBOW_TROUT = new FishType(
                 "Rainbow Trout",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID2,
                 10,
                 30,
                 3,
@@ -238,7 +203,7 @@ public class FishTypes {
 
         WALLEYE = new FishType(
                 "Walleye",
-                FishPatterns.DEFAULT,
+                FishPatterns.MID1,
                 10,
                 30,
                 2,

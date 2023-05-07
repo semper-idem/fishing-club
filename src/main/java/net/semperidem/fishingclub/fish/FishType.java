@@ -19,7 +19,7 @@ public class FishType {
 
     float fishRarity;
 
-    //TODO sanitize input, add ranges etc etc avoid constructor param hell
+    //TODO refactor into factory
     public FishType(
             String name,
             FishPattern fishPattern,
@@ -43,26 +43,5 @@ public class FishType {
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
         allFishTypes.add(this);
-    }
-    public FishType(
-            String name,
-            FishPattern fishPattern,
-            int fishMinLevel,
-            int fishEnergyLevel,
-            float fishMinLength,
-            float fishMinWeight,
-            float fishRarity
-            )
-    {
-        this.name = name;
-        this.fishPattern = fishPattern;
-        this.fishMinLevel = fishMinLevel;
-        this.fishRandomLevel = fishMinLevel * 2 + 10;
-        this.fishEnergyLevel = fishEnergyLevel;
-        this.fishMinLength = fishMinLength;
-        this.fishRandomLength = fishMinLength * 0.5f;
-        this.fishMinWeight = fishMinWeight;
-        this.fishRandomWeight = fishMinWeight * 0.5f;
-        this.fishRarity = fishRarity;
     }
 }

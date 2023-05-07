@@ -31,7 +31,7 @@ public class Fish {
         this.fishMaxEnergyLevel = this.fishEnergy;
         this.curvePoints = FishPatterns.getRandomizedPoints(fishType.fishPattern, fishLevel);
         this.curveControlPoints = FishPatterns.getRandomizedControlPoints(fishType.fishPattern, fishLevel);
-        this.experience = (int) Math.min(500, (5 + Math.pow(fishLevel, 1.1)));
+        this.experience = (int) Math.min(500, (200 - fishType.fishRarity) / 100 * (5 + Math.pow(fishLevel, 1.1)));
 
     }
 

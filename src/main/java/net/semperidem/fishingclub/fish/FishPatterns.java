@@ -45,6 +45,8 @@ public class FishPatterns {
     public static final FishPattern MID2;
     public static final FishPattern MID3;
     public static final FishPattern MID4;
+    public static final FishPattern MID5;
+    public static final FishPattern MID6;
     public static final FishPattern HARD1;
     public static final FishPattern HARD2;
     public static final FishPattern HARD3;
@@ -146,6 +148,26 @@ public class FishPatterns {
                         new Point(40, 700),
                         new Point(80, 600),
                         new Point(120, 400),
+                        new Point(160, 700),
+                        new Point(200, 0)}
+        );
+
+        MID5 = new FishPattern(
+                new Point[]{
+                        new Point(0, 0),
+                        new Point(40, 300),
+                        new Point(80, 600),
+                        new Point(120, 400),
+                        new Point(160, 100),
+                        new Point(200, 0)}
+        );
+
+        MID6 = new FishPattern(
+                new Point[]{
+                        new Point(0, 0),
+                        new Point(40, 900),
+                        new Point(80, 600),
+                        new Point(120, 900),
                         new Point(160, 700),
                         new Point(200, 0)}
         );
