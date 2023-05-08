@@ -2,24 +2,29 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkillManager;
 
 public class ServerPacketReceiver {
     public static void registerServerPacketHandlers() {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, FishingClub.C2S_GRANT_EXP_ID, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_GRANT_REWARD, (server1, player, handler1, buf, responseSender) -> {
                 int expGained = buf.readInt();
+                float fishWeight = buf.readFloat();
+                float fishLength = buf.readFloat();
+                String fishName = buf.readString();
 
                 server1.execute(() -> {
                     FishingSkillManager.grantExperience(player.getUuid(), expGained);
+                    player.addExperience(Math.max(1, expGained/10));
+                    player.giveItemStack(FishUtil.prepareFishItemStack(fishName, fishWeight, fishLength));
                 });
             });
         });
 
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, FishingClub.C2S_REQUEST_DATA_SYNC_ID, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, (server1, player, handler1, buf, responseSender) -> {
                 server1.execute(() -> {
                     ServerPacketSender.sendFishingSkillSyncPacket(player);
                 });

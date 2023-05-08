@@ -1,21 +1,21 @@
 package net.semperidem.fishingclub.fish;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FishType {
-    public static ArrayList<FishType> allFishTypes = new ArrayList<>();
-    String name;
+    public static HashMap<String, FishType> allFishTypes = new HashMap<>();
+    public String name;
     FishPattern fishPattern;
     int fishMinLevel;
     int fishRandomLevel;
 
     int fishEnergyLevel;
 
-    float fishMinLength;
-    float fishRandomLength;
+    public float fishMinLength;
+    public float fishRandomLength;
 
-    float fishMinWeight;
-    float fishRandomWeight;
+    public float fishMinWeight;
+    public float fishRandomWeight;
 
     float fishRarity;
 
@@ -42,6 +42,6 @@ public class FishType {
         this.fishMinWeight = fishMinWeight;
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
-        allFishTypes.add(this);
+        allFishTypes.put(name, this);
     }
 }

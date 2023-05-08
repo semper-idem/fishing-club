@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.FishingClubClient;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -33,6 +32,9 @@ public class FishGameLogic {
         this.fishingSkill = FishingClubClient.clientFishingSkill;
         this.fish = Fish.getFishOnHook(fishingSkill.level);
         player.sendMessage(Text.of("Exp: " + fishingSkill.exp), false);
+        this.isWon = true;
+        this.isFinished = true;
+        grantExperience();
     }
 
     public boolean isFinished() {
@@ -171,6 +173,6 @@ public class FishGameLogic {
     }
 
     public void grantExperience(){
-        ClientPacketSender.sendFishingSkillGrantExp(fish.experience);
+        ClientPacketSender.sendFishingSkillGrantExp(fish);
     }
 }

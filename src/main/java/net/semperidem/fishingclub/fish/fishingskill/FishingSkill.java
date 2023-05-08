@@ -1,12 +1,11 @@
 package net.semperidem.fishingclub.fish.fishingskill;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-
-import java.util.UUID;
 
 public class FishingSkill {
     private static final String FISHING_NBT_TAG = "fishing_skills";
+    private static final int baseXP = 50;
+    private static final float exponent = 1.25f;
 
     public int level = 1;
     public int exp = 0;
@@ -15,12 +14,8 @@ public class FishingSkill {
         this.level = level;
         this.exp = exp;
     }
-
     public FishingSkill() {
-        this.level = 1;
-        this.exp = 0;
     }
-
 
     public void writeNBT(NbtCompound playerTag){
         NbtCompound fishingTag = new NbtCompound();
@@ -37,6 +32,11 @@ public class FishingSkill {
         }
     }
 
+
+    private int nextLevelXP(){
+        return (int) Math.floor(baseXP * Math.pow(level, exponent));
+    }
+
     public void grantExperience(double gainedXP){
         this.exp += gainedXP;
         while (this.exp > level * 100) {
@@ -47,6 +47,6 @@ public class FishingSkill {
 
     @Override
     public String toString(){
-        return "Fishing Skill/ Level:" + level + "  Exp:" + exp;
+        return "[Fishing Skill] Level:" + level + "  Exp:" + exp;
     }
 }
