@@ -39,9 +39,11 @@ public class FishingSkill {
 
     public void grantExperience(double gainedXP){
         this.exp += gainedXP;
-        while (this.exp > level * 100) {
-            this.exp -= level * 100;
+        float nextLevelXP = nextLevelXP();
+        while (this.exp > nextLevelXP) {
+            this.exp -= nextLevelXP;
             this.level++;
+            nextLevelXP = nextLevelXP();
         }
     }
 

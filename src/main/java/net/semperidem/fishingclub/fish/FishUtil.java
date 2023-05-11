@@ -1,10 +1,12 @@
 package net.semperidem.fishingclub.fish;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 
@@ -132,4 +134,36 @@ public class FishUtil {
         return new Fish();
     }
 
+
+
+    public static float getPseudoRandomValue(float base, float randomAdjustment, float basedOf){
+        return (float) (base + randomAdjustment / 2 * basedOf + randomAdjustment / 2 * Math.random());
+    }
+    public static int getPseudoRandomValue(int base, int randomAdjustment, int basedOf){
+        return (int) (base + randomAdjustment / 2 * basedOf + randomAdjustment / 2 * Math.random());
+    }
+
+
+    public static float getRandomValue(float base, float randomAdjustment){
+        return (float) ((base + randomAdjustment * Math.random()));
+    }
+    public static int getRandomValue(int base, int randomAdjustment){
+        return (int) ((base + randomAdjustment * Math.random()));
+    }
+
+    public static float clampValue(float from, float to, float value){
+            return Math.max(Math.min(to, value), from);
+    }
+    public static int clampValue(int from, int to, int value){
+        return Math.max(Math.min(to, value), from);
+    }
+
+    public static PacketByteBuf getFishPacketBuf(Fish fish){
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeInt(fish.experience);
+        buf.writeFloat(fish.weight);
+        buf.writeFloat(fish.length);
+        buf.writeString(fish.fishType.name);
+        return buf;
+    }
 }

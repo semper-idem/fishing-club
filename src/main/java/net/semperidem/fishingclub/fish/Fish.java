@@ -4,52 +4,80 @@ import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
-    public FishType fishType;
+    FishingSkill fishingSkill;
+
+    FishType fishType;
+
     int fishLevel;
-    public float weight;
-    public float length;
+    int grade;
+    int experience;
+
+    float weight;
+    float length;
+
     int fishEnergy;
     int fishMinEnergyLevel;
     int fishMaxEnergyLevel;
-    public int experience;
+
     Point[] curvePoints;
     Point[] curveControlPoints;
-    int grade;
 
     public Fish(){
         this(FishTypes.COD, new FishingSkill());
     }
 
-    public Fish(FishType fishType, FishingSkill fisherSkill){
+    public Fish(FishType fishType, FishingSkill fishingSkill){
         this.fishType = fishType;
-        this.fishLevel = (int)Math.max(1, Math.min(99 ,
-                getSemiRandomValue(fishType.fishMinLevel, fishType.fishRandomLevel, (float)Math.sqrt(fisherSkill.level / 100f))
-                )
-        );
-        this.fishEnergy = fishType.fishEnergyLevel * 2000;
-        this.weight = getSemiRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight, fishLevel / 100f);
-        this.length = getSemiRandomValue(fishType.fishMinLength, fishType.fishRandomLength, fishLevel / 100f);
-        this.fishMinEnergyLevel = this.fishEnergy / 2;
-        this.fishMaxEnergyLevel = this.fishEnergy;
+        this.fishingSkill = fishingSkill;
+        this.fishLevel = calculateFishLevel();
+        this.weight = calculateFishWeight();
+        this.length = calculateFishLength();
+        this.grade = calculateGrade();
+        this.experience = calculateFishExp();
+        initEnergyLevels();
+        initCurvePoints();
+    }
+
+    private void initCurvePoints(){
         this.curvePoints = FishPatterns.getRandomizedPoints(fishType.fishPattern, fishLevel);
         this.curveControlPoints = FishPatterns.getRandomizedControlPoints(fishType.fishPattern, fishLevel);
-        this.experience = (int) Math.min(500, (200 - fishType.fishRarity) / 100 * (5 + Math.pow(fishLevel, 1.1)));
-        this.grade = calculateGrade();
-        if (this.grade > 3) {
-            this.experience *= Math.pow(2, this.grade - 3);
-        }
+    }
+
+    private void initEnergyLevels(){
+        this.fishEnergy = 1000 + fishType.fishEnergyLevel * 2000;
+        this.fishMinEnergyLevel = this.fishEnergy / 2;
+        this.fishMaxEnergyLevel = this.fishEnergy;
+    }
+
+    private int calculateFishLevel(){
+        int adjustedFishLevel = FishUtil.getPseudoRandomValue(
+                fishType.fishMinLevel,
+                fishType.fishRandomLevel,
+                (int)Math.sqrt(fishingSkill.level / 100f)
+        );
+        return FishUtil.clampValue(1, 99, adjustedFishLevel);
+    }
+
+
+    private float calculateFishWeight(){
+        return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight, fishLevel / 100f);
+    }
+
+    private float calculateFishLength(){
+        return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength, fishLevel / 100f);
+    }
+
+    private int calculateFishExp(){
+        float fishRarityMultiplier = (200 - fishType.fishRarity) / 100;
+        float fishExpValue = (float) Math.pow(fishLevel, 1.3);
+        float fishGradeMultiplier = this.grade > 3 ? (float) Math.pow(2, this.grade - 3) : 1;
+        float fishExp = fishGradeMultiplier * fishRarityMultiplier * (5 + fishExpValue);
+        return FishUtil.clampValue(5, 99999, (int)fishExp);
     }
 
     private int calculateGrade(){
         int weightGrade = FishUtil.getGrade(weight, fishType.fishMinWeight, fishType.fishMinWeight + fishType.fishRandomWeight);
         int lengthGrade = FishUtil.getGrade(length, fishType.fishMinLength, fishType.fishMinLength + fishType.fishRandomLength);
         return Math.max(weightGrade, lengthGrade);
-    }
-
-    private float getSemiRandomValue(float base, float randomAdjustment, float basedOf){
-        return (float) (base + randomAdjustment / 2 * basedOf + randomAdjustment / 2 * Math.random());
-    }
-    private int getRandomValue(int base, int randomAdjustment){
-        return (int) ((base + randomAdjustment * Math.random()));
     }
 }
