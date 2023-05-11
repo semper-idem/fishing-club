@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
+import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
@@ -16,13 +17,13 @@ public class Fish {
     int grade;
 
     public Fish(){
-        this(FishTypes.COD, 100);
+        this(FishTypes.COD, new FishingSkill());
     }
 
-    public Fish(FishType fishType, int fisherLevel){
+    public Fish(FishType fishType, FishingSkill fisherSkill){
         this.fishType = fishType;
         this.fishLevel = (int)Math.max(1, Math.min(99 ,
-                getSemiRandomValue(fishType.fishMinLevel, fishType.fishRandomLevel, (float)Math.sqrt(fisherLevel / 100f))
+                getSemiRandomValue(fishType.fishMinLevel, fishType.fishRandomLevel, (float)Math.sqrt(fisherSkill.level / 100f))
                 )
         );
         this.fishEnergy = fishType.fishEnergyLevel * 2000;
@@ -50,31 +51,5 @@ public class Fish {
     }
     private int getRandomValue(int base, int randomAdjustment){
         return (int) ((base + randomAdjustment * Math.random()));
-    }
-
-    public static Fish getFishOnHook(int fisherLevel){
-        return new Fish();
-        /*
-        int totalRarity = 0;
-        HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<FishType> availableFish = new ArrayList<>();
-        for (FishType fishType : FishType.allFishTypes.values()) {
-            if (fisherLevel > fishType.fishMinLevel) {
-                availableFish.add(fishType);
-            }
-        }
-        for (FishType fishType : availableFish) {
-            totalRarity += fishType.fishRarity;
-            fishTypeToThreshold.put(fishType, totalRarity);
-        }
-        int randomFish = (int) (Math.random() * totalRarity);
-        for (FishType fishType : availableFish) {
-            if (randomFish < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType);
-            }
-        }
-        return new Fish();
-
-         */
     }
 }

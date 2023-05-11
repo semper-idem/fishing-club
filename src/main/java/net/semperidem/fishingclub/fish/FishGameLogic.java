@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.fish;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClubClient;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -11,30 +10,36 @@ import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
 
 public class FishGameLogic {
+    private static final float sinePeriod = (float) (Math.PI * 2);
+
     PlayerEntity player;
     float health = 100;
     float progress = 0;
-    float bobberPos = 0;
-    float bobberWidth = 0.1f;
     float fishPos = 0;
-    public int ticks = 0;
+    int ticks = 0;
+    float bobberPos = 0;
+    float bobberLength = 0.1f;
     float bobberSpeed = 0f;
-    float playerAcceleration = 0.005f;
+    float reelingAcceleration = 0.005f;
     float gravityAcceleration = 0.0035f;
     Fish fish;
     boolean isFinished = false;
     boolean isWon = false;
     FishingSkill fishingSkill;
+    float bottomBound;
+    float topBound;
+    float trackLength;
+    float totalDuration;
 
 
     public FishGameLogic(PlayerEntity player){
         this.player = player;
         this.fishingSkill = FishingClubClient.clientFishingSkill;
-        this.fish = Fish.getFishOnHook(fishingSkill.level);
-        player.sendMessage(Text.of("Exp: " + fishingSkill.exp), false);
-        this.isWon = true;
-        this.isFinished = true;
-        grantExperience();
+        this.fish = FishUtil.getFishOnHook(fishingSkill);
+        this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
+        this.trackLength = 1 + Math.round((this.fish.fishLevel / 10f)) / 10f;
+        this.bottomBound = bobberLength;
+        this.topBound = trackLength - bobberLength;
     }
 
     public boolean isFinished() {
@@ -48,6 +53,7 @@ public class FishGameLogic {
     public float getFishPos() {
         return fishPos;
     }
+
     public float getProgress() {
         return progress;
     }
@@ -60,88 +66,120 @@ public class FishGameLogic {
         return health;
     }
 
-    public float getBobberWidth() {
-        return bobberWidth;
+    public float getBobberLength() {
+        return bobberLength;
     }
 
+    private boolean isReeling(){
+       return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_SPACE);
+    }
 
-    public void tick() {
-        fishPos = calculateFishPos();
-        float bobberForce = -gravityAcceleration;
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_SPACE)) {
-            bobberForce = playerAcceleration;
-        }
-        bobberSpeed += bobberForce;
-        float nextPos = bobberPos + bobberSpeed;
-        bobberPos = Math.max(Math.min(nextPos, 1 - bobberWidth), 0 + bobberWidth);
-        if (bobberPos <= 0 + bobberWidth) {
-            if (bobberSpeed < -gravityAcceleration) {
-                bobberSpeed = bobberSpeed * -0.5f;
-            } else {
-                bobberSpeed = 0;
-            }
-        } else if (bobberPos >= 1 - bobberWidth) {
+    private float getBobberAcceleration(){
+        return isReeling() ? reelingAcceleration : -gravityAcceleration;
+    }
+
+    private float nextBobberPos(){
+        float nextBobberPosUnbound = bobberPos + bobberSpeed;
+        return Math.max(Math.min(nextBobberPosUnbound, topBound),bottomBound);
+    }
+
+    private void bobberCollideWithBound(){
+        if (bobberPos <= bottomBound) {
+            bobberBounce();
+        } else if (bobberPos >= topBound) {
             bobberSpeed = 0;
         }
+    }
 
+    private void bobberBounce(){
+        bobberSpeed = bobberSpeed < 0 ? bobberSpeed * -0.5f : 0;
+    }
 
-        if (fishPos < bobberPos + bobberWidth && fishPos > bobberPos - bobberWidth) {
-            if (progress < 1) {
-                progress += 0.01f;
-                fish.fishEnergy--;
-            } else {
-                this.isFinished = true;
-                this.isWon = true;
-                grantExperience();
-            }
-        } else {
-            if (progress > 0) {
-                float nextProgress = progress - 0.005f;
-                progress = Math.max(0, nextProgress);
-            }
-            if (health > 0) {
-                health -= Math.max(0, (fish.fishLevel - 5) / 20f);
-            } else {
-                this.isFinished = true;
-            }
+    private void processHealth(){
+        if (!fishDealsDamage()) {
+            return;
         }
+        if (health > 0) {
+            health -= getFishDamage();
+        } else {
+            this.isFinished = true;
+        }
+    }
+
+    private float getFishDamage(){
+        return Math.max(0, (fish.fishLevel - 5) / 20f);
+    }
+
+    private boolean fishDealsDamage(){
+        return fish.fishLevel > 10;
+    }
+
+    private void processProgress(){
+        boolean bobberHasFish = fishPos <= bobberPos + bobberLength && fishPos >= bobberPos - bobberLength;
+        if (bobberHasFish) {
+            grantProgress();
+        } else {
+            revokeProgress();
+        }
+    }
+
+    private void grantProgress(){
+        if (progress < 1) {
+            progress += 0.01f;
+            fish.fishEnergy--;
+        } else {
+            processVictory();
+        }
+    }
+
+    private void revokeProgress(){
+        processHealth();
+        if (progress > 0) {
+            progress = Math.max(0, progress - 0.005f);
+        }
+    }
+
+    private void processVictory(){
+        this.isFinished = true;
+        this.isWon = true;
+        grantExperience();
+    }
+    public void tick() {
+        fishPos = nextFishPosition();
+        bobberSpeed += getBobberAcceleration();
+        bobberPos = nextBobberPos();
+        bobberCollideWithBound();
+        processProgress();
         ticks++;
     }
 
-    float calculateFishPos() {
-        float totalDuration = calculateTotalDuration(fish.curvePoints);
+    float nextFishPosition() {
+        float fishSpeed = Math.max(fish.fishMinEnergyLevel, fish.fishEnergy) / (fish.fishMaxEnergyLevel * 1f);
+        float fishSpeedScaledToLevel = fishSpeed * 0.75f + (fish.fishLevel / 200f);
+        float elapsedTime = (fishSpeedScaledToLevel * ticks) % totalDuration;
+        float nextFishPosUnbound = nextFishPosOnCurve(elapsedTime) + nextFishPosOnWave(elapsedTime);
+        return Math.min(Math.max(nextFishPosUnbound * trackLength, 0), trackLength);
+    }
 
-// In the game loop:
-        float power = Math.max(fish.fishMinEnergyLevel, fish.fishEnergy) / (fish.fishMaxEnergyLevel * 1f);
-        float elapsedTime = (power * ticks) % totalDuration; // Increment this value based on the time passed since the last frame
-
-
-        float sinePeriod = (float) (Math.PI * 2);
-        float waveSpeed = 5;
-        float waveStrength = 0.05f;
+    private float nextFishPosOnWave(float elapsedTime){
         float percentElapsedTime = elapsedTime / totalDuration;
-        float waveFunction = (float) (Math.sin(sinePeriod * waveSpeed * percentElapsedTime) * waveStrength);
-        return (moveFish(fish.curvePoints, fish.curveControlPoints, elapsedTime, totalDuration) / 1000) + waveFunction ;//+ ((float)Math.sin(ticks / 3f)/ 40);
-    }
-    public static float calculateTotalDuration(Point[] points) {
-        return points[points.length - 1].x;
+        return  (float) (Math.sin(sinePeriod * 5 * percentElapsedTime) * 0.05f);
     }
 
+    private float nextFishPosOnCurve(float elapsedTime) {
+        elapsedTime %= this.totalDuration;
 
-    public static float moveFish(Point[] points, Point[] controlPoints, float elapsedTime, float totalDuration) {
-        elapsedTime %= totalDuration; // Wrap the elapsed time
-
-        int pointCount = points.length;
+        int pointCount = fish.curvePoints.length;
 
         int currentIndex = 0;
-        while (currentIndex < pointCount - 1 && elapsedTime >= points[currentIndex + 1].x) {
+        while (currentIndex < pointCount - 1 && elapsedTime >= fish.curvePoints[currentIndex + 1].x) {
             currentIndex++;
         }
 
         if (currentIndex < pointCount - 1) {
-            Point currentPoint = points[currentIndex];
-            Point nextPoint = points[currentIndex + 1];
-            Point controlPoint = controlPoints[currentIndex];
+            Point currentPoint = fish.curvePoints[currentIndex];
+            Point nextPoint = fish.curvePoints[currentIndex + 1];
+            Point controlPoint = fish.curveControlPoints[currentIndex];
 
             float segmentStartTime = currentPoint.x;
             float segmentEndTime = nextPoint.x;
@@ -149,10 +187,10 @@ public class FishGameLogic {
             float segmentElapsedTime = elapsedTime - segmentStartTime;
 
             float t = segmentElapsedTime / segmentDuration;
-            return quadraticBezier(t, currentPoint.y, controlPoint.y, nextPoint.y);
+            return quadraticBezier(t, currentPoint.y, controlPoint.y, nextPoint.y) / 1000;
 
         } else {
-            return points[0].y;
+            return fish.curvePoints[0].y / 1000;
         }
     }
 
@@ -172,7 +210,7 @@ public class FishGameLogic {
         return fish.experience;
     }
 
-    public void grantExperience(){
+    private void grantExperience(){
         ClientPacketSender.sendFishingSkillGrantExp(fish);
     }
 }

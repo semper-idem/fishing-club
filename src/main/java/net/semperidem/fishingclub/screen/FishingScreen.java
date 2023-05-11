@@ -51,7 +51,7 @@ public class FishingScreen extends Screen {
         //Bar
         DrawableHelper.fill(matrices, x,y,x + 10,y - 100,0xFF282e68);
         //Bobber
-        float bobberWidth = fishGameLogic.getBobberWidth();
+        float bobberWidth = fishGameLogic.getBobberLength();
         float bobberPos = fishGameLogic.getBobberPos();
         float fishPos = fishGameLogic.getFishPos();
         DrawableHelper.fill(matrices, x + 1, (int) (y - bobberWidth*100 - (bobberPos * 100)),x + 9, (int) (y + bobberWidth*100 - (bobberPos * 100)),0xFFf49333);

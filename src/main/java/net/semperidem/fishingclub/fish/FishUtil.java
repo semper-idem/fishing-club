@@ -6,10 +6,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
+import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class FishUtil {
@@ -105,6 +108,28 @@ public class FishUtil {
             loreTag.add(NbtString.of(Text.Serializer.toJson(line)));
         }
         displayTag.put("Lore", loreTag);
+    }
+
+    public static Fish getFishOnHook(FishingSkill fishingSkill){
+        int totalRarity = 0;
+        HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
+        ArrayList<FishType> availableFish = new ArrayList<>();
+        for (FishType fishType : FishType.allFishTypes.values()) {
+            if (fishingSkill.level > fishType.fishMinLevel) {
+                availableFish.add(fishType);
+            }
+        }
+        for (FishType fishType : availableFish) {
+            totalRarity += fishType.fishRarity;
+            fishTypeToThreshold.put(fishType, totalRarity);
+        }
+        int randomFish = (int) (Math.random() * totalRarity);
+        for (FishType fishType : availableFish) {
+            if (randomFish < fishTypeToThreshold.get(fishType)) {
+                return new Fish(fishType, fishingSkill);
+            }
+        }
+        return new Fish();
     }
 
 }

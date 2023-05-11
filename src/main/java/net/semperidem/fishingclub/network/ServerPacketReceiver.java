@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkillManager;
 
@@ -17,7 +18,12 @@ public class ServerPacketReceiver {
                 server1.execute(() -> {
                     FishingSkillManager.grantExperience(player.getUuid(), expGained);
                     player.addExperience(Math.max(1, expGained/10));
-                    player.giveItemStack(FishUtil.prepareFishItemStack(fishName, fishWeight, fishLength));
+                    ItemStack fishReward = FishUtil.prepareFishItemStack(fishName, fishWeight, fishLength);
+                    if (player.getInventory().getEmptySlot() == -1) {
+                        player.dropItem(fishReward, false);
+                    } else {
+                        player.giveItemStack(fishReward);
+                    }
                 });
             });
         });
