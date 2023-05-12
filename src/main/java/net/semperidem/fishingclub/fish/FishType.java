@@ -4,18 +4,21 @@ import java.util.HashMap;
 
 public class FishType {
     public static HashMap<String, FishType> allFishTypes = new HashMap<>();
-    public String name;
+
+    String name;
+
     FishPattern fishPattern;
+
     int fishMinLevel;
     int fishRandomLevel;
 
     int fishEnergyLevel;
 
-    public float fishMinLength;
-    public float fishRandomLength;
+    float fishMinLength;
+    float fishRandomLength;
 
-    public float fishMinWeight;
-    public float fishRandomWeight;
+    float fishMinWeight;
+    float fishRandomWeight;
 
     float fishRarity;
 

@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.FishingClubClient;
+import net.semperidem.fishingclub.fish.fishingskill.FishingPerks;
 import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.util.Point;
@@ -18,7 +19,7 @@ public class FishGameLogic {
     float fishPos = 0;
     int ticks = 0;
     float bobberPos = 0;
-    float bobberLength = 0.1f;
+    float bobberLength;
     float bobberSpeed = 0f;
     float reelingAcceleration = 0.005f;
     float gravityAcceleration = 0.0035f;
@@ -30,14 +31,17 @@ public class FishGameLogic {
     float topBound;
     float trackLength;
     float totalDuration;
+    float waveSpeed = 5;
+    float waveStrength = 0.05f;
 
 
     public FishGameLogic(PlayerEntity player){
         this.player = player;
         this.fishingSkill = FishingClubClient.clientFishingSkill;
+        setBobberLength();
         this.fish = FishUtil.getFishOnHook(fishingSkill);
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
-        this.trackLength = 1 + Math.round((this.fish.fishLevel / 10f)) / 10f;
+        this.trackLength = (float) (1 + Math.floor((this.fish.fishLevel / 10f)) / 10f);
         this.bottomBound = bobberLength;
         this.topBound = trackLength - bobberLength;
     }
@@ -64,6 +68,13 @@ public class FishGameLogic {
 
     public float getHealth() {
         return health;
+    }
+
+    public void setBobberLength(){
+        bobberLength = 0.15f;
+        if(fishingSkill.hasPerk(FishingPerks.FISHING_SCHOOL)) {
+            bobberLength =  0.15f;
+        }
     }
 
     public float getBobberLength() {
@@ -163,7 +174,7 @@ public class FishGameLogic {
 
     private float nextFishPosOnWave(float elapsedTime){
         float percentElapsedTime = elapsedTime / totalDuration;
-        return  (float) (Math.sin(sinePeriod * 5 * percentElapsedTime) * 0.05f);
+        return  (float) (Math.sin(sinePeriod * percentElapsedTime * waveSpeed) * waveStrength);
     }
 
     private float nextFishPosOnCurve(float elapsedTime) {

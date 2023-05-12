@@ -12,10 +12,7 @@ import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class FishUtil {
 
@@ -39,6 +36,7 @@ public class FishUtil {
         int weightGrade = getGrade(weight, fishType.fishMinWeight, fishType.fishMinWeight + fishType.fishRandomWeight);
         int lengthGrade = getGrade(length, fishType.fishMinLength, fishType.fishMinLength + fishType.fishRandomLength);
         return Arrays.asList(
+                getGradeText(Math.max(lengthGrade, weightGrade)),
                 getWeightText(weight, weightGrade),
                 getLengthText(length, lengthGrade),
                 getCaughtText()
@@ -51,6 +49,10 @@ public class FishUtil {
         fishDetails.putFloat("weight", weight);
         fishDetails.putFloat("length", length);
         stack.getNbt().put("fish_details", fishDetails);
+    }
+
+    private static Text getGradeText(int grade){
+        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + integerToRoman(grade));
     }
 
     private static Text getWeightText(float weight, int grade){
@@ -165,5 +167,31 @@ public class FishUtil {
         buf.writeFloat(fish.length);
         buf.writeString(fish.fishType.name);
         return buf;
+    }
+
+    private static final TreeMap<Integer, String> treemap = new TreeMap<Integer, String>();
+    static {
+        treemap.put(1000, "M");
+        treemap.put(900, "CM");
+        treemap.put(500, "D");
+        treemap.put(400, "CD");
+        treemap.put(100, "C");
+        treemap.put(90, "XC");
+        treemap.put(50, "L");
+        treemap.put(40, "XL");
+        treemap.put(10, "X");
+        treemap.put(9, "IX");
+        treemap.put(5, "V");
+        treemap.put(4, "IV");
+        treemap.put(1, "I");
+
+    }
+
+    public static String integerToRoman(int number) {
+        int l = treemap.floorKey(number);
+        if (number == l) {
+            return treemap.get(number);
+        }
+        return treemap.get(l) + integerToRoman(number - l);
     }
 }

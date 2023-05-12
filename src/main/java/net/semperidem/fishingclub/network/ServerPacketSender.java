@@ -12,7 +12,7 @@ public class ServerPacketSender {
         ServerPlayNetworking.send(
                 player,
                 PacketIdentifiers.S2C_SYNC_DATA_ID,
-                getFishingSkillPacketBuf(FishingSkillManager.get(player.getUuid()))
+                getFishingSkillPacketBuf(FishingSkillManager.getPlayerFishingSkill(player.getUuid()))
         );
     }
 
@@ -20,6 +20,7 @@ public class ServerPacketSender {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(fishingSkill.level);
         buf.writeInt(fishingSkill.exp);
+        buf.writeString(FishingSkillManager.getStringFromPlayerPerks(fishingSkill.getPerks()));
         return buf;
     }
     public static void sendFishingStartPacket(ServerPlayerEntity player){

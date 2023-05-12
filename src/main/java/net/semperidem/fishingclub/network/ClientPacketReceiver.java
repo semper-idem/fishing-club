@@ -11,9 +11,11 @@ public class ClientPacketReceiver {
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SYNC_DATA_ID, (client, handler, buf, responseSender) -> {
             int level = buf.readInt();
             int exp = buf.readInt();
+            String fishingPerksString = buf.readString();
+
 
             client.execute(() -> {
-                FishingClubClient.clientFishingSkill = new FishingSkill(level, exp);
+                FishingClubClient.clientFishingSkill = new FishingSkill(level, exp, fishingPerksString);
             });
         });
 
