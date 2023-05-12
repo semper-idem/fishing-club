@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.screen;
+package net.semperidem.fishingclub.client.screen;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;

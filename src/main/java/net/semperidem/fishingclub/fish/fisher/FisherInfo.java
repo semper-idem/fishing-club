@@ -44,6 +44,10 @@ public class FisherInfo {
         return exp;
     }
 
+    public int getCredit(){
+        return credit;
+    }
+
     private void initPerks(){
         this.perks.add(FishingPerks.ROOT_HOBBYIST);
         this.perks.add(FishingPerks.ROOT_OPPORTUNIST);
@@ -80,8 +84,14 @@ public class FisherInfo {
         }
     }
 
+
     @Override
     public String toString(){
-        return "[Fisher Info] Level:" + level + "  Exp:" + exp;
+        return
+                "\n============[Fisher Info]============" +
+                "\nLevel: " + level +
+                "\nExperience: " + exp +
+                "\nPerk Count: " + perks.size() +
+                "\n============[Fisher Info]============";
     }
 }

@@ -24,6 +24,7 @@ public class ServerPacketReceiver {
                     } else {
                         player.giveItemStack(fishReward);
                     }
+                    ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });
             });
         });
