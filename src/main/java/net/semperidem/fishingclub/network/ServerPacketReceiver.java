@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkillManager;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
 public class ServerPacketReceiver {
     public static void registerServerPacketHandlers() {
@@ -16,7 +16,7 @@ public class ServerPacketReceiver {
                 String fishName = buf.readString();
 
                 server1.execute(() -> {
-                    FishingSkillManager.grantExperience(player.getUuid(), expGained);
+                    FisherInfos.grantExperience(player.getUuid(), expGained);
                     player.addExperience(Math.max(1, expGained/10));
                     ItemStack fishReward = FishUtil.prepareFishItemStack(fishName, fishWeight, fishLength);
                     if (player.getInventory().getEmptySlot() == -1) {
@@ -32,7 +32,7 @@ public class ServerPacketReceiver {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, (server1, player, handler1, buf, responseSender) -> {
                 server1.execute(() -> {
-                    ServerPacketSender.sendFishingSkillSyncPacket(player);
+                    ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });
             });
         });

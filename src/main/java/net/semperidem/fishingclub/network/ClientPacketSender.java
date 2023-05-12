@@ -6,10 +6,10 @@ import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 
 public class ClientPacketSender {
-    public static void sendFishingSkillGrantExp(Fish fish) {
+    public static void sendFisherInfoGrantExp(Fish fish) {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_GRANT_REWARD, FishUtil.getFishPacketBuf(fish));
     }
-    public static void sendFishingSkillDataRequest() {
+    public static void sendFishingInfoDataRequest() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, PacketByteBufs.create());
     }
 

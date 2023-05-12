@@ -1,10 +1,10 @@
 package net.semperidem.fishingclub.fish;
 
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
+import net.semperidem.fishingclub.fish.fisher.FisherInfo;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
-    FishingSkill fishingSkill;
+    FisherInfo fisherInfo;
 
     FishType fishType;
 
@@ -23,12 +23,12 @@ public class Fish {
     Point[] curveControlPoints;
 
     public Fish(){
-        this(FishTypes.COD, new FishingSkill());
+        this(FishTypes.COD, new FisherInfo());
     }
 
-    public Fish(FishType fishType, FishingSkill fishingSkill){
+    public Fish(FishType fishType, FisherInfo fisherInfo){
         this.fishType = fishType;
-        this.fishingSkill = fishingSkill;
+        this.fisherInfo = fisherInfo;
         this.fishLevel = calculateFishLevel();
         this.weight = calculateFishWeight();
         this.length = calculateFishLength();
@@ -53,7 +53,7 @@ public class Fish {
         int adjustedFishLevel = FishUtil.getPseudoRandomValue(
                 fishType.fishMinLevel,
                 fishType.fishRandomLevel,
-                (int)Math.sqrt(fishingSkill.level / 100f)
+                (int)Math.sqrt(fisherInfo.getLevel() / 100f)
         );
         return FishUtil.clampValue(1, 99, adjustedFishLevel);
     }

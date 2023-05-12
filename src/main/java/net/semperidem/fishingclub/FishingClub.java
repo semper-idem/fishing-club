@@ -5,8 +5,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkillManager;
+import net.semperidem.fishingclub.fish.fisher.FisherInfo;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -27,9 +27,9 @@ public class FishingClub implements ModInitializer {
                 .executes(context -> {
                     // For versions below 1.19, replace "Text.literal" with "new LiteralText".
                     context.getSource().sendMessage(Text.literal("Called /foo with no arguments"));
-                    FishingSkill fs = FishingSkillManager.getPlayerFishingSkill(context.getSource().getPlayer().getUuid());
+                    FisherInfo fs = FisherInfos.getPlayerFisherInfo(context.getSource().getPlayer().getUuid());
                     fs.grantPerk("all");
-                    ServerPacketSender.sendFishingSkillSyncPacket(context.getSource().getPlayer());
+                    ServerPacketSender.sendFisherInfoSyncPacket(context.getSource().getPlayer());
                     return 1;
                 })));
 

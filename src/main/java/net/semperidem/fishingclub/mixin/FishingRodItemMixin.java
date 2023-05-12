@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.mixin;
 
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
@@ -12,13 +11,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.network.ServerPacketSender;
-import net.semperidem.fishingclub.screen.FishingScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -59,7 +56,7 @@ public class FishingRodItemMixin {
     }
 
     private void startFishingMinigame(PlayerEntity player) {
-        ServerPacketSender.sendFishingSkillSyncPacket((ServerPlayerEntity)player);
+        ServerPacketSender.sendFisherInfoSyncPacket((ServerPlayerEntity)player);
         ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity)player);
     }
 }

@@ -3,9 +3,9 @@ package net.semperidem.fishingclub.fish;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.semperidem.fishingclub.FishingClubClient;
-import net.semperidem.fishingclub.fish.fishingskill.FishingPerks;
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
+import net.semperidem.fishingclub.fish.fisher.FishingPerks;
+import net.semperidem.fishingclub.fish.fisher.FisherInfo;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
@@ -26,7 +26,7 @@ public class FishGameLogic {
     Fish fish;
     boolean isFinished = false;
     boolean isWon = false;
-    FishingSkill fishingSkill;
+    FisherInfo fisherInfo;
     float bottomBound;
     float topBound;
     float trackLength;
@@ -37,9 +37,9 @@ public class FishGameLogic {
 
     public FishGameLogic(PlayerEntity player){
         this.player = player;
-        this.fishingSkill = FishingClubClient.clientFishingSkill;
+        this.fisherInfo = FisherInfos.getClientInfo();
         setBobberLength();
-        this.fish = FishUtil.getFishOnHook(fishingSkill);
+        this.fish = FishUtil.getFishOnHook(fisherInfo);
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
         this.trackLength = (float) (1 + Math.floor((this.fish.fishLevel / 10f)) / 10f);
         this.bottomBound = bobberLength;
@@ -72,7 +72,7 @@ public class FishGameLogic {
 
     public void setBobberLength(){
         bobberLength = 0.15f;
-        if(fishingSkill.hasPerk(FishingPerks.FISHING_SCHOOL)) {
+        if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
             bobberLength =  0.15f;
         }
     }
@@ -222,6 +222,6 @@ public class FishGameLogic {
     }
 
     private void grantExperience(){
-        ClientPacketSender.sendFishingSkillGrantExp(fish);
+        ClientPacketSender.sendFisherInfoGrantExp(fish);
     }
 }

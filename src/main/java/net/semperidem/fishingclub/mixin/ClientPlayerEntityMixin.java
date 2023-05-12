@@ -12,7 +12,7 @@ public class ClientPlayerEntityMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo ci){
-        ClientPacketSender.sendFishingSkillDataRequest();
+        ClientPacketSender.sendFishingInfoDataRequest();
     }
 
 }

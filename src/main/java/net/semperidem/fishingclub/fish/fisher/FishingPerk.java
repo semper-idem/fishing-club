@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish.fishingskill;
+package net.semperidem.fishingclub.fish.fisher;
 
 public class FishingPerk {
     String name;

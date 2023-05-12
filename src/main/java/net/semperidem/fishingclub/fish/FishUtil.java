@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fish.fishingskill.FishingSkill;
+import net.semperidem.fishingclub.fish.fisher.FisherInfo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -114,12 +114,12 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-    public static Fish getFishOnHook(FishingSkill fishingSkill){
+    public static Fish getFishOnHook(FisherInfo fisherInfo){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = new ArrayList<>();
         for (FishType fishType : FishType.allFishTypes.values()) {
-            if (fishingSkill.level > fishType.fishMinLevel) {
+            if (fisherInfo.getLevel() > fishType.fishMinLevel) {
                 availableFish.add(fishType);
             }
         }
@@ -130,7 +130,7 @@ public class FishUtil {
         int randomFish = (int) (Math.random() * totalRarity);
         for (FishType fishType : availableFish) {
             if (randomFish < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fishingSkill);
+                return new Fish(fishType, fisherInfo);
             }
         }
         return new Fish();
