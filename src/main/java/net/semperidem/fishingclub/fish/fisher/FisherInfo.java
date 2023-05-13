@@ -8,17 +8,16 @@ public class FisherInfo {
     private static final int BASE_XP = 50;
     private static final float XP_EXPONENT = 1.25f;
 
-
     int level = 1;
     int exp = 0;
     ArrayList<FishingPerk> perks = new ArrayList<>();
-    int credit;
+    int fisherCredit;
 
     public FisherInfo(int level, int exp, String perkString, int credit) {
         this.level = level;
         this.exp = exp;
         this.perks = FisherInfos.getPlayerPerksFromString(perkString);
-        this.credit = credit;
+        this.fisherCredit = credit;
     }
 
     public FisherInfo(int level, int exp, String perkString) {
@@ -44,8 +43,8 @@ public class FisherInfo {
         return exp;
     }
 
-    public int getCredit(){
-        return credit;
+    public int getFisherCredit(){
+        return fisherCredit;
     }
 
     private void initPerks(){
@@ -84,14 +83,25 @@ public class FisherInfo {
         }
     }
 
+    public boolean removeCredit(int credit) {
+        if (this.fisherCredit - credit < 0) {
+            return false;
+        }
+        this.fisherCredit -= credit;
+        return true;
+    }
+
+    public void addCredit(int credit) {
+        this.fisherCredit += credit;
+    }
 
     @Override
     public String toString(){
-        return
-                "\n============[Fisher Info]============" +
+        return "\n============[Fisher Info]============" +
                 "\nLevel: " + level +
                 "\nExperience: " + exp +
                 "\nPerk Count: " + perks.size() +
+                "\nCredit: " + fisherCredit +
                 "\n============[Fisher Info]============";
     }
 }

@@ -2,24 +2,31 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_START_GAME;
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_SYNC_DATA_ID;
+
 public class ServerPacketSender {
-    public static void sendFisherInfoSyncPacket(ServerPlayerEntity player) {
-        ServerPlayNetworking.send(
-                player,
-                PacketIdentifiers.S2C_SYNC_DATA_ID,
-                FisherInfos.getPlayerFisherInfoBuf(player.getUuid())
-        );
+
+    private static void sendPacket(ServerPlayerEntity player, Identifier identifier, PacketByteBuf buf){
+        if (player != null) {
+            ServerPlayNetworking.send( player, identifier, buf);
+        }
     }
 
+    public static void sendFisherInfoSyncPacket(ServerPlayerEntity player) {
+        sendFisherInfoSyncPacket(player, FisherInfos.getPlayerFisherInfoBuf(player.getUuid()));
+    }
+
+    public static void sendFisherInfoSyncPacket(ServerPlayerEntity player, PacketByteBuf buf) {
+        sendPacket(player, S2C_SYNC_DATA_ID, buf);
+    }
 
     public static void sendFishingStartPacket(ServerPlayerEntity player){
-        ServerPlayNetworking.send(
-                player,
-                PacketIdentifiers.S2C_START_GAME,
-                PacketByteBufs.create()
-        );
+        sendPacket(player, S2C_START_GAME, PacketByteBufs.empty());
     }
 }
