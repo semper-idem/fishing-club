@@ -21,7 +21,7 @@ public class FishingClubClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-        HandledScreens.register(FishingClub.SHOP_SCREEN_HANDLER, ShopSellScreen::new);
+        HandledScreens.register(FishingClub.SHOP_SELL_SCREEN_HANDLER, ShopSellScreen::new);
         infoScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key." + FishingClub.MOD_ID + ".fisher_info_screen", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
