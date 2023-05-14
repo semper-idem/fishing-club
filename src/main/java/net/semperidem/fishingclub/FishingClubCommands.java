@@ -15,7 +15,7 @@ public class FishingClubCommands {
     public static void register(){
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             // Root command
-            LiteralArgumentBuilder<ServerCommandSource> rootCommand = CommandManager.literal(FishingClub.MODID);
+            LiteralArgumentBuilder<ServerCommandSource> rootCommand = CommandManager.literal(FishingClub.MOD_ID);
 
             rootCommand.then(CommandManager.literal("info").executes(context -> {
                 context.getSource().sendMessage(Text.literal(FisherInfos.getClientInfo().toString()));

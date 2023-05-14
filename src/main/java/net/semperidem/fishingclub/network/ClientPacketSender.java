@@ -10,7 +10,11 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_GRANT_REWARD, FishUtil.getFishPacketBuf(fish));
     }
     public static void sendFishingInfoDataRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, PacketByteBufs.create());
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, PacketByteBufs.empty());
+    }
+
+    public static void sendOpenShopRequest() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_SHOP, PacketByteBufs.empty());
     }
 
 }
