@@ -2,23 +2,23 @@ package net.semperidem.fishingclub.fish;
 
 
 public class FishTypes {
-    public static final FishType COD;
-    public static final FishType L_BASS;
-    public static final FishType S_BASS;
-    public static final FishType SALMON;
-    public static final FishType SARDINE;
-    public static final FishType SHRIMP;
-    public static final FishType EEL;
-    public static final FishType PIKE;
-    public static final FishType PUFFERFISH;
-    public static final FishType RED_SNAPPER;
-    public static final FishType BREAM;
-    public static final FishType CARP;
-    public static final FishType CATFISH;
-    public static final FishType RAINBOW_TROUT;
-    public static final FishType WALLEYE;
+    public static FishType COD;
+    public static FishType L_BASS;
+    public static FishType S_BASS;
+    public static FishType SALMON;
+    public static FishType SARDINE;
+    public static FishType SHRIMP;
+    public static FishType EEL;
+    public static FishType PIKE;
+    public static FishType PUFFERFISH;
+    public static FishType RED_SNAPPER;
+    public static FishType BREAM;
+    public static FishType CARP;
+    public static FishType CATFISH;
+    public static FishType RAINBOW_TROUT;
+    public static FishType WALLEYE;
 
-    static {
+    public static void initFishTypes(){
         COD = new FishType(
                 "Cod",
             FishPatterns.EASY5,

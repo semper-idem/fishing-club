@@ -12,8 +12,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.fish.fisher.FisherInfo;
-import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 import org.jetbrains.annotations.Nullable;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
@@ -22,7 +20,6 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
     private static final Identifier TEXTURE = new Identifier(MOD_ID,"textures/gui/shop_sell.png");
     private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/shop_sell_money_widget.png");
     private final int rows = 6;
-    FisherInfo clientInfo;
     private int animationTick = 0;
 
 
@@ -31,7 +28,6 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
         this.passEvents = false;
         this.backgroundHeight = 114 + this.rows * 18;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
-        this.clientInfo = FisherInfos.getClientInfo();
     }
 
 
@@ -43,15 +39,20 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
 
     protected void addSellButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Sell"), (buttonWidget) -> {
-            this.animationTick = 300;
+                if (this.handler.sellContainer()) {
+                    this.animationTick = 300;
+                }
         }));
     }
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
         this.renderBackground(matrixStack);
         super.render(matrixStack, i, j, f);
-        this.drawMouseoverTooltip(matrixStack, i, j);
         this.drawBalanceWidget(matrixStack);
+        this.drawMouseoverTooltip(matrixStack, i, j);
+        String containerValueString = "$" + this.handler.getSellContainerValue();
+        int containerValueStringWidth = textRenderer.getWidth(containerValueString);
+        this.textRenderer.draw(matrixStack,containerValueString, this.x + 167 -containerValueStringWidth , this.y + 6, 4210752);
     }
 
     private void drawBalanceWidget(MatrixStack matrixStack){
@@ -64,17 +65,17 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
         if (animationTick > 0) {
             animationTick-=2;
             this.drawTexture(matrixStack, widgetX, widgetY + Math.min(animationTick, 200) /10, 0, 0, 80, 40, 80, 80);
-            String gainString = "+$123";
+            String gainString = "+$" + this.handler.lastSellValue;
             int gainTextWidth = textRenderer.getWidth(gainString);
-            this.textRenderer.drawWithShadow(matrixStack,"+$123", widgetX + 69 -gainTextWidth , widgetY + Math.min(animationTick, 200) /10f + 24, 0xcdcdf7);
+            this.textRenderer.drawWithShadow(matrixStack,gainString, widgetX + 69 -gainTextWidth , widgetY + Math.min(animationTick, 200) /10f + 24, 0xcdcdf7);
         }
         RenderSystem.setShaderTexture(0, MONEY_WIDGET);
         this.drawTexture(matrixStack, widgetX, widgetY, 0, 0, 80, 40, 80, 80);
 
         this.textRenderer.drawWithShadow(matrixStack,"Balance:", widgetX + 6, widgetY + 6, 0xcdcdf7);
-        String balanceString = "$" + clientInfo.getFisherCredit();
+        String balanceString = "$" + this.handler.getPlayerBalance();
         int balanceStringWidth = textRenderer.getWidth(balanceString);
-        this.textRenderer.drawWithShadow(matrixStack, "$" + clientInfo.getFisherCredit(), widgetX + 69 - balanceStringWidth, widgetY + 24, 0xcdcdf7);
+        this.textRenderer.drawWithShadow(matrixStack, balanceString, widgetX + 69 - balanceStringWidth, widgetY + 24, 0xcdcdf7);
     }
 
     protected void drawBackground(MatrixStack matrixStack, float f, int i, int j) {

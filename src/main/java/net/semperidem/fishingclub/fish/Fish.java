@@ -6,14 +6,16 @@ import net.semperidem.fishingclub.util.Point;
 public class Fish {
     FisherInfo fisherInfo;
 
-    FishType fishType;
+    public FishType fishType;
 
-    int fishLevel;
-    int grade;
-    int experience;
+    public String name;
+    public int fishLevel;
+    public int grade;
+    public int experience;
+    public int value;
 
-    float weight;
-    float length;
+    public float weight;
+    public float length;
 
     int fishEnergy;
     int fishMinEnergyLevel;
@@ -23,11 +25,11 @@ public class Fish {
     Point[] curveControlPoints;
 
     public Fish(){
-        this(FishTypes.COD, new FisherInfo());
     }
 
     public Fish(FishType fishType, FisherInfo fisherInfo){
         this.fishType = fishType;
+        this.name = fishType.name;
         this.fisherInfo = fisherInfo;
         this.fishLevel = calculateFishLevel();
         this.weight = calculateFishWeight();
@@ -36,6 +38,7 @@ public class Fish {
         this.experience = calculateFishExp();
         initEnergyLevels();
         initCurvePoints();
+        this.value = FishUtil.getFishValue(this);
     }
 
     private void initCurvePoints(){
@@ -76,8 +79,10 @@ public class Fish {
     }
 
     private int calculateGrade(){
-        int weightGrade = FishUtil.getGrade(weight, fishType.fishMinWeight, fishType.fishMinWeight + fishType.fishRandomWeight);
-        int lengthGrade = FishUtil.getGrade(length, fishType.fishMinLength, fishType.fishMinLength + fishType.fishRandomLength);
+        int weightGrade = FishUtil.getWeightGrade(this);
+        int lengthGrade = FishUtil.getLengthGrade(this);
         return Math.max(weightGrade, lengthGrade);
     }
+
+
 }

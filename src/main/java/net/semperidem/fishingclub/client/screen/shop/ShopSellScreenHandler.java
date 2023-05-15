@@ -5,9 +5,14 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.fisher.FisherInfo;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 public class ShopSellScreenHandler extends ScreenHandler {
     private final Inventory inventory;
@@ -16,12 +21,15 @@ public class ShopSellScreenHandler extends ScreenHandler {
     private final int slotCount =  54;
     private final PlayerEntity player;
     private final int slotSize = 18;
+    private FisherInfo clientInfo;
+    int lastSellValue = 0;
 
 
     public ShopSellScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FishingClub.SHOP_SELL_SCREEN_HANDLER, syncId);
         this.inventory = new SimpleInventory(slotCount);
         this.player = playerInventory.player;
+        this.clientInfo = FisherInfos.getClientInfo();
 
 
         addSellInventory();
@@ -55,6 +63,40 @@ public class ShopSellScreenHandler extends ScreenHandler {
 
     public boolean canUse(PlayerEntity playerEntity) {
         return this.inventory.canPlayerUse(playerEntity);
+    }
+
+    public int getPlayerBalance(){
+        return FisherInfos.getClientInfo().getFisherCredit();
+    }
+
+    public int getSellContainerValue(){
+        int result = 0;
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack fishStack = inventory.getStack(i);
+            if (!fishStack.isOf(Items.AIR)) {
+                result += FishUtil.getFishValue(inventory.getStack(i));
+            }
+        }
+
+        return result;
+    }
+
+    public void containerSold(){
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack itemStack = inventory.removeStack(i);
+            if (!itemStack.isEmpty()) {
+                //inventory.removeStack(i);
+            }
+        }
+    }
+
+    boolean sellContainer(){
+        lastSellValue =  getSellContainerValue();
+        if (lastSellValue == 0) {
+            return false;
+        }
+        ClientPacketSender.sellShopContainer(lastSellValue);
+        return true;
     }
 
     @Override
@@ -96,7 +138,6 @@ public class ShopSellScreenHandler extends ScreenHandler {
                     player.dropItem(itemStack, false);
                 }
             }
-            this.dropInventory(player, this.inventory);
         }
     }
 
