@@ -21,15 +21,13 @@ public class FishGameLogic {
     float bobberPos = 0;
     float bobberLength;
     float bobberSpeed = 0f;
+    float fishLength = 0.0625f;
     float reelingAcceleration = 0.005f;
     float gravityAcceleration = 0.0035f;
     Fish fish;
     boolean isFinished = false;
     boolean isWon = false;
     FisherInfo fisherInfo;
-    float bottomBound;
-    float topBound;
-    float trackLength;
     float totalDuration;
     float waveSpeed = 5;
     float waveStrength = 0.05f;
@@ -41,9 +39,6 @@ public class FishGameLogic {
         setBobberLength();
         this.fish = FishUtil.getFishOnHook(fisherInfo);
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
-        this.trackLength = (float) (1 + Math.floor((this.fish.fishLevel / 10f)) / 10f);
-        this.bottomBound = bobberLength;
-        this.topBound = trackLength - bobberLength;
     }
 
     public boolean isFinished() {
@@ -91,13 +86,13 @@ public class FishGameLogic {
 
     private float nextBobberPos(){
         float nextBobberPosUnbound = bobberPos + bobberSpeed;
-        return Math.max(Math.min(nextBobberPosUnbound, topBound),bottomBound);
+        return Math.max(Math.min(nextBobberPosUnbound, 1), bobberLength);
     }
 
     private void bobberCollideWithBound(){
-        if (bobberPos <= bottomBound) {
+        if (bobberPos <= bobberLength) {
             bobberBounce();
-        } else if (bobberPos >= topBound) {
+        } else if (bobberPos >= 1) {
             bobberSpeed = 0;
         }
     }
@@ -128,7 +123,7 @@ public class FishGameLogic {
     private void processProgress(){
         boolean bobberHasFish = fishPos <= bobberPos + bobberLength && fishPos >= bobberPos - bobberLength;
         if (bobberHasFish) {
-            grantProgress();
+          //  grantProgress();
         } else {
             revokeProgress();
         }
@@ -169,7 +164,7 @@ public class FishGameLogic {
         float fishSpeedScaledToLevel = fishSpeed * 0.75f + (fish.fishLevel / 200f);
         float elapsedTime = (fishSpeedScaledToLevel * ticks) % totalDuration;
         float nextFishPosUnbound = nextFishPosOnCurve(elapsedTime) + nextFishPosOnWave(elapsedTime);
-        return Math.min(Math.max(nextFishPosUnbound * trackLength, 0), trackLength);
+        return Math.max(Math.min(nextFishPosUnbound, 1), fishLength);
     }
 
     private float nextFishPosOnWave(float elapsedTime){
