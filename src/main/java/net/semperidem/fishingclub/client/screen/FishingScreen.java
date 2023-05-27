@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -30,6 +29,8 @@ public class FishingScreen extends Screen {
 
     int barBorderWidth = 14;
     int barBorderHeight = 140;
+
+    int bobberHeight = 32;
 
 
     FishGameLogic fishGameLogic;
@@ -63,13 +64,10 @@ public class FishingScreen extends Screen {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         renderWindow(matrices);
+        renderBobber(matrices);
         renderFish(matrices);
-//        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of(String.format("%.2f", fishGameLogic.getHealth())), 0,0,0xFFFFFF);
-//        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of("Level:" + fishGameLogic.getLevel()), 0,20,0xFFFFFF);
-////        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of("bobberPos:" + String.format("%.2f",bobberPos)), 0,40,0xFFFFFF);
-////        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of("fishPos:" + String.format("%.2f",fishPos)), 0,60,0xFFFFFF);
-//        renderFishWidget(matrices, screenX + 50, screenY + 150);
-//        renderProgressWidget(matrices, screenX + 100, screenY + 150);
+        renderProgressBar(matrices);
+        renderLineHealth(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         matrices.pop();
     }
@@ -79,6 +77,20 @@ public class FishingScreen extends Screen {
         drawTexture(matrices, windowX, windowY, 0, 0, bgWidth, bgHeight, bgWidth, bgHeight);
     }
 
+    private void renderBobber(MatrixStack matrices){
+        matrices.push();
+        float bobberPos = fishGameLogic.getBobberPos();
+        float bobberLength = fishGameLogic.getBobberLength();
+        float bobberScale = barHeight * bobberLength / bobberHeight;
+        RenderSystem.setShaderTexture(0, BOBBER);
+        matrices.scale(1f,bobberScale,1f);
+        int y = (int) ( (windowY + 16 + barHeight - barHeight * bobberPos) * (1f / bobberScale));
+        drawTexture(matrices, windowX + 26, y, 0, 0, barWidth, bobberHeight, barWidth, bobberHeight);
+
+        matrices.pop();
+
+    }
+
     private void renderFish(MatrixStack matrices){
         RenderSystem.setShaderTexture(0, FISH);
         float fishPos = fishGameLogic.getFishPos();
@@ -86,24 +98,21 @@ public class FishingScreen extends Screen {
 
     }
 
-    private void renderFishWidget(MatrixStack matrices, int x, int y) {
-        //Bar
-        DrawableHelper.fill(matrices, x,y,x + 10,y - 100,0xFF282e68);
-        //Bobber
-        float bobberWidth = fishGameLogic.getBobberLength();
-        float bobberPos = fishGameLogic.getBobberPos();
-        float fishPos = fishGameLogic.getFishPos();
-        DrawableHelper.fill(matrices, x + 1, (int) (y - bobberWidth*100 - (bobberPos * 100)),x + 9, (int) (y + bobberWidth*100 - (bobberPos * 100)),0xFFf49333);
 
-        //Fish
-        DrawableHelper.fill(matrices, x + 1, (int) (y - (fishPos * 100)),x + 9, (int) (y - 1 - (fishPos * 100)),0xFF468681);
+    public void renderProgressBar(MatrixStack matrices ) {
+        RenderSystem.setShaderTexture(0, PROGRESS_BAR);
+        int progressBarLength = (int) (barHeight * fishGameLogic.getProgress());
+        drawTexture(matrices, windowX + 126, windowY+ 16 + barHeight - progressBarLength, 0, 0, barWidth, progressBarLength, barWidth, barHeight);
 
     }
+    public void renderLineHealth(MatrixStack matrices) {
+        String healthLabel = "Line Health";
+        int healthLabelLength = textRenderer.getWidth(healthLabel);
+        textRenderer.drawWithShadow(matrices, Text.of(healthLabel), windowX + 80 - healthLabelLength / 2f,windowY + 75,0xFFFFFF);
 
-    public void renderProgressWidget(MatrixStack matrices, int x, int y) {
-        DrawableHelper.fill(matrices, x,y,x + 10,y - 100,0xFF483e10);
-        DrawableHelper.fill(matrices, x + 1,y,x + 9, (int) (y - (100 * fishGameLogic.getProgress())),0xFFeccf49);
-
+        String healthInfo = String.format("%.1f" ,fishGameLogic.getHealth());
+        int healthInfoLength = textRenderer.getWidth(healthInfo);
+        textRenderer.drawWithShadow(matrices, Text.of(healthInfo), windowX + 80 - healthInfoLength / 2f,windowY + 90,0xFFFFFF);
     }
 
     @Override

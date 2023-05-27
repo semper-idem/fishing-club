@@ -66,9 +66,9 @@ public class FishGameLogic {
     }
 
     public void setBobberLength(){
-        bobberLength = 0.15f;
+        bobberLength = 0.25f;
         if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
-            bobberLength =  0.15f;
+            bobberLength =  0.25f;
         }
     }
 
@@ -121,9 +121,10 @@ public class FishGameLogic {
     }
 
     private void processProgress(){
-        boolean bobberHasFish = fishPos <= bobberPos + bobberLength && fishPos >= bobberPos - bobberLength;
+        float fishPosCenter = fishPos - fishLength / 2;
+        boolean bobberHasFish = bobberPos >= fishPosCenter && bobberPos - bobberLength <= fishPosCenter;
         if (bobberHasFish) {
-          //  grantProgress();
+            grantProgress();
         } else {
             revokeProgress();
         }
