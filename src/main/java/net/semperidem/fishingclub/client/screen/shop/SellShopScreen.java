@@ -6,27 +6,25 @@ import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
+import static net.semperidem.fishingclub.client.screen.shop.SellShopScreenHandler.ROW_COUNT;
+import static net.semperidem.fishingclub.client.screen.shop.SellShopScreenHandler.SLOT_SIZE;
 
-public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> implements ScreenHandlerProvider<ShopSellScreenHandler> {
+public class SellShopScreen extends HandledScreen<SellShopScreenHandler> implements ScreenHandlerProvider<SellShopScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(MOD_ID,"textures/gui/shop_sell.png");
-    private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/shop_sell_money_widget.png");
-    private final int rows = 6;
+    private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/money_widget.png");
     private int animationTick = 0;
 
 
-    public ShopSellScreen(ShopSellScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
+    public SellShopScreen(SellShopScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
         super(shopSellScreenHandler, playerInventory, text);
         this.passEvents = false;
-        this.backgroundHeight = 114 + this.rows * 18;
+        this.backgroundHeight = 114 + ROW_COUNT * SLOT_SIZE;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
 
@@ -39,20 +37,20 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
 
     protected void addSellButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Sell"), (buttonWidget) -> {
-                if (this.handler.sellContainer()) {
-                    this.animationTick = 300;
-                }
+            if (this.handler.sellContainer()) {
+                this.animationTick = 300;
+            }
         }));
     }
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
-        this.renderBackground(matrixStack);
+        renderBackground(matrixStack);
         super.render(matrixStack, i, j, f);
-        this.drawBalanceWidget(matrixStack);
-        this.drawMouseoverTooltip(matrixStack, i, j);
+        drawBalanceWidget(matrixStack);
+        drawMouseoverTooltip(matrixStack, i, j);
         String containerValueString = "$" + this.handler.getSellContainerValue();
         int containerValueStringWidth = textRenderer.getWidth(containerValueString);
-        this.textRenderer.draw(matrixStack,containerValueString, this.x + 167 -containerValueStringWidth , this.y + 6, 4210752);
+        textRenderer.draw(matrixStack,containerValueString, this.x + 167 -containerValueStringWidth , this.y + 6, 4210752);
     }
 
     private void drawBalanceWidget(MatrixStack matrixStack){
@@ -60,52 +58,37 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MONEY_WIDGET);
-        int widgetX = this.x + 174;
+        int widgetX = this.x + 172;
         int widgetY = this.y + 17;
         if (animationTick > 0) {
             animationTick-=2;
-            this.drawTexture(matrixStack, widgetX, widgetY + Math.min(animationTick, 200) /10, 0, 0, 80, 40, 80, 80);
+           // matrixStack.push();
+            //matrixStack.translate(0, 0, -100); good idea bad execution
+            drawTexture(matrixStack, widgetX, widgetY + Math.min(animationTick, 200) /10, 0, 0, 80, 40, 128, 128);
             String gainString = "+$" + this.handler.lastSellValue;
             int gainTextWidth = textRenderer.getWidth(gainString);
-            this.textRenderer.drawWithShadow(matrixStack,gainString, widgetX + 69 -gainTextWidth , widgetY + Math.min(animationTick, 200) /10f + 24, 0xcdcdf7);
+            this.textRenderer.drawWithShadow(matrixStack,gainString, widgetX + 74 -gainTextWidth , widgetY + Math.min(animationTick, 200) /10f + 25, 0xcdcdf7);
+            //matrixStack.pop();
         }
         RenderSystem.setShaderTexture(0, MONEY_WIDGET);
-        this.drawTexture(matrixStack, widgetX, widgetY, 0, 0, 80, 40, 80, 80);
+        drawTexture(matrixStack, widgetX, widgetY, 0, 0, 80, 40, 128, 128);
 
         this.textRenderer.drawWithShadow(matrixStack,"Balance:", widgetX + 6, widgetY + 6, 0xcdcdf7);
-        String balanceString = "$" + this.handler.getPlayerBalance();
+        String balanceString = "$" + FisherInfos.getClientInfo().getFisherCredit();
         int balanceStringWidth = textRenderer.getWidth(balanceString);
-        this.textRenderer.drawWithShadow(matrixStack, balanceString, widgetX + 69 - balanceStringWidth, widgetY + 24, 0xcdcdf7);
+        this.textRenderer.drawWithShadow(matrixStack, balanceString, widgetX + 74 - balanceStringWidth, widgetY + 25, 0xcdcdf7);
     }
 
     protected void drawBackground(MatrixStack matrixStack, float f, int i, int j) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, this.rows * 18 + 17);
-        this.drawTexture(matrixStack, this.x, this.y + this.rows * 18 + 17, 0, 126, 256, 96);
+        this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, ROW_COUNT * SLOT_SIZE + 17);
+        this.drawTexture(matrixStack, this.x, this.y + ROW_COUNT * SLOT_SIZE + 17, 0, 126, 256, 96);
     }
 
     @Override
     public boolean shouldPause() {
         return false;
-    }
-
-
-    public static void openScreen(PlayerEntity player){
-        if(player.world != null && !player.world.isClient) {
-            player.openHandledScreen(new NamedScreenHandlerFactory() {
-
-                @Override
-                public Text getDisplayName() {
-                    return Text.translatable("Sell Inventory");
-                }
-
-                @Override
-                public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new ShopSellScreenHandler(syncId, inv);
-                }
-            });
-        }
     }
 }

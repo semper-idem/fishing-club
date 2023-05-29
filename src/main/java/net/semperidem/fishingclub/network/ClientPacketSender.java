@@ -17,9 +17,10 @@ public class ClientPacketSender {
     public static void sendOpenShopRequest() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_SHOP, PacketByteBufs.empty());
     }
-    public static void sellShopContainer(int gained) {
+    public static void sellShopContainer(int containerValuee) {
+        if (containerValuee <= 0 ) return;
         PacketByteBuf  buf = PacketByteBufs.create();
-        buf.writeInt(gained);
+        buf.writeInt(containerValuee);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_SELL_FISH, buf);
     }
 

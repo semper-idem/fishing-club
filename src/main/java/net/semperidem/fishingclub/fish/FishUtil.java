@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fish;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -15,10 +16,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FishUtil {
+    public static final Item FISH_ITEM = Items.TROPICAL_FISH;
 
 
     public static ItemStack prepareFishItemStack(Fish fish){
-        ItemStack fishReward = new ItemStack(Items.TROPICAL_FISH).setCustomName(Text.of(fish.name));
+        ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
         setFishDetails(fishReward, fish);
         return fishReward;
     }
@@ -236,7 +238,7 @@ public class FishUtil {
         if (fishNbt != null) {
             return fishNbt.getCompound("fish_details").getInt("value");
         }
-        return 10;
+        return 1;
      }
 
 

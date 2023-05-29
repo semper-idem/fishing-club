@@ -4,8 +4,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.semperidem.fishingclub.client.screen.shop.ShopSellScreen;
-import net.semperidem.fishingclub.client.screen.shop.ShopSellScreenHandler;
+import net.semperidem.fishingclub.client.screen.shop.SellShopScreenHandler;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
@@ -41,7 +41,7 @@ public class ServerPacketReceiver {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_OPEN_SHOP, (server1, player, handler1, buf, responseSender) -> {
                 server1.execute(() -> {
-                    ShopSellScreen.openScreen(player);
+                    ShopScreenUtil.openSellScreen(player);
                 });
             });
         });
@@ -51,8 +51,8 @@ public class ServerPacketReceiver {
                 server1.execute(() -> {
                     FisherInfos.addCredit(player.getUuid(), gained);
                     ScreenHandler currentHandler = player.currentScreenHandler;
-                    if (currentHandler instanceof ShopSellScreenHandler) {
-                        ((ShopSellScreenHandler) currentHandler).containerSold();
+                    if (currentHandler instanceof SellShopScreenHandler) {
+                        ((SellShopScreenHandler) currentHandler).containerSold();
                     }
                     ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });

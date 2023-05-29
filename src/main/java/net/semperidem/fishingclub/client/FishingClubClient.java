@@ -3,13 +3,12 @@ package net.semperidem.fishingclub.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.FisherInfoScreen;
-import net.semperidem.fishingclub.client.screen.shop.ShopSellScreen;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
 
@@ -21,7 +20,7 @@ public class FishingClubClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-        HandledScreens.register(FishingClub.SHOP_SELL_SCREEN_HANDLER, ShopSellScreen::new);
+        ShopScreenUtil.registerClient();
         infoScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key." + FishingClub.MOD_ID + ".fisher_info_screen", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
