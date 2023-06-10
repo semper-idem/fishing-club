@@ -10,19 +10,20 @@ import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
-public class SellShopScreenHandler extends ScreenHandler {
+import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
+import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
+
+public class ShopSellScreenHandler extends ScreenHandler {
     final static int ROW_COUNT = 6;
-    final static int SLOTS_PER_ROW = 9;
     final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
-    final static int SLOT_SIZE = 18;
 
     private final PlayerEntity player;
     private final Inventory sellContainer;
     int lastSellValue = 0;
 
 
-    public SellShopScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(ShopScreenUtil.FISH_SHOP_SCREEN_HANDLER, syncId);
+    public ShopSellScreenHandler(int syncId, PlayerInventory playerInventory) {
+        super(ShopScreenUtil.SHOP_SELL_SCREEN, syncId);
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         this.player = playerInventory.player;
 

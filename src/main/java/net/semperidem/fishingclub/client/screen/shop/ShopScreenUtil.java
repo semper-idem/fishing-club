@@ -13,15 +13,20 @@ import net.semperidem.fishingclub.FishingClub;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopScreenUtil {
-    public static ScreenHandlerType<SellShopScreenHandler> FISH_SHOP_SCREEN_HANDLER;
+    final static int SLOTS_PER_ROW = 9;
+    final static int SLOT_SIZE = 18;
+    public static ScreenHandlerType<ShopSellScreenHandler> SHOP_SELL_SCREEN;
+    public static ScreenHandlerType<ShopBuyScreenHandler> SHOP_BUY_SCREEN;
 
 
     public static void register(){
         //TODO don't use deprecated method
-        FISH_SHOP_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "sell_shop_screen"), SellShopScreenHandler::new);
+        SHOP_SELL_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "sell_shop_screen"), ShopSellScreenHandler::new);
+        SHOP_BUY_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "sell_buy_screen"), ShopBuyScreenHandler::new);
     }
     public static void registerClient(){
-        HandledScreens.register(FISH_SHOP_SCREEN_HANDLER, SellShopScreen::new);
+        HandledScreens.register(SHOP_SELL_SCREEN, ShopSellScreen::new);
+        HandledScreens.register(SHOP_BUY_SCREEN, ShopBuyScreen::new);
     }
 
     public static void openSellScreen(PlayerEntity player){
@@ -35,7 +40,23 @@ public class ShopScreenUtil {
 
                 @Override
                 public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new SellShopScreenHandler(syncId, inv);
+                    return new ShopSellScreenHandler(syncId, inv);
+                }
+            });
+        }
+    }
+    public static void openBuyScreen(PlayerEntity player){
+        if(player.world != null && !player.world.isClient) {
+            player.openHandledScreen(new NamedScreenHandlerFactory() {
+
+                @Override
+                public Text getDisplayName() {
+                    return Text.translatable("Buy");
+                }
+
+                @Override
+                public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new ShopBuyScreenHandler(syncId, inv);
                 }
             });
         }

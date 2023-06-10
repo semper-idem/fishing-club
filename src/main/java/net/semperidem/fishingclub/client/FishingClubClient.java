@@ -14,7 +14,8 @@ import org.lwjgl.glfw.GLFW;
 
 public class FishingClubClient implements ClientModInitializer {
     private static KeyBinding infoScreenKeybind;
-    private static KeyBinding shopScreenKeybind;
+    private static KeyBinding shopSellScreenKeybind;
+    private static KeyBinding shopBuyScreenKeybind;
     /**
      * Runs the mod initializer on the client environment.
      */
@@ -27,10 +28,16 @@ public class FishingClubClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_F, // The keycode of the key
                 "category."+ FishingClub.MOD_ID +".fishing_club_category" // The translation key of the keybinding's category.
         ));
-        shopScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key." + FishingClub.MOD_ID + ".fisher_shop_screen", // The translation key of the keybinding's name
+        shopSellScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key." + FishingClub.MOD_ID + ".fisher_shop_sell_screen", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_L, // The keycode of the key
+                "category."+ FishingClub.MOD_ID +".fishing_club_category" // The translation key of the keybinding's category.
+        ));
+        shopBuyScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key." + FishingClub.MOD_ID + ".fisher_shop_buy_screen", // The translation key of the keybinding's name
+                InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+                GLFW.GLFW_KEY_P, // The keycode of the key
                 "category."+ FishingClub.MOD_ID +".fishing_club_category" // The translation key of the keybinding's category.
         ));
 
@@ -39,8 +46,11 @@ public class FishingClubClient implements ClientModInitializer {
                 client.setScreen(new FisherInfoScreen(Text.of("Fisher Info")));
             }
 
-            while (shopScreenKeybind.wasPressed()) {
-                ClientPacketSender.sendOpenShopRequest();
+            while (shopSellScreenKeybind.wasPressed()) {
+                ClientPacketSender.sendOpenSellShopRequest();
+            }
+            while (shopBuyScreenKeybind.wasPressed()) {
+                ClientPacketSender.sendOpenBuyShopRequest();
             }
         });
     }

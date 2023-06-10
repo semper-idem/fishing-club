@@ -12,16 +12,16 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
-import static net.semperidem.fishingclub.client.screen.shop.SellShopScreenHandler.ROW_COUNT;
-import static net.semperidem.fishingclub.client.screen.shop.SellShopScreenHandler.SLOT_SIZE;
+import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
+import static net.semperidem.fishingclub.client.screen.shop.ShopSellScreenHandler.ROW_COUNT;
 
-public class SellShopScreen extends HandledScreen<SellShopScreenHandler> implements ScreenHandlerProvider<SellShopScreenHandler> {
+public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> implements ScreenHandlerProvider<ShopSellScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(MOD_ID,"textures/gui/shop_sell.png");
     private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/money_widget.png");
     private int animationTick = 0;
 
 
-    public SellShopScreen(SellShopScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
+    public ShopSellScreen(ShopSellScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
         super(shopSellScreenHandler, playerInventory, text);
         this.passEvents = false;
         this.backgroundHeight = 114 + ROW_COUNT * SLOT_SIZE;

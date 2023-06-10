@@ -14,8 +14,11 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, PacketByteBufs.empty());
     }
 
-    public static void sendOpenShopRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_SHOP, PacketByteBufs.empty());
+    public static void sendOpenSellShopRequest() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_SELL_SHOP, PacketByteBufs.empty());
+    }
+    public static void sendOpenBuyShopRequest() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_BUY_SHOP, PacketByteBufs.empty());
     }
     public static void sellShopContainer(int containerValuee) {
         if (containerValuee <= 0 ) return;
