@@ -13,7 +13,7 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
-public class ShopSellScreenHandler extends ScreenHandler {
+public class ShopScreenHandler extends ScreenHandler {
     final static int ROW_COUNT = 6;
     final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
 
@@ -22,14 +22,26 @@ public class ShopSellScreenHandler extends ScreenHandler {
     int lastSellValue = 0;
 
 
-    public ShopSellScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(ShopScreenUtil.SHOP_SELL_SCREEN, syncId);
-        this.sellContainer = new SimpleInventory(SLOT_COUNT);
+    public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
+        super(ShopScreenUtil.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
+        this.sellContainer = new SimpleInventory(SLOT_COUNT);
+        loadSellScreenHandler();
+    }
 
+
+    public void loadSellScreenHandler() {
+        this.slots.clear();
         addSellInventory();
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+        addPlayerInventory(player.getInventory());
+        addPlayerHotbar(player.getInventory());
+    }
+
+    public void loadBuyScreenHandler() {
+
+        this.slots.clear();
+        addPlayerInventory(player.getInventory());
+        addPlayerHotbar(player.getInventory());
     }
 
     private void addSellInventory(){
@@ -138,6 +150,13 @@ public class ShopSellScreenHandler extends ScreenHandler {
             player.dropItem(itemStack, false);
         } else {
             player.giveItemStack(itemStack);
+        }
+    }
+
+    public void loadScreenHandler(ShopScreen.ScreenType screenType) {
+        switch (screenType) {
+            case SELL -> loadSellScreenHandler();
+            case BUY -> loadBuyScreenHandler();
         }
     }
 }

@@ -8,7 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.client.screen.shop.ShopBuyScreen;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
@@ -16,12 +16,12 @@ public class OfferEntry extends AlwaysSelectedEntryListWidget.Entry<OfferEntry> 
     private static final Identifier TEXTURE_EMPTY = new Identifier(MOD_ID,"textures/gui/shop_buy_empty.png");
     private final OfferListWidget offerListWidget;
     final OfferEntryData offer;
-    ShopBuyScreen screen;
+    ShopScreen screen;
 
-    public OfferEntry(OfferListWidget offerListWidget, ShopBuyScreen shopBuyScreen, OfferEntryData offer) {
+    public OfferEntry(OfferListWidget offerListWidget, ShopScreen shopScreen, OfferEntryData offer) {
         this.offerListWidget = offerListWidget;
         this.offer = offer;
-        this.screen = shopBuyScreen;
+        this.screen = shopScreen;
     }
 
     @Override
@@ -64,29 +64,5 @@ public class OfferEntry extends AlwaysSelectedEntryListWidget.Entry<OfferEntry> 
         int countInBasket = screen.orderListWidget.getCountFor(this);
         offer.lastPrice = offer.getPriceForNth(countInBasket + 1);
         return true;
-    }
-
-    public boolean keyPressed(int i, int j, int k) {
-            OfferListWidget offerListWidget = this.screen.offerListWidget;
-            int l = offerListWidget.children().indexOf(this);
-            if (l == -1) {
-                return true;
-            }
-
-            if (i == 264 && l < this.screen.offers.size() - 1 || i == 265 && l > 0) {
-                this.swapEntries(l, i == 264 ? l + 1 : l - 1);
-                return true;
-            }
-        return super.keyPressed(i, j, k);
-    }
-
-
-    private void swapEntries(int i, int j) {
-        OfferEntryData temp = this.screen.offers.get(i);
-        this.screen.offers.set(i, this.screen.offers.get(j));
-        this.screen.offers.set(j, temp);
-        OfferEntry entry = this.screen.offerListWidget.children().get(j);
-        this.screen.offerListWidget.setSelected(entry);
-        this.screen.offerListWidget.ensureVisible(entry);
     }
 }

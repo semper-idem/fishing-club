@@ -8,7 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.client.screen.shop.ShopBuyScreen;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
@@ -16,12 +16,12 @@ public class OrderEntry extends AlwaysSelectedEntryListWidget.Entry<OrderEntry> 
     private static final Identifier TEXTURE_EMPTY = new Identifier(MOD_ID,"textures/gui/shop_buy_empty.png");
     private final OrderListWidget orderListWidget;
     private final OrderEntryData orderEntryData;
-    ShopBuyScreen screen;
+    ShopScreen screen;
 
-    public OrderEntry(OrderListWidget orderListWidget, ShopBuyScreen shopBuyScreen, OrderEntryData orderEntryData) {
+    public OrderEntry(OrderListWidget orderListWidget, ShopScreen shopScreen, OrderEntryData orderEntryData) {
         this.orderListWidget = orderListWidget;
         this.orderEntryData = orderEntryData;
-        this.screen = shopBuyScreen;
+        this.screen = shopScreen;
     }
 
     @Override

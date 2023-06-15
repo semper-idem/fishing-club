@@ -1,18 +1,21 @@
 package net.semperidem.fishingclub.client.screen.shop.widget;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 
 public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
     TextRenderer textRenderer;
 
-    public OrderListWidget(MinecraftClient client, int width, int height, int x, int y, int itemHeight) {
-        super(client, width, height, y, y + height, itemHeight);
+    public OrderListWidget(ShopScreen parent, int width, int height, int x, int y) {
+        super(parent.getClient(), width, height, y, y + height, 20);
+        if(parent.getClient() == null) {
+            return;
+        }
         this.left = x;
         this.right = x + width;
-        textRenderer = MinecraftClient.getInstance().textRenderer;
+        textRenderer = parent.getClient().textRenderer;
         setRenderBackground(false);
         setRenderHeader(false, 0);
         setRenderSelection(false);
