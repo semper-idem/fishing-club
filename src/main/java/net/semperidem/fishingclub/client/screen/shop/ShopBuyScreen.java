@@ -5,16 +5,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Items;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.client.screen.shop.widget.OfferEntryData;
 import net.semperidem.fishingclub.client.screen.shop.widget.OfferListWidget;
 import net.semperidem.fishingclub.client.screen.shop.widget.OrderListWidget;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.ArrayList;
 
@@ -26,6 +29,7 @@ public class ShopBuyScreen extends HandledScreen<ShopBuyScreenHandler> implement
     private static final Identifier TEXTURE = new Identifier(MOD_ID,"textures/gui/shop_buy.png");
     private static final Identifier TEXTURE_EMPTY = new Identifier(MOD_ID,"textures/gui/shop_buy_empty.png");
     private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/money_widget.png");
+    private static final Identifier SHOP_BUTTONS = new Identifier(MOD_ID,"textures/gui/shop_buttons_64x64.png");
     private int animationTick = 0;
     public OfferListWidget offerListWidget;
     public OrderListWidget orderListWidget;
@@ -68,11 +72,23 @@ public class ShopBuyScreen extends HandledScreen<ShopBuyScreenHandler> implement
         ));
         this.offerListWidget.addEntries(this, offers);
         this.addCheckoutButton();
+        this.addOpenSellScreenButton();
     }
+
+
+    protected void addOpenSellScreenButton() {
+        MinecraftClient.getInstance().mouse.unlockCursor();
+        this.addDrawableChild(new TexturedButtonWidget(this.x + 178, this.y + 128, 32, 32, 32, 0, 0, SHOP_BUTTONS, 64, 64,(buttonWidget) -> {
+            MinecraftClient.getInstance().mouse.lockCursor();
+            ClientPacketSender.sendOpenSellShopRequest();
+        }, ScreenTexts.EMPTY));
+    }
+
 
     public int getY(){
         return this.y;
     }
+
     protected void addCheckoutButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Checkout"), (buttonWidget) -> {
         }){

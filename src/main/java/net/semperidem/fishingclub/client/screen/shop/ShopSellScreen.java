@@ -1,15 +1,19 @@
 package net.semperidem.fishingclub.client.screen.shop;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -18,6 +22,7 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopSellScreenHandle
 public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> implements ScreenHandlerProvider<ShopSellScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(MOD_ID,"textures/gui/shop_sell.png");
     private static final Identifier MONEY_WIDGET = new Identifier(MOD_ID,"textures/gui/money_widget.png");
+    private static final Identifier SHOP_BUTTONS = new Identifier(MOD_ID,"textures/gui/shop_buttons_64x64.png");
     private int animationTick = 0;
 
 
@@ -32,7 +37,9 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
     protected void init() {
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
+        MinecraftClient.getInstance().mouse.onResolutionChanged();
         this.addSellButton();
+        this.addOpenBuyScreenButton();
     }
 
     protected void addSellButton() {
@@ -41,6 +48,11 @@ public class ShopSellScreen extends HandledScreen<ShopSellScreenHandler> impleme
                 this.animationTick = 300;
             }
         }));
+    }
+    protected void addOpenBuyScreenButton() {
+        this.addDrawableChild(new TexturedButtonWidget(this.x + 178, this.y + 128, 32, 32, 0, 0, 0, SHOP_BUTTONS, 64, 64,(buttonWidget) -> {
+            ClientPacketSender.sendOpenBuyShopRequest();
+        }, ScreenTexts.EMPTY));
     }
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
