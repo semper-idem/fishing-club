@@ -65,6 +65,15 @@ public class OfferListWidget extends AlwaysSelectedEntryListWidget<OfferEntry> {
 
     }
 
+    public void updatePrices(){
+        int entryCount = this.getEntryCount();
+        for(int i = 0; i < entryCount; i++) {
+            OfferEntry entry = this.getEntry(i);
+            int countInBasket = parent.orderListWidget.getCountFor(entry);
+            entry.offer.lastPrice = entry.offer.getPriceForNth(countInBasket + 1);
+        }
+    }
+
 
     public void initCatalog(){
         for(int i = 0; i < 20; i++) {

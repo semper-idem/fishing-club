@@ -11,4 +11,5 @@ public class PacketIdentifiers {
     public static final Identifier S2C_START_GAME = new Identifier(MOD_ID, "s2c_start_game");
     public static final Identifier C2S_SELL_FISH = new Identifier(MOD_ID, "c2s_sell_fish");
     public static final Identifier C2S_OPEN_SELL_SHOP = new Identifier(MOD_ID, "c2s_open_sell_shop");
+    public static final Identifier C2S_BUY_BASKET = new Identifier(MOD_ID, "c2s_buy_basket");
 }

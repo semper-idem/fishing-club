@@ -5,11 +5,23 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 
+import java.util.ArrayList;
+
 public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
     TextRenderer textRenderer;
 
     public OrderListWidget(ShopScreen parent, int width, int height, int x, int y) {
         super(parent.getClient(), width, height, y, y + height, 20);
+        OrderListWidget previousInstance = parent.orderListWidget;
+        if (previousInstance != null) {
+            int entryCount = previousInstance.getEntryCount();
+            if (entryCount > 0) {
+                for( int i = 0; i < entryCount; i++) {
+                    this.addEntry(previousInstance.getEntry(i));
+                }
+                parent.offerListWidget.updatePrices();
+            }
+        }
         if(parent.getClient() == null) {
             return;
         }
@@ -59,6 +71,7 @@ public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
         }
         this.children().add(entry);
     }
+
     public void decreaseCount(OrderEntry orderEntry){
         if (orderEntry.decreaseCount()) {
             removeEntry(orderEntry);
@@ -97,5 +110,21 @@ public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
             basketTotal += orderEntry.getTotal();
         }
         return basketTotal;
+    }
+
+    public ArrayList<OrderEntryData> getBasektData(){
+        ArrayList<OrderEntryData> basket = new ArrayList<>();
+        int entryCount = getEntryCount();
+        for(int i = 0; i < entryCount; i++) {
+            basket.add(this.getEntry(i).getData());
+        }
+        return basket;
+    }
+
+    public void clear(){
+        int entryCount = getEntryCount();
+        for(int i = 0; i < entryCount; i++) {
+            remove(i);
+        }
     }
 }

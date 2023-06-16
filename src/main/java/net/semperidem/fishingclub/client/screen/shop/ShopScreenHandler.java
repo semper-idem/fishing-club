@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.shop;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -7,8 +8,14 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.semperidem.fishingclub.client.screen.shop.widget.OrderEntryData;
+import net.semperidem.fishingclub.client.screen.shop.widget.OrderListWidget;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.ServerPacketSender;
+
+import java.util.ArrayList;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -17,9 +24,9 @@ public class ShopScreenHandler extends ScreenHandler {
     final static int ROW_COUNT = 6;
     final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
 
-    private final PlayerEntity player;
+    private PlayerEntity player;
     private final Inventory sellContainer;
-    int lastSellValue = 0;
+    int lastBalanceChange = 0;
 
 
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
@@ -27,6 +34,15 @@ public class ShopScreenHandler extends ScreenHandler {
         this.player = playerInventory.player;
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         loadSellScreenHandler();
+    }
+    public ShopScreenHandler(int syncId, PlayerInventory playerInventory, ShopScreen.ScreenType screenType) {
+        super(ShopScreenUtil.SHOP_SCREEN, syncId);
+        this.player = playerInventory.player;
+        this.sellContainer = new SimpleInventory(SLOT_COUNT);
+        switch (screenType) {
+            case BUY -> loadBuyScreenHandler();
+            case SELL -> loadSellScreenHandler();
+        }
     }
 
 
@@ -84,22 +100,40 @@ public class ShopScreenHandler extends ScreenHandler {
 
     //Client
     public boolean sellContainer(){
-        lastSellValue =  getSellContainerValue();
-        if (lastSellValue != 0) {
-            ClientPacketSender.sellShopContainer(lastSellValue);
+        lastBalanceChange =  getSellContainerValue();
+        if (lastBalanceChange != 0) {
+            ClientPacketSender.sellShopContainer(lastBalanceChange);
             return true;
         }
         return false;
     }
 
     //Server
-    public void containerSold(){
+    public void soldContainer(){
         for (int i = 0; i < sellContainer.size(); i++) {
             ItemStack removedStack = sellContainer.removeStack(i);
             if (!removedStack.isOf(FishUtil.FISH_ITEM)) {
                 returnItemStack(removedStack);
             }
         }
+    }
+    //Client
+    public boolean buyContaier(OrderListWidget orderListWidget){
+        ArrayList<OrderEntryData> basket = orderListWidget.getBasektData();
+        int cost = orderListWidget.getBasketTotal();
+        int currentCredit =  FisherInfos.getClientInfo().getFisherCredit();
+        lastBalanceChange = cost;
+        if (cost <= currentCredit) {
+            ClientPacketSender.buyShopContainer(cost, basket);
+            return true;
+        }
+        return false;
+    }
+
+    //Server
+    public void boughtContainer(PlayerEntity player){
+        System.out.println(player);
+        ServerPlayNetworking.
     }
 
 

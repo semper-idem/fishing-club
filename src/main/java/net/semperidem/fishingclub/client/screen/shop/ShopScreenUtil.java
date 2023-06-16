@@ -27,17 +27,20 @@ public class ShopScreenUtil {
     }
 
     public static void openShopScreen(PlayerEntity player){
+        openShopScreen(player, ShopScreen.ScreenType.SELL);
+    }
+    public static void openShopScreen(PlayerEntity player, ShopScreen.ScreenType screenType){
         if(player.world != null && !player.world.isClient) {
             player.openHandledScreen(new NamedScreenHandlerFactory() {
 
                 @Override
                 public Text getDisplayName() {
-                    return Text.translatable("Value:");
+                    return Text.translatable(screenType.toString().toLowerCase());
                 }
 
                 @Override
                 public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new ShopScreenHandler(syncId, inv);
+                    return new ShopScreenHandler(syncId, inv, screenType);
                 }
             });
         }

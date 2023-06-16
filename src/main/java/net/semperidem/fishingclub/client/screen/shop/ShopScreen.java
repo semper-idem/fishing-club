@@ -35,15 +35,12 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
     private ScreenType screenType;
 
 
-
     public ShopScreen(ShopScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
         super(shopSellScreenHandler, playerInventory, text);
         this.screenType = ScreenType.SELL;
         this.passEvents = false;
         this.backgroundHeight = 114 + ROW_COUNT * SLOT_SIZE;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
-
-
     }
 
     public MinecraftClient getClient(){
@@ -62,35 +59,13 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         this.addSwapScreenButton();
     }
 
-//    public void initCatalog(){
-//        this.catalog = new ArrayList<>();
-//        for(int i = 0; i < 20; i++) {
-//
-//            catalog.add(new OfferEntryData(
-//                    Items.DIAMOND,
-//                    i,
-//                    i,
-//                    1f,
-//                    1f
-//            ));
-//        }
-//        catalog.add(new OfferEntryData(
-//                Items.EMERALD,
-//                8,
-//                4,
-//                .1f,
-//                0.5f
-//        ));
-//    }
-
     public void initSell(){
         addSellButton();
     }
     public void initBuy(){
         this.offerListWidget = new OfferListWidget(this, 53, 107, x + 6, y + 17);
         this.orderListWidget = new OrderListWidget(this, 88, 107, x + 69, y + 17);
-        this.addSelectableChild(offerListWidget);
-        this.addSelectableChild(orderListWidget);
+        this.addCheckoutButton();
     }
 
 
@@ -121,24 +96,9 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
-        switch (screenType) {
-            case SELL -> renderSellScreen(matrixStack, i, j, f);
-            case BUY -> renderBuyScreen(matrixStack, i, j, f);
-        }
-    }
-
-    public void renderSellScreen(MatrixStack matrixStack, int i, int j, float f) {
         renderBackground(matrixStack);
         super.render(matrixStack, i, j, f);
         drawBalanceWidget(matrixStack);
-        drawMouseoverTooltip(matrixStack, i, j);
-        String containerValueString = "$" + this.handler.getSellContainerValue();
-        int containerValueStringWidth = textRenderer.getWidth(containerValueString);
-        textRenderer.draw(matrixStack,containerValueString, this.x + 167 -containerValueStringWidth , this.y + 6, 4210752);
-    }
-    public void renderBuyScreen(MatrixStack matrixStack, int i, int j, float f) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, i, j, f);
         drawMouseoverTooltip(matrixStack, i, j);
     }
 
@@ -152,7 +112,6 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
 
     protected void drawSellBackground(MatrixStack matrixStack, float f, int i, int j) {
-
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE_SELL);
@@ -178,10 +137,8 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         RenderSystem.setShaderTexture(0, TEXTURE_EMPTY);
         this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, ROW_COUNT * SLOT_SIZE + 17);
         this.drawTexture(matrixStack, this.x, this.y + ROW_COUNT * SLOT_SIZE + 17, 0, 126, 256, 96);
-        drawBalanceWidget(matrixStack);
         matrixStack.push();
-        matrixStack.translate((double)x, (double)y, 2.0);
-        matrixStack.translate(0.0, 0.0, (double)(200.0F));
+        matrixStack.translate(x, y, 200.0F);
         drawForeground(matrixStack,i,j);
 
         matrixStack.pop();
@@ -190,12 +147,11 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
     protected void addCheckoutButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Checkout"), (buttonWidget) -> {
-        }){
-            @Override
-            public void renderButton(MatrixStack matrixStack, int i, int j, float f){
-//TODO
+            if(this.handler.buyContaier(orderListWidget)){
+                System.out.println("NICE");
+                orderListWidget.clear();
             }
-        });
+        }));
     }
 
 
@@ -229,11 +185,26 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
 
     protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-//        String containerValueString = "Total: $" + orderListWidget.getBasketTotal();
-//        int containerValueStringWidth = textRenderer.getWidth(containerValueString);
-        this.textRenderer.draw(matrixStack, this.title, (float)this.titleX, (float)this.titleY, 4210752);
-      //  this.textRenderer.draw(matrixStack, containerValueString, 158 -containerValueStringWidth, (float)this.titleY, 4210752);
+        int containerValue = getContainerValue();
+        String containerValueString = "Total: $" + containerValue;
+        int containerValueStringWidth = textRenderer.getWidth(containerValueString);
+
+        String title = screenType.toString().toLowerCase();
+        this.textRenderer.draw(matrixStack, title.substring(0, 1).toUpperCase() + title.substring(1), (float)this.titleX, (float)this.titleY, 4210752);
+        this.textRenderer.draw(matrixStack, containerValueString, 169 -containerValueStringWidth , (float)this.titleY, 4210752);
         this.textRenderer.draw(matrixStack, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
+    }
+
+    private int getContainerValue(){
+        switch (screenType) {
+            case SELL -> {
+                return this.handler.getSellContainerValue();
+            }
+            case BUY -> {
+                return this.orderListWidget.getBasketTotal();
+            }
+        }
+        return 0;
     }
 
     @Override

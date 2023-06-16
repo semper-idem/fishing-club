@@ -24,6 +24,7 @@ public class OrderEntry extends AlwaysSelectedEntryListWidget.Entry<OrderEntry> 
         this.screen = shopScreen;
     }
 
+
     @Override
     public void render(MatrixStack matrices, int index, int y, int x, int itemWidth, int itemHeight, int mouseX, int mouseY, boolean isSelected, float tickDelta) {
         matrices.push();
@@ -58,6 +59,10 @@ public class OrderEntry extends AlwaysSelectedEntryListWidget.Entry<OrderEntry> 
     public boolean mouseClicked(double d, double e, int i) {
         screen.orderListWidget.decreaseCount(this);
         return true;
+    }
+
+    public OrderEntryData getData(){
+        return this.orderEntryData;
     }
 
     public boolean decreaseCount(){

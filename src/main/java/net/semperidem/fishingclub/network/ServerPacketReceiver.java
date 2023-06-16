@@ -10,6 +10,8 @@ import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
+import java.util.ArrayList;
+
 public class ServerPacketReceiver {
     public static void registerServerPacketHandlers() {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
@@ -52,7 +54,29 @@ public class ServerPacketReceiver {
                     FisherInfos.addCredit(player.getUuid(), gained);
                     ScreenHandler currentHandler = player.currentScreenHandler;
                     if (currentHandler instanceof ShopScreenHandler) {
-                        ((ShopScreenHandler) currentHandler).containerSold();
+                        ((ShopScreenHandler) currentHandler).soldContainer();
+                    }
+                    ServerPacketSender.sendFisherInfoSyncPacket(player);
+                });
+            });
+        });
+        ServerPlayConnectionEvents.INIT.register((handler, server) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_BUY_BASKET, (server1, player, handler1, buf, responseSender) -> {
+                int cost = buf.readInt();
+                int basketSize = buf.readInt();
+                ArrayList<ItemStack> basket = new ArrayList<>();
+                for(int i = 0; i < basketSize; i++) {
+                    basket.add(buf.readItemStack());
+                }
+                server1.execute(() -> {
+                    FisherInfos.removeCredit(player.getUuid(), cost);
+                    for(ItemStack itemStack : basket) {
+                        player.giveItemStack(itemStack);
+                    }
+                    ScreenHandler currentHandler = player.currentScreenHandler;
+                    if (currentHandler instanceof ShopScreenHandler) {
+                        //TODO SYNC PLAYER INVENTORY
+                        ((ShopScreenHandler) currentHandler).boughtContainer(player);
                     }
                     ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });
