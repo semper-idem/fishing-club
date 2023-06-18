@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.network;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
@@ -16,6 +17,17 @@ public class ServerPacketSender {
         if (player != null) {
             ServerPlayNetworking.send( player, identifier, buf);
         }
+    }
+
+    public static void sendShopScreenInventorySyncPacket(ServerPlayerEntity player){
+        player.networkHandler.sendPacket(
+                new InventoryS2CPacket(
+                        player.playerScreenHandler.syncId,
+                        player.playerScreenHandler.getRevision(),
+                        player.playerScreenHandler.getStacks(),
+                        player.playerScreenHandler.getCursorStack()
+                )
+        );
     }
 
     public static void sendFisherInfoSyncPacket(ServerPlayerEntity player) {

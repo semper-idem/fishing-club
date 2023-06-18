@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
     TextRenderer textRenderer;
+    ShopScreen parent;
 
     public OrderListWidget(ShopScreen parent, int width, int height, int x, int y) {
         super(parent.getClient(), width, height, y, y + height, 20);
@@ -25,6 +26,7 @@ public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
         if(parent.getClient() == null) {
             return;
         }
+        this.parent = parent;
         this.left = x;
         this.right = x + width;
         textRenderer = parent.getClient().textRenderer;
@@ -121,10 +123,9 @@ public class OrderListWidget extends AlwaysSelectedEntryListWidget<OrderEntry> {
         return basket;
     }
 
+
     public void clear(){
-        int entryCount = getEntryCount();
-        for(int i = 0; i < entryCount; i++) {
-            remove(i);
-        }
+        clearEntries();
+        parent.offerListWidget.updatePrices();
     }
 }

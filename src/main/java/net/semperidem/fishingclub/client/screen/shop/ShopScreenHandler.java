@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.shop;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -8,6 +7,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.screen.shop.widget.OrderEntryData;
 import net.semperidem.fishingclub.client.screen.shop.widget.OrderListWidget;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -33,29 +33,7 @@ public class ShopScreenHandler extends ScreenHandler {
         super(ShopScreenUtil.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
-        loadSellScreenHandler();
-    }
-    public ShopScreenHandler(int syncId, PlayerInventory playerInventory, ShopScreen.ScreenType screenType) {
-        super(ShopScreenUtil.SHOP_SCREEN, syncId);
-        this.player = playerInventory.player;
-        this.sellContainer = new SimpleInventory(SLOT_COUNT);
-        switch (screenType) {
-            case BUY -> loadBuyScreenHandler();
-            case SELL -> loadSellScreenHandler();
-        }
-    }
-
-
-    public void loadSellScreenHandler() {
-        this.slots.clear();
         addSellInventory();
-        addPlayerInventory(player.getInventory());
-        addPlayerHotbar(player.getInventory());
-    }
-
-    public void loadBuyScreenHandler() {
-
-        this.slots.clear();
         addPlayerInventory(player.getInventory());
         addPlayerHotbar(player.getInventory());
     }
@@ -131,9 +109,13 @@ public class ShopScreenHandler extends ScreenHandler {
     }
 
     //Server
-    public void boughtContainer(PlayerEntity player){
-        System.out.println(player);
-        ServerPlayNetworking.
+    public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int cost){
+        if (!FisherInfos.removeCredit(player.getUuid(), cost)) return;
+        for(ItemStack itemStack : basket) {
+            player.getInventory().insertStack(itemStack.copy());
+        }
+        ServerPacketSender.sendShopScreenInventorySyncPacket(player);
+        ServerPacketSender.sendFisherInfoSyncPacket(player);
     }
 
 
@@ -184,13 +166,6 @@ public class ShopScreenHandler extends ScreenHandler {
             player.dropItem(itemStack, false);
         } else {
             player.giveItemStack(itemStack);
-        }
-    }
-
-    public void loadScreenHandler(ShopScreen.ScreenType screenType) {
-        switch (screenType) {
-            case SELL -> loadSellScreenHandler();
-            case BUY -> loadBuyScreenHandler();
         }
     }
 }

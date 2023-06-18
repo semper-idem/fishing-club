@@ -34,6 +34,10 @@ public class OrderEntryData {
         return count;
     }
 
+    public int getQuantity(){
+        return count * offerEntryData.batchSize;
+    }
+
     public OrderEntryData add(){
         this.count++;
         total = offerEntryData.getPriceForCount(count);

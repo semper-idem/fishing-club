@@ -69,16 +69,10 @@ public class ServerPacketReceiver {
                     basket.add(buf.readItemStack());
                 }
                 server1.execute(() -> {
-                    FisherInfos.removeCredit(player.getUuid(), cost);
-                    for(ItemStack itemStack : basket) {
-                        player.giveItemStack(itemStack);
-                    }
                     ScreenHandler currentHandler = player.currentScreenHandler;
                     if (currentHandler instanceof ShopScreenHandler) {
-                        //TODO SYNC PLAYER INVENTORY
-                        ((ShopScreenHandler) currentHandler).boughtContainer(player);
+                        ((ShopScreenHandler) currentHandler).boughtContainer(player, basket, cost);
                     }
-                    ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });
             });
         });

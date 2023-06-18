@@ -40,7 +40,7 @@ public class ShopScreenUtil {
 
                 @Override
                 public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new ShopScreenHandler(syncId, inv, screenType);
+                    return new ShopScreenHandler(syncId, inv);
                 }
             });
         }

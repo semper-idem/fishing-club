@@ -30,12 +30,11 @@ public class ClientPacketSender {
 
 
     public static void buyShopContainer(int containerValue, ArrayList<OrderEntryData> basket) {
-        if (containerValue <= 0 ) return;
         PacketByteBuf  buf = PacketByteBufs.create();
         buf.writeInt(containerValue);
         buf.writeInt(basket.size());
         for (OrderEntryData itemInBasket : basket) {
-            int itemCount = itemInBasket.getCount();
+            int itemCount = itemInBasket.getQuantity();
             ItemStack itemStack = new ItemStack(itemInBasket.getItem());
             itemStack.setCount(itemCount);
             buf.writeItemStack(itemStack);

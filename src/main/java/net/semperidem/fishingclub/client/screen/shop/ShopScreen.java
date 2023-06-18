@@ -32,7 +32,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
     public OfferListWidget offerListWidget;
     public OrderListWidget orderListWidget;
-    private ScreenType screenType;
+    ScreenType screenType;
 
 
     public ShopScreen(ShopScreenHandler shopSellScreenHandler, PlayerInventory playerInventory, Text text) {
@@ -86,7 +86,6 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             for(ScreenType nextScreenType : ScreenType.values()) {
                 if (screenType != nextScreenType) {
                     this.screenType = nextScreenType;
-                    this.handler.loadScreenHandler(screenType);
                     this.init();
                     break;
                 }
@@ -148,7 +147,6 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
     protected void addCheckoutButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Checkout"), (buttonWidget) -> {
             if(this.handler.buyContaier(orderListWidget)){
-                System.out.println("NICE");
                 orderListWidget.clear();
             }
         }));
