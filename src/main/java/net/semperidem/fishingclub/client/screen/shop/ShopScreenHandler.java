@@ -93,18 +93,18 @@ public class ShopScreenHandler extends ScreenHandler {
             }
         }
     }
-    //Client
-    public boolean buyContaier(OrderListWidget orderListWidget){//change to itemstack basket
-        ArrayList<OrderEntryData> basket = orderListWidget.getBasektData();
-        int cost = orderListWidget.getBasketTotal();
-        int currentCredit =  FisherInfos.getClientInfo().getFisherCredit();
-        lastBalanceChange = cost;
-        if (cost <= currentCredit) {
-            ClientPacketSender.buyShopContainer(cost, basket);
-            return true;
-        }
-        return false;
-    }
+//    //Client
+//    public boolean buyContaier(OrderListWidget orderListWidget){//change to itemstack basket
+//        ArrayList<OrderEntryData> basket = orderListWidget.getBasektData();
+//        int cost = orderListWidget.getBasketTotal();
+//        int currentCredit =  FisherInfos.getClientInfo().getFisherCredit();
+//        lastBalanceChange = cost;
+//        if (cost <= currentCredit) {
+//            ClientPacketSender.buyShopContainer(cost, basket);
+//            return true;
+//        }
+//        return false;
+//    }
 
     //Server
     public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int cost){

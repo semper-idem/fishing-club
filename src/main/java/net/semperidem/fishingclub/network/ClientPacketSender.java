@@ -28,14 +28,11 @@ public class ClientPacketSender {
     }
 
 
-    public static void buyShopContainer(int containerValue, ArrayList<OrderEntryData> basket) {
+    public static void buyShopContainer(int containerValue, ArrayList<ItemStack> basket) {
         PacketByteBuf  buf = PacketByteBufs.create();
         buf.writeInt(containerValue);
         buf.writeInt(basket.size());
-        for (OrderEntryData itemInBasket : basket) {
-            int itemCount = itemInBasket.getQuantity();
-            ItemStack itemStack = new ItemStack(itemInBasket.getItem());
-            itemStack.setCount(itemCount);
+        for (ItemStack itemStack : basket) {
             buf.writeItemStack(itemStack);
         }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_BUY_BASKET, buf);
