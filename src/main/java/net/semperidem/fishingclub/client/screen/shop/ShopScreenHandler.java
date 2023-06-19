@@ -8,8 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.shop.widget.OrderEntryData;
-import net.semperidem.fishingclub.client.screen.shop.widget.OrderListWidget;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -96,7 +94,7 @@ public class ShopScreenHandler extends ScreenHandler {
         }
     }
     //Client
-    public boolean buyContaier(OrderListWidget orderListWidget){
+    public boolean buyContaier(OrderListWidget orderListWidget){//change to itemstack basket
         ArrayList<OrderEntryData> basket = orderListWidget.getBasektData();
         int cost = orderListWidget.getBasketTotal();
         int currentCredit =  FisherInfos.getClientInfo().getFisherCredit();
