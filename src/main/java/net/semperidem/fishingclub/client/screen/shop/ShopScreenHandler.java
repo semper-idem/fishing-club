@@ -73,15 +73,17 @@ public class ShopScreenHandler extends ScreenHandler {
         return result;
     }
 
+    //TODO ADD CALCULATE SELL CONTAINER SO IT DOESNT RUN EVERY RENDER TICK
+
 
     //Client
-    public boolean sellContainer(){
+    public int sellContainer(){
         lastBalanceChange =  getSellContainerValue();
         if (lastBalanceChange != 0) {
             ClientPacketSender.sellShopContainer(lastBalanceChange);
-            return true;
+            return lastBalanceChange;
         }
-        return false;
+        return 0;
     }
 
     //Server

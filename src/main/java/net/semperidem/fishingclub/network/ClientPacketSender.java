@@ -24,7 +24,7 @@ public class ClientPacketSender {
         if (containerValue <= 0 ) return;
         PacketByteBuf  buf = PacketByteBufs.create();
         buf.writeInt(containerValue);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_SELL_FISH, buf);
+        //ClientPlayNetworking.send(PacketIdentifiers.C2S_SELL_FISH, buf);
     }
 
 
