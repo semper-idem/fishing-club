@@ -2,11 +2,10 @@ package net.semperidem.fishingclub.client.screen.shop;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -36,6 +35,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
     public OfferListWidget offerListWidget;
     public OrderListWidget orderListWidget;
+    public BalanceWidget balanceWidget;
     ScreenType screenType;
 
     private int lastBalanceChange;
@@ -71,6 +71,8 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
     public void initBuy(){
         this.offerListWidget = new OfferListWidget( 53, 107, x + 6, y + 17);
         this.orderListWidget = new OrderListWidget( 88, 107, x + 69, y + 17);
+       // this.addDrawableChild(offerListWidget);
+      //  this.addDrawableChild(orderListWidget);
         this.addCheckoutButton();
     }
 
@@ -81,6 +83,18 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             }
         }));
     }
+
+
+    protected void addCheckoutButton() {
+        this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Checkout"), (buttonWidget) -> {
+            if(orderListWidget.buyContainer()){
+                //Handle Success
+            } else {
+                //Handle Fail
+            }
+        }));
+    }
+
 
     protected void addSwapScreenButton() {
         this.addDrawableChild(new TexturedButtonWidget(this.x + 178, this.y + 128, 32 , 32,(screenType !=  ScreenType.BUY ? 0 : 32), 0, 0, SHOP_BUTTONS, 64, 64,(buttonWidget) -> {
@@ -112,20 +126,17 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
 
     protected void drawSellBackground(MatrixStack matrixStack, float f, int i, int j) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE_SELL);
+        setTexture(TEXTURE_SELL);
         this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, ROW_COUNT * SLOT_SIZE + 17);
         this.drawTexture(matrixStack, this.x, this.y + ROW_COUNT * SLOT_SIZE + 17, 0, 126, 256, 96);
     }
 
 
     protected void drawBuyBackground(MatrixStack matrixStack, float f, int i, int j) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE_BUY);
+        setTexture(TEXTURE_BUY);
         this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, ROW_COUNT * SLOT_SIZE + 17);
         this.drawTexture(matrixStack, this.x, this.y + ROW_COUNT * SLOT_SIZE + 17, 0, 126, 256, 96);
+
 
         RenderSystem.enableTexture();
         RenderSystem.enableDepthTest();
@@ -134,33 +145,20 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         this.orderListWidget.render(matrixStack,i,j,f);
         this.offerListWidget.render(matrixStack,i,j,f);
 
-        RenderSystem.setShaderTexture(0, TEXTURE_EMPTY);
+        setTexture(TEXTURE_EMPTY);
         this.drawTexture(matrixStack, this.x, this.y, 0, 0, 256, ROW_COUNT * SLOT_SIZE + 17);
         this.drawTexture(matrixStack, this.x, this.y + ROW_COUNT * SLOT_SIZE + 17, 0, 126, 256, 96);
         matrixStack.push();
-        matrixStack.translate(x, y, 200.0F);
+        matrixStack.translate(x, y, 300.0F);
         drawForeground(matrixStack,i,j);
 
         matrixStack.pop();
     }
 
 
-    protected void addCheckoutButton() {
-        this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Checkout"), (buttonWidget) -> {
-            if(orderListWidget.buyContainer()){
-                //Handle Success
-            } else {
-                //Handle Fail
-            }
-        }));
-    }
-
-
     private void drawBalanceWidget(MatrixStack matrixStack){
         matrixStack.push();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, MONEY_WIDGET);
+        setTexture(MONEY_WIDGET);
         int widgetX = this.x + 172;
         int widgetY = this.y + 17;
         if (animationTick > 0) {
@@ -173,7 +171,6 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             this.textRenderer.drawWithShadow(matrixStack,gainString, widgetX + 74 -gainTextWidth , widgetY + Math.min(animationTick, 200) /10f + 25, 0xcdcdf7);
             //matrixStack.pop();
         }
-        RenderSystem.setShaderTexture(0, MONEY_WIDGET);
         drawTexture(matrixStack, widgetX, widgetY, 0, 0, 80, 40, 128, 128);
 
         this.textRenderer.drawWithShadow(matrixStack,"Balance:", widgetX + 6, widgetY + 6, 0xcdcdf7);
@@ -281,7 +278,28 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
     }
 
 
+
+    private void setTexture(Identifier texture){
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, texture);
+
+    }
+
+    class BalanceWidget extends TextFieldWidget {
+        public BalanceWidget(TextRenderer textRenderer, int i, int j, int k, int l, Text text) {
+            super(textRenderer, i, j, k, l, text);
+        }
+
+        @Override
+        public void render(MatrixStack matrixStack, int i, int j, float f) {
+            super.render(matrixStack, i, j, f);
+        }
+    }
+
     class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
+
+        final boolean isOffer;
         final Item offerItem;
         final int basePrice;
         final int batchSize;
@@ -293,7 +311,8 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         int totalPrice;
         boolean isEnabled;
 
-        public Entry(Item offerItem, int basePrice, int batchSize, float discountIncrement, float discountMinimum) {
+        public Entry(Item offerItem, int basePrice, int batchSize, float discountIncrement, float discountMinimum, boolean isOffer) {
+            this.isOffer = isOffer;
             this.offerItem = offerItem;
             this.basePrice = basePrice;
             this.batchSize = Math.max(1,batchSize);
@@ -304,6 +323,17 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             this.count = 0;
             this.totalPrice = 0;
             this.isEnabled = true;
+        }
+
+        public Entry(Item offerItem, int basePrice, int batchSize, float discountIncrement, float discountMinimum) {
+            this(offerItem, basePrice, batchSize, discountIncrement, discountMinimum, false);
+        }
+
+        public Entry ofOrderEntry(){
+            Entry orderEntry = new Entry(this.offerItem, this.basePrice, this.batchSize, this.discountIncrement, this.discountMinimum);
+            orderEntry.count = 1;
+            orderEntry.totalPrice =  basePrice;
+            return orderEntry;
         }
 
         public ItemStack getItemStack(){
@@ -335,9 +365,14 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             if (y < ShopScreen.this.y) {
                 return;
             }
-            renderBackground(matrices, x, y,itemWidth, itemHeight);
+            if (isOffer) {
+                renderOfferBackground(matrices, x, y,itemWidth, itemHeight);
+                renderOfferEntryText(matrices, x, y, itemWidth);
+            } else {
+                renderOrderBackground(matrices, x, y,itemWidth, itemHeight);
+                renderOrderEntryText(matrices, x, y, itemWidth);
+            }
             renderEntryIcon(x,y);
-            renderEntryText(matrices, x, y, itemWidth);
             matrices.pop();
         }
 
@@ -346,26 +381,55 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             itemRenderer.renderGuiItemIcon(renderedStack, x + 1,y+1);
             itemRenderer.renderGuiItemOverlay(textRenderer, renderedStack, x,y+1, String.valueOf(batchSize)) ;
         }
-        
-        private void renderEntryText(MatrixStack matrices, int x, int y, int itemWidth){
-            String priceString = "$"+ currentPrice;
-            int priceStringLength = textRenderer.getWidth(priceString);
-            textRenderer.drawWithShadow(matrices, priceString, x + itemWidth - priceStringLength - 2, y + 8, 0xFFFFFF);
+
+        private void renderOfferEntryText(MatrixStack matrices, int x, int y, int itemWidth){
+            renderEntryText(matrices, x, y, itemWidth, "$"+ currentPrice);
         }
 
+        private void renderEntryText(MatrixStack matrices, int x, int y, int itemWidth, String text){
+            int textLength = textRenderer.getWidth(text);
+            textRenderer.drawWithShadow(matrices, text, x + itemWidth - textLength - 2, y + 8, 0xFFFFFF);
 
-        private void renderBackground(MatrixStack matrices, int x, int y, int itemWidth, int itemHeight){
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, TEXTURE_EMPTY);
+        }
+
+        private void renderOrderEntryText(MatrixStack matrices, int x, int y, int itemWidth){
+            renderEntryText(matrices, x, y, itemWidth, "$"+ totalPrice);
+            textRenderer.drawWithShadow(matrices, "x"+count, x + 21, y + 8, 0xFFFFFF);
+        }
+
+        private void renderOrderBackground(MatrixStack matrices, int x, int y, int itemWidth, int itemHeight){
+            setTexture(TEXTURE_EMPTY);
+            drawTexture(matrices, x, y, 106, 236, itemWidth, itemHeight);
+        }
+
+        private void renderOfferBackground(MatrixStack matrices, int x, int y, int itemWidth, int itemHeight){
+            setTexture(TEXTURE_EMPTY);
             drawTexture(matrices, x, y, isEnabled ? 0 : itemWidth, 236, itemWidth, itemHeight);
+        }
+
+        public void decreaseCount(){
+            if (count > 0) {
+                this.count--;
+                totalPrice = getPriceForCount(count);
+            }
+        }
+
+        public void increaseCount(){
+            if (count < 99) {
+                count++;
+                totalPrice = getPriceForCount(count);
+            }
         }
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
-            if(isEnabled) {
-                orderListWidget.addToBasket(this);
-                currentPrice = getPriceForNth(this.count + 1);
+            if(isOffer) {
+                if(isEnabled) {
+                    int countInBasket = orderListWidget.addToBasket(this).count;
+                    currentPrice = getPriceForNth(countInBasket + 1);
+                }
+            } else {
+                orderListWidget.removeFromBasket(this);
             }
             return true;
         }
@@ -454,7 +518,8 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
                         i,
                         i,
                         1f,
-                        1f
+                        1f,
+                        true
                 ));
             }
             this.addEntry(new ShopScreen.Entry(
@@ -462,12 +527,14 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
                     8,
                     4,
                     .1f,
-                    0.5f
+                    0.5f,
+                    true
             ));
         }
     }
 
-    class OrderListWidget extends AlwaysSelectedEntryListWidget<Entry> {
+    class OrderListWidget extends AlwaysSelectedEntryListWidget<ShopScreen.Entry> {
+
         public OrderListWidget(int width, int height, int x, int y) {
             super(getClient(), width, height, y, y + height, 20);
             this.left = x;
@@ -478,6 +545,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             setRenderSelection(false);
             setRenderHorizontalShadows(false);
         }
+
         @Override
         public int getRowWidth() {
             return width;
@@ -502,9 +570,9 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         protected void renderList(MatrixStack matrixStack, int i, int j, float f) {
             int k = this.getRowLeft();
             int l = this.getRowWidth();
-            int n = this.getEntryCount();
+            int entryCount = this.getEntryCount();
 
-            for (int o = 0; o < n; ++o) {
+            for (int o = 0; o < entryCount; ++o) {
                 int p = this.getRowTop(o);
                 int q = this.getRowBottom(o);
                 if (q >= this.top && p <= this.bottom) {
@@ -534,20 +602,22 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
         }
 
 
-        public void addToBasket(ShopScreen.Entry entry) {
+        public ShopScreen.Entry addToBasket(ShopScreen.Entry entry) {
             for (ShopScreen.Entry orderEntry : this.children()) {
                 if (orderEntry.equals(entry)) {
-                    ((Entry)orderEntry).increaseCount();
-                    return;
+                    orderEntry.increaseCount();
+                    return orderEntry;
                 }
             }
-            this.children().add(entry);
+            ShopScreen.Entry orderEntry = entry.ofOrderEntry();
+            this.children().add(orderEntry);
+            return orderEntry;
         }
 
-        public void removeFromBasket(Entry entry) {
+        public void removeFromBasket(ShopScreen.Entry entry) {
             entry.decreaseCount();
             if (entry.count == 0) {
-                orderListWidget.removeFromBasket(entry);
+                orderListWidget.removeEntry(entry);
             }
         }
 
@@ -563,65 +633,6 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             clearEntries();
             offerListWidget.updatePrices();
         }
-
-        private class Entry extends ShopScreen.Entry {
-            public Entry(Item offerItem, int basePrice, int batchSize, float discountIncrement, float discountMinimum) {
-                super(offerItem, basePrice, batchSize, discountIncrement, discountMinimum);
-            }
-
-
-            @Override
-            public void render(MatrixStack matrices, int index, int y, int x, int itemWidth, int itemHeight, int mouseX, int mouseY, boolean isSelected, float tickDelta) {
-                matrices.push();
-                if (y < ShopScreen.this.y) {
-                    return;
-                }
-                renderBackground(matrices, x, y,itemWidth, itemHeight);
-                renderEntryIcon(x,y);
-                renderEntryText(matrices, x, y,itemWidth);
-                matrices.pop();
-            }
-
-
-            private void renderBackground(MatrixStack matrices, int x, int y, int itemWidth, int itemHeight){
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShaderTexture(0, TEXTURE_EMPTY);
-                drawTexture(matrices, x, y, 106, 236, itemWidth, itemHeight);
-            }
-
-            private void renderEntryIcon(int x, int y){
-                ItemStack renderedStack = offerItem.getDefaultStack();
-                itemRenderer.renderGuiItemIcon(renderedStack, x + 1,y+1);
-                itemRenderer.renderGuiItemOverlay(textRenderer, renderedStack,x,y+1, String.valueOf(batchSize));
-            }
-            private void renderEntryText(MatrixStack matrices, int x, int y, int itemWidth){
-                String priceString = "$"+totalPrice;
-                int priceStringLength = textRenderer.getWidth(priceString);
-                textRenderer.drawWithShadow(matrices, priceString, x + itemWidth - priceStringLength - 2, y + 8, 0xFFFFFF);
-                textRenderer.drawWithShadow(matrices, "x"+count, x + 21, y + 8, 0xFFFFFF);
-            }
-
-
-            @Override
-            public boolean mouseClicked(double d, double e, int i) {
-                orderListWidget.removeFromBasket(this);
-                return true;
-            }
-
-            public void decreaseCount(){
-                this.count--;
-                totalPrice = getPriceForCount(count);
-            }
-
-            public void increaseCount(){
-                if (count < 99) {
-                    count++;
-                    totalPrice = getPriceForCount(count);
-                }
-            }
-        }
-
     }
 
 

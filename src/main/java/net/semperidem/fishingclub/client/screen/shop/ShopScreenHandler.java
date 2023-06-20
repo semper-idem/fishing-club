@@ -22,7 +22,7 @@ public class ShopScreenHandler extends ScreenHandler {
     final static int ROW_COUNT = 6;
     final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
 
-    private PlayerEntity player;
+    private final PlayerEntity player;
     private final Inventory sellContainer;
     int lastBalanceChange = 0;
 
@@ -87,24 +87,9 @@ public class ShopScreenHandler extends ScreenHandler {
     //Server
     public void soldContainer(){
         for (int i = 0; i < sellContainer.size(); i++) {
-            ItemStack removedStack = sellContainer.removeStack(i);
-            if (!removedStack.isOf(FishUtil.FISH_ITEM)) {
-                returnItemStack(removedStack);
-            }
+            sellContainer.removeStack(i);
         }
     }
-//    //Client
-//    public boolean buyContaier(OrderListWidget orderListWidget){//change to itemstack basket
-//        ArrayList<OrderEntryData> basket = orderListWidget.getBasektData();
-//        int cost = orderListWidget.getBasketTotal();
-//        int currentCredit =  FisherInfos.getClientInfo().getFisherCredit();
-//        lastBalanceChange = cost;
-//        if (cost <= currentCredit) {
-//            ClientPacketSender.buyShopContainer(cost, basket);
-//            return true;
-//        }
-//        return false;
-//    }
 
     //Server
     public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int cost){
