@@ -24,7 +24,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
     private final PlayerEntity player;
     private final Inventory sellContainer;
-    int lastBalanceChange = 0;
+    private int sellContainerValue = 0;
 
 
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
@@ -62,28 +62,30 @@ public class ShopScreenHandler extends ScreenHandler {
         return this.sellContainer.canPlayerUse(playerEntity);
     }
 
-    public int getSellContainerValue(){
-        int result = 0;
-        for (int i = 0; i < sellContainer.size(); i++) {
-            ItemStack fishStack = sellContainer.getStack(i);
-            if (fishStack.isOf(FishUtil.FISH_ITEM)) {
-                result += FishUtil.getFishValue(sellContainer.getStack(i));
-            }
-        }
-        return result;
-    }
-
     //TODO ADD CALCULATE SELL CONTAINER SO IT DOESNT RUN EVERY RENDER TICK
 
 
-    //Client
-    public int sellContainer(){
-        lastBalanceChange =  getSellContainerValue();
-        if (lastBalanceChange != 0) {
-            ClientPacketSender.sellShopContainer(lastBalanceChange);
-            return lastBalanceChange;
+    public void calculateSellContainer(){
+        int sellContainerValue = 0;
+        for (int i = 0; i < sellContainer.size(); i++) {
+            ItemStack fishStack = sellContainer.getStack(i);
+            if (fishStack.isOf(FishUtil.FISH_ITEM)) {
+                sellContainerValue += FishUtil.getFishValue(sellContainer.getStack(i));
+            }
         }
-        return 0;
+        this.sellContainerValue = sellContainerValue;
+    }
+    //Client
+    public int getSellContainerValue(){
+        return sellContainerValue;
+    }
+
+    public boolean sellContainer(){
+        if(sellContainerValue > 0) {
+            ClientPacketSender.sellShopContainer(sellContainerValue);
+            return true;
+        }
+        return false;
     }
 
     //Server

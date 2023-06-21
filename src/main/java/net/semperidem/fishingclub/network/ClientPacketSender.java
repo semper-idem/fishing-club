@@ -11,20 +11,20 @@ import java.util.ArrayList;
 
 public class ClientPacketSender {
     public static void sendFisherInfoGrantExp(Fish fish) {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_GRANT_REWARD, FishUtil.fishToPacketBuf(fish));
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_FINISH, FishUtil.fishToPacketBuf(fish));
     }
     public static void sendFishingInfoDataRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, PacketByteBufs.empty());
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_DATA_SYNC_REQ, PacketByteBufs.empty());
     }
 
     public static void sendOpenSellShopRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_SELL_SHOP, PacketByteBufs.empty());
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_OPEN, PacketByteBufs.empty());
     }
     public static void sellShopContainer(int containerValue) {
         if (containerValue <= 0 ) return;
         PacketByteBuf  buf = PacketByteBufs.create();
         buf.writeInt(containerValue);
-        //ClientPlayNetworking.send(PacketIdentifiers.C2S_SELL_FISH, buf);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
     }
 
 
@@ -35,7 +35,7 @@ public class ClientPacketSender {
         for (ItemStack itemStack : basket) {
             buf.writeItemStack(itemStack);
         }
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_BUY_BASKET, buf);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_BUY, buf);
     }
 
 

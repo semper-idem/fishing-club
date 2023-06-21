@@ -22,4 +22,18 @@ public class FishSlot extends Slot {
         Screen currentScreen = MinecraftClient.getInstance().currentScreen;
         return currentScreen instanceof ShopScreen && ((ShopScreen) currentScreen).screenType == ShopScreen.ScreenType.SELL;
     }
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+        tryCalculateSellContainerValue();
+
+    }
+
+    private void tryCalculateSellContainerValue(){
+        Screen currentScreen = MinecraftClient.getInstance().currentScreen;
+        if (currentScreen instanceof ShopScreen) {
+            ( (ShopScreen) currentScreen).getScreenHandler().calculateSellContainer();
+        }
+    }
 }

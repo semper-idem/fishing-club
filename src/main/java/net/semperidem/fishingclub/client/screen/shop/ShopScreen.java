@@ -86,8 +86,8 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
     protected void addSellButton() {
         this.addDrawableChild(new ButtonWidget(this.x + 175, this.y + 103, 70, 20, Text.of("Sell"), (buttonWidget) -> {
-            lastBalanceChange = this.handler.sellContainer();
-            if (lastBalanceChange > 0) {
+            if (this.handler.sellContainer()) {
+                this.lastBalanceChange = this.handler.getSellContainerValue();
                 this.animationTick = 500;
             }
         }));

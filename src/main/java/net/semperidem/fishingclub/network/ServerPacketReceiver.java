@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class ServerPacketReceiver {
     public static void registerServerPacketHandlers() {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_GRANT_REWARD, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_F_GAME_FINISH, (server1, player, handler1, buf, responseSender) -> {
                 Fish fish = FishUtil.fishFromPacketBuf(buf);
 
                 server1.execute(() -> {
@@ -34,21 +34,21 @@ public class ServerPacketReceiver {
 
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_REQUEST_DATA_SYNC_ID, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_F_DATA_SYNC_REQ, (server1, player, handler1, buf, responseSender) -> {
                 server1.execute(() -> {
                     ServerPacketSender.sendFisherInfoSyncPacket(player);
                 });
             });
         });
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_OPEN_SELL_SHOP, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_F_SHOP_OPEN, (server1, player, handler1, buf, responseSender) -> {
                 server1.execute(() -> {
                     ShopScreenUtil.openShopScreen(player);
                 });
             });
         });
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_SELL_FISH, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_F_SHOP_SELL, (server1, player, handler1, buf, responseSender) -> {
                 int gained = buf.readInt();
                 server1.execute(() -> {
                     FisherInfos.addCredit(player.getUuid(), gained);
@@ -61,7 +61,7 @@ public class ServerPacketReceiver {
             });
         });
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_BUY_BASKET, (server1, player, handler1, buf, responseSender) -> {
+            ServerPlayNetworking.registerReceiver(handler, PacketIdentifiers.C2S_F_SHOP_BUY, (server1, player, handler1, buf, responseSender) -> {
                 int cost = buf.readInt();
                 int basketSize = buf.readInt();
                 ArrayList<ItemStack> basket = new ArrayList<>();

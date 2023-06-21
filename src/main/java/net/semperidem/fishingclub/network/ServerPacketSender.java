@@ -8,8 +8,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_START_GAME;
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_SYNC_DATA_ID;
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SYNC;
 
 public class ServerPacketSender {
 
@@ -35,10 +35,10 @@ public class ServerPacketSender {
     }
 
     public static void sendFisherInfoSyncPacket(ServerPlayerEntity player, PacketByteBuf buf) {
-        sendPacket(player, S2C_SYNC_DATA_ID, buf);
+        sendPacket(player, S2C_F_DATA_SYNC, buf);
     }
 
     public static void sendFishingStartPacket(ServerPlayerEntity player){
-        sendPacket(player, S2C_START_GAME, PacketByteBufs.empty());
+        sendPacket(player, S2C_F_GAME_START, PacketByteBufs.empty());
     }
 }
