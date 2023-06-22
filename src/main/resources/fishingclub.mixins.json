@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "FishingRodItemMixin",
-    "ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin",
+    "WanderingTraderEntityMixin"
   ],
   "client": [
     "ClientPlayerEntityMixin"

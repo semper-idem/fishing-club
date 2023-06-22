@@ -41,18 +41,16 @@ public class ServerPacketHandlers {
     }
 
     public static void handleFishingShopBuyBasket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> {
-            int cost = buf.readInt();
-            int basketSize = buf.readInt();
-            ArrayList<ItemStack> basket = new ArrayList<>();
-            for(int i = 0; i < basketSize; i++) {
-                basket.add(buf.readItemStack());
-            }
-            server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
+        int cost = buf.readInt();
+        int basketSize = buf.readInt();
+        ArrayList<ItemStack> basket = new ArrayList<>();
+        for(int i = 0; i < basketSize; i++) {
+            basket.add(buf.readItemStack());
+        }
+        server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
                     .filter(ShopScreenHandler.class::isInstance)
                     .map(ShopScreenHandler.class::cast)
                     .ifPresent(screenHandler -> screenHandler.boughtContainer(player, basket, cost)));
-        });
     }
 
 
