@@ -89,10 +89,12 @@ public class ShopScreenHandler extends ScreenHandler {
     }
 
     //Server
-    public void soldContainer(){
+    public void soldContainer(ServerPlayerEntity player, int creditGained){
+        FisherInfos.addCredit(player.getUuid(), creditGained);
         for (int i = 0; i < sellContainer.size(); i++) {
             sellContainer.removeStack(i);
         }
+        ServerPacketSender.sendFisherInfoSyncPacket(player);
     }
 
     //Server
@@ -104,7 +106,6 @@ public class ShopScreenHandler extends ScreenHandler {
         ServerPacketSender.sendShopScreenInventorySyncPacket(player);
         ServerPacketSender.sendFisherInfoSyncPacket(player);
     }
-
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {

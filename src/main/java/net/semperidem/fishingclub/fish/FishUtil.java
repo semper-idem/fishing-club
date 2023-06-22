@@ -8,8 +8,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.fisher.FisherInfo;
+import net.semperidem.fishingclub.fish.fisher.FisherInfos;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +25,18 @@ public class FishUtil {
         ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
         setFishDetails(fishReward, fish);
         return fishReward;
+    }
+
+    public static void grantReward(ServerPlayerEntity player, Fish fish){
+        FisherInfos.grantExperience(player.getUuid(), fish.experience);
+        player.addExperience(Math.max(1, fish.experience / 10));
+        ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
+        if (player.getInventory().getEmptySlot() == -1) {
+            player.dropItem(fishReward, false);
+        } else {
+            player.giveItemStack(fishReward);
+        }
+
     }
 
     private static void setFishDetails(ItemStack stack, Fish fish){

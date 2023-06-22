@@ -69,20 +69,6 @@ public class FisherInfo {
         }
     }
 
-    public ArrayList<FishingPerk> getPerks(){
-        return new ArrayList<>(perks);
-    }
-
-    public boolean hasPerk(FishingPerk perk) {
-        return perks.contains(perk);
-    }
-
-    public void grantPerk(String perkName){
-        if (Objects.equals(perkName, "all")) {
-            perks.addAll(FishingPerks.ALL_PERKS);
-        }
-    }
-
     public boolean removeCredit(int credit) {
         if (this.fisherCredit - credit < 0) {
             return false;
@@ -94,6 +80,23 @@ public class FisherInfo {
     public void addCredit(int credit) {
         this.fisherCredit += credit;
     }
+
+
+    public void grantPerk(String perkName){
+        if (Objects.equals(perkName, "all")) {
+            perks.addAll(FishingPerks.ALL_PERKS);
+        }
+    }
+
+    public ArrayList<FishingPerk> getPerks(){
+        return new ArrayList<>(perks);
+    }
+
+    public boolean hasPerk(FishingPerk perk) {
+        return perks.contains(perk);
+    }
+
+
 
     @Override
     public String toString(){
