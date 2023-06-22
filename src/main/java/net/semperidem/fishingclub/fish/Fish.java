@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
-import net.semperidem.fishingclub.fish.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {

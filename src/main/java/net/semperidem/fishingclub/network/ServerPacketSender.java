@@ -6,7 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfos;
 
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SYNC;

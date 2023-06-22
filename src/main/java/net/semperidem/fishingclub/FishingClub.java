@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.fish.FishTypes;
-import net.semperidem.fishingclub.fish.fisher.FisherInfoDB;
+import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
 

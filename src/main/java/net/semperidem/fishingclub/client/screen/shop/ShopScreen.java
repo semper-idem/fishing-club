@@ -17,7 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.ArrayList;

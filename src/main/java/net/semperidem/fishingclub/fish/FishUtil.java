@@ -10,8 +10,8 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fish.fisher.FisherInfo;
-import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfos;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

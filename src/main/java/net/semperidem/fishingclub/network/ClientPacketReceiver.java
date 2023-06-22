@@ -2,8 +2,8 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fish.fisher.FisherInfo;
-import net.semperidem.fishingclub.fish.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.client.screen.FishingScreen;
 
 public class ClientPacketReceiver {
@@ -15,7 +15,7 @@ public class ClientPacketReceiver {
 
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
-            client.execute(() -> client.setScreen(new FishingScreen(Text.of("Fish"))));
+            client.execute(() -> client.setScreen(new FishingScreen(Text.of("Fishing..."))));
         });
     }
 }

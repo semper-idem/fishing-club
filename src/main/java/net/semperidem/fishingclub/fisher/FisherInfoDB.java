@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish.fisher;
+package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.server.MinecraftServer;
 import net.semperidem.fishingclub.network.ServerPacketSender;

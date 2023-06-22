@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish.fisher;
+package net.semperidem.fishingclub.fisher;
 
 import java.util.ArrayList;
 import java.util.Optional;

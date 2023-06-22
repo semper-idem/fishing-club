@@ -7,9 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 
+import java.util.Optional;
+
 public class FishSlot extends Slot {
-    public FishSlot(Inventory inventory, int i, int j, int k) {
-        super(inventory, i, j, k);
+    public FishSlot(Inventory inventory, int index, int x, int y) {
+        super(inventory, index, x, y);
     }
 
     @Override
@@ -31,9 +33,9 @@ public class FishSlot extends Slot {
     }
 
     private void tryCalculateSellContainerValue(){
-        Screen currentScreen = MinecraftClient.getInstance().currentScreen;
-        if (currentScreen instanceof ShopScreen) {
-            ( (ShopScreen) currentScreen).getScreenHandler().calculateSellContainer();
-        }
+        Optional.ofNullable(MinecraftClient.getInstance().currentScreen)
+                .filter(ShopScreen.class::isInstance)
+                .map(ShopScreen.class::cast)
+                .ifPresent(shopScreen -> shopScreen.getScreenHandler().calculateSellContainer());
     }
 }
