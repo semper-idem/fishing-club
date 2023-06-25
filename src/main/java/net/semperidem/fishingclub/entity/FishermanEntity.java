@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.entity;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -13,7 +14,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
 
 public class FishermanEntity extends WanderingTraderEntity {
     public FishermanEntity(EntityType<? extends WanderingTraderEntity> entityType, World world) {
@@ -40,7 +41,9 @@ public class FishermanEntity extends WanderingTraderEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        ShopScreenUtil.openShopScreen(playerEntity);
+        if (world.isClient()){
+            MinecraftClient.getInstance().setScreen(new DialogScreen(getCustomName()));
+        }
         return ActionResult.CONSUME;
     }
 
