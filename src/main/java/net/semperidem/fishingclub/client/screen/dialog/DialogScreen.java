@@ -6,10 +6,12 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 public class DialogScreen extends Screen {
     Identifier TEXTURE = new Identifier(FishingClub.MOD_ID, "textures/gui/dialog.png");
     Identifier TEXTURE_FOREGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/dialog_foreground.png");
+    static final String DELIMETER = ";";
     int backgroundWidth = 200;
     int backgroundHeight = 200;
     int x;
@@ -40,17 +43,17 @@ public class DialogScreen extends Screen {
         this.dialogBox = new DialogBoxWidget(client, 184,115,x + 8,y + 18);
         this.addDrawableChild(dialogBox);
 
-
-        Entry firstEntry = new Entry("First\nLine2\nLine3", "");
-        Entry secondEntryA = new Entry("SecondA\nSecondA\nSecondA", "A");
+//THIS RESETS DIALOG IT SHOULD NOT
+        Entry firstEntry = new Entry("First;Line2;Line3", "");
+        Entry secondEntryA = new Entry("SecondA;SecondA;SecondA", "A");
         Entry secondEntryB = new Entry("SecondB", "B");
-        Entry thirdAA = new Entry("thirdAA\nthirdAA\nthirdAA", "AA");
-        Entry thirdAB = new Entry("thirdAB", "AB");
+        Entry thirdAA = new Entry("thirdAA;thirdAA;thirdAA", "AA");
+        Entry thirdAB = new Entry("thirdAB", "[Shop]AB");
         Entry thirdAC = new Entry("thirdAC", "AC");
         Entry thirdBA = new Entry("thirdBA", "BA");
         Entry thirdBB = new Entry("thirdBB", "BB");
         Entry thirdBC = new Entry("thirdBC", "BC");
-        Entry forth = new Entry("forth\nforth", "AAA");
+        Entry forth = new Entry("forth;forth", "AAA");
         Entry fifth = new Entry("fifth", "AAAA");
         firstEntry.addChoice(secondEntryA);
         firstEntry.addChoice(secondEntryB);
@@ -66,14 +69,9 @@ public class DialogScreen extends Screen {
 
         dialogBox.addMessage(firstEntry);
         dialogBox.lastDialog = firstEntry;
-        int offset = 0;
         initialChoiceY = y + 148;
-        for(Entry choice : firstEntry.choices) {
-            DialogChoiceWidget dialogChoiceWidget = new DialogChoiceWidget(x + 45, initialChoiceY + offset,92,10, choice);
-            dialogChoiceWidgets.add(dialogChoiceWidget);
-            this.addDrawableChild(dialogChoiceWidget);
-            offset += 10;
-        }
+        DialogChoiceWidget dummyChoice = new DialogChoiceWidget(x + 45, initialChoiceY, null);
+        dummyChoice.init(firstEntry);
     }
 
     public void clearChoices(){
@@ -108,6 +106,23 @@ public class DialogScreen extends Screen {
 
     }
 
+    @Override
+    public boolean keyPressed(int i, int j, int k) {
+        if (i == InputUtil.GLFW_KEY_SPACE) {
+            dialogBox.textSpeed = 10;
+            return true;
+        } else if (i > InputUtil.GLFW_KEY_0 && i <= InputUtil.GLFW_KEY_0 + dialogChoiceWidgets.size()) {
+            dialogChoiceWidgets.get(i - InputUtil.GLFW_KEY_0 - 1).onClick(0,0);
+            return true;
+        } else {
+            return super.keyPressed(i, j, k);
+        }
+    }
+
+    public void endDialog(){
+        this.close();
+    }
+
     class Entry extends AlwaysSelectedEntryListWidget.Entry<Entry> {
         String text;
         String chosen;
@@ -115,6 +130,7 @@ public class DialogScreen extends Screen {
         ArrayList<Entry> choices = new ArrayList<>();
         int id;
         static int lastId = 0;
+        int textEndTime;
 
         final static int cDuration = 10;
         final static HashMap<Character, Integer> pauseMap = new HashMap<>() {{
@@ -124,11 +140,20 @@ public class DialogScreen extends Screen {
             put('!', 10);
         }};
 
+        Entry(String text){
+            this(text, "");
+        }
+
+        Entry(String text, String query, Entry parent){
+            this(text, query);
+            parent.addChoice(this);
+        }
+
         Entry(String text, String query){
             this.id = lastId++;
             this.text = text;
             this.query = query;
-
+            this.textEndTime = getTextEndTime();
         }
 
 
@@ -145,7 +170,17 @@ public class DialogScreen extends Screen {
             return result.toString();
          }
 
-        void addChoice(Entry child){
+        int getTextEndTime(){
+            int result = 0;
+            for(int i = 0; i < text.length(); i++){
+                char c = text.charAt(i);
+                result += pauseMap.getOrDefault(c, cDuration);
+            }
+
+            return result;
+        }
+
+        private void addChoice(Entry child){
             choices.add(child);
         }
 
@@ -154,49 +189,60 @@ public class DialogScreen extends Screen {
             return Text.of(text);
         }
 
-        @Override
-            public void render(MatrixStack matrices, int index, int y, int x, int itemWidth, int itemHeight, int mouseX, int mouseY, boolean isSelected, float tickDelta) {
-//            if (dialogBox.lastDialog == null) {
-//                if (this.id == dialogBox.lastDialog.id) {
-//                    //SLOW TYPE
-//                } else {
-//                }
-//            }
-            boolean isLastDialog = dialogBox.lastDialog != null && dialogBox.lastDialog.id == id;
-            String textForTime = isLastDialog ? getTextForTime(dialogBox.textTick) : text;
-            textForTime = textForTime.charAt(textForTime.length() -1) == '\\' ? textForTime.substring(0, textForTime.length() - 2) : textForTime;
-            String[] lines = textForTime.split("\n");
+        private boolean isItemWithinBox(int itemY){
+            return itemY > dialogBox.getTop() - dialogBox.lineHeight && itemY < dialogBox.getBottom() + dialogBox.lineHeight;
+        }
+
+        private boolean isLastInBox(){
+            return this.id == dialogBox.lastDialog.id;
+        }
+
+        private String getText(){
+            return isLastInBox() ? getTextForTime(dialogBox.textTick) : text;
+        }
+
+        private void renderTextLines(MatrixStack matrices, int x, int y){
+            String[] lines = getText().split(DELIMETER);
             int offset = 0;
             boolean firstLine = true;
             for(String line : lines){
                 if (firstLine) {
                     line = "Derek: " + line;
+                    firstLine = false;
                 }
-                firstLine = false;
                 int itemY = y + 1 + offset;
-                if (itemY > dialogBox.getTop() - 14 && itemY < dialogBox.getBottom() +14) {
+                if (isItemWithinBox(itemY)) {
                     textRenderer.drawWithShadow(matrices, line, dialogBox.getLeft() + 1 ,itemY, 0xFFFFFF);
                 }
                 offset += dialogBox.lineHeight;
-
             }
+        }
+
+        private void renderTextFooter(MatrixStack matrices,int x, int y, int itemHeight){
             int itemY = y + itemHeight;
-            if (itemY > dialogBox.getTop() - 14 && itemY < dialogBox.getBottom() + 14) {
-                if (textForTime.equals(text)) {
-                    fill(matrices, x,itemY,x + dialogBox.getRowWidth(),y - 1 + itemHeight, Color.WHITE.getRGB());
-                }
+            if(isTypedOut() && isItemWithinBox(itemY)) {
+                fill(matrices, x,itemY,x + dialogBox.getRowWidth(),itemY - 1, Color.WHITE.getRGB());
             }
+        }
+        
+        private boolean isTypedOut(){
+            return !isLastInBox() ||  dialogBox.textTick > this.textEndTime;
+        }
 
-            if (dialogBox.lastDialog != null) {
-                if (dialogBox.lastDialog.id != id){
-                    itemY = y + itemHeight - dialogBox.lineHeight + 1;
-                    if (itemY > dialogBox.getTop() - 9 && itemY < dialogBox.getBottom() + 9) {
-                        fill(matrices, x,itemY - 1,x + dialogBox.getRowWidth(),itemY - 2, Color.WHITE.getRGB());
-                        String respText = MinecraftClient.getInstance().player.getName().getString()+ ": " + dialogBox.getDialogEntry(index + 1).query;
-                        textRenderer.drawWithShadow(matrices, respText, dialogBox.getLeft() + 1 ,itemY, Color.YELLOW.getRGB());
-                    }
-                }
+        private void renderResponse(MatrixStack matrices, int x, int y, int index, int itemHeight){
+            int itemY = y + itemHeight - dialogBox.lineHeight + 1;
+            if(!isLastInBox() && isItemWithinBox(itemY)) {
+                fill(matrices, x,itemY - 1,x + dialogBox.getRowWidth(),itemY - 2, Color.WHITE.getRGB());
+                String respText = MinecraftClient.getInstance().player.getName().getString()+ ": " + dialogBox.getDialogEntry(index + 1).query;
+                textRenderer.drawWithShadow(matrices, respText, dialogBox.getLeft() + 1 ,itemY, Color.YELLOW.getRGB());
             }
+        }
+
+        @Override
+            public void render(MatrixStack matrices, int index, int y, int x, int itemWidth, int itemHeight, int mouseX, int mouseY, boolean isSelected, float tickDelta) {
+            renderTextLines(matrices, x,y);
+            renderTextFooter(matrices, x,y, itemHeight);
+            renderResponse(matrices, x,y, index, itemHeight);
         }
     }
     class DialogBoxWidget extends AlwaysSelectedEntryListWidget<Entry> {
@@ -258,7 +304,7 @@ public class DialogScreen extends Screen {
 
         private int getRowHeight(int i){
             int respHeight = dialogBox.lastDialog != null && dialogBox.lastDialog.id != getEntry(i).id ? lineHeight : 0;
-            return getEntry(i).text.split("\n").length * lineHeight + respHeight;
+            return getEntry(i).text.split(DELIMETER).length * lineHeight + respHeight;
         }
 
         @Override
@@ -305,7 +351,7 @@ public class DialogScreen extends Screen {
         }
 
         public void tick(){
-            textTick+= textSpeed;
+                textTick+= textSpeed;
         }
 
 
@@ -317,40 +363,112 @@ public class DialogScreen extends Screen {
 
         void setChosen(String chosenText){
             this.children().forEach(entry -> {
-                if (lastDialog == null || entry.id == lastDialog.id) {
+                if (entry.id == lastDialog.id) {
                     entry.chosen = chosenText;
                     clearChoices();
                 }
             });
         }
-        //TODO SPACEBAR SPEEDS UP TEXT
-        //KEY CONTROL CHOICE
     }
 
 
     class DialogChoiceWidget extends ButtonWidget {
-        public DialogChoiceWidget(int x, int y, int width, int height, DialogScreen.Entry option) {
-            super(x, y, width, height, Text.empty(), buttonWidget -> {
-                dialogBox.setChosen(option.query);
-                dialogBox.lastDialog = option;
-                dialogBox.addMessage(option);
-                int offset = 0;
-                for(DialogScreen.Entry entry : option.choices) {
-                    dialogChoiceWidgets.add(new DialogChoiceWidget(x, initialChoiceY + offset, width, height, entry));
-                    offset += height;
-                }
-                for(DialogChoiceWidget dialogChoiceWidget : dialogChoiceWidgets) {
-                    addDrawableChild(dialogChoiceWidget);
-                }
-            });
-            this.setMessage(Text.of(option.query));
 
+        private static final int optionHeight = 10;
+        private static final int optionWidth = 92;
+        private static int lastIndex = 0;
+        DialogScreen.Entry option;
+        int index;
+
+        public DialogChoiceWidget(int x, int y, PressAction onPress) {
+            super(x, y, optionWidth, optionHeight, Text.empty(), onPress);
+            this.index = lastIndex++;
+            dialogBox.textSpeed = 1;
+        }
+
+        public void init(DialogScreen.Entry initialEntry){
+            this.option = initialEntry;
+            this.populateChoices();
+        }
+
+        public DialogChoiceWidget getDefaultChoice(int x, int y,  DialogScreen.Entry option){
+            DialogChoiceWidget choice = new DialogChoiceWidget(x,y, buttonWidget -> {
+                if (this.option == null) return;
+                if (!isActive()) return;
+                this.option = option;
+                onChoiceClick();
+            });
+            choice.setMessage(Text.of(option.query));
+            return choice;
+        }
+
+        public DialogChoiceWidget getExitChoice(int x, int y){
+            DialogChoiceWidget choice = new DialogChoiceWidget(x,y, buttonWidget -> {
+                if (!isActive()) return;
+                onExitClick();
+            });
+            choice.setMessage(Text.of("[Exit]"));
+            return choice;
+        }
+
+        public DialogChoiceWidget getShopChoice(int x, int y, DialogScreen.Entry option){
+            DialogChoiceWidget choice = new DialogChoiceWidget(x,y, buttonWidget -> {
+                if (!isActive()) return;
+                onShopClick();
+            });
+            choice.setMessage(Text.of(option.query));
+            return choice;
+        }
+
+        private void onChoiceClick(){
+            dialogBox.setChosen(option.query);
+            dialogBox.lastDialog = option;
+            dialogBox.addMessage(option);
+            populateChoices();
+        }
+        private void onExitClick(){
+            endDialog();
+        }
+        private void onShopClick(){
+            ClientPacketSender.sendOpenSellShopRequest();
+        }
+
+        private void populateChoices(){
+            lastIndex = 0;
+            addExitChoice();
+            for(int i = 0; i < option.choices.size(); i++) {
+                DialogScreen.Entry choiceEntry = option.choices.get(i);
+                DialogChoiceWidget choice = getChoice(choiceEntry, i);
+                dialogChoiceWidgets.add(choice);
+                addDrawableChild(choice);
+            }
+        }
+
+        private DialogChoiceWidget getChoice(DialogScreen.Entry choiceEntry, int i){
+            return choiceEntry.query.startsWith("[Shop]") ?
+                    getShopChoice(x, initialChoiceY + i * optionHeight, choiceEntry) :
+                    getDefaultChoice(x,initialChoiceY + i * optionHeight, choiceEntry);
+        }
+
+        private void addExitChoice(){
+            if (option.choices.size() == 0) {
+                DialogChoiceWidget exitChoice = getExitChoice(x, initialChoiceY);
+                dialogChoiceWidgets.add(exitChoice);
+                addDrawableChild(exitChoice);
+            }
+        }
+
+
+
+        private boolean isActive(){
+            return dialogBox.lastDialog.isTypedOut();
         }
 
         @Override
         public void render(MatrixStack matrixStack, int i, int j, float f) {
+            if (!isActive()) return;
             fill(matrixStack, this.x,this.y + this.height - 1,this.x + this.width,this.y + this.height, Color.WHITE.getRGB());
-            textRenderer.drawWithShadow(matrixStack, getMessage(), this.x, this.y + 1, Color.WHITE.getRGB());
+            textRenderer.drawWithShadow(matrixStack, (index + 1) + ") " + getMessage().getString(), this.x, this.y + 1, Color.WHITE.getRGB());
         }
     }
 }

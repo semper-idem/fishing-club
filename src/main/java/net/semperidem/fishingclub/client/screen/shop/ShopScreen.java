@@ -649,6 +649,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
         public void clear() {
             clearEntries();
+            calculateBasketTotal();
             offerListWidget.updatePrices();
         }
     }
