@@ -57,6 +57,6 @@ public class FishingRodItemMixin {
 
     private void startFishingMinigame(PlayerEntity player) {
         ServerPacketSender.sendFisherInfoSyncPacket((ServerPlayerEntity)player);
-        ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity)player);
+        ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity)player, null);
     }
 }

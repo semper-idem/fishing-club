@@ -7,9 +7,12 @@ import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
+import java.util.HashMap;
+
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SYNC;
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
 
 public class ServerPacketSender {
 
@@ -38,7 +41,15 @@ public class ServerPacketSender {
         sendPacket(player, S2C_F_DATA_SYNC, buf);
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player){
-        sendPacket(player, S2C_F_GAME_START, PacketByteBufs.empty());
+    public static void sendFishingStartPacket(ServerPlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts){
+        PacketByteBuf fishingRodPacket = PacketByteBufs.create();
+        if (customParts != null) {
+            int partCount = customParts.size();
+            fishingRodPacket.writeInt(partCount);
+            for(FishingRodPartItem part : customParts.values()) {
+                fishingRodPacket.writeString(part.getKey());
+            }
+        }
+        sendPacket(player, S2C_F_GAME_START, fishingRodPacket);//TODO HANDLE NEW INFOMATION IN CLIENT MINI GAME
     }
 }

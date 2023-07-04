@@ -220,4 +220,16 @@ public class FishGameLogic {
     private void grantExperience(){
         ClientPacketSender.sendFisherInfoGrantExp(fish);
     }
+
+    public enum Stat{
+        BOBBER_WIDTH,
+        DEFENSE,
+        LINE_HEALTH,
+        CATCH_RATE,
+        PROGRESS_MULTIPLIER,
+        FISH_MAX_WEIGHT_MULTIPLIER,
+        FISH_RARITY_BONUS,
+        FISH_MAX_SIZE_MULTIPLIER,
+        BITE_WINDOW
+    }
 }
