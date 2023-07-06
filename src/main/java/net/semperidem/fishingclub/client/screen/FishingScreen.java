@@ -9,6 +9,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishGameLogic;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
+
+import java.util.HashMap;
 
 public class FishingScreen extends Screen {
     private static final Identifier BOBBER = new Identifier(FishingClub.MOD_ID, "textures/gui/bobber_8x32.png");
@@ -35,9 +38,15 @@ public class FishingScreen extends Screen {
 
     FishGameLogic fishGameLogic;
 
+
     public FishingScreen(Text text) {
         super(text);
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player);
+    }
+
+    public FishingScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts) {
+        super(text);
+        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts);
     }
 
 
@@ -110,7 +119,7 @@ public class FishingScreen extends Screen {
         int healthLabelLength = textRenderer.getWidth(healthLabel);
         textRenderer.drawWithShadow(matrices, Text.of(healthLabel), windowX + 80 - healthLabelLength / 2f,windowY + 75,0xFFFFFF);
 
-        String healthInfo = String.format("%.1f" ,fishGameLogic.getHealth());
+        String healthInfo = String.format("%.1f" ,fishGameLogic.getLineHealth());
         int healthInfoLength = textRenderer.getWidth(healthInfo);
         textRenderer.drawWithShadow(matrices, Text.of(healthInfo), windowX + 80 - healthInfoLength / 2f,windowY + 90,0xFFFFFF);
     }

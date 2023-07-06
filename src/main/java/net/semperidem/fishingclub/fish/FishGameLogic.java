@@ -3,41 +3,57 @@ package net.semperidem.fishingclub.fish;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
+
 public class FishGameLogic {
+    //TODO IMPLEMENT TREASURE MECHANIC - "time event"
     private static final float sinePeriod = (float) (Math.PI * 2);
+    private static final float STARTING_BOBBER_LENGTH = 0.1f;
 
     PlayerEntity player;
-    float health = 100;
+    float lineHealth = 0;
     float progress = 0;
     float fishPos = 0;
     int ticks = 0;
     float bobberPos = 0;
     float bobberLength;
     float bobberSpeed = 0f;
-    float fishLength = 0.0625f;
-    float reelingAcceleration = 0.005f;
-    float gravityAcceleration = 0.0035f;
+    float fishLength = 0.0625f; //possible future upgrade
+    float reelingAcceleration = 0.005f; //possible future upgrade
+    float gravityAcceleration = 0.0035f;//possible future upgrade
     Fish fish;
     boolean isFinished = false;
     boolean isWon = false;
     FisherInfo fisherInfo;
     float totalDuration;
-    float waveSpeed = 5;
-    float waveStrength = 0.05f;
+    float waveSpeed = 5; //TODO make bobber in world dependant eg. ocean = bigger waves
+    float waveStrength = 0.05f;//TODO above
+
+    float fishDamage;
+
+    HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts;
 
 
     public FishGameLogic(PlayerEntity player){
+        this(player,  new HashMap<>());
+    }
+
+    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts){
         this.player = player;
         this.fisherInfo = FisherInfos.getClientInfo();
-        setBobberLength();
         this.fish = FishUtil.getFishOnHook(fisherInfo);
+        this.rodParts = rodParts;
+        calculateBobberLength();
+        calculateHealth();
+        calculateFishDamage();
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
     }
 
@@ -61,15 +77,44 @@ public class FishGameLogic {
         return bobberPos;
     }
 
-    public float getHealth() {
-        return health;
+    public float getLineHealth() {
+        return lineHealth;
     }
 
-    public void setBobberLength(){
-        bobberLength = 0.25f;
+    private void calculateBobberLength(){
+        float calculateBobberLength = STARTING_BOBBER_LENGTH;
+
+        //SKILLS
         if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
-            bobberLength =  0.25f;
+            calculateBobberLength += 0.1f;
         }
+
+        //PARTS
+        float partsBonusLengthPercent = 0;
+        for(FishingRodPartItem part : rodParts.values()) {
+            partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
+        }
+        calculateBobberLength += (calculateBobberLength * (1 + partsBonusLengthPercent));
+
+        this.bobberLength = calculateBobberLength;
+    }
+
+
+    private void calculateFishDamage(){
+        float damageReduction = 0;
+        for(FishingRodPartItem part : rodParts.values()) {
+            damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
+        }
+        float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fisherInfo.getLevel() / 4f)) / 20f);
+        this.fishDamage =  fishRawDamage * (1 - Math.max(0, Math.min(1, damageReduction)));
+    }
+
+    private void calculateHealth(){
+        float calculatedHealth = 0;
+        for(FishingRodPartItem part : rodParts.values()) {
+            calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
+        }
+        this.lineHealth = calculatedHealth;
     }
 
     public float getBobberLength() {
@@ -101,20 +146,18 @@ public class FishGameLogic {
         bobberSpeed = bobberSpeed < 0 ? bobberSpeed * -0.5f : 0;
     }
 
-    private void processHealth(){
+    private void tickHealth(){
         if (!fishDealsDamage()) {
             return;
         }
-        if (health > 0) {
-            health -= getFishDamage();
+        //Instant lose if attempting to fish without line
+        if (lineHealth > 0) {
+            lineHealth -= (fishDamage);
         } else {
-            this.isFinished = true;
+            isFinished = true;
         }
     }
 
-    private float getFishDamage(){
-        return Math.max(0, (fish.fishLevel - 5) / 20f);
-    }
 
     private boolean fishDealsDamage(){
         return fish.fishLevel > 10;
@@ -140,7 +183,7 @@ public class FishGameLogic {
     }
 
     private void revokeProgress(){
-        processHealth();
+        tickHealth();
         if (progress > 0) {
             progress = Math.max(0, progress - 0.005f);
         }
@@ -222,10 +265,10 @@ public class FishGameLogic {
     }
 
     public enum Stat{
-        BOBBER_WIDTH,
-        DEFENSE,
-        LINE_HEALTH,
-        CATCH_RATE,
+        BOBBER_WIDTH, //Percentage increase of bobber width
+        DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm
+        LINE_HEALTH, // Additional health point
+        CATCH_RATE,//TODO Percentage reduction of time until bite
         PROGRESS_MULTIPLIER,
         FISH_MAX_WEIGHT_MULTIPLIER,
         FISH_RARITY_BONUS,

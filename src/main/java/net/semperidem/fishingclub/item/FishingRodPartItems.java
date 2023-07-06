@@ -62,17 +62,17 @@ public class FishingRodPartItems {
                 PartType.BOBBER,
                 "BOBBER_WOODEN")
                 .withStat(Stat.BITE_WINDOW, 5f)
-                .withStat(Stat.BOBBER_WIDTH, 2f);
+                .withStat(Stat.BOBBER_WIDTH, 0.05f);
         BOBBER_PLANT_BASED = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.BOBBER,
                 "BOBBER_PLANT_BASED")
                 .withStat(Stat.BITE_WINDOW, 10f)
-                .withStat(Stat.BOBBER_WIDTH, 4f);
+                .withStat(Stat.BOBBER_WIDTH, 0.1f);
         BOBBER_ANCIENT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.EPIC),
                 PartType.BOBBER,
                 "BOBBER_ANCIENT")
                 .withStat(Stat.BITE_WINDOW, 20f)
-                .withStat(Stat.BOBBER_WIDTH, 8f);
+                .withStat(Stat.BOBBER_WIDTH, 0.2f);
 
         LINE_WOOL_THREAD = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.LINE,
@@ -84,20 +84,20 @@ public class FishingRodPartItems {
                 "LINE_SPIDER_SILK")
                 .withStat(Stat.PROGRESS_MULTIPLIER, 1.1f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(Stat.LINE_HEALTH, 50f);
+                .withStat(Stat.LINE_HEALTH, 25f);
         LINE_FIBER_THREAD = new FishingRodPartItem(new Item.Settings().rarity(Rarity.RARE),
                 PartType.LINE,
                 "LINE_FIBER_THREAD")
                 .withStat(Stat.PROGRESS_MULTIPLIER, 1.1f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.5f)
-                .withStat(Stat.LINE_HEALTH, 100f);
+                .withStat(Stat.LINE_HEALTH, 50f);
         LINE_STRIDER_THREAD = new FishingRodPartItem(
                 new Item.Settings().fireproof().rarity(Rarity.RARE),
                 PartType.LINE,
                 "LINE_STRIDER_THREAD")
                 .withStat(Stat.PROGRESS_MULTIPLIER, 1.5f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(Stat.LINE_HEALTH, 200f);
+                .withStat(Stat.LINE_HEALTH, 100f);
 
         HOOK_COPPER = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON),
@@ -109,7 +109,7 @@ public class FishingRodPartItems {
                 new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.HOOK,
                 "HOOK_IRON")
-                .withStat(Stat.DEFENSE, 5f);
+                .withStat(Stat.DAMAGE_REDUCTION, 0.25f);
         HOOK_GOLD = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.RARE),
                 PartType.HOOK,
@@ -122,7 +122,7 @@ public class FishingRodPartItems {
                 new Item.Settings().fireproof().rarity(Rarity.EPIC),
                 PartType.HOOK,
                 "HOOK_NETHERITE")
-                .withStat(Stat.DEFENSE, 10f)
+                .withStat(Stat.DAMAGE_REDUCTION, 0.75f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
                 .withStat(Stat.FISH_MAX_SIZE_MULTIPLIER, 1.1f)
                 .withStat(Stat.CATCH_RATE, 1.1f)

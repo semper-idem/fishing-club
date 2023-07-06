@@ -50,6 +50,6 @@ public class ServerPacketSender {
                 fishingRodPacket.writeString(part.getKey());
             }
         }
-        sendPacket(player, S2C_F_GAME_START, fishingRodPacket);//TODO HANDLE NEW INFOMATION IN CLIENT MINI GAME
+        sendPacket(player, S2C_F_GAME_START, fishingRodPacket);
     }
 }
