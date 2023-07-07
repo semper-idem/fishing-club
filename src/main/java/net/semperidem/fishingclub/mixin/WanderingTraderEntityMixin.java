@@ -16,8 +16,8 @@ public class WanderingTraderEntityMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void init(EntityType<? extends WanderingTraderEntity> entityType, World world, CallbackInfo info) {
-        if (entityType != FishingClub.FISHERMAN_ENTITY) {
-            FishermanEntity fishermanEntity = FishingClub.FISHERMAN_ENTITY.create(world);
+        if (entityType != FishingClub.FISHERMAN) {
+            FishermanEntity fishermanEntity = FishingClub.FISHERMAN.create(world);
             world.spawnEntity(fishermanEntity);
         }
     }

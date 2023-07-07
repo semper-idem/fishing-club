@@ -1,0 +1,14 @@
+{
+    "parent": "item/handheld_rod",
+    "textures": {
+        "layer0": "fishing-club:item/custom_fishing_rod"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "casting": 1
+            },
+            "model": "fishing-club:item/custom_fishing_rod_cast"
+        }
+    ]
+}
