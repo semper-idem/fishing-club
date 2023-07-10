@@ -1,8 +1,10 @@
-package net.semperidem.fishingclub.fish;
+package net.semperidem.fishingclub.client.game;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 
 public class FishGameLogic {
     //TODO IMPLEMENT TREASURE MECHANIC - "time event"
+
     private static final float sinePeriod = (float) (Math.PI * 2);
     private static final float STARTING_BOBBER_LENGTH = 0.1f;
 
@@ -147,20 +150,12 @@ public class FishGameLogic {
     }
 
     private void tickHealth(){
-        if (!fishDealsDamage()) {
-            return;
-        }
-        //Instant lose if attempting to fish without line
-        if (lineHealth > 0) {
+        if (fishDamage != 0) {
             lineHealth -= (fishDamage);
-        } else {
+        }
+        if (lineHealth <= 0){
             isFinished = true;
         }
-    }
-
-
-    private boolean fishDealsDamage(){
-        return fish.fishLevel > 10;
     }
 
     private void processProgress(){
@@ -192,8 +187,9 @@ public class FishGameLogic {
     private void processVictory(){
         this.isFinished = true;
         this.isWon = true;
-        grantExperience();
+        grantReward();
     }
+
     public void tick() {
         fishPos = nextFishPosition();
         bobberSpeed += getBobberAcceleration();
@@ -260,8 +256,8 @@ public class FishGameLogic {
         return fish.experience;
     }
 
-    private void grantExperience(){
-        ClientPacketSender.sendFisherInfoGrantExp(fish);
+    private void grantReward(){
+        ClientPacketSender.sendFishGameGrantReward(fish);
     }
 
     public enum Stat{

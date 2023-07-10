@@ -21,7 +21,7 @@ import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.FishermanEntityRenderer;
-import net.semperidem.fishingclub.fish.FishTypes;
+import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;

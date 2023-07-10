@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item;
 
+import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
@@ -38,6 +39,10 @@ public class CustomFishingRod extends FishingRodItem {
         }
         customParts.put(partItem.getPartType(), partItem);
         //Consume item
+    }
+
+    public HashMap<FishingRodPartItem.PartType, FishingRodPartItem> getParts(){
+        return customParts;
     }
 
     @Override

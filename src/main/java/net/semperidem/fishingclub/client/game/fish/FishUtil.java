@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish;
+package net.semperidem.fishingclub.client.game.fish;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.Item;

@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.semperidem.fishingclub.fish.FishGameLogic;
+import net.semperidem.fishingclub.client.game.FishGameLogic;
 
 import java.util.HashMap;
 

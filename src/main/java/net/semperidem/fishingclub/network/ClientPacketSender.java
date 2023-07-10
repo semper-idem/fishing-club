@@ -4,14 +4,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.fish.Fish;
-import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFisherInfoGrantExp(Fish fish) {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_FINISH, FishUtil.fishToPacketBuf(fish));
+    public static void sendFishGameGrantReward(Fish fish) {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, FishUtil.fishToPacketBuf(fish));
     }
     public static void sendFishingInfoDataRequest() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_DATA_SYNC_REQ, PacketByteBufs.empty());

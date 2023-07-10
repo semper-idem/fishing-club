@@ -8,12 +8,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fish.FishGameLogic;
+import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 import java.util.HashMap;
 
-public class FishingScreen extends Screen {
+public class FishGameScreen extends Screen {
     private static final Identifier BOBBER = new Identifier(FishingClub.MOD_ID, "textures/gui/bobber_8x32.png");
     private static final Identifier FISH = new Identifier(FishingClub.MOD_ID, "textures/gui/fish_icon_8x8.png");
     private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/minigame_background_160x160.png");
@@ -39,12 +39,12 @@ public class FishingScreen extends Screen {
     FishGameLogic fishGameLogic;
 
 
-    public FishingScreen(Text text) {
+    public FishGameScreen(Text text) {
         super(text);
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player);
     }
 
-    public FishingScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts) {
+    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts) {
         super(text);
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts);
     }

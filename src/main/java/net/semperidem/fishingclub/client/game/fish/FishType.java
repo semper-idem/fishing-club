@@ -1,11 +1,11 @@
-package net.semperidem.fishingclub.fish;
+package net.semperidem.fishingclub.client.game.fish;
 
 import java.util.HashMap;
 
 public class FishType {
     public static HashMap<String, FishType> allFishTypes = new HashMap<>();
 
-    String name;
+    public String name;
 
     FishPattern fishPattern;
 

@@ -2,13 +2,12 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.client.screen.FishingScreen;
+import net.semperidem.fishingclub.client.screen.FishGameScreen;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.item.FishingRodPartItems;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ClientPacketReceiver {
@@ -26,7 +25,7 @@ public class ClientPacketReceiver {
                 FishingRodPartItem part = FishingRodPartItems.KEY_TO_PART_MAP.get(buf.readString());
                 rodParts.put(part.getPartType(), part);
             }
-            client.execute(() -> client.setScreen(new FishingScreen(Text.empty(), rodParts)));
+            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), rodParts)));
         });
     }
 }

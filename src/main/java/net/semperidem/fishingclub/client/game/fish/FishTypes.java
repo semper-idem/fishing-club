@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish;
+package net.semperidem.fishingclub.client.game.fish;
 
 
 public class FishTypes {

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fish;
+package net.semperidem.fishingclub.client.game.fish;
 
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.util.Point;
@@ -17,12 +17,12 @@ public class Fish {
     public float weight;
     public float length;
 
-    int fishEnergy;
-    int fishMinEnergyLevel;
-    int fishMaxEnergyLevel;
+    public int fishEnergy;
+    public int fishMinEnergyLevel;
+    public int fishMaxEnergyLevel;
 
-    Point[] curvePoints;
-    Point[] curveControlPoints;
+    public Point[] curvePoints;
+    public Point[] curveControlPoints;
 
     public Fish(){
     }

@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;

@@ -5,7 +5,7 @@ import net.minecraft.util.Rarity;
 
 import java.util.HashMap;
 
-import static net.semperidem.fishingclub.fish.FishGameLogic.Stat;
+import static net.semperidem.fishingclub.client.game.FishGameLogic.Stat;
 import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType;
 
 public class FishingRodPartItems {

@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 
 import java.util.Optional;
 

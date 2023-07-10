@@ -8,8 +8,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.fish.Fish;
-import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 
 import java.util.ArrayList;
 import java.util.Optional;
