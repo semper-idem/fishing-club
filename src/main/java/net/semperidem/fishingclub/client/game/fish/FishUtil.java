@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -88,11 +89,11 @@ public class FishUtil {
     }
 
     public static int getWeightGrade(Fish fish){
-        float percentile = (fish.weight - fish.fishType.fishMinWeight) / fish.weight;
+        float percentile = (fish.weight - fish.getFishType().fishMinWeight) / fish.weight;
         return getGrade(percentile);
     }
     public static int getLengthGrade(Fish fish){
-        float percentile = (fish.length - fish.fishType.fishMinLength) / fish.length;
+        float percentile = (fish.length - fish.getFishType().fishMinLength) / fish.length;
         return getGrade(percentile);
     }
 
@@ -237,7 +238,7 @@ public class FishUtil {
                 gradeMultiplier = (float) Math.pow(2, (fish.grade - 2));
             }
             levelMultiplier = 1 + (float) Math.pow(2, fish.fishLevel / 50f);
-            rarityBase = 1 + ((125 - fish.fishType.fishRarity) / 100) * 0.5f;
+            rarityBase = 1 + ((125 - fish.getFishType().fishRarity) / 100) * 0.5f;
             weightMultiplier = 1 + fish.weight / 100;
         } catch (NullPointerException nullPointerException) {
             nullPointerException.printStackTrace();
@@ -266,19 +267,41 @@ public class FishUtil {
         fishNbt.putInt("value", fish.value);
         fishNbt.putFloat("weight", fish.weight);
         fishNbt.putFloat("length", fish.length);
+        fishNbt.putString("curvePoints", curveToString(fish.curvePoints));
+        fishNbt.putString("curveControlPoints", curveToString(fish.curveControlPoints));
         return fishNbt;
     }
 
     static Fish fromNbt(NbtCompound nbtCompound){
         Fish fish = new Fish();
         fish.name = nbtCompound.getString("name");
-        fish.fishType = FishType.allFishTypes.get(fish.name);
+        fish.setFishType(FishType.allFishTypes.get(fish.name));
         fish.grade = nbtCompound.getInt("grade");
         fish.fishLevel = nbtCompound.getInt("fishLevel");
         fish.experience = nbtCompound.getInt("experience");
         fish.value = nbtCompound.getInt("value");
         fish.weight = nbtCompound.getFloat("weight");
         fish.length = nbtCompound.getFloat("length");
+        fish.curvePoints = FishUtil.curveFromString(nbtCompound.getString("curvePoints"));
+        fish.curveControlPoints = FishUtil.curveFromString(nbtCompound.getString("curveControlPoints"));
         return fish;
+    }
+
+    static Point[] curveFromString(String curvePointString){
+        String[] input = curvePointString.split(";");
+        int pointCount = input.length;
+        Point[] curvePoints = new Point[pointCount];
+        for(int i = 0; i < pointCount; i++) {
+            curvePoints[i] = new Point(input[i]);
+        }
+        return curvePoints;
+    }
+
+    static String curveToString(Point[] curvePoints){
+        StringBuilder result = new StringBuilder();
+        for(Point point : curvePoints) {
+            result.append(point.toString()).append(";");
+        }
+        return result.toString();
     }
 }

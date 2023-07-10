@@ -116,7 +116,7 @@ public class FishingRodPartItems {
                 "HOOK_GOLD")
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
                 .withStat(Stat.FISH_MAX_SIZE_MULTIPLIER, 0.75f)
-                .withStat(Stat.CATCH_RATE, 1.25f)
+                .withStat(Stat.CATCH_RATE, 0.25f)
                 .withStat(Stat.FISH_RARITY_BONUS, 1.25f);
         HOOK_NETHERITE = new FishingRodPartItem(
                 new Item.Settings().fireproof().rarity(Rarity.EPIC),
@@ -125,7 +125,7 @@ public class FishingRodPartItems {
                 .withStat(Stat.DAMAGE_REDUCTION, 0.75f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
                 .withStat(Stat.FISH_MAX_SIZE_MULTIPLIER, 1.1f)
-                .withStat(Stat.CATCH_RATE, 1.1f)
+                .withStat(Stat.CATCH_RATE, 0.1f)
                 .withStat(Stat.FISH_RARITY_BONUS, 1.1f);
 
         BAIT_WORM = new FishingRodPartItem(

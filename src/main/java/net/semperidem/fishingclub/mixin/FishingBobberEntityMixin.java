@@ -19,13 +19,5 @@ public class FishingBobberEntityMixin {
 
     @Inject(method = "removeIfInvalid", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/FishingBobberEntity;discard()V"), cancellable = true)
     void removeIfInvalid(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack itemStack = playerEntity.getMainHandStack();
-        ItemStack itemStack2 = playerEntity.getOffHandStack();
-        boolean bl = itemStack.isOf(FishingClub.CUSTOM_FISHING_ROD);
-        boolean bl2 = itemStack2.isOf(FishingClub.CUSTOM_FISHING_ROD);
-        boolean hasNoFishingRod = !bl && !bl2;
-        if (!hasNoFishingRod) {
-            cir.setReturnValue(false);
-        }
     }
 }

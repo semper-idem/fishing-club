@@ -8,4 +8,13 @@ public class Point {
         this.x = x;
         this.y = y;
     }
+    public Point(String input){
+        String[] inputArray = input.split(",");
+        this.x = Float.parseFloat(inputArray[0]);
+        this.y = Float.parseFloat(inputArray[1]);
+    }
+
+    public String toString(){
+        return x + "," + y;
+    }
 }

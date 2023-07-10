@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
+import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 import java.util.HashMap;
@@ -44,9 +45,9 @@ public class FishGameScreen extends Screen {
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player);
     }
 
-    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts) {
+    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts, Fish fish) {
         super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts);
+        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts,fish);
     }
 
 

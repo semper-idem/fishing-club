@@ -6,8 +6,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.util.Point;
@@ -46,18 +48,19 @@ public class FishGameLogic {
 
 
     public FishGameLogic(PlayerEntity player){
-        this(player,  new HashMap<>());
+        this(player,  new HashMap<>(), FishUtil.getFishOnHook(FisherInfoDB.get(player.getUuid())));
     }
 
-    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts){
+    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts, Fish fish){
         this.player = player;
         this.fisherInfo = FisherInfos.getClientInfo();
-        this.fish = FishUtil.getFishOnHook(fisherInfo);
+        this.fish = fish;
         this.rodParts = rodParts;
         calculateBobberLength();
         calculateHealth();
         calculateFishDamage();
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
+        this.bobberPos = nextBobberPos();
     }
 
     public boolean isFinished() {
@@ -152,9 +155,9 @@ public class FishGameLogic {
     private void tickHealth(){
         if (fishDamage != 0) {
             lineHealth -= (fishDamage);
-        }
-        if (lineHealth <= 0){
-            isFinished = true;
+            if (lineHealth <= 0){
+                isFinished = true;
+            }
         }
     }
 
@@ -170,7 +173,7 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += 0.01f;
+            progress += (0.0075f * Math.max(1, CustomFishingRod.getStat(Stat.PROGRESS_MULTIPLIER, rodParts)));
             fish.fishEnergy--;
         } else {
             processVictory();
@@ -180,7 +183,7 @@ public class FishGameLogic {
     private void revokeProgress(){
         tickHealth();
         if (progress > 0) {
-            progress = Math.max(0, progress - 0.005f);
+            progress = Math.max(0, progress - 0.005f - fishDamage / 100);
         }
     }
 
@@ -250,7 +253,7 @@ public class FishGameLogic {
     }
 
     public String getName() {
-        return fish.fishType.name;
+        return fish.getFishType().name;
     }
     public int getExperience() {
         return fish.experience;
@@ -264,7 +267,7 @@ public class FishGameLogic {
         BOBBER_WIDTH, //Percentage increase of bobber width
         DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm
         LINE_HEALTH, // Additional health point
-        CATCH_RATE,//TODO Percentage reduction of time until bite
+        CATCH_RATE,//Percentage reduction of time until bite
         PROGRESS_MULTIPLIER,
         FISH_MAX_WEIGHT_MULTIPLIER,
         FISH_RARITY_BONUS,

@@ -6,7 +6,7 @@ import net.semperidem.fishingclub.util.Point;
 public class Fish {
     FisherInfo fisherInfo;
 
-    public FishType fishType;
+    private FishType fishType;
 
     public String name;
     public int fishLevel;
@@ -19,7 +19,7 @@ public class Fish {
 
     public int fishEnergy;
     public int fishMinEnergyLevel;
-    public int fishMaxEnergyLevel;
+    public int fishMaxEnergyLevel = 1;
 
     public Point[] curvePoints;
     public Point[] curveControlPoints;
@@ -39,6 +39,15 @@ public class Fish {
         initEnergyLevels();
         initCurvePoints();
         this.value = FishUtil.getFishValue(this);
+    }
+
+    public FishType getFishType(){
+        return this.fishType;
+    }
+
+    public void setFishType(FishType fishType){
+        this.fishType = fishType;
+        initEnergyLevels();
     }
 
     private void initCurvePoints(){

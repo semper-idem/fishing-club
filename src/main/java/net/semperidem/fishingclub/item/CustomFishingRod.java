@@ -11,6 +11,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 
 import java.util.HashMap;
@@ -45,6 +46,11 @@ public class CustomFishingRod extends FishingRodItem {
         return customParts;
     }
 
+    public float getStat(FishGameLogic.Stat stat){
+        return getStat(stat, customParts);
+    }
+
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity2, Hand hand) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
@@ -58,7 +64,7 @@ public class CustomFishingRod extends FishingRodItem {
         } else {
             world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
             if (!world.isClient) {
-                world.spawnEntity(new CustomFishingBobberEntity(playerEntity2, world));
+                world.spawnEntity(new CustomFishingBobberEntity(playerEntity2, world, this));
             }
             playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
             playerEntity2.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -66,4 +72,13 @@ public class CustomFishingRod extends FishingRodItem {
         return TypedActionResult.success(itemStack, world.isClient());
     }
 
+
+    //TODO MOVE TO UTIL
+    public static float getStat(FishGameLogic.Stat stat, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts){
+        float result = 0;
+        for(FishingRodPartItem part : customParts.values()) {
+            result += part.getStatBonuses().getOrDefault(stat, 0f);
+        }
+        return result;
+    }
 }

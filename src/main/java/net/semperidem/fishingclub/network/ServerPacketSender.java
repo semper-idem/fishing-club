@@ -6,6 +6,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
@@ -41,15 +43,15 @@ public class ServerPacketSender {
         sendPacket(player, S2C_F_DATA_SYNC, buf);
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts){
-        PacketByteBuf fishingRodPacket = PacketByteBufs.create();
+    public static void sendFishingStartPacket(ServerPlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts, Fish fish){
+        PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         if (customParts != null) {
             int partCount = customParts.size();
-            fishingRodPacket.writeInt(partCount);
+            fishGameStartPacket.writeInt(partCount);
             for(FishingRodPartItem part : customParts.values()) {
-                fishingRodPacket.writeString(part.getKey());
+                fishGameStartPacket.writeString(part.getKey());
             }
         }
-        sendPacket(player, S2C_F_GAME_START, fishingRodPacket);
+        sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
     }
 }

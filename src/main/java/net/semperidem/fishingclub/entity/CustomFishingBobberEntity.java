@@ -20,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -27,6 +28,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.game.FishGameLogic;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.fisher.FisherInfoDB;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,20 +41,18 @@ import java.util.HashMap;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
+    private static final int MIN_WAIT = 20;
     private final Random velocityRandom = Random.create();
-    private boolean caughtFish;
     private int outOfOpenWaterTicks;
-    private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(CustomFishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> CAUGHT_FISH = DataTracker.registerData(CustomFishingBobberEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int removalTimer;
     private int hookCountdown;
     private int waitCountdown;
     private int fishTravelCountdown;
     private float fishAngle;
     private boolean inOpenWater = true;
-    @Nullable
-    private Entity hookedEntity;
     private State state = State.FLYING;
+    private CustomFishingRod fishingRod;
+    private Fish caughtFish;
 
 
 
@@ -56,9 +60,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, CustomFishingRod fishingRod) {
         this(FishingClub.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
+        this.fishingRod = fishingRod;
         setThrowDirection();
     }
 
@@ -83,7 +88,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         this.prevYaw = this.getYaw();
         this.prevPitch = this.getPitch();
     }
-
 
     @Override
     public void tick() {
@@ -112,30 +116,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             waterHeight = fluidState.getHeight(this.world, blockPos);
         }
         boolean isBobbing = waterHeight > 0.0f;
-        if (this.state == State.FLYING) {
-            if (this.hookedEntity != null) {
-                this.setVelocity(Vec3d.ZERO);
-                this.state = State.HOOKED_IN_ENTITY;
-                return;
-            }
-            if (isBobbing) {
-                this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
-                this.state = State.BOBBING;
-                return;
-            }
-            this.checkForCollision();
+        if (this.state == State.FLYING && isBobbing) {
+            this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
+            this.state = State.BOBBING;
+            return;
         } else {
-            if (this.state == State.HOOKED_IN_ENTITY) {
-                if (this.hookedEntity != null) {
-                    if (this.hookedEntity.isRemoved() || this.hookedEntity.world.getRegistryKey() != this.world.getRegistryKey()) {
-                        this.updateHookedEntityId(null);
-                        this.state = State.FLYING;
-                    } else {
-                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
-                    }
-                }
-                return;
-            }
             if (this.state == State.BOBBING) {
                 Vec3d vec3d = this.getVelocity();
                 double d = this.getY() + vec3d.y - (double)blockPos.getY() - (double)waterHeight;
@@ -146,9 +131,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
                 this.inOpenWater = this.hookCountdown <= 0 && this.fishTravelCountdown <= 0 || this.inOpenWater && this.outOfOpenWaterTicks < 10 && this.isOpenOrWaterAround(blockPos);
                 if (isBobbing) {
                     this.outOfOpenWaterTicks = Math.max(0, this.outOfOpenWaterTicks - 1);
-                    if (this.caughtFish) {
-                        this.setVelocity(this.getVelocity().add(0.0, -0.05 * (double)this.velocityRandom.nextFloat() * (double)this.velocityRandom.nextFloat(), 0.0));
-                    }
                     if (!this.world.isClient) {
                         this.tickFishingLogic(blockPos);
                     }
@@ -190,7 +172,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (this.hookCountdown <= 0) {
             this.waitCountdown = 0;
             this.fishTravelCountdown = 0;
-            this.getDataTracker().set(CAUGHT_FISH, false);
+            this.caughtFish = null;
         }
     }
 
@@ -199,15 +181,21 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (this.fishTravelCountdown > 0) {
             tickFishReeling(serverWorld);
         } else {
-            this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
-            double m = this.getY() + 0.5;
-            serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-            serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-            serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-            this.hookCountdown = MathHelper.nextInt(this.random, 40, 80);
-            this.getDataTracker().set(CAUGHT_FISH, true);
+            handleFishOnHook(serverWorld);
         }
     }
+
+    private void handleFishOnHook(ServerWorld serverWorld){
+        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()));
+        this.setVelocity(0,-0.5,0);
+        this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
+        double m = this.getY() + 0.5;
+        serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
+        serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
+        serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
+        this.hookCountdown = MathHelper.nextInt(this.random, 40, 80);
+    }
+
     private void tickFishReeling(ServerWorld serverWorld){
         this.fishAngle += (float)this.random.nextTriangular(0.0, 9.188);
         float f = this.fishAngle * ((float)Math.PI / 180);
@@ -231,9 +219,20 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void tickWait(ServerWorld serverWorld, int countdownDecrement){
-        float f = 0.05f;
         this.waitCountdown -= countdownDecrement;
-        if (this.random.nextFloat() < f) {
+        splashWater(serverWorld);
+        handleWaitCountdown();
+    }
+
+    private void handleWaitCountdown(){
+        if (this.waitCountdown <= 0) {
+            this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
+            this.fishTravelCountdown = 1;// MathHelper.nextInt(this.random, 20, 80); Initialize with
+        }
+    }
+
+    private void splashWater(ServerWorld serverWorld){
+        if (this.random.nextFloat() < 0.05f) {
             float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float)Math.PI / 180);
             float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
             double d = this.getX() + (double)(MathHelper.sin(g) * h) * 0.1;
@@ -243,10 +242,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             if (blockState.isOf(Blocks.WATER)) {
                 serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 1 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
             }
-        }
-        if (this.waitCountdown <= 0) {
-            this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
-            this.fishTravelCountdown = 1;// MathHelper.nextInt(this.random, 20, 80); Initialize with
         }
     }
     
@@ -268,7 +263,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void setWaitCountdown() {
-        this.waitCountdown = MathHelper.nextInt(this.random, 200, 400);
+        float catchRate = fishingRod.getStat(FishGameLogic.Stat.CATCH_RATE);
+        int minWait = (int) (MIN_WAIT * Math.max(0,(1 - catchRate)));
+        int maxWait = minWait * 2;
+        this.waitCountdown = MathHelper.nextInt(this.random, minWait, maxWait);
     }
 
 
@@ -296,21 +294,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
 
-    @Override
-    public void onTrackedDataSet(TrackedData<?> trackedData) {
-        if (HOOK_ENTITY_ID.equals(trackedData)) {
-            int i = this.getDataTracker().get(HOOK_ENTITY_ID);
-            Entity entity = this.hookedEntity = i > 0 ? this.world.getEntityById(i - 1) : null;
-        }
-        if (CAUGHT_FISH.equals(trackedData)) {
-            this.caughtFish = this.getDataTracker().get(CAUGHT_FISH);
-            if (this.caughtFish) {
-                this.setVelocity(this.getVelocity().x, -0.4f * MathHelper.nextFloat(this.velocityRandom, 0.6f, 1.0f), this.getVelocity().z);
-            }
-        }
-        super.onTrackedDataSet(trackedData);
-    }
-
     private PositionType getPositionType(BlockPos blockPos) {
         BlockState blockState = this.world.getBlockState(blockPos);
         if (blockState.isAir() || blockState.isOf(Blocks.LILY_PAD)) {
@@ -327,11 +310,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         return BlockPos.stream(blockPos, blockPos2).map(this::getPositionType).reduce((positionType, positionType2) -> positionType == positionType2 ? positionType : PositionType.INVALID).orElse(PositionType.INVALID);
     }
 
-    private void updateHookedEntityId(@Nullable Entity entity) {
-        this.hookedEntity = entity;
-        this.getDataTracker().set(HOOK_ENTITY_ID, entity == null ? 0 : entity.getId() + 1);
-    }
-
     private boolean removeIfInvalid(PlayerEntity playerEntity) {
         ItemStack itemStack = playerEntity.getMainHandStack();
         ItemStack itemStack2 = playerEntity.getOffHandStack();
@@ -344,23 +322,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         return false;
     }
 
-    private void checkForCollision() {
-        HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
-        this.onCollision(hitResult);
-    }
-
-    @Override
-    protected boolean canHit(Entity entity) {
-        return super.canHit(entity) || entity.isAlive() && entity instanceof ItemEntity;
-    }
-
-
-    @Override
-    protected void initDataTracker() {
-        this.getDataTracker().startTracking(HOOK_ENTITY_ID, 0);
-        this.getDataTracker().startTracking(CAUGHT_FISH, false);
-    }
-
     @Override
     public int use(ItemStack itemStack) {
         PlayerEntity playerEntity = this.getPlayerOwner();
@@ -368,13 +329,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             return 0;
         }
         int i = 0;
-        if (this.getHookedEntity() != null) {
-            this.pullHookedEntity(this.getHookedEntity());
-            Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, itemStack, this, Collections.emptyList());
-            this.world.sendEntityStatus(this, (byte)31);
-            i = this.getHookedEntity() instanceof ItemEntity ? 3 : 5;
-        } else if ((hookCountdown > 0)){
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, new HashMap<>());
+        if ((hookCountdown > 0)){
+            //TODO ROD PARTS
+            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, new HashMap<>(), caughtFish);
         }
         if (this.onGround) {
             i = 2;
@@ -395,14 +352,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     * */
 
 
-    static enum State {
+    enum State {
         FLYING,
-        HOOKED_IN_ENTITY,
         BOBBING;
 
     }
 
-    static enum PositionType {
+    enum PositionType {
         ABOVE_WATER,
         INSIDE_WATER,
         INVALID;
