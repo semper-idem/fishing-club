@@ -187,7 +187,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void handleFishOnHook(ServerWorld serverWorld){
         caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()));
-        this.setVelocity(0,-0.5,0);
+        this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
         serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
@@ -340,14 +340,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     /* TODO
-    *   - buff rain bonus if skill present
-    *   - activate mini game instead of normal catch
-    *   - adjust for fishing rod catch rate stat
     *   - different texture per bobber part (luxury feature)
-    *   - remove "fish coming" indicator
-    *   - lengthen "catch" window
-    *   - bigger fish pull bobber with greater force
-    *   -
+    *   - hide "fish coming" indicator behind skill
+    *   - buff rain bonus if skill present
     * */
 
 
