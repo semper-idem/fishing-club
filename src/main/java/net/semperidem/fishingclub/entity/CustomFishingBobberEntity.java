@@ -33,6 +33,7 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import org.jetbrains.annotations.Nullable;
 
@@ -345,6 +346,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     *   - buff rain bonus if skill present
     * */
 
+    FishingRodPartItem getBobber(){
+        return fishingRod.getParts().get(FishingRodPartItem.PartType.BOBBER);
+    }
 
     enum State {
         FLYING,

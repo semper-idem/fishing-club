@@ -11,14 +11,19 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {
-    private static final Identifier TEXTURE = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
-    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
+    private static final Identifier DEFAULT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
+    private static final Identifier ANCIENT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_ancient.png");
+    private static final Identifier PLANT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_plant.png");
+    private static final Identifier WOODEN = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_wooden.png");
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(DEFAULT);
 
     public CustomFishingBobberEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
@@ -113,6 +118,17 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
 
     @Override
     public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
-        return TEXTURE;
+        if ( fishingBobberEntity instanceof CustomFishingBobberEntity) {
+            FishingRodPartItem bobber = ((CustomFishingBobberEntity) fishingBobberEntity).getBobber();
+            switch (bobber.getKey()) {
+                case "BOBBER_WOODEN":
+                    return WOODEN;
+                case "BOBBER_PLANT_BASED":
+                    return PLANT;
+                case "BOBBER_ANCIENT":
+                    return ANCIENT;
+            }
+        }
+        return DEFAULT;
     }
 }
