@@ -330,8 +330,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         }
         int i = 0;
         if ((hookCountdown > 0)){
-            //TODO ROD PARTS
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, new HashMap<>(), caughtFish);
+            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
         }
         if (this.onGround) {
             i = 2;
