@@ -35,10 +35,6 @@ import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.HashMap;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
@@ -341,7 +337,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     /* TODO
-    *   - different texture per bobber part (luxury feature)
     *   - hide "fish coming" indicator behind skill
     *   - buff rain bonus if skill present
     * */

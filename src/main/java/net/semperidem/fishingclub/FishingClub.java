@@ -30,7 +30,7 @@ import net.semperidem.fishingclub.network.ServerPacketReceiver;
 public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
 
-    public static final Item CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1));
+    public static final Item CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(128));
 
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,
@@ -50,9 +50,7 @@ public class FishingClub implements ModInitializer {
                     .trackedUpdateRate(5)
                     .build()
     );
-// public static final EntityType<FishingBobberEntity> FISHING_BOBBER = EntityType.register("fishing_bobber",
-// Builder.create(FishingBobberEntity::new, SpawnGroup.MISC).disableSaving().disableSummon().setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(5));
-//
+
     @Override
     public void onInitialize() {
         //Screens
