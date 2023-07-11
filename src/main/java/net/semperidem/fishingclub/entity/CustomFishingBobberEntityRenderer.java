@@ -64,11 +64,10 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         double d = MathHelper.sin(l);
         double e = MathHelper.cos(l);
         double m = (double)j * 0.35;
-        double n = 0.8;
         if (this.dispatcher.gameOptions != null && !this.dispatcher.gameOptions.getPerspective().isFirstPerson() || playerEntity != MinecraftClient.getInstance().player) {
-            o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
+            o = MathHelper.lerp(g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
             p = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)g - 0.45;
-            q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
+            q = MathHelper.lerp(g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
             r = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
         } else {
             s = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
@@ -76,25 +75,23 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
             vec3d = vec3d.multiply(s);
             vec3d = vec3d.rotateY(k * 0.5f);
             vec3d = vec3d.rotateX(-k * 0.7f);
-            o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) + vec3d.x;
-            p = MathHelper.lerp((double)g, playerEntity.prevY, playerEntity.getY()) + vec3d.y;
-            q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
+            o = MathHelper.lerp(g, playerEntity.prevX, playerEntity.getX()) + vec3d.x;
+            p = MathHelper.lerp(g, playerEntity.prevY, playerEntity.getY()) + vec3d.y;
+            q = MathHelper.lerp(g, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
             r = playerEntity.getStandingEyeHeight();
         }
-        s = MathHelper.lerp((double)g, fishingBobberEntity.prevX, fishingBobberEntity.getX());
-        double t = MathHelper.lerp((double)g, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
-        double u = MathHelper.lerp((double)g, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
+        s = MathHelper.lerp(g, fishingBobberEntity.prevX, fishingBobberEntity.getX());
+        double t = MathHelper.lerp(g, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
+        double u = MathHelper.lerp(g, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
         float v = (float)(o - s);
         float w = (float)(p - t) + r;
         float x = (float)(q - u);
         VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
         MatrixStack.Entry entry2 = matrixStack.peek();
-        int y = 16;
         for (int z = 0; z <= 16; ++z) {
             renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
         }
         matrixStack.pop();
-       // super.render(fishingBobberEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     private static float percentage(int i, int j) {
