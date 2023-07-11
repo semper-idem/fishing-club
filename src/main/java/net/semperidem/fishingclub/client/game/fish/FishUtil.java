@@ -159,11 +159,11 @@ public class FishUtil {
 
 
 
-    public static float getPseudoRandomValue(float base, float randomAdjustment, float basedOf){
-        return (float) (base + randomAdjustment / 2 * basedOf + randomAdjustment / 2 * Math.random());
+    public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
+        return (float) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
     }
-    public static int getPseudoRandomValue(int base, int randomAdjustment, int basedOf){
-        return (int) (base + randomAdjustment / 2 * basedOf + randomAdjustment / 2 * Math.random());
+    public static int getPseudoRandomValue(int base, int randomAdjustment, int skew){
+        return (int) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
     }
 
 

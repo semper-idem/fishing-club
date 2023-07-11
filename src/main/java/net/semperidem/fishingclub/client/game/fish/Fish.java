@@ -1,6 +1,9 @@
 package net.semperidem.fishingclub.client.game.fish;
 
+import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
@@ -24,10 +27,16 @@ public class Fish {
     public Point[] curvePoints;
     public Point[] curveControlPoints;
 
+    public CustomFishingRod caughtUsing;
     public Fish(){
     }
 
     public Fish(FishType fishType, FisherInfo fisherInfo){
+        this(fishType, fisherInfo, (CustomFishingRod)FishingClub.CUSTOM_FISHING_ROD);
+    }
+
+    public Fish(FishType fishType, FisherInfo fisherInfo, CustomFishingRod fishingRod){
+        this.caughtUsing = fishingRod;
         this.fishType = fishType;
         this.name = fishType.name;
         this.fisherInfo = fisherInfo;
@@ -72,11 +81,13 @@ public class Fish {
 
 
     private float calculateFishWeight(){
-        return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight, fishLevel / 100f);
+        float weightMultiplier = Math.min(1, caughtUsing.getStat(FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
+        return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight * weightMultiplier, fishLevel / 100f);
     }
 
     private float calculateFishLength(){
-        return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength, fishLevel / 100f);
+        float lengthMultiplier = Math.min(1, caughtUsing.getStat(FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
+        return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength * lengthMultiplier, fishLevel / 100f);
     }
 
     private int calculateFishExp(){

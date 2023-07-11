@@ -264,14 +264,14 @@ public class FishGameLogic {
     }
 
     public enum Stat{
-        BOBBER_WIDTH, //Percentage increase of bobber width
-        DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm
-        LINE_HEALTH, // Additional health point
-        CATCH_RATE,//Percentage reduction of time until bite
-        PROGRESS_MULTIPLIER,
-        FISH_MAX_WEIGHT_MULTIPLIER,
+        BOBBER_WIDTH, //Percentage increase of bobber width DONE
+        DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm DONE
+        LINE_HEALTH, // Additional health point DONE
+        CATCH_RATE,//Percentage reduction of time until bite DONE
+        PROGRESS_MULTIPLIER,//Self-explanatory DONE
+        FISH_MAX_WEIGHT_MULTIPLIER,//Moves upper barrier of max fish weight (on average heavier fish)
+        FISH_MAX_LENGTH_MULTIPLIER,//Moves upper barrier of max fish length (on average longer fish)
         FISH_RARITY_BONUS,
-        FISH_MAX_SIZE_MULTIPLIER,
         BITE_WINDOW
     }
 }

@@ -1,8 +1,5 @@
 package net.semperidem.fishingclub.item;
 
-import it.unimi.dsi.fastutil.Hash;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
