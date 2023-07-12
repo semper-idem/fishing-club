@@ -101,7 +101,8 @@ public class Fish {
     private int calculateGrade(){
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
-        return Math.max(weightGrade, lengthGrade);
+        float oneUpChance = Math.max(0, caughtUsing.getStat(FishGameLogic.Stat.FISH_RARITY_BONUS));
+        return Math.min(5, Math.max(weightGrade, lengthGrade) + Math.random() < oneUpChance ? 1 : 0);
     }
 
 
