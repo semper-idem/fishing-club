@@ -61,17 +61,17 @@ public class FishingRodPartItems {
                 new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.BOBBER,
                 "BOBBER_WOODEN")
-                .withStat(Stat.BITE_WINDOW, 5f)
+                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 5f)
                 .withStat(Stat.BOBBER_WIDTH, 0.05f);
         BOBBER_PLANT_BASED = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.BOBBER,
                 "BOBBER_PLANT_BASED")
-                .withStat(Stat.BITE_WINDOW, 10f)
+                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 10f)
                 .withStat(Stat.BOBBER_WIDTH, 0.1f);
         BOBBER_ANCIENT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.EPIC),
                 PartType.BOBBER,
                 "BOBBER_ANCIENT")
-                .withStat(Stat.BITE_WINDOW, 20f)
+                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 20f)
                 .withStat(Stat.BOBBER_WIDTH, 0.2f);
 
         LINE_WOOL_THREAD = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),

@@ -39,6 +39,7 @@ import net.semperidem.fishingclub.network.ServerPacketSender;
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
     private static final int MIN_WAIT = 20;
+    private static final int MIN_HOOK_TICKS = 10;
     private final Random velocityRandom = Random.create();
     private int outOfOpenWaterTicks;
     private int removalTimer;
@@ -50,6 +51,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private State state = State.FLYING;
     private CustomFishingRod fishingRod;
     private Fish caughtFish;
+    private int lastHookCountdown;
 
 
 
@@ -190,7 +192,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-        this.hookCountdown = MathHelper.nextInt(this.random, 40, 80);
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * fishingRod.getStat(FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER));
+        this.lastHookCountdown = hookCountdown;
     }
 
     private void tickFishReeling(ServerWorld serverWorld){
@@ -327,6 +330,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         }
         int i = 0;
         if ((hookCountdown > 0)){
+            //Grant rewards TODO
+            int reaction = lastHookCountdown - hookCountdown;
             ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
         }
         if (this.onGround) {

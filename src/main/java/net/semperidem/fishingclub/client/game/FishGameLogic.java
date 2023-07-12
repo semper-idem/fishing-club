@@ -272,6 +272,6 @@ public class FishGameLogic {
         FISH_MAX_WEIGHT_MULTIPLIER,//Moves upper barrier of max fish weight (on average heavier fish)
         FISH_MAX_LENGTH_MULTIPLIER,//Moves upper barrier of max fish length (on average longer fish)
         FISH_RARITY_BONUS,//Percentage chance to gain fish on higher grade TODO Skew grades to lower end so it's not broken? idk
-        BITE_WINDOW
+        BITE_WINDOW_MULTIPLIER//Extends ticks in which fish can be hooked
     }
 }
