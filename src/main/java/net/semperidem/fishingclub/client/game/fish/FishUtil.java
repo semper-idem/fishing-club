@@ -40,6 +40,11 @@ public class FishUtil {
 
     }
 
+    public static void grantExp(ServerPlayerEntity player, int exp){
+        FisherInfos.grantExperience(player.getUuid(), exp);
+        player.addExperience(Math.max(1, exp / 10));
+    }
+
     private static void setFishDetails(ItemStack stack, Fish fish){
         if (!stack.hasNbt()) {
             stack.setNbt(new NbtCompound());

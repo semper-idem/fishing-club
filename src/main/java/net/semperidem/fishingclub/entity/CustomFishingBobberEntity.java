@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.entity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -20,6 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +37,7 @@ import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+import org.apache.logging.log4j.core.jmx.Server;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
@@ -330,8 +333,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         }
         int i = 0;
         if ((hookCountdown > 0)){
-            //Grant rewards TODO
-            int reaction = lastHookCountdown - hookCountdown;
+            onUseReactionBonus();
             ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
         }
         if (this.onGround) {
@@ -345,6 +347,18 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     *   - hide "fish coming" indicator behind skill
     *   - buff rain bonus if skill present
     * */
+
+    private void onUseReactionBonus(){
+        int reaction = lastHookCountdown - hookCountdown;
+        if (reaction < 20) {
+            int reactionXP = 20 - Math.max(5, 20 - reaction);
+            if (!this.world.isClient()) {
+                FishUtil.grantExp((ServerPlayerEntity) this.getOwner(), reactionXP);
+            } else {
+                MinecraftClient.getInstance().player.sendMessage(Text.of("[Quick Hands Bonus] - Gained " + reactionXP + "exp"));
+            }
+        }
+    }
 
     FishingRodPartItem getBobber(){
         return fishingRod.getParts().get(FishingRodPartItem.PartType.BOBBER);
