@@ -37,12 +37,12 @@ import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
-import org.apache.logging.log4j.core.jmx.Server;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
     private static final int MIN_WAIT = 20;
     private static final int MIN_HOOK_TICKS = 10;
+    private static final int REACTION_REWARD = 20;
     private final Random velocityRandom = Random.create();
     private int outOfOpenWaterTicks;
     private int removalTimer;
@@ -104,7 +104,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         }
         if (this.onGround) {
             ++this.removalTimer;
-            if (this.removalTimer >= 1200) {
+            if (this.removalTimer >= 600) {
                 this.discard();
                 return;
             }
@@ -195,6 +195,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
+        //(From 20 To 45) * Multiplier
         this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * fishingRod.getStat(FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER));
         this.lastHookCountdown = hookCountdown;
     }
@@ -213,7 +214,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             if (this.random.nextFloat() < 0.15f) {
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - (double)0.1f, j, 1, g, 0.1, h, 0.0);
             }
-            //TODO hide behind skill
             float k = g * 0.04f;
             float l = h * 0.04f;
             serverWorld.spawnParticles(ParticleTypes.FISHING, d, e, j, 0, l, 0.01, -k, 1.0);
@@ -230,7 +230,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private void handleWaitCountdown(){
         if (this.waitCountdown <= 0) {
             this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
-            this.fishTravelCountdown = 1;// MathHelper.nextInt(this.random, 20, 80); Initialize with
+            //TODO Initialize with value with skill
+            this.fishTravelCountdown = 0;
         }
     }
 
@@ -349,12 +350,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     * */
 
     private void onUseReactionBonus(){
-        int reaction = lastHookCountdown - hookCountdown;
-        if (reaction < 20) {
-            int reactionXP = 20 - Math.max(5, 20 - reaction);
+        int reaction = this.lastHookCountdown - this.hookCountdown;
+        if (reaction < REACTION_REWARD) {
+            int reactionXP = REACTION_REWARD - Math.max(5, REACTION_REWARD - reaction);
             if (!this.world.isClient()) {
                 FishUtil.grantExp((ServerPlayerEntity) this.getOwner(), reactionXP);
             } else {
+                //TODO Make this text nicer
                 MinecraftClient.getInstance().player.sendMessage(Text.of("[Quick Hands Bonus] - Gained " + reactionXP + "exp"));
             }
         }
