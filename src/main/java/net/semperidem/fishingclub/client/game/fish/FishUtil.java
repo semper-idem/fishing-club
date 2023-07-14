@@ -106,13 +106,13 @@ public class FishUtil {
         if (percentile < 0.1) {
             return 1;
         }
-        if (percentile < 0.25) {
+        if (percentile < 0.50) {
             return 2;
         }
-        if (percentile < 0.6) {
+        if (percentile < 0.80) {
             return 3;
         }
-        if (percentile < 0.9) {
+        if (percentile < 0.95) {
             return 4;
         }
         return 5;
