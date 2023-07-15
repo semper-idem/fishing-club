@@ -13,8 +13,8 @@ import net.semperidem.fishingclub.FishingClub;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopScreenUtil {
-    final static int SLOTS_PER_ROW = 9;
-    final static int SLOT_SIZE = 18;
+    public final static int SLOTS_PER_ROW = 9;
+    public final static int SLOT_SIZE = 18;
     public static ScreenHandlerType<ShopScreenHandler> SHOP_SCREEN;
 
 

@@ -6,17 +6,12 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FisherWorkbenchBlockEntity  extends BlockEntity implements ExtendedScreenHandlerFactory {

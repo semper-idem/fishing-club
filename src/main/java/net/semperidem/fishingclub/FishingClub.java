@@ -25,8 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlockEntity;
-import net.semperidem.fishingclub.client.screen.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
+import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntityRenderer;
@@ -35,6 +34,7 @@ import net.semperidem.fishingclub.entity.FishermanEntityRenderer;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
 
