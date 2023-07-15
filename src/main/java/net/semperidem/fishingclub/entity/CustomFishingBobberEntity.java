@@ -196,7 +196,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * fishingRod.getStat(FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, fishingRod.getStat(FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
     }
 
@@ -231,7 +231,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (this.waitCountdown <= 0) {
             this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
             //TODO Initialize with value with skill
-            this.fishTravelCountdown = 0;
+            this.fishTravelCountdown = 1;
         }
     }
 
@@ -352,12 +352,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private void onUseReactionBonus(){
         int reaction = this.lastHookCountdown - this.hookCountdown;
         if (reaction < REACTION_REWARD) {
-            int reactionXP = REACTION_REWARD - Math.max(5, REACTION_REWARD - reaction);
+            int reactionXP = Math.max(5, REACTION_REWARD - reaction);
             if (!this.world.isClient()) {
                 FishUtil.grantExp((ServerPlayerEntity) this.getOwner(), reactionXP);
-            } else {
-                //TODO Make this text nicer
-                MinecraftClient.getInstance().player.sendMessage(Text.of("[Quick Hands Bonus] - Gained " + reactionXP + "exp"));
+               this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] - Gained " + reactionXP + "exp"));
             }
         }
     }
