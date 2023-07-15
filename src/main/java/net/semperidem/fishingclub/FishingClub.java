@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -111,5 +112,8 @@ public class FishingClub implements ModInitializer {
                         .build(null));
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "fisher_workbench"), FISHER_WORKBENCH_BLOCK_ITEM);
+
+
+        FISHER_WORKBENCH_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
     }
 }

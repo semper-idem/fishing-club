@@ -3,14 +3,20 @@ package net.semperidem.fishingclub.block;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.client.screen.FisherWorkbenchScreenHandler;
 
 public class FisherWorkbenchBlock extends Block {
     public FisherWorkbenchBlock(AbstractBlock.Settings settings) {
@@ -27,6 +33,11 @@ public class FisherWorkbenchBlock extends Block {
         return ActionResult.CONSUME;
     }
 
+
+    @Override
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new FisherWorkbenchScreenHandler(syncId, inventory), Text.of("Fisher Workbench"));
+    }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {

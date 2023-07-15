@@ -18,12 +18,19 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
     }
 
 
+    public void render(MatrixStack matrixStack, int i, int j, float f) {
+        renderBackground(matrixStack);
+        super.render(matrixStack, i, j, f);
+        drawMouseoverTooltip(matrixStack, i, j);
+    }
+
+
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, BACKGROUND);
-        this.drawTexture(matrices, this.x, this.y, 0, 0, 256, 9 * 18 + 17);
+        this.drawTexture(matrices, this.x, 5, 0, 0, 256, 256);
     }
 }
