@@ -1,0 +1,47 @@
+package net.semperidem.fishingclub.block;
+
+import net.minecraft.block.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.stat.Stats;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+public class FisherWorkbenchBlock extends Block {
+    public FisherWorkbenchBlock(AbstractBlock.Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world.isClient) {
+            return ActionResult.SUCCESS;
+        }
+        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+        player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+        return ActionResult.CONSUME;
+    }
+
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(Properties.FACING);
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return this.getDefaultState().with(Properties.FACING, ctx.getPlayerFacing().getOpposite());
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+}

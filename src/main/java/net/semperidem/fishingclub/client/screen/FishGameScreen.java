@@ -58,7 +58,6 @@ public class FishGameScreen extends Screen {
             this.close();
             if (this.fishGameLogic.isWon()) {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Caught Lvl." + this.fishGameLogic.getLevel() + " " + this.fishGameLogic.getName() + "! Nice"));
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Gained " + this.fishGameLogic.getExperience() + "exp"));
             } else {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
             }

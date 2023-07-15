@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -11,6 +12,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.FisherInfoScreen;
+import net.semperidem.fishingclub.client.screen.FisherWorkbenchScreen;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
@@ -58,5 +61,8 @@ public class FishingClubClient implements ClientModInitializer {
             }
             return ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
         });
+
+
+        HandledScreens.register(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
     }
 }

@@ -5,17 +5,27 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.passive.WanderingTraderEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
+import net.semperidem.fishingclub.block.FisherWorkbenchBlockEntity;
+import net.semperidem.fishingclub.client.screen.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntityRenderer;
@@ -31,6 +41,12 @@ public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
 
     public static final Item CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(128));
+    public static final Block FISHER_WORKBENCH_BLOCK = new FisherWorkbenchBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE));
+    public static final Item FISHER_WORKBENCH_BLOCK_ITEM = new BlockItem(FISHER_WORKBENCH_BLOCK, new Item.Settings().group(ItemGroup.DECORATIONS));
+
+    public static ScreenHandlerType<FisherWorkbenchScreenHandler> FISHER_WORKBENCH_SCREEN_HANDLER;
+    public static BlockEntityType<FisherWorkbenchBlockEntity> FISHER_WORKBENCH_BLOCK_ENTITY;
+
 
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,
@@ -50,6 +66,7 @@ public class FishingClub implements ModInitializer {
                     .trackedUpdateRate(5)
                     .build()
     );
+
 
     @Override
     public void onInitialize() {
@@ -87,5 +104,12 @@ public class FishingClub implements ModInitializer {
 
         //Items
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "custom_fishing_rod"), CUSTOM_FISHING_ROD);
+        Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "fisher_workbench"), FISHER_WORKBENCH_BLOCK);
+        FISHER_WORKBENCH_BLOCK_ENTITY = Registry.register(
+                Registry.BLOCK_ENTITY_TYPE, MOD_ID + ":fisher_workbench",
+                BlockEntityType.Builder.create(FisherWorkbenchBlockEntity::new, FISHER_WORKBENCH_BLOCK)
+                        .build(null));
+
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "fisher_workbench"), FISHER_WORKBENCH_BLOCK_ITEM);
     }
 }
