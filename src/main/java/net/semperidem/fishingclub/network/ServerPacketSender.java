@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,13 +44,13 @@ public class ServerPacketSender {
         sendPacket(player, S2C_F_DATA_SYNC, buf);
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts, Fish fish){
+    public static void sendFishingStartPacket(ServerPlayerEntity player, HashMap<FishingRodPartItem.PartType, ItemStack> customParts, Fish fish){
         PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         if (customParts != null) {
             int partCount = customParts.size();
             fishGameStartPacket.writeInt(partCount);
-            for(FishingRodPartItem part : customParts.values()) {
-                fishGameStartPacket.writeString(part.getKey());
+            for(ItemStack partStack : customParts.values()) {
+                fishGameStartPacket.writeItemStack(partStack);
             }
         }
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);

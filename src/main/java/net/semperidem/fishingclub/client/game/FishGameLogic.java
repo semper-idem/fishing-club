@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client.game;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
@@ -44,14 +45,14 @@ public class FishGameLogic {
 
     float fishDamage;
 
-    HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts;
+    HashMap<FishingRodPartItem.PartType, ItemStack> rodParts;
 
 
     public FishGameLogic(PlayerEntity player){
         this(player,  new HashMap<>(), FishUtil.getFishOnHook(FisherInfoDB.get(player.getUuid())));
     }
 
-    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts, Fish fish){
+    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, ItemStack> rodParts, Fish fish){
         this.player = player;
         this.fisherInfo = FisherInfos.getClientInfo();
         this.fish = fish;
@@ -97,7 +98,8 @@ public class FishGameLogic {
 
         //PARTS
         float partsBonusLengthPercent = 0;
-        for(FishingRodPartItem part : rodParts.values()) {
+        for(ItemStack partStack : rodParts.values()) {
+            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
             partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
         }
         calculateBobberLength += (calculateBobberLength * (1 + partsBonusLengthPercent));
@@ -108,7 +110,8 @@ public class FishGameLogic {
 
     private void calculateFishDamage(){
         float damageReduction = 0;
-        for(FishingRodPartItem part : rodParts.values()) {
+        for(ItemStack partStack : rodParts.values()) {
+            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
             damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
         }
         float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fisherInfo.getLevel() / 4f)) / 20f);
@@ -117,7 +120,8 @@ public class FishGameLogic {
 
     private void calculateHealth(){
         float calculatedHealth = 0;
-        for(FishingRodPartItem part : rodParts.values()) {
+        for(ItemStack partStack : rodParts.values()) {
+            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
             calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
         }
         this.lineHealth = calculatedHealth;

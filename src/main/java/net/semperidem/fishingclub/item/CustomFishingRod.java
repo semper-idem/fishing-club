@@ -2,7 +2,9 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -16,32 +18,102 @@ import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import java.util.HashMap;
 
 public class CustomFishingRod extends FishingRodItem {
-    HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts = new HashMap<>();
+    HashMap<FishingRodPartItem.PartType, ItemStack> customParts = new HashMap<>();
     public CustomFishingRod(Settings settings) {
         super(settings);
     }
 
-    public void initParts(HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts){
-        this.customParts = customParts;
+    @Override
+        public ItemStack getDefaultStack() {
+        ItemStack defaultStack = new ItemStack(this);
+        NbtCompound partsNbt = new NbtCompound();
+        defaultStack.setNbt(partsNbt);
+        addPart(defaultStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
+        addPart(defaultStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
+        addPart(defaultStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
+        return defaultStack;
     }
 
-
-    public void initDefault(){
-        this.customParts.put(FishingRodPartItem.PartType.CORE, FishingRodPartItems.CORE_BAMBOO);
-        this.customParts.put(FishingRodPartItem.PartType.HOOK, FishingRodPartItems.HOOK_COPPER);
-        this.customParts.put(FishingRodPartItem.PartType.LINE, FishingRodPartItems.LINE_WOOL_THREAD);
+    public boolean hasPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
+        NbtCompound rodNbt = rodStack.getNbt();
+        if (rodNbt.contains("parts")) {
+            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            if (partsNbt.contains(partType.name())) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void changePart(FishingRodPartItem partItem){
+    public ItemStack getPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
+        NbtCompound rodNbt = rodStack.getNbt();
+        if (rodNbt.contains("parts")) {
+            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            if (partsNbt.contains(partType.name())) {
+                NbtCompound partNbt = partsNbt.getCompound(partType.name());
+                if (partNbt.contains("key")) {
+                    FishingRodPartItem partItem = FishingRodPartItems.KEY_TO_PART_MAP.get(partNbt.getString("key"));
+                    ItemStack partStack = partItem.getDefaultStack();
+                    partStack.setNbt(partNbt);
+                    return partStack;
+                }
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public ItemStack addPart(ItemStack rodStack, ItemStack partStack, FishingRodPartItem.PartType partType) {
+        NbtCompound rodNbt;
+        if (!rodStack.hasNbt()) {
+            rodNbt = new NbtCompound();
+            rodNbt.put("parts", new NbtCompound());
+            rodStack.setNbt(rodNbt);
+        } else {
+            rodNbt = rodStack.getNbt();
+        }
+        ItemStack replacedStack = ItemStack.EMPTY;
+        if (!rodNbt.contains("parts")) {
+            rodNbt.put("parts", new NbtCompound());
+        }
+        NbtCompound partsNbt = rodNbt.getCompound("parts");
+        if (partsNbt.contains(partType.name())) {
+            replacedStack = removePart(rodStack, partType);
+        }
+        FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
+        partStack.getNbt().putString("key", partItem.getKey());
+        partsNbt.put(partItem.getPartType().name(), partStack.getNbt());
+        return replacedStack;
+    }
+
+    public ItemStack removePart(ItemStack rodStack, FishingRodPartItem.PartType slot){
+        NbtCompound rodNbt = rodStack.getNbt();
+        if (rodNbt.contains("parts")) {
+            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            if (partsNbt.contains(slot.name())) {
+                NbtCompound partNbt = partsNbt.getCompound(slot.name());
+                if (partNbt.contains("key")) {
+                    FishingRodPartItem partItem = FishingRodPartItems.KEY_TO_PART_MAP.get(partNbt.getString("key"));
+                    ItemStack partStack = partItem.getDefaultStack();
+                    partStack.setNbt(partNbt);
+                    partsNbt.remove(slot.name());
+                    return partStack;
+                }
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public void changePart(ItemStack partStack){
+        FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
         if (customParts.containsKey(partItem.getPartType())) {
             customParts.remove(partItem.getPartType());
             //Drop item
         }
-        customParts.put(partItem.getPartType(), partItem);
+        customParts.put(partItem.getPartType(), partStack);
         //Consume item
     }
 
-    public HashMap<FishingRodPartItem.PartType, FishingRodPartItem> getParts(){
+    public HashMap<FishingRodPartItem.PartType, ItemStack> getParts(){
         return customParts;
     }
 
@@ -73,10 +145,11 @@ public class CustomFishingRod extends FishingRodItem {
 
 
     //TODO MOVE TO UTIL
-    public static float getStat(FishGameLogic.Stat stat, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> customParts){
+    public static float getStat(FishGameLogic.Stat stat, HashMap<FishingRodPartItem.PartType, ItemStack> customParts){
         float result = 0;
-        for(FishingRodPartItem part : customParts.values()) {
-            result += part.getStatBonuses().getOrDefault(stat, 0f);
+        for(ItemStack partStack : customParts.values()) {
+            FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
+            result += partItem.getStatBonuses().getOrDefault(stat, 0f);
         }
         return result;
     }

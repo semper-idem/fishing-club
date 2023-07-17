@@ -9,6 +9,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.shop.FishSlot;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
@@ -27,11 +28,8 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     }
 
     private void addRodPartSlots(){
-            addSlot(new Slot(fishingRodSlots, 0, 16, 17){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return stack.isOf(FishingClub.CUSTOM_FISHING_ROD);//TODO Add vanilla fishing rod transformmation
-            }
+            addSlot(new FishingRodSlot(fishingRodSlots, 0, 16, 17){
+
         });
 
         addSlot(new RodPartSlot(fishingRodSlots, 1, 145, 17,  FishingRodPartItem.PartType.CORE));
@@ -53,6 +51,27 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
             addSlot(new Slot(playerInventory, x, 8 + x * SLOT_SIZE, 198));
         }
+    }
+
+
+    @Override
+    public void setCursorStack(ItemStack stack) {
+        if (stack.isOf(FishingClub.CUSTOM_FISHING_ROD)) {
+            for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
+                CustomFishingRod rodItem = (CustomFishingRod) FishingClub.CUSTOM_FISHING_ROD;
+                ItemStack partStack = this.fishingRodSlots.getStack(partType.slotIndex);
+                if (!partStack.isEmpty()) {
+                    rodItem.addPart(stack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
+                }
+                this.fishingRodSlots.setStack(partType.slotIndex, ItemStack.EMPTY);
+            }
+        }
+        super.setCursorStack(stack);
+    }
+
+    @Override
+    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
+        return super.insertItem(stack, startIndex, endIndex, fromLast);
     }
 
     public ItemStack transferSlot(PlayerEntity player, int index) {

@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 
 import java.util.HashMap;
@@ -19,6 +20,12 @@ public class FishingRodPartItem extends Item {
 
     }
 
+    @Override
+    public ItemStack getDefaultStack() {
+        ItemStack defaultStack = new ItemStack(this);
+        defaultStack.getNbt().putString("key", this.key);
+        return defaultStack;
+    }
     public PartType getPartType() {
         return partType;
     }
@@ -38,10 +45,16 @@ public class FishingRodPartItem extends Item {
 
 
     public enum PartType {
-        BOBBER,
-        CORE,
-        LINE,
-        HOOK,
-        BAIT
-    }
+        CORE(1),
+        BOBBER(2),
+        LINE(3),
+        HOOK(4),
+        BAIT(5);
+
+        public int slotIndex;
+
+        PartType(int slotIndex) {
+            this.slotIndex = slotIndex;
+        }
+     }
 }

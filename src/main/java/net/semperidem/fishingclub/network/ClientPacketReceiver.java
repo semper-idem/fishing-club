@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
@@ -21,12 +22,12 @@ public class ClientPacketReceiver {
 
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
-            HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts = new HashMap<>();
+            HashMap<FishingRodPartItem.PartType, ItemStack> rodParts = new HashMap<>();
             Fish fish = FishUtil.fishFromPacketBuf(buf);
             int partCount = buf.readInt();
             for(int i = 0; i < partCount; i++) {
-                FishingRodPartItem part = FishingRodPartItems.KEY_TO_PART_MAP.get(buf.readString());
-                rodParts.put(part.getPartType(), part);
+                ItemStack part = buf.readItemStack();
+                rodParts.put(((FishingRodPartItem)part.getItem()).getPartType(), part);
             }
             client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), rodParts, fish)));
         });

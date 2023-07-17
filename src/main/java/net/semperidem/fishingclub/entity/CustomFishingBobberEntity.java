@@ -361,7 +361,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     FishingRodPartItem getBobber(){
-        return fishingRod.getParts().get(FishingRodPartItem.PartType.BOBBER);
+        return (FishingRodPartItem) fishingRod.getParts().get(FishingRodPartItem.PartType.BOBBER).getItem();
     }
 
     enum State {

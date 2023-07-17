@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -45,7 +46,7 @@ public class FishGameScreen extends Screen {
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player);
     }
 
-    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, FishingRodPartItem> rodParts, Fish fish) {
+    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, ItemStack> rodParts, Fish fish) {
         super(text);
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts,fish);
     }
