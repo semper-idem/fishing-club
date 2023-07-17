@@ -1,0 +1,6 @@
+{
+    "parent": "fishing-club:item/bait",
+    "textures": {
+        "layer0": "fishing-club:item/bait_worm"
+    }
+}

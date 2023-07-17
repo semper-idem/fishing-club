@@ -35,6 +35,7 @@ import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
 
@@ -115,5 +116,7 @@ public class FishingClub implements ModInitializer {
 
 
         FISHER_WORKBENCH_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
+
+        FishingRodPartItems.registerParts();
     }
 }

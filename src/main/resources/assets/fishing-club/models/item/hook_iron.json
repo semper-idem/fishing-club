@@ -1,0 +1,6 @@
+{
+    "parent": "fishing-club:item/hook",
+    "textures": {
+        "layer0": "fishing-club:item/hook_iron"
+    }
+}

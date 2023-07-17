@@ -1,10 +1,13 @@
 package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.Item;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 
+import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 import static net.semperidem.fishingclub.client.game.FishGameLogic.Stat;
 import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType;
 
@@ -16,7 +19,7 @@ public class FishingRodPartItems {
     public static FishingRodPartItem CORE_NETHERITE;
 
     public static FishingRodPartItem BOBBER_WOODEN;
-    public static FishingRodPartItem BOBBER_PLANT_BASED;
+    public static FishingRodPartItem BOBBER_PLANT;
     public static FishingRodPartItem BOBBER_ANCIENT;
 
     public static FishingRodPartItem LINE_SPIDER_SILK;
@@ -32,7 +35,7 @@ public class FishingRodPartItems {
     public static FishingRodPartItem BAIT_WORM;
     public static FishingRodPartItem BAIT_FEATHER;
     public static FishingRodPartItem BAIT_CRAFTED;
-    public static FishingRodPartItem BAIT_MAGNETIC;
+    public static FishingRodPartItem BAIT_MAGNET;
 
     static {
         CORE_BAMBOO = new FishingRodPartItem(
@@ -63,9 +66,9 @@ public class FishingRodPartItems {
                 "BOBBER_WOODEN")
                 .withStat(Stat.BITE_WINDOW_MULTIPLIER, 5f)
                 .withStat(Stat.BOBBER_WIDTH, 0.05f);
-        BOBBER_PLANT_BASED = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),
+        BOBBER_PLANT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.BOBBER,
-                "BOBBER_PLANT_BASED")
+                "BOBBER_PLANT")
                 .withStat(Stat.BITE_WINDOW_MULTIPLIER, 10f)
                 .withStat(Stat.BOBBER_WIDTH, 0.1f);
         BOBBER_ANCIENT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.EPIC),
@@ -140,9 +143,15 @@ public class FishingRodPartItems {
                 new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(32),
                 PartType.BAIT,
                 "BAIT_CRAFTED");
-        BAIT_MAGNETIC = new FishingRodPartItem(
+        BAIT_MAGNET = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(64),
                 PartType.BAIT,
-                "BAIT_MAGNETIC");
+                "BAIT_MAGNET");
+    }
+
+    public static void registerParts(){
+        for(FishingRodPartItem part : KEY_TO_PART_MAP.values()) {
+            Registry.register(Registry.ITEM, new Identifier(MOD_ID, part.getKey().toLowerCase()), part);
+        }
     }
 }
