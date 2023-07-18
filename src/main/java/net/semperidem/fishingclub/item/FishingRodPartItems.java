@@ -1,6 +1,8 @@
 package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -153,5 +155,20 @@ public class FishingRodPartItems {
         for(FishingRodPartItem part : KEY_TO_PART_MAP.values()) {
             Registry.register(Registry.ITEM, new Identifier(MOD_ID, part.getKey().toLowerCase()), part);
         }
+    }
+
+    public static ItemStack getStackFromCompound(NbtCompound partNbt){
+        if (!partNbt.contains("key")) {
+            return ItemStack.EMPTY;
+        }
+        String partKey = partNbt.getString("key");
+        ItemStack partStack =  KEY_TO_PART_MAP.get(partKey).getDefaultStack();
+        if (!partStack.hasNbt()) {
+            partStack.setNbt(new NbtCompound());
+        }
+        partNbt = partStack.getNbt();
+        partNbt.putString("key", partKey);
+        partStack.setNbt(partNbt);
+        return partStack;
     }
 }

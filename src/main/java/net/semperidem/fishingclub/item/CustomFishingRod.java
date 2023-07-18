@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
@@ -15,6 +14,7 @@ import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CustomFishingRod extends FishingRodItem {
@@ -83,6 +83,26 @@ public class CustomFishingRod extends FishingRodItem {
         partStack.getNbt().putString("key", partItem.getKey());
         partsNbt.put(partItem.getPartType().name(), partStack.getNbt());
         return replacedStack;
+    }
+
+    public ArrayList<ItemStack> getRodParts(ItemStack rodStack){
+        ArrayList<ItemStack> rodParts = new ArrayList<>();
+        if (!rodStack.hasNbt()) {
+            return rodParts;
+        }
+        NbtCompound rodTag = rodStack.getNbt();
+        if (!rodTag.contains("parts")) {
+            return rodParts;
+        }
+        NbtCompound partsTag = rodTag.getCompound("parts");
+        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
+            if (!partsTag.contains(partType.name())) {
+                continue;
+            }
+            rodParts.add(FishingRodPartItems.getStackFromCompound(partsTag.getCompound(partType.name())));
+        }
+
+        return rodParts;
     }
 
     public ItemStack removePart(ItemStack rodStack, FishingRodPartItem.PartType slot){

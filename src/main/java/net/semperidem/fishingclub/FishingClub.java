@@ -34,7 +34,6 @@ import net.semperidem.fishingclub.entity.FishermanEntityRenderer;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
@@ -42,7 +41,7 @@ import net.semperidem.fishingclub.network.ServerPacketReceiver;
 public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
 
-    public static final Item CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(128));
+    public static final CustomFishingRod CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(128));
     public static final Block FISHER_WORKBENCH_BLOCK = new FisherWorkbenchBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE));
     public static final Item FISHER_WORKBENCH_BLOCK_ITEM = new BlockItem(FISHER_WORKBENCH_BLOCK, new Item.Settings().group(ItemGroup.DECORATIONS));
 

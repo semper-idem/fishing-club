@@ -12,6 +12,7 @@ import net.semperidem.fishingclub.client.screen.shop.FishSlot;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
+import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
@@ -56,12 +57,11 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     @Override
     public void setCursorStack(ItemStack stack) {
-        if (stack.isOf(FishingClub.CUSTOM_FISHING_ROD)) {
+        if (stack.isOf(CUSTOM_FISHING_ROD)) {
             for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-                CustomFishingRod rodItem = (CustomFishingRod) FishingClub.CUSTOM_FISHING_ROD;
                 ItemStack partStack = this.fishingRodSlots.getStack(partType.slotIndex);
                 if (!partStack.isEmpty()) {
-                    rodItem.addPart(stack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
+                    CUSTOM_FISHING_ROD.addPart(stack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
                 }
                 this.fishingRodSlots.setStack(partType.slotIndex, ItemStack.EMPTY);
             }
@@ -75,6 +75,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     }
 
     public ItemStack transferSlot(PlayerEntity player, int index) {
+        //TODO Add rod parts removal after shift click
         ItemStack itemStackCopy = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasStack()) {
