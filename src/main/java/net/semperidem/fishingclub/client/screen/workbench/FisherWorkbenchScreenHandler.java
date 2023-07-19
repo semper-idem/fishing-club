@@ -6,10 +6,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.shop.FishSlot;
-import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
@@ -19,26 +19,33 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
     private static final int SLOT_COUNT = 6;
     private final PlayerEntity player;
-    private final Inventory fishingRodSlots;
+    private final Inventory benchInventory;
+    private ScreenHandlerContext context;
+    private BlockPos blockPos;
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory) {
+        this(syncId, inventory, ScreenHandlerContext.create(inventory.player.world, inventory.player.getBlockPos()), inventory.player.getBlockPos());
+    }
+    public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context, BlockPos blockPos) {
         super(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
+        this.context = context;
         this.player = inventory.player;
-        fishingRodSlots = new SimpleInventory(6);
+        this.blockPos = blockPos;
+        this.benchInventory = new SimpleInventory(6);
         addRodPartSlots();
         addPlayerInventory(player.getInventory());
         addPlayerHotbar(player.getInventory());
     }
 
     private void addRodPartSlots(){
-            addSlot(new FishingRodSlot(fishingRodSlots, 0, 16, 17){
+            addSlot(new FishingRodSlot(benchInventory, 0, 16, 17){
 
         });
 
-        addSlot(new RodPartSlot(fishingRodSlots, 1, 145, 17,  FishingRodPartItem.PartType.CORE));
-        addSlot(new RodPartSlot(fishingRodSlots, 2, 145, 17 + 26,  FishingRodPartItem.PartType.BOBBER));
-        addSlot(new RodPartSlot(fishingRodSlots, 3, 145, 17 + 26 * 2,  FishingRodPartItem.PartType.LINE));
-        addSlot(new RodPartSlot(fishingRodSlots, 4, 145, 17 + 26 * 3,  FishingRodPartItem.PartType.HOOK));
-        addSlot(new RodPartSlot(fishingRodSlots, 5, 54, 17 + 26 * 3,  FishingRodPartItem.PartType.BAIT));
+        addSlot(new RodPartSlot(benchInventory, 1, 145, 17,  FishingRodPartItem.PartType.CORE));
+        addSlot(new RodPartSlot(benchInventory, 2, 145, 17 + 26,  FishingRodPartItem.PartType.BOBBER));
+        addSlot(new RodPartSlot(benchInventory, 3, 145, 17 + 26 * 2,  FishingRodPartItem.PartType.LINE));
+        addSlot(new RodPartSlot(benchInventory, 4, 145, 17 + 26 * 3,  FishingRodPartItem.PartType.HOOK));
+        addSlot(new RodPartSlot(benchInventory, 5, 54, 17 + 26 * 3,  FishingRodPartItem.PartType.BAIT));
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory){
@@ -66,11 +73,11 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     private void packFishingRod(ItemStack rodStack){
         for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-            ItemStack partStack = this.fishingRodSlots.getStack(partType.slotIndex);
+            ItemStack partStack = this.benchInventory.getStack(partType.slotIndex);
             if (!partStack.isEmpty()) {
-                CUSTOM_FISHING_ROD.addPart(rodStack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
+                CUSTOM_FISHING_ROD.addPart(rodStack,this.benchInventory.getStack(partType.slotIndex), partType);
             }
-            this.fishingRodSlots.setStack(partType.slotIndex, ItemStack.EMPTY);
+            this.benchInventory.setStack(partType.slotIndex, ItemStack.EMPTY);
         }
     }
 
@@ -114,6 +121,34 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return true;
+        if (player.world.getBlockState(this.blockPos).getBlock() != FishingClub.FISHER_WORKBENCH_BLOCK) {
+            return false;
+        } else {
+            return player.squaredDistanceTo((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D) <= 64.0D;
+        }
     }
+
+
+    public void close(PlayerEntity player) {
+        super.close(player);
+        packFishingRod(benchInventory.getStack(0));
+        this.context.run((world, pos) -> this.dropInventory(player, this.benchInventory));
+
+//        if (!player.world.isClient) {
+//            packFishingRod(benchInventory.getStack(0));
+//            returnItemStack(benchInventory.removeStack(0));
+//        }
+    }
+
+    private void returnItemStack(ItemStack itemStack){
+        if (itemStack.isEmpty()) {
+            return;
+        }
+        if(player.getInventory().getEmptySlot() != -1) {
+            player.dropItem(itemStack, false);
+        } else {
+            player.giveItemStack(itemStack);
+        }
+    }
+
 }
