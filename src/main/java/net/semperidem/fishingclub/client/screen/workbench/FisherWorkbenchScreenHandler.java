@@ -17,6 +17,7 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
+    private static final int SLOT_COUNT = 6;
     private final PlayerEntity player;
     private final Inventory fishingRodSlots;
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory) {
@@ -58,15 +59,19 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     @Override
     public void setCursorStack(ItemStack stack) {
         if (stack.isOf(CUSTOM_FISHING_ROD)) {
-            for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-                ItemStack partStack = this.fishingRodSlots.getStack(partType.slotIndex);
-                if (!partStack.isEmpty()) {
-                    CUSTOM_FISHING_ROD.addPart(stack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
-                }
-                this.fishingRodSlots.setStack(partType.slotIndex, ItemStack.EMPTY);
-            }
+            packFishingRod(stack);
         }
         super.setCursorStack(stack);
+    }
+
+    private void packFishingRod(ItemStack rodStack){
+        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
+            ItemStack partStack = this.fishingRodSlots.getStack(partType.slotIndex);
+            if (!partStack.isEmpty()) {
+                CUSTOM_FISHING_ROD.addPart(rodStack,this.fishingRodSlots.getStack(partType.slotIndex), partType);
+            }
+            this.fishingRodSlots.setStack(partType.slotIndex, ItemStack.EMPTY);
+        }
     }
 
     @Override
@@ -75,18 +80,21 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     }
 
     public ItemStack transferSlot(PlayerEntity player, int index) {
-        //TODO Add rod parts removal after shift click
         ItemStack itemStackCopy = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasStack()) {
             ItemStack itemStackInSlot = slot.getStack();
             itemStackCopy = itemStackInSlot.copy();
-            if (index < 6) {
-                if (!this.insertItem(itemStackInSlot, 6, this.slots.size(), true)) {
+            if (index < SLOT_COUNT) {
+                if (itemStackInSlot.isOf(CUSTOM_FISHING_ROD)) {
+                    packFishingRod(itemStackInSlot);
+                }
+
+                if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.insertItem(itemStackInSlot, 0, 6, false)) {
+                if (!this.insertItem(itemStackInSlot, 0, SLOT_COUNT, false)) {
                     return ItemStack.EMPTY;
                 }
             }
