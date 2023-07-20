@@ -96,7 +96,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
                     packFishingRod(itemStackInSlot);
                 }
 
-                if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), true)) {
+                if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
