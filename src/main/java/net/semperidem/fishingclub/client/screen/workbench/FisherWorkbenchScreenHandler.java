@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
 import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.FishingClub.FISHER_WORKBENCH_BLOCK;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType.*;
@@ -118,11 +119,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        if (player.world.getBlockState(this.blockPos).getBlock() != FishingClub.FISHER_WORKBENCH_BLOCK) {
-            return false;
-        } else {
-            return player.squaredDistanceTo(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f) <= 9f;
-        }
+        return ScreenHandler.canUse(this.context, player, FISHER_WORKBENCH_BLOCK);
     }
 
     public void close(PlayerEntity player) {
