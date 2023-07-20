@@ -10,9 +10,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
 
-import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
 import static net.semperidem.fishingclub.FishingClub.FISHER_WORKBENCH_BLOCK;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -62,28 +60,6 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     }
 
 
-    @Override
-    public void setCursorStack(ItemStack stack) {
-        if (stack.isOf(CUSTOM_FISHING_ROD)) {
-            packFishingRod(stack);
-        }
-        super.setCursorStack(stack);
-    }
-
-    private void packFishingRod(ItemStack rodStack){
-        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-            ItemStack partStack = this.benchInventory.getStack(partType.slotIndex);
-            if (!partStack.isEmpty()) {
-                CUSTOM_FISHING_ROD.addPart(rodStack,this.benchInventory.getStack(partType.slotIndex), partType);
-            }
-            this.benchInventory.setStack(partType.slotIndex, ItemStack.EMPTY);
-        }
-    }
-
-    @Override
-    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
-        return super.insertItem(stack, startIndex, endIndex, fromLast);
-    }
 
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStackCopy = ItemStack.EMPTY;
@@ -92,10 +68,9 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
             ItemStack itemStackInSlot = slot.getStack();
             itemStackCopy = itemStackInSlot.copy();
             if (index < SLOT_COUNT) {
-                if (itemStackInSlot.isOf(CUSTOM_FISHING_ROD)) {
-                    packFishingRod(itemStackInSlot);
+                if (index == 0) {
+                    ((FishingRodSlot) slot).packFishingRod(itemStackInSlot);
                 }
-
                 if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), false)) {
                     return ItemStack.EMPTY;
                 }
@@ -124,7 +99,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     public void close(PlayerEntity player) {
         super.close(player);
-        packFishingRod(benchInventory.getStack(0));
+        ((FishingRodSlot)this.slots.get(0)).packFishingRod(benchInventory.getStack(0));
         this.context.run((world, pos) -> this.dropInventory(player, this.benchInventory));
     }
 }
