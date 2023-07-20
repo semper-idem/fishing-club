@@ -15,37 +15,35 @@ import net.semperidem.fishingclub.item.FishingRodPartItem;
 import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
+import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType.*;
 
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
     private static final int SLOT_COUNT = 6;
-    private final PlayerEntity player;
     private final Inventory benchInventory;
-    private ScreenHandlerContext context;
-    private BlockPos blockPos;
+    private final ScreenHandlerContext context;
+    private final BlockPos blockPos;
+
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, ScreenHandlerContext.create(inventory.player.world, inventory.player.getBlockPos()), inventory.player.getBlockPos());
     }
-    public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context, BlockPos blockPos) {
+    public FisherWorkbenchScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context, BlockPos blockPos) {
         super(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
-        this.player = inventory.player;
         this.blockPos = blockPos;
         this.benchInventory = new SimpleInventory(6);
         addRodPartSlots();
-        addPlayerInventory(player.getInventory());
-        addPlayerHotbar(player.getInventory());
+        addPlayerInventory(playerInventory);
+        addPlayerHotbar(playerInventory);
     }
 
     private void addRodPartSlots(){
-            addSlot(new FishingRodSlot(benchInventory, 0, 16, 17){
+        addSlot(new FishingRodSlot(this.benchInventory, 0, 16, 17));
 
-        });
-
-        addSlot(new RodPartSlot(benchInventory, 1, 145, 17,  FishingRodPartItem.PartType.CORE));
-        addSlot(new RodPartSlot(benchInventory, 2, 145, 17 + 26,  FishingRodPartItem.PartType.BOBBER));
-        addSlot(new RodPartSlot(benchInventory, 3, 145, 17 + 26 * 2,  FishingRodPartItem.PartType.LINE));
-        addSlot(new RodPartSlot(benchInventory, 4, 145, 17 + 26 * 3,  FishingRodPartItem.PartType.HOOK));
-        addSlot(new RodPartSlot(benchInventory, 5, 54, 17 + 26 * 3,  FishingRodPartItem.PartType.BAIT));
+        addSlot(new RodPartSlot(this.benchInventory, 1, 145, 17, CORE));
+        addSlot(new RodPartSlot(this.benchInventory, 2, 145, 17 + 26,  BOBBER));
+        addSlot(new RodPartSlot(this.benchInventory, 3, 145, 17 + 26 * 2, LINE));
+        addSlot(new RodPartSlot(this.benchInventory, 4, 145, 17 + 26 * 3, HOOK));
+        addSlot(new RodPartSlot(this.benchInventory, 5, 54, 17 + 26 * 3, BAIT));
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory){
@@ -118,37 +116,18 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         return itemStackCopy;
     }
 
-
     @Override
     public boolean canUse(PlayerEntity player) {
         if (player.world.getBlockState(this.blockPos).getBlock() != FishingClub.FISHER_WORKBENCH_BLOCK) {
             return false;
         } else {
-            return player.squaredDistanceTo((double)blockPos.getX() + 0.5D, (double)blockPos.getY() + 0.5D, (double)blockPos.getZ() + 0.5D) <= 64.0D;
+            return player.squaredDistanceTo(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f) <= 9f;
         }
     }
-
 
     public void close(PlayerEntity player) {
         super.close(player);
         packFishingRod(benchInventory.getStack(0));
         this.context.run((world, pos) -> this.dropInventory(player, this.benchInventory));
-
-//        if (!player.world.isClient) {
-//            packFishingRod(benchInventory.getStack(0));
-//            returnItemStack(benchInventory.removeStack(0));
-//        }
     }
-
-    private void returnItemStack(ItemStack itemStack){
-        if (itemStack.isEmpty()) {
-            return;
-        }
-        if(player.getInventory().getEmptySlot() != -1) {
-            player.dropItem(itemStack, false);
-        } else {
-            player.giveItemStack(itemStack);
-        }
-    }
-
 }
