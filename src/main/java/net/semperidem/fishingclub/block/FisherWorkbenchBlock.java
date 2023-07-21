@@ -1,14 +1,14 @@
 package net.semperidem.fishingclub.block;
 
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.FurnaceBlockEntity;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
@@ -18,7 +18,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import org.jetbrains.annotations.Nullable;
 
 public class FisherWorkbenchBlock extends Block {
     public FisherWorkbenchBlock(AbstractBlock.Settings settings) {
@@ -37,7 +36,7 @@ public class FisherWorkbenchBlock extends Block {
 
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new FisherWorkbenchScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos), pos), Text.of("Fisher Workbench"));
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new FisherWorkbenchScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), Text.of("Fisher Workbench"));
     }
 
     @Override
