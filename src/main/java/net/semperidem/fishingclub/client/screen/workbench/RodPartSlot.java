@@ -50,11 +50,11 @@ public class RodPartSlot extends Slot {
                     }
                 }
             } else {
-                CustomFishingRod rodItem = ((CustomFishingRod)FishingClub.CUSTOM_FISHING_ROD);
+                CustomFishingRod rodItem = FishingClub.CUSTOM_FISHING_ROD;
                 rodItem.addPart(rodStack, stack, partType);
             }
         } else {
-            CustomFishingRod rodItem = ((CustomFishingRod)FishingClub.CUSTOM_FISHING_ROD);
+            CustomFishingRod rodItem = FishingClub.CUSTOM_FISHING_ROD;
             rodItem.removePart(rodStack, partType);
         }
         this.inventory.setStack(this.index, stack);

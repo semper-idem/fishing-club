@@ -29,7 +29,6 @@ public class CustomFishingRod extends FishingRodItem {
         NbtCompound partsNbt = new NbtCompound();
         defaultStack.setNbt(partsNbt);
         addPart(defaultStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
-        addPart(defaultStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
         addPart(defaultStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
         return defaultStack;
     }
