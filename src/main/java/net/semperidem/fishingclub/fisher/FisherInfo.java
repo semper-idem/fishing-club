@@ -1,38 +1,36 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class FisherInfo {
+    ServerPlayerEntity fisher;
+    UUID fisherUUID;
 
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
 
     int level = 1;
     int exp = 0;
-    ArrayList<FishingPerk> perks = new ArrayList<>();
+    ArrayList<FishingPerk> perks;
     int fisherCredit;
 
-    public FisherInfo(int level, int exp, String perkString, int credit) {
+    public FisherInfo(int level, int exp, String perkString, int credit, UUID fisherUUID) {
         this.level = level;
         this.exp = exp;
         this.perks = FisherInfos.getPlayerPerksFromString(perkString);
         this.fisherCredit = credit;
+        this.fisherUUID = fisherUUID;
+        this.fisher = FisherInfoDB.getPlayer(fisherUUID);
     }
 
-    public FisherInfo(int level, int exp, String perkString) {
-        this.level = level;
-        this.exp = exp;
-        this.perks = FisherInfos.getPlayerPerksFromString(perkString);
-    }
-
-    public FisherInfo(int level, int exp) {
-        this.level = level;
-        this.exp = exp;
+    public FisherInfo(UUID fisherUUID) {
+        this(1,0, "", 0, fisherUUID);
         initPerks();
-    }
-
-    public FisherInfo() {
     }
 
     public int getLevel() {
@@ -70,8 +68,19 @@ public class FisherInfo {
         while (this.exp >= nextLevelXP) {
             this.exp -= nextLevelXP;
             this.level++;
+            onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
+
         }
+    }
+
+    public void onLevelUpBehaviour(){
+        if (fisher == null){
+            return;
+        }
+        fisher.getWorld().spawnParticles(ParticleTypes.FIREWORK, fisher.getX(), fisher.getY(),  fisher.getZ(), 1,1,1,1,1);
+        //serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
+
     }
 
     public boolean removeCredit(int credit) {

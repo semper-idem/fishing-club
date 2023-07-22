@@ -1,19 +1,11 @@
 package net.semperidem.fishingclub.entity;
 
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -22,8 +14,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -334,7 +324,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         }
         int i = 0;
         if ((hookCountdown > 0)){
-            onUseReactionBonus();
+            int reactionBonus = calculateReactionBonus();
+            caughtFish.experience += reactionBonus;
+            this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] - +" + reactionBonus + " to fish exp"));
             ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
         }
         if (this.onGround) {
@@ -349,15 +341,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     *   - buff rain bonus if skill present
     * */
 
-    private void onUseReactionBonus(){
+    private int calculateReactionBonus(){
         int reaction = this.lastHookCountdown - this.hookCountdown;
         if (reaction < REACTION_REWARD) {
-            int reactionXP = Math.max(5, REACTION_REWARD - reaction);
-            if (!this.world.isClient()) {
-                FishUtil.grantExp((ServerPlayerEntity) this.getOwner(), reactionXP);
-               this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] - Gained " + reactionXP + "exp"));
-            }
+            return Math.max(5, REACTION_REWARD - reaction);
         }
+        return 0;
     }
 
     FishingRodPartItem getBobber(){

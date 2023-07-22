@@ -9,7 +9,6 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
 
@@ -40,8 +39,6 @@ public class FisherInfoScreen extends Screen {
     public FisherInfoScreen(Text text) {
         super(text);
         this.client = MinecraftClient.getInstance();
-
-        ClientPacketSender.sendFishingInfoDataRequest();
         this.clientInfo = FisherInfos.getClientInfo();
         this.name = this.client.player.getName().getString();
         this.level = String.valueOf(clientInfo.getLevel());

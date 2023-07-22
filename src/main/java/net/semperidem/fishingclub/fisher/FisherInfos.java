@@ -26,13 +26,15 @@ public class FisherInfos {
     }
 
     public static void setClientInfo(FisherInfo cfi){
+        if (cfi == null) return;
         clientFisherInfo = cfi;
     }
 
+    public static void resetClientInfo(){
+        clientFisherInfo = null;
+    }
+
     public static FisherInfo getPlayerFisherInfo(UUID uuid){
-        if (!FisherInfoDB.contains(uuid)) {
-            FisherInfoDB.put(uuid, new FisherInfo(1,0));
-        }
         return FisherInfoDB.get(uuid);
     }
 
@@ -87,6 +89,7 @@ public class FisherInfos {
         buf.writeInt(fisherInfo.exp);
         buf.writeInt(fisherInfo.fisherCredit);
         buf.writeString(FisherInfos.getStringFromPlayerPerks(fisherInfo.getPerks()));
+        buf.writeUuid(fisherInfo.fisherUUID);
         return buf;
     }
 
@@ -95,11 +98,22 @@ public class FisherInfos {
         int exp = buf.readInt();
         int fisherCredit = buf.readInt();
         String perksString = buf.readString();
-        return new FisherInfo(level, exp, perksString, fisherCredit);
+        UUID fisherUUID = buf.readUuid();
+        return new FisherInfo(
+                level,
+                exp,
+                perksString,
+                fisherCredit,
+                fisherUUID
+        );
     }
 
     public static void writeNBT(UUID uuid, NbtCompound playerTag) {
-        writeNBT(getPlayerFisherInfo(uuid), playerTag);
+        if (!FisherInfoDB.contains(uuid)) {
+            FisherInfoDB.putDefault(uuid);
+        }
+        FisherInfo fisherInfo = getPlayerFisherInfo(uuid);
+        writeNBT(fisherInfo, playerTag);
     }
 
     private static void writeNBT(FisherInfo fisherInfo, NbtCompound playerTag){
@@ -121,7 +135,7 @@ public class FisherInfos {
     }
 
     private static FisherInfo readNBT(NbtCompound playerTag){
-        FisherInfo fisherInfo = new  FisherInfo();
+        FisherInfo fisherInfo = new  FisherInfo(playerTag.getUuid("UUID"));
         if (playerTag.contains(FISHER_INFO_TAG_NAME)) {
             NbtCompound fishingTag = playerTag.getCompound(FISHER_INFO_TAG_NAME);
             fisherInfo.level = fishingTag.getInt("level");
@@ -132,7 +146,6 @@ public class FisherInfos {
             for(int i = 0; i < perkCount; i++) {
                 FishingPerks.getPerkFromName(perkList.getString(i)).ifPresent(fishingPerk -> fisherInfo.perks.add(fishingPerk));
             }
-
         }
         return fisherInfo;
     }

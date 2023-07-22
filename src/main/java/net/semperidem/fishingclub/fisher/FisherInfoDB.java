@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 
 import java.util.HashMap;
@@ -22,11 +23,25 @@ public class FisherInfoDB {
     }
 
     public static void put(UUID key, FisherInfo value) {
+        value.fisherUUID = key;
         SERVER_FISHER_INFO.put(key, value);
         ServerPacketSender.sendFisherInfoSyncPacket(
                 linkedServer.getPlayerManager().getPlayer(key),
                 FisherInfos.getFisherInfoBuf(value)
         );
+    }
+
+    public static void putDefault(UUID key) {
+        FisherInfo value = new FisherInfo(key);
+        SERVER_FISHER_INFO.put(key, value);
+        ServerPacketSender.sendFisherInfoSyncPacket(
+                linkedServer.getPlayerManager().getPlayer(key),
+                FisherInfos.getFisherInfoBuf(value)
+        );
+    }
+
+    public static ServerPlayerEntity getPlayer(UUID key){
+        return linkedServer.getPlayerManager().getPlayer(key);
     }
 
     public static FisherInfo get(UUID key) {
