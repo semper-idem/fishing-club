@@ -5,8 +5,8 @@ import java.util.Objects;
 
 public class FisherInfo {
 
-    private static final int BASE_XP = 50;
-    private static final float XP_EXPONENT = 1.25f;
+    private static final int BASE_EXP = 50;
+    private static final float EXP_EXPONENT = 1.25f;
 
     int level = 1;
     int exp = 0;
@@ -54,15 +54,20 @@ public class FisherInfo {
     }
 
 
+    public int getSkillPoints(){
+        // -1 cause of starting level
+        // +3 cause of root perks
+        return Math.max(0, this.level - 1 + 3 - this.perks.size());
+    }
 
-    private int nextLevelXP(){
-        return (int) Math.floor(BASE_XP * Math.pow(level, XP_EXPONENT));
+    public int nextLevelXP(){
+        return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
     public void grantExperience(double gainedXP){
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
-        while (this.exp > nextLevelXP) {
+        while (this.exp >= nextLevelXP) {
             this.exp -= nextLevelXP;
             this.level++;
             nextLevelXP = nextLevelXP();

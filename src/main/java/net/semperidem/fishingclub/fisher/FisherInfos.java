@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fisher;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
@@ -120,14 +121,14 @@ public class FisherInfos {
     }
 
     private static FisherInfo readNBT(NbtCompound playerTag){
-        FisherInfo fisherInfo = new FisherInfo();
-        if (playerTag.contains(FISHER_INFO_TAG_NAME, 10)) {
+        FisherInfo fisherInfo = new  FisherInfo();
+        if (playerTag.contains(FISHER_INFO_TAG_NAME)) {
             NbtCompound fishingTag = playerTag.getCompound(FISHER_INFO_TAG_NAME);
             fisherInfo.level = fishingTag.getInt("level");
             fisherInfo.exp = fishingTag.getInt("exp");
             fisherInfo.fisherCredit = fishingTag.getInt("fisherCredit");
             int perkCount = fishingTag.getInt("perkCount");
-            NbtList perkList = fishingTag.getList("perks", perkCount);
+            NbtList perkList = fishingTag.getList("perks", NbtElement.STRING_TYPE);
             for(int i = 0; i < perkCount; i++) {
                 FishingPerks.getPerkFromName(perkList.getString(i)).ifPresent(fishingPerk -> fisherInfo.perks.add(fishingPerk));
             }

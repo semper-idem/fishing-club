@@ -14,6 +14,7 @@ public class FisherInfoDB {
 
     public static void linkServer(MinecraftServer srv){
         linkedServer = srv;
+        SERVER_FISHER_INFO.clear();
     }
 
     public static boolean contains(UUID key) {
