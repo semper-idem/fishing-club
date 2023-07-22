@@ -3,18 +3,24 @@ package net.semperidem.fishingclub.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FishingPerk;
+import net.semperidem.fishingclub.fisher.FishingPerks;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class FisherInfoScreen extends Screen {
     //512 x 288
     private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
+    private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
     int backgroundTextureWidth = 512;
     int backgroundTextureHeight = 288;
 
@@ -36,6 +42,8 @@ public class FisherInfoScreen extends Screen {
     boolean hasSkillPoints;
     String skillPoints;
 
+    FishingPerk rootPerk;
+
     public FisherInfoScreen(Text text) {
         super(text);
         this.client = MinecraftClient.getInstance();
@@ -56,6 +64,53 @@ public class FisherInfoScreen extends Screen {
 
         x = (width - backgroundWidth) / 2;
         y = (height - backgroundHeight) / 2;
+        //int x, int y, int width, int height, Text message, PressAction onPress
+        addPageButtons();
+
+    }
+
+    private void addPageButtons(){
+        int buttonWidth = 70;
+        int infoButtonWidth = 40;
+        int buttonHeight = 20;
+        int buttonsX = x + 95;
+        int buttonsY = y + 6;
+
+        String info = "Info";
+        ButtonWidget infoButton = new ButtonWidget(buttonsX,buttonsY,infoButtonWidth, buttonHeight, Text.of(info), button -> {
+            rootPerk = null;
+            lockClicked(button);
+            addPerks();
+        });
+        infoButton.active = false;
+        addDrawableChild(infoButton);
+
+        addDrawableChild(new ButtonWidget(buttonsX + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_HOBBYIST.getLabel()), button -> {
+            rootPerk = FishingPerks.ROOT_HOBBYIST;
+            lockClicked(button);
+            addPerks();
+        } ));
+
+        addDrawableChild(new ButtonWidget(buttonsX + buttonWidth  + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_OPPORTUNIST.getLabel()), button -> {
+            rootPerk = FishingPerks.ROOT_OPPORTUNIST;
+            lockClicked(button);
+            addPerks();
+        }));
+
+        addDrawableChild(new ButtonWidget(buttonsX + buttonWidth * 2  + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_SOCIALIST.getLabel()), button -> {
+            rootPerk = FishingPerks.ROOT_SOCIALIST;
+            lockClicked(button);
+            addPerks();
+        }));
+    }
+
+    private void lockClicked(ButtonWidget button){
+        this.children().forEach(child -> {
+            if (child instanceof ButtonWidget) {
+                ((ButtonWidget)child).active = true;
+            }
+        });
+        button.active = false;
     }
 
     @Override
@@ -99,6 +154,33 @@ public class FisherInfoScreen extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
+    private void addPerks(){
+        while (children().size() > 4) {
+            remove(children().get(children().size() - 1));
+        }
+        if (this.rootPerk == null || !this.rootPerk.hasChildren()) {
+            return;
+        }
+
+        int perksX = x + 100;
+        int perksY = y + 30;
+
+        ArrayList<FishingPerk> children = this.rootPerk.getChildren();
+        int childY = 0;
+        for(FishingPerk child : children) {
+            addPerk(child, perksX, perksY + childY);
+            childY += 24;
+        }
+    }
+
+    private void addPerk(FishingPerk fishingPerk, int perkX, int perkY){
+        addDrawableChild(new PerkButtonWidget(perkX, perkY, 20,20, Text.empty(), button -> {}, fishingPerk));
+        ArrayList<FishingPerk> children = fishingPerk.getChildren();
+        for(FishingPerk child : children) {
+            addPerk(child, perkX + 24, perkY);
+        }
+    }
+
 
 
 
@@ -107,4 +189,40 @@ public class FisherInfoScreen extends Screen {
         return false;
     }
 
+    class PerkButtonWidget extends ButtonWidget {
+        FishingPerk fishingPerk;
+        public PerkButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, FishingPerk fishingPerk) {
+            super(x, y, width, height, message, onPress,  new ButtonWidget.TooltipSupplier() {
+                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+                    renderTooltip(matrixStack, i, j, fishingPerk);
+                }
+
+                public void supply(Consumer<Text> consumer) {
+                    consumer.accept(Text.of(fishingPerk.getLabel()));
+                }
+            });
+            this.fishingPerk = fishingPerk;
+            this.setZOffset(-100);
+        }
+
+        public static void renderTooltip(MatrixStack matrices, int mouseX, int mouseY, FishingPerk fishingPerk) {
+            MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of(fishingPerk.getLabel()),mouseX, mouseY, TEXT_COLOR);
+        }
+
+        @Override
+        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+            if (this.fishingPerk == null) return;
+            textRenderer.drawWithShadow(matrices,this.fishingPerk.getLabel(), mouseX, mouseY, TEXT_COLOR);
+        }
+
+        @Override
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            RenderSystem.setShaderTexture(0, SKILL_ICON);
+            drawTexture(matrices, x, y, 0, 0, 20, 20, 20, 20);
+            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            if (isHovered())  {
+                renderTooltip(matrices, mouseX, mouseY);
+            }
+        }
+    }
 }
