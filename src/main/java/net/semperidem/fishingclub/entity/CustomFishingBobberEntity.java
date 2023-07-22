@@ -326,7 +326,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if ((hookCountdown > 0)){
             int reactionBonus = calculateReactionBonus();
             caughtFish.experience += reactionBonus;
-            this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] - +" + reactionBonus + " to fish exp"));
+            this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
             ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
         }
         if (this.onGround) {

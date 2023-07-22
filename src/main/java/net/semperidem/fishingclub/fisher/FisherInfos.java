@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class FisherInfos {
@@ -45,19 +45,21 @@ public class FisherInfos {
         FisherInfoDB.put(uuid, fisherInfo);
     }
 
-    public static String getStringFromPlayerPerks(ArrayList<FishingPerk> perks){
+    public static String getStringFromPlayerPerks(HashMap<String, FishingPerk> perks){
         StringBuilder sb = new StringBuilder();
-        for(FishingPerk perk : perks) {
-            sb.append(perk.name).append(DELIMITER);
+        for(String perk : perks.keySet()) {
+            sb.append(perk).append(DELIMITER);
         }
         return sb.toString();
     }
 
-    public static ArrayList<FishingPerk> getPlayerPerksFromString(String fishingPerksString){
-        ArrayList<FishingPerk> fishingPerks = new ArrayList<>();
+    public static HashMap<String, FishingPerk> getPlayerPerksFromString(String fishingPerksString){
+        HashMap<String, FishingPerk> fishingPerks = new HashMap<>();
         String[] fishingPerksStringArray = fishingPerksString.split(DELIMITER);
         for(String fishingPerkName : fishingPerksStringArray) {
-            FishingPerks.getPerkFromName(fishingPerkName).ifPresent(fishingPerks::add);
+            FishingPerks.getPerkFromName(fishingPerkName).ifPresent(perk -> {
+                fishingPerks.put(fishingPerkName, perk);
+            });
         }
         return fishingPerks;
     }
@@ -122,8 +124,8 @@ public class FisherInfos {
         fishingTag.putInt("exp", fisherInfo.exp);
         fishingTag.putInt("fisherCredit", fisherInfo.fisherCredit);
         NbtList perksList = new NbtList();
-        for(FishingPerk perk : fisherInfo.perks) {
-            perksList.add(NbtString.of(perk.name));
+        for(String perk : fisherInfo.perks.keySet()) {
+            perksList.add(NbtString.of(perk));
         }
         fishingTag.put("perks", perksList);
         fishingTag.putInt("perkCount", perksList.size());
@@ -144,7 +146,7 @@ public class FisherInfos {
             int perkCount = fishingTag.getInt("perkCount");
             NbtList perkList = fishingTag.getList("perks", NbtElement.STRING_TYPE);
             for(int i = 0; i < perkCount; i++) {
-                FishingPerks.getPerkFromName(perkList.getString(i)).ifPresent(fishingPerk -> fisherInfo.perks.add(fishingPerk));
+                FishingPerks.getPerkFromName(perkList.getString(i)).ifPresent(fishingPerk -> fisherInfo.perks.put(fishingPerk.name, fishingPerk));
             }
         }
         return fisherInfo;

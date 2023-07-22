@@ -15,7 +15,6 @@ import net.semperidem.fishingclub.fisher.FishingPerks;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class FisherInfoScreen extends Screen {
     //512 x 288
@@ -152,6 +151,11 @@ public class FisherInfoScreen extends Screen {
         renderBackground(matrices);
         renderFisherInfo(matrices);
         super.render(matrices, mouseX, mouseY, delta);
+        hoveredElement(mouseX, mouseY).ifPresent(hovered -> {
+            if (hovered instanceof PerkButtonWidget) {
+                renderTooltip(matrices, Text.of(((PerkButtonWidget) hovered).fishingPerk.getLabel()), mouseX, mouseY);
+            }
+        });
     }
 
     private void addPerks(){
@@ -174,10 +178,11 @@ public class FisherInfoScreen extends Screen {
     }
 
     private void addPerk(FishingPerk fishingPerk, int perkX, int perkY){
-        addDrawableChild(new PerkButtonWidget(perkX, perkY, 20,20, Text.empty(), button -> {}, fishingPerk));
+        addDrawableChild(new PerkButtonWidget(perkX, perkY, 20, 20, Text.empty(), button -> {
+        }, fishingPerk));
         ArrayList<FishingPerk> children = fishingPerk.getChildren();
         for(FishingPerk child : children) {
-            addPerk(child, perkX + 24, perkY);
+            addPerk(child, perkX + 30, perkY);
         }
     }
 
@@ -189,30 +194,12 @@ public class FisherInfoScreen extends Screen {
         return false;
     }
 
-    class PerkButtonWidget extends ButtonWidget {
+    static class PerkButtonWidget extends ButtonWidget {
         FishingPerk fishingPerk;
         public PerkButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, FishingPerk fishingPerk) {
-            super(x, y, width, height, message, onPress,  new ButtonWidget.TooltipSupplier() {
-                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                    renderTooltip(matrixStack, i, j, fishingPerk);
-                }
-
-                public void supply(Consumer<Text> consumer) {
-                    consumer.accept(Text.of(fishingPerk.getLabel()));
-                }
-            });
+            super(x, y, width, height, message, onPress);
             this.fishingPerk = fishingPerk;
             this.setZOffset(-100);
-        }
-
-        public static void renderTooltip(MatrixStack matrices, int mouseX, int mouseY, FishingPerk fishingPerk) {
-            MinecraftClient.getInstance().textRenderer.drawWithShadow(matrices, Text.of(fishingPerk.getLabel()),mouseX, mouseY, TEXT_COLOR);
-        }
-
-        @Override
-        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-            if (this.fishingPerk == null) return;
-            textRenderer.drawWithShadow(matrices,this.fishingPerk.getLabel(), mouseX, mouseY, TEXT_COLOR);
         }
 
         @Override
@@ -222,6 +209,9 @@ public class FisherInfoScreen extends Screen {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             if (isHovered())  {
                 renderTooltip(matrices, mouseX, mouseY);
+            }
+            if (fishingPerk.parentIsRoot()) {
+                fill(matrices, x, y + 9, x - 10, y + 11, TEXT_COLOR);
             }
         }
     }

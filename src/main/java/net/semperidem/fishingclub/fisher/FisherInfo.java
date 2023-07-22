@@ -3,8 +3,7 @@ package net.semperidem.fishingclub.fisher;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class FisherInfo {
@@ -16,7 +15,7 @@ public class FisherInfo {
 
     int level = 1;
     int exp = 0;
-    ArrayList<FishingPerk> perks;
+    HashMap<String, FishingPerk> perks;
     int fisherCredit;
 
     public FisherInfo(int level, int exp, String perkString, int credit, UUID fisherUUID) {
@@ -46,9 +45,13 @@ public class FisherInfo {
     }
 
     private void initPerks(){
-        this.perks.add(FishingPerks.ROOT_HOBBYIST);
-        this.perks.add(FishingPerks.ROOT_OPPORTUNIST);
-        this.perks.add(FishingPerks.ROOT_SOCIALIST);
+        addPerk(FishingPerks.ROOT_HOBBYIST);
+        addPerk(FishingPerks.ROOT_OPPORTUNIST);
+        addPerk(FishingPerks.ROOT_SOCIALIST);
+    }
+
+    private void addPerk(FishingPerk perk){
+        this.perks.put(perk.name, perk);
     }
 
 
@@ -95,19 +98,19 @@ public class FisherInfo {
         this.fisherCredit += credit;
     }
 
+//
+//    public void grantPerk(String perkName){
+//        if (Objects.equals(perkName, "all")) {
+//            perks.addAll(FishingPerks.ALL_PERKS);
+//        }
+//    }
 
-    public void grantPerk(String perkName){
-        if (Objects.equals(perkName, "all")) {
-            perks.addAll(FishingPerks.ALL_PERKS);
-        }
-    }
-
-    public ArrayList<FishingPerk> getPerks(){
-        return new ArrayList<>(perks);
+    public HashMap<String, FishingPerk> getPerks(){
+        return perks;
     }
 
     public boolean hasPerk(FishingPerk perk) {
-        return perks.contains(perk);
+        return perks.containsKey(perk.name);
     }
 
 

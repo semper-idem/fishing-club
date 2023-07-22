@@ -42,6 +42,13 @@ public class FishingPerk {
         return this.children.size() > 0;
     }
 
+    public boolean parentIsRoot(){
+        if (this.parent == null) {
+            return false;
+        }
+        return this.parent.parent != null;
+    }
+
     FishingPerk withLabel(String label){
         this.label = label;
         return this;
