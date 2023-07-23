@@ -144,7 +144,7 @@ public class CustomFishingRod extends FishingRodItem {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        int power = Math.max(1, Math.min(5, (getMaxUseTime(stack) - remainingUseTicks + 60) / 60));
+        int power = getPower(getMaxUseTime(stack) - remainingUseTicks);
         castHook(world, (PlayerEntity) user, user.getStackInHand(Hand.MAIN_HAND).isOf(stack.getItem()) ? Hand.MAIN_HAND : Hand.OFF_HAND, power);
     }
 
@@ -197,5 +197,9 @@ public class CustomFishingRod extends FishingRodItem {
             result += partItem.getStatBonuses().getOrDefault(stat, 0f);
         }
         return result;
+    }
+
+    public static int getPower(int usageTick){
+        return Math.max(1, Math.min(5, (usageTick + 60) / 60));
     }
 }
