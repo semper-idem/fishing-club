@@ -46,7 +46,19 @@ public class FisherInfoScreen extends Screen {
 
     FishingPerk selectedPerk;
 
+    ButtonWidget infoButton;
+    ButtonWidget hButton;
+    ButtonWidget oButton;
+    ButtonWidget sButton;
     ButtonWidget unlockButton;
+
+
+    int buttonWidth = 72;
+    int infoButtonWidth = 40;
+    int buttonHeight = 20;
+    int buttonsX = x + 95;
+    int buttonsY = y + 6;
+    int lastButtonX = buttonsX;
 
     ArrayList<PerkButtonWidget> perkButtonWidgets = new ArrayList<>();
 
@@ -55,6 +67,7 @@ public class FisherInfoScreen extends Screen {
         this.client = MinecraftClient.getInstance();
         this.clientInfo = FisherInfos.getClientInfo();
         updateData();
+        addPageButtons();
     }
 
     private void updateData(){
@@ -64,6 +77,7 @@ public class FisherInfoScreen extends Screen {
         this.credit = String.valueOf(clientInfo.getFisherCredit());
         this.hasSkillPoints = clientInfo.getSkillPoints() > 0;
         this.skillPoints = String.valueOf(clientInfo.getSkillPoints());
+
     }
 
     @Override
@@ -73,54 +87,46 @@ public class FisherInfoScreen extends Screen {
 
         x = (width - backgroundWidth) / 2;
         y = (height - backgroundHeight) / 2;
-        //int x, int y, int width, int height, Text message, PressAction onPress
-        addPageButtons();
 
+
+        buttonWidth = 72;
+        infoButtonWidth = 40;
+        buttonHeight = 20;
+        buttonsX = x + 93;
+        buttonsY = y + 6;
+        lastButtonX = buttonsX;
+
+        initInfoButton();
+        initSkillButtons();
+        initUnlockButton();
+        resetButtonState();
+        addPageButtons();
     }
 
-    private void addPageButtons(){
-        int buttonWidth = 72;
-        int infoButtonWidth = 40;
-        int buttonHeight = 20;
-        int buttonsX = x + 95;
-        int buttonsY = y + 6;
+    private void resetButtonState(){
+        infoButton.active = false;
+        unlockButton.visible = false;
+        selectedPerk = null;
+        clearPerkButtons();
+    }
 
+    private void initInfoButton(){
         String info = "Info";
-        ButtonWidget infoButton = new ButtonWidget(buttonsX,buttonsY,infoButtonWidth, buttonHeight, Text.of(info), button -> {
+        infoButton = new ButtonWidget(lastButtonX,buttonsY,infoButtonWidth, buttonHeight, Text.of(info), button -> {
             rootPerk = null;
             lockClicked(button);
-            addPerks();
+            clearPerkButtons();
         });
-        infoButton.active = false;
-        addDrawableChild(infoButton);
+        lastButtonX += infoButtonWidth;
+    }
 
-        addDrawableChild(new ButtonWidget(buttonsX + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_HOBBYIST.getLabel()), button -> {
-            rootPerk = FishingPerks.ROOT_HOBBYIST;
-            lockClicked(button);
-            addPerks();
-            selectedPerk = null;
-            unlockButton.visible = false;
-            unlockButton.setMessage(Text.of("Unlock"));
-        } ));
+    private void initSkillButtons(){
+        hButton = getButtonForSkill(FishingPerks.ROOT_HOBBYIST);
+        oButton = getButtonForSkill(FishingPerks.ROOT_OPPORTUNIST);
+        sButton = getButtonForSkill(FishingPerks.ROOT_SOCIALIST);
+    }
 
-        addDrawableChild(new ButtonWidget(buttonsX + buttonWidth  + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_OPPORTUNIST.getLabel()), button -> {
-            rootPerk = FishingPerks.ROOT_OPPORTUNIST;
-            lockClicked(button);
-            addPerks();
-            selectedPerk = null;
-            unlockButton.visible = false;
-            unlockButton.setMessage(Text.of("Unlock"));
-        }));
-
-        addDrawableChild(new ButtonWidget(buttonsX + buttonWidth * 2  + infoButtonWidth,buttonsY,buttonWidth, buttonHeight, Text.of(FishingPerks.ROOT_SOCIALIST.getLabel()), button -> {
-            rootPerk = FishingPerks.ROOT_SOCIALIST;
-            lockClicked(button);
-            addPerks();
-            selectedPerk = null;
-            unlockButton.visible = false;
-            unlockButton.setMessage(Text.of("Unlock"));
-        }));
-
+    private void initUnlockButton(){
         unlockButton = new ButtonWidget(x + backgroundWidth - 65 ,y + backgroundHeight - 103,50, 20, Text.of("Unlock"), button -> {
             if (clientInfo.availablePerk(selectedPerk) && !clientInfo.hasPerk(selectedPerk)) {
                 ClientPacketSender.unlockPerk(selectedPerk.getName());
@@ -128,7 +134,24 @@ public class FisherInfoScreen extends Screen {
             unlockButton.setMessage(Text.of("Unlocked"));
             unlockButton.active = false;
         });
-        unlockButton.visible = false;
+    }
+
+    private ButtonWidget getButtonForSkill(FishingPerk fishingPerk) {
+        ButtonWidget skillButton = new ButtonWidget(lastButtonX,buttonsY,buttonWidth, buttonHeight, Text.of(fishingPerk.getLabel()), button -> {
+            rootPerk = fishingPerk;
+            lockClicked(button);
+            addPerks();
+            unlockButton.setMessage(Text.of("Unlock"));
+        });
+        lastButtonX += buttonWidth;
+        return skillButton;
+    }
+
+    private void addPageButtons(){
+        addDrawableChild(infoButton);
+        addDrawableChild(hButton);
+        addDrawableChild(oButton);
+        addDrawableChild(sButton);
         addDrawableChild(unlockButton);
     }
 
@@ -205,11 +228,16 @@ public class FisherInfoScreen extends Screen {
         }
     }
 
-
-    private void addPerks(){
+    private void clearPerkButtons(){
+        unlockButton.visible = false;
+        selectedPerk = null;
         for(PerkButtonWidget perkButtonWidget : perkButtonWidgets) {
             remove(perkButtonWidget);
         }
+    }
+
+    private void addPerks(){
+        clearPerkButtons();
         if (this.rootPerk == null || !this.rootPerk.hasChildren()) {
             return;
         }

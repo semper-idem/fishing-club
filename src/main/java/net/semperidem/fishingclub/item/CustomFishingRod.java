@@ -214,6 +214,6 @@ public class CustomFishingRod extends FishingRodItem {
     }
 
     public static int getPower(int usageTick){
-        return Math.max(1, Math.min(5, (usageTick + 60) / 60));
+        return Math.max(1, Math.min(5, (usageTick + 40) / 40));
     }
 }
