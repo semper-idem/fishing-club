@@ -189,11 +189,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void handleFishOnHook(ServerWorld serverWorld){
-        float qualityMultiplier = 1;
+        float fishTypeRarityMultiplier = 1;
         if (FisherInfoDB.hasPerk(this.getOwner(), FishingPerks.BOBBER_THROW_CHARGE)) {
-            qualityMultiplier += MathHelper.clamp(this.distanceTraveled / 320, 0, 0.2);
+            fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 320, 0, 0.2);
         }
-        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()), fishingRod, qualityMultiplier);
+        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()), fishingRod, fishTypeRarityMultiplier);
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;

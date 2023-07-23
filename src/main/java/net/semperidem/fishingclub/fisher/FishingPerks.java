@@ -14,11 +14,11 @@ public class FishingPerks {
     public static FishingPerk BOBBER_THROW_CHARGE = FishingPerk
             .createPerk("bobber_throw_charge", ROOT_HOBBYIST)
             .withLabel("Expert Technique")
-            .withDescription("Charge rod cast to throw bobber further")
+            .withDescription("Charge rod cast to throw bobber further and catch rare fish more easily (Doesn't impact fish quality)")
             .withDetailedDesc(
-                    "Charge rod cast to throw bobber further which increases average quality of fish.\n" +
-                    "~5% quality increase per 16 blocks, up to 64 (doesn't include height)\n" +
-                    "Note: Without this throw distance doesn't impact fish quality"
+                    "Charge rod cast to throw bobber further which increases rarity of fish type.\n" +
+                    "~5% rarity increase per 16 blocks, up to 64 (doesn't include height)\n" +
+                    "Note: Without this throw distance doesn't impact fish rarity"
             );
 
     //H - UTIL
