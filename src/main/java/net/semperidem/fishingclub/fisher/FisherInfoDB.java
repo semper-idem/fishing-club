@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -38,6 +39,10 @@ public class FisherInfoDB {
                 linkedServer.getPlayerManager().getPlayer(key),
                 FisherInfos.getFisherInfoBuf(value)
         );
+    }
+
+    public static boolean hasPerk(PlayerEntity fisher, FishingPerk perk){
+        return get(fisher.getUuid()).hasPerk(perk);
     }
 
     public static ServerPlayerEntity getPlayer(UUID key){
