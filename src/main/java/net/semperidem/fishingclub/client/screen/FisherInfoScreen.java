@@ -22,7 +22,7 @@ public class FisherInfoScreen extends Screen {
     private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
     int backgroundTextureWidth = 512;
-    int backgroundTextureHeight = 288;
+    int backgroundTextureHeight = 352;
 
     int x, y;
     float scale = .7f; //TODO RENAME TO BACKGROUND SCALE
@@ -121,7 +121,7 @@ public class FisherInfoScreen extends Screen {
             unlockButton.setMessage(Text.of("Unlock"));
         }));
 
-        unlockButton = new ButtonWidget(x + backgroundWidth - 60 ,y + backgroundHeight - 65,50, 20, Text.of("Unlock"), button -> {
+        unlockButton = new ButtonWidget(x + backgroundWidth - 65 ,y + backgroundHeight - 103,50, 20, Text.of("Unlock"), button -> {
             if (clientInfo.availablePerk(selectedPerk) && !clientInfo.hasPerk(selectedPerk)) {
                 ClientPacketSender.unlockPerk(selectedPerk.getName());
             }
@@ -185,8 +185,8 @@ public class FisherInfoScreen extends Screen {
             if (hovered instanceof PerkButtonWidget) {
                 FishingPerk fishingPerk = ((PerkButtonWidget) hovered).fishingPerk;
                 ArrayList<Text> lines = new ArrayList<>();
-                lines.add(Text.of(fishingPerk.getLabel()));//Optimize Later TODO
-                lines.add(Text.of(fishingPerk.getDescription()));
+                lines.add(Text.of("§6§l" + fishingPerk.getLabel()));//Optimize Later TODO
+                lines.addAll(fishingPerk.getDescription());
                 renderTooltip(matrices, lines, mouseX, mouseY);
             }
         });
@@ -195,23 +195,16 @@ public class FisherInfoScreen extends Screen {
 
     private void renderSelectedPerk(MatrixStack matrices){
         if (selectedPerk == null) return;
-        textRenderer.drawWithShadow(matrices,selectedPerk.getLabel(), x + 100, y + backgroundHeight - 65, TEXT_COLOR);
+        textRenderer.drawWithShadow(matrices,selectedPerk.getLabel(), x + 100, y + backgroundHeight - 102, TEXT_COLOR);
 
-        int width = 250;
-        String detailedDesc = selectedPerk.getDetailedDescription();
-        String[] words = detailedDesc.split(" ");
-        StringBuilder line = new StringBuilder();
+        ArrayList<Text> lines = selectedPerk.getDetailedDescription();
         int offset = 0;
-        for(String word : words) {
-            if(textRenderer.getWidth(line + " " +word) > width) {
-                textRenderer.drawWithShadow(matrices, line.toString(), x + 100, y + backgroundHeight - 43 + offset, TEXT_COLOR);
-                line = new StringBuilder();
-                offset += textRenderer.fontHeight + 2;
-            }
-            line.append(word).append(" ");
+        for(Text line : lines) {
+            textRenderer.drawWithShadow(matrices, line, x + 100, y + backgroundHeight - 80 + offset, TEXT_COLOR);
+            offset += textRenderer.fontHeight + 2;
         }
-        textRenderer.drawWithShadow(matrices, line.toString(), x + 100, y + backgroundHeight - 43 + offset, TEXT_COLOR);
     }
+
 
     private void addPerks(){
         for(PerkButtonWidget perkButtonWidget : perkButtonWidgets) {

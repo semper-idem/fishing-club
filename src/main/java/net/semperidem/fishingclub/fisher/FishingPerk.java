@@ -1,12 +1,14 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
 
 public class FishingPerk {
     String name;
     String label;
-    String description;
-    String detailedDescription;
+    ArrayList<Text> description;
+    ArrayList<Text> detailedDescription;
     FishingPerk parent;
     ArrayList<FishingPerk> children = new ArrayList<>();
 
@@ -58,22 +60,31 @@ public class FishingPerk {
         return this;
     }
     FishingPerk withDescription(String description){
-        this.description = description;
+        this.description = splitLine(description);
         return this;
     }
 
     FishingPerk withDetailedDesc(String detailedDescription){
-        this.detailedDescription = detailedDescription;
+        this.detailedDescription = splitLine(detailedDescription);
         return this;
+    }
+
+    private ArrayList<Text> splitLine(String text){
+        String[] lines = text.split("\n");
+        ArrayList<Text> result = new ArrayList<>();
+        for(String line : lines) {
+                result.add(Text.of(line));
+        }
+        return result;
     }
 
     public String getLabel(){
         return label;
     }
-    public String getDescription(){
+    public ArrayList<Text> getDescription(){
         return description;
     }
-    public String getDetailedDescription(){
+    public ArrayList<Text> getDetailedDescription(){
         return detailedDescription;
     }
 }
