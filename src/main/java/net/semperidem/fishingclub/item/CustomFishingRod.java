@@ -19,10 +19,8 @@ import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CustomFishingRod extends FishingRodItem {
-    HashMap<FishingRodPartItem.PartType, ItemStack> customParts = new HashMap<>();
     public CustomFishingRod(Settings settings) {
         super(settings);
     }
@@ -88,7 +86,7 @@ public class CustomFishingRod extends FishingRodItem {
         return replacedStack;
     }
 
-    public ArrayList<ItemStack> getRodParts(ItemStack rodStack){
+    public static ArrayList<ItemStack> getRodParts(ItemStack rodStack){
         ArrayList<ItemStack> rodParts = new ArrayList<>();
         if (!rodStack.hasNbt()) {
             return rodParts;
@@ -106,6 +104,21 @@ public class CustomFishingRod extends FishingRodItem {
         }
 
         return rodParts;
+    }
+    public static ItemStack getRodPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
+        if (!rodStack.hasNbt()) {
+            return ItemStack.EMPTY;
+        }
+        NbtCompound rodTag = rodStack.getNbt();
+        if (!rodTag.contains("parts")) {
+            return ItemStack.EMPTY;
+        }
+        NbtCompound partsTag = rodTag.getCompound("parts");
+        if (!partsTag.contains(partType.name())) {
+            return ItemStack.EMPTY;
+        }
+
+       return FishingRodPartItems.getStackFromCompound(partsTag.getCompound(partType.name()));
     }
 
     public ItemStack removePart(ItemStack rodStack, FishingRodPartItem.PartType slot){
@@ -126,28 +139,10 @@ public class CustomFishingRod extends FishingRodItem {
         return ItemStack.EMPTY;
     }
 
-    public void changePart(ItemStack partStack){
-        FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
-        if (customParts.containsKey(partItem.getPartType())) {
-            customParts.remove(partItem.getPartType());
-            //Drop item
-        }
-        customParts.put(partItem.getPartType(), partStack);
-        //Consume item
-    }
-
-    public HashMap<FishingRodPartItem.PartType, ItemStack> getParts(){
-        return customParts;
-    }
-
-    public float getStat(FishGameLogic.Stat stat){
-        return getStat(stat, customParts);
-    }
-
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int power = getPower(getMaxUseTime(stack) - remainingUseTicks);
-        castHook(world, (PlayerEntity) user, power);
+        castHook(world, (PlayerEntity) user, power, stack);
     }
 
     @Override
@@ -160,10 +155,10 @@ public class CustomFishingRod extends FishingRodItem {
         return 1200;
     }
 
-    private void castHook(World world, PlayerEntity user, int power){
+    private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod){
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, this, power));
+            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power));
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -171,13 +166,14 @@ public class CustomFishingRod extends FishingRodItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack fishingRod = user.getStackInHand(hand);
         if (isCasting(user)) {
-            reelRod(world,user,hand);
+            reelRod(world,user,hand, fishingRod);
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
         if (!FisherInfoDB.hasPerk(user, FishingPerks.BOBBER_THROW_CHARGE)) {
-            castHook(world, user, 1);
+            castHook(world, user, 1, fishingRod);
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
@@ -189,16 +185,15 @@ public class CustomFishingRod extends FishingRodItem {
         return user.fishHook != null;
     }
 
-    private void serverReelRod(World world, PlayerEntity user, Hand hand){
+    private void serverReelRod(World world, PlayerEntity user, Hand hand, ItemStack itemStack){
         if (!world.isClient) {
-            ItemStack itemStack = user.getStackInHand(hand);
             int i = user.fishHook.use(itemStack);
             itemStack.damage(i, user, playerEntity -> playerEntity.sendToolBreakStatus(hand));
         }
     }
 
-    private void reelRod(World world, PlayerEntity user, Hand hand){
-        serverReelRod(world, user, hand);
+    private void reelRod(World world, PlayerEntity user, Hand hand, ItemStack fishingRod){
+        serverReelRod(world, user, hand, fishingRod);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
     }
@@ -209,9 +204,9 @@ public class CustomFishingRod extends FishingRodItem {
     }
 
     //TODO MOVE TO UTIL
-    public static float getStat(FishGameLogic.Stat stat, HashMap<FishingRodPartItem.PartType, ItemStack> customParts){
+    public static float getStat(ItemStack fishingRod, FishGameLogic.Stat stat){
         float result = 0;
-        for(ItemStack partStack : customParts.values()) {
+        for(ItemStack partStack : getRodParts(fishingRod)) {
             FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
             result += partItem.getStatBonuses().getOrDefault(stat, 0f);
         }

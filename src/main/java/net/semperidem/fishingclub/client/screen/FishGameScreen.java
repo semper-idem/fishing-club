@@ -11,9 +11,6 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
-
-import java.util.HashMap;
 
 public class FishGameScreen extends Screen {
     private static final Identifier BOBBER = new Identifier(FishingClub.MOD_ID, "textures/gui/bobber_8x32.png");
@@ -41,14 +38,9 @@ public class FishGameScreen extends Screen {
     FishGameLogic fishGameLogic;
 
 
-    public FishGameScreen(Text text) {
+    public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish) {
         super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player);
-    }
-
-    public FishGameScreen(Text text, HashMap<FishingRodPartItem.PartType, ItemStack> rodParts, Fish fish) {
-        super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, rodParts,fish);
+        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish);
     }
 
 

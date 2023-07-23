@@ -5,9 +5,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.item.CustomFishingRod;
@@ -15,8 +13,6 @@ import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.HashMap;
 
 public class FishGameLogic {
     //TODO IMPLEMENT TREASURE MECHANIC - "time event"
@@ -45,18 +41,14 @@ public class FishGameLogic {
 
     float fishDamage;
 
-    HashMap<FishingRodPartItem.PartType, ItemStack> rodParts;
+    ItemStack caughtUsing;
 
 
-    public FishGameLogic(PlayerEntity player){
-        this(player,  new HashMap<>(), FishUtil.getFishOnHook(FisherInfoDB.get(player.getUuid())));
-    }
-
-    public FishGameLogic(PlayerEntity player, HashMap<FishingRodPartItem.PartType, ItemStack> rodParts, Fish fish){
+    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish){
         this.player = player;
         this.fisherInfo = FisherInfos.getClientInfo();
         this.fish = fish;
-        this.rodParts = rodParts;
+        this.caughtUsing = caughtUsing;
         calculateBobberLength();
         calculateHealth();
         calculateFishDamage();
@@ -93,14 +85,16 @@ public class FishGameLogic {
 
         //SKILLS
         if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
-            calculateBobberLength += 0.1f;
+            calculateBobberLength += 0.01f;
         }
 
         //PARTS
         float partsBonusLengthPercent = 0;
-        for(ItemStack partStack : rodParts.values()) {
-            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
-            partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
+        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+            FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
+            if (part.getStatBonuses().containsKey(Stat.BOBBER_WIDTH)) {
+                partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
+            }
         }
         calculateBobberLength += (calculateBobberLength * (1 + partsBonusLengthPercent));
 
@@ -110,9 +104,11 @@ public class FishGameLogic {
 
     private void calculateFishDamage(){
         float damageReduction = 0;
-        for(ItemStack partStack : rodParts.values()) {
-            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
-            damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
+        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+            FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
+            if (part.getStatBonuses().containsKey(Stat.DAMAGE_REDUCTION)) {
+                damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
+            }
         }
         float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fisherInfo.getLevel() / 4f)) / 20f);
         this.fishDamage =  fishRawDamage * (1 - Math.max(0, Math.min(1, damageReduction)));
@@ -120,9 +116,11 @@ public class FishGameLogic {
 
     private void calculateHealth(){
         float calculatedHealth = 0;
-        for(ItemStack partStack : rodParts.values()) {
-            FishingRodPartItem part = (FishingRodPartItem) partStack.getItem();
-            calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
+        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+            FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
+            if (part.getStatBonuses().containsKey(Stat.LINE_HEALTH)) {
+                calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
+            }
         }
         this.lineHealth = calculatedHealth;
     }
@@ -177,7 +175,7 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += (0.0075f * Math.max(1, CustomFishingRod.getStat(Stat.PROGRESS_MULTIPLIER, rodParts)));
+            progress += (0.0075f * Math.max(1, CustomFishingRod.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
             processVictory();

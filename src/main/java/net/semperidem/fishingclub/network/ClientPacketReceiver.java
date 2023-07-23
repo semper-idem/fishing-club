@@ -8,10 +8,6 @@ import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.FishGameScreen;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
-import net.semperidem.fishingclub.item.FishingRodPartItems;
-
-import java.util.HashMap;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
@@ -22,14 +18,9 @@ public class ClientPacketReceiver {
 
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
-            HashMap<FishingRodPartItem.PartType, ItemStack> rodParts = new HashMap<>();
             Fish fish = FishUtil.fishFromPacketBuf(buf);
-            int partCount = buf.readInt();
-            for(int i = 0; i < partCount; i++) {
-                ItemStack part = buf.readItemStack();
-                rodParts.put(((FishingRodPartItem)part.getItem()).getPartType(), part);
-            }
-            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), rodParts, fish)));
+            ItemStack fishingRood = buf.readItemStack();
+            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), fishingRood, fish)));
         });
     }
 }

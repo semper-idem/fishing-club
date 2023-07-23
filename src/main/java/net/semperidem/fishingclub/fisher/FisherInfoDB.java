@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.fisher;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -41,7 +41,7 @@ public class FisherInfoDB {
         );
     }
 
-    public static boolean hasPerk(PlayerEntity fisher, FishingPerk perk){
+    public static boolean hasPerk(Entity fisher, FishingPerk perk){
         return get(fisher.getUuid()).hasPerk(perk);
     }
 

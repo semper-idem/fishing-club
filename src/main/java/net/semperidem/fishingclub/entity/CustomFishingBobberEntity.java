@@ -25,6 +25,7 @@ import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
+import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -43,12 +44,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private float fishAngle;
     private boolean inOpenWater = true;
     private State state = State.FLYING;
-    private CustomFishingRod fishingRod;
+    private ItemStack fishingRod;
     private Fish caughtFish;
     private int lastHookCountdown;
 
     private int power;
-    private boolean announced = false;
+    private float throwDistance;
 
 
 
@@ -56,7 +57,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, CustomFishingRod fishingRod, int power) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power) {
         this(FishingClub.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
@@ -117,9 +118,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (this.state == State.FLYING && isBobbing) {
             this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
             this.state = State.BOBBING;
-            double distanceToOwner = distanceTo(this.getOwner());
+            this.throwDistance = distanceTo(this.getOwner());
             if (this.world.isClient) {
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Distance: " + String.format("%.2f", distanceToOwner)), true);
+                MinecraftClient.getInstance().player.sendMessage(Text.of("Distance: " + String.format("%.2f", this.throwDistance)), true);
             }
             return;
         } else {
@@ -188,7 +189,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void handleFishOnHook(ServerWorld serverWorld){
-        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()));
+        float qualityMultiplier = 1;
+        if (FisherInfoDB.hasPerk(this.getOwner(), FishingPerks.BOBBER_THROW_CHARGE)) {
+            qualityMultiplier += MathHelper.clamp(this.distanceTraveled / 320, 0, 0.2);
+        }
+        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()), fishingRod, qualityMultiplier);
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
@@ -196,7 +201,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, fishingRod.getStat(FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, CustomFishingRod.getStat(fishingRod, FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
     }
 
@@ -267,7 +272,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void setWaitCountdown() {
-        float catchRate = fishingRod.getStat(FishGameLogic.Stat.CATCH_RATE);
+        float catchRate = CustomFishingRod.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
         int minWait = (int) (MIN_WAIT * Math.max(0,(1 - catchRate)));
         int maxWait = minWait * 2;
         this.waitCountdown = MathHelper.nextInt(this.random, minWait, maxWait);
@@ -337,7 +342,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             int reactionBonus = calculateReactionBonus();
             caughtFish.experience += reactionBonus;
             this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod.getParts(), caughtFish);
+            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish);
         }
         if (this.onGround) {
             i = 2;
@@ -360,7 +365,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     FishingRodPartItem getBobber(){
-        return (FishingRodPartItem) fishingRod.getParts().get(FishingRodPartItem.PartType.BOBBER).getItem();
+        return (FishingRodPartItem) CustomFishingRod.getRodPart(fishingRod, FishingRodPartItem.PartType.BOBBER).getItem().asItem();
     }
 
     enum State {

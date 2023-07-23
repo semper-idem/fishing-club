@@ -140,7 +140,7 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-    public static Fish getFishOnHook(FisherInfo fisherInfo){
+    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float qualityMultiplier){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = new ArrayList<>();
@@ -156,7 +156,7 @@ public class FishUtil {
         int randomFish = (int) (Math.random() * totalRarity);
         for (FishType fishType : availableFish) {
             if (randomFish < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fisherInfo);
+                return new Fish(fishType, fisherInfo, fishingRod, qualityMultiplier);
             }
         }
         return new Fish();
