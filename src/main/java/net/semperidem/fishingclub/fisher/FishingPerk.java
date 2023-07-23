@@ -49,6 +49,10 @@ public class FishingPerk {
         return this.parent.parent != null;
     }
 
+    public String getName(){
+        return name;
+    }
+
     FishingPerk withLabel(String label){
         this.label = label;
         return this;

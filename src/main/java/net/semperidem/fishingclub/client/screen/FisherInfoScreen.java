@@ -12,6 +12,7 @@ import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerk;
 import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class FisherInfoScreen extends Screen {
 
     @Override
     public void tick() {
-
+        this.clientInfo = FisherInfos.getClientInfo();
     }
 
     private void renderInfoLine(MatrixStack matrices, int x, int y, String left, String right){
@@ -179,6 +180,9 @@ public class FisherInfoScreen extends Screen {
 
     private void addPerk(FishingPerk fishingPerk, int perkX, int perkY){
         addDrawableChild(new PerkButtonWidget(perkX, perkY, 20, 20, Text.empty(), button -> {
+            if (clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk)) {
+                ClientPacketSender.unlockPerk(fishingPerk.getName());
+            }
         }, fishingPerk));
         ArrayList<FishingPerk> children = fishingPerk.getChildren();
         for(FishingPerk child : children) {
@@ -194,25 +198,30 @@ public class FisherInfoScreen extends Screen {
         return false;
     }
 
-    static class PerkButtonWidget extends ButtonWidget {
+    class PerkButtonWidget extends ButtonWidget {
         FishingPerk fishingPerk;
         public PerkButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, FishingPerk fishingPerk) {
             super(x, y, width, height, message, onPress);
             this.fishingPerk = fishingPerk;
-            this.setZOffset(-100);
         }
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderTexture(0, SKILL_ICON);
-            drawTexture(matrices, x, y, 0, 0, 20, 20, 20, 20);
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            if (isHovered())  {
-                renderTooltip(matrices, mouseX, mouseY);
+            boolean hasPerk = clientInfo.hasPerk(fishingPerk);
+            boolean isAvailable = clientInfo.availablePerk(fishingPerk);
+            RenderSystem.enableBlend();
+            if (hasPerk) {
+                RenderSystem.setShaderColor(0.5f,1,0.5f,1);
+            } else if (!isAvailable) {
+                RenderSystem.setShaderColor(1,0.9f,0.9f,0.5f);
             }
+            drawTexture(matrices, x, y, 0, 0, 20, 20, 20, 20);
             if (fishingPerk.parentIsRoot()) {
                 fill(matrices, x, y + 9, x - 10, y + 11, TEXT_COLOR);
             }
+            RenderSystem.setShaderColor(1,1,1,1);
+            RenderSystem.disableBlend();
         }
     }
 }

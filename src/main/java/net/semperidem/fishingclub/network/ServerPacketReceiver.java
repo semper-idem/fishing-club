@@ -13,6 +13,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_F_SHOP_OPEN, ServerPacketHandlers::handleFishingShopOpenRequest);
             registerReceiver(handler, C2S_F_SHOP_SELL, ServerPacketHandlers::handleFishingShopSellContainer);
             registerReceiver(handler, C2S_F_SHOP_BUY, ServerPacketHandlers::handleFishingShopBuyBasket);
+            registerReceiver(handler, C2S_F_DATA_PERK_ADD, ServerPacketHandlers::handlePerkAdd);
         });
     }
 }

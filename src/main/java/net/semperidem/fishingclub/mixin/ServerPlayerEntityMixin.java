@@ -8,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,12 +16,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin extends PlayerEntity{
-
+public abstract class ServerPlayerEntityMixin extends PlayerEntity{
     public ServerPlayerEntityMixin(World world, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
         super(world, blockPos, f, gameProfile, playerPublicKey);
     }
 
+
+    @Inject(method = "onSpawn", at = @At("TAIL"))
+    private void onSpawn(CallbackInfo ci){
+        ServerPacketSender.sendFisherInfoSyncPacket((ServerPlayerEntity)(PlayerEntity)this);
+    }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void readCustomDataFromNbt(NbtCompound nbtCompound, CallbackInfo ci){

@@ -50,9 +50,16 @@ public class FisherInfo {
         addPerk(FishingPerks.ROOT_SOCIALIST);
     }
 
-    private void addPerk(FishingPerk perk){
-        this.perks.put(perk.name, perk);
+    public void addPerk(FishingPerk perk){
+        if (availablePerk(perk)) {
+            this.perks.put(perk.name, perk);
+        }
     }
+
+    public boolean availablePerk(FishingPerk perk){
+        return perk.parent == null || this.perks.containsKey(perk.parent.name);
+    }
+
 
 
     public int getSkillPoints(){

@@ -6,10 +6,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
+import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FishingPerks;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -48,9 +51,23 @@ public class ServerPacketHandlers {
             basket.add(buf.readItemStack());
         }
         server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
-                    .filter(ShopScreenHandler.class::isInstance)
-                    .map(ShopScreenHandler.class::cast)
-                    .ifPresent(screenHandler -> screenHandler.boughtContainer(player, basket, cost)));
+                .filter(ShopScreenHandler.class::isInstance)
+                .map(ShopScreenHandler.class::cast)
+                .ifPresent(screenHandler -> screenHandler.boughtContainer(player, basket, cost)));
+    }
+
+
+    public static void handlePerkAdd(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        String perkName = buf.readString();
+        FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
+            server.execute(() -> {
+                FisherInfo fisherInfo = FisherInfos.getPlayerFisherInfo(player.getUuid());
+                if (fisherInfo.getSkillPoints() > 0) {
+                    fisherInfo.addPerk(perk);
+                    ServerPacketSender.sendFisherInfoSyncPacket(player);
+                }
+            });
+        });
     }
 
 

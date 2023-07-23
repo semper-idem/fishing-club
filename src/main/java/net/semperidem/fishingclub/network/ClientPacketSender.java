@@ -27,6 +27,12 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
     }
 
+    public static void unlockPerk(String perkName){
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString(perkName);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_DATA_PERK_ADD, buf);
+    }
+
 
     public static void buyShopContainer(int containerValue, ArrayList<ItemStack> basket) {
         PacketByteBuf  buf = PacketByteBufs.create();
