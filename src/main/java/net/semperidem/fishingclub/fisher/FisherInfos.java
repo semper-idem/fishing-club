@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FisherInfos {
@@ -119,17 +120,18 @@ public class FisherInfos {
     }
 
     private static void writeNBT(FisherInfo fisherInfo, NbtCompound playerTag){
-        NbtCompound fishingTag = new NbtCompound();
-        fishingTag.putInt("level", fisherInfo.level);
-        fishingTag.putInt("exp", fisherInfo.exp);
-        fishingTag.putInt("fisherCredit", fisherInfo.fisherCredit);
+        NbtCompound fisherInfoTag = new NbtCompound();
+        fisherInfoTag.putInt("level", fisherInfo.level);
+        fisherInfoTag.putInt("exp", fisherInfo.exp);
+        fisherInfoTag.putInt("fisherCredit", fisherInfo.fisherCredit);
         NbtList perksList = new NbtList();
         for(String perk : fisherInfo.perks.keySet()) {
             perksList.add(NbtString.of(perk));
         }
-        fishingTag.put("perks", perksList);
-        fishingTag.putInt("perkCount", perksList.size());
-        playerTag.put(FISHER_INFO_TAG_NAME, fishingTag);
+        fisherInfoTag.put("perks", perksList);
+        fisherInfoTag.putInt("perkCount", perksList.size());
+        fisherInfoTag.putInt("skillPoints", fisherInfo.skillPoints);
+        playerTag.put(FISHER_INFO_TAG_NAME, fisherInfoTag);
     }
 
     public static void readNBT(UUID uuid, NbtCompound playerTag) {
@@ -139,17 +141,21 @@ public class FisherInfos {
     private static FisherInfo readNBT(NbtCompound playerTag){
         FisherInfo fisherInfo = new  FisherInfo(playerTag.getUuid("UUID"));
         if (playerTag.contains(FISHER_INFO_TAG_NAME)) {
-            NbtCompound fishingTag = playerTag.getCompound(FISHER_INFO_TAG_NAME);
-            fisherInfo.level = fishingTag.getInt("level");
-            fisherInfo.exp = fishingTag.getInt("exp");
-            fisherInfo.fisherCredit = fishingTag.getInt("fisherCredit");
-            int perkCount = fishingTag.getInt("perkCount");
-            NbtList perkList = fishingTag.getList("perks", NbtElement.STRING_TYPE);
+            NbtCompound fisherInfoTag = playerTag.getCompound(FISHER_INFO_TAG_NAME);
+            fisherInfo.level = getIntFromTag(fisherInfoTag, "level");
+            fisherInfo.exp = getIntFromTag(fisherInfoTag, "exp");
+            fisherInfo.fisherCredit = getIntFromTag(fisherInfoTag, "fisherCredit");
+            int perkCount = getIntFromTag(fisherInfoTag, "perkCount");
+            NbtList perkList = fisherInfoTag.getList("perks", NbtElement.STRING_TYPE);
             for(int i = 0; i < perkCount; i++) {
                 FishingPerks.getPerkFromName(perkList.getString(i)).ifPresent(fishingPerk -> fisherInfo.perks.put(fishingPerk.name, fishingPerk));
             }
+            fisherInfo.skillPoints = getIntFromTag(fisherInfoTag, "skillPoints");
         }
         return fisherInfo;
     }
 
+    private static int getIntFromTag(NbtCompound fisherInfoTag, String key){
+        return Optional.of(fisherInfoTag.getInt(key)).orElse(0);
+    }
 }

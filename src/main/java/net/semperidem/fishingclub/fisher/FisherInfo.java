@@ -13,10 +13,11 @@ public class FisherInfo {
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
 
-    int level = 1;
-    int exp = 0;
+    int level;
+    int exp;
     HashMap<String, FishingPerk> perks;
     int fisherCredit;
+    int skillPoints = 0;
 
     public FisherInfo(int level, int exp, String perkString, int credit, UUID fisherUUID) {
         this.level = level;
@@ -51,8 +52,9 @@ public class FisherInfo {
     }
 
     public void addPerk(FishingPerk perk){
-        if (availablePerk(perk)) {
+        if (availablePerk(perk) && skillPoints > 0) {
             this.perks.put(perk.name, perk);
+            skillPoints--;
         }
     }
 
@@ -60,12 +62,12 @@ public class FisherInfo {
         return perk.parent == null || this.perks.containsKey(perk.parent.name);
     }
 
-
+    private void addSkillPoint(){
+        this.skillPoints++;
+    }
 
     public int getSkillPoints(){
-        // -1 cause of starting level
-        // +3 cause of root perks
-        return Math.max(0, this.level - 1 + 3 - this.perks.size());
+        return this.skillPoints;
     }
 
     public int nextLevelXP(){
@@ -85,6 +87,7 @@ public class FisherInfo {
     }
 
     public void onLevelUpBehaviour(){
+        addSkillPoint();
         if (fisher == null){
             return;
         }
