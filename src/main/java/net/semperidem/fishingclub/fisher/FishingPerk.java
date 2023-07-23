@@ -70,4 +70,10 @@ public class FishingPerk {
     public String getLabel(){
         return label;
     }
+    public String getDescription(){
+        return description;
+    }
+    public String getDetailedDescription(){
+        return detailedDescription;
+    }
 }
