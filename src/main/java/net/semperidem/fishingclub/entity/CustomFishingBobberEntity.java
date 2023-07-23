@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,16 +47,20 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private Fish caughtFish;
     private int lastHookCountdown;
 
+    private int power;
+    private boolean announced = false;
+
 
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, CustomFishingRod fishingRod) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, CustomFishingRod fishingRod, int power) {
         this(FishingClub.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
+        this.power = power;
         setThrowDirection();
     }
 
@@ -74,6 +79,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         Vec3d vec3d = new Vec3d(-k, MathHelper.clamp(-(m / l), -5.0f, 5.0f), -h);
         double o = vec3d.length();
         vec3d = vec3d.multiply(0.6 / o + this.random.nextTriangular(0.5, 0.0103365), 0.6 / o + this.random.nextTriangular(0.5, 0.0103365), 0.6 / o + this.random.nextTriangular(0.5, 0.0103365));
+        vec3d = vec3d.multiply(power);
         this.setVelocity(vec3d);
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 57.2957763671875));
@@ -111,6 +117,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (this.state == State.FLYING && isBobbing) {
             this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
             this.state = State.BOBBING;
+            double distanceToOwner = distanceTo(this.getOwner());
+            if (this.world.isClient) {
+                MinecraftClient.getInstance().player.sendMessage(Text.of("Distance: " + String.format("%.2f", distanceToOwner)), true);
+            }
             return;
         } else {
             if (this.state == State.BOBBING) {
@@ -309,7 +319,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         ItemStack itemStack2 = playerEntity.getOffHandStack();
         boolean bl = itemStack.isOf(FishingClub.CUSTOM_FISHING_ROD);
         boolean bl2 = itemStack2.isOf(FishingClub.CUSTOM_FISHING_ROD);
-        if (playerEntity.isRemoved() || !playerEntity.isAlive() || !bl && !bl2 || this.squaredDistanceTo(playerEntity) > 1024.0) {
+        if (playerEntity.isRemoved() || !playerEntity.isAlive() || !bl && !bl2) {
             this.discard();
             return true;
         }

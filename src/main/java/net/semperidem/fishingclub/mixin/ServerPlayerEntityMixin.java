@@ -21,7 +21,6 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity{
         super(world, blockPos, f, gameProfile, playerPublicKey);
     }
 
-
     @Inject(method = "onSpawn", at = @At("TAIL"))
     private void onSpawn(CallbackInfo ci){
         ServerPacketSender.sendFisherInfoSyncPacket((ServerPlayerEntity)(PlayerEntity)this);

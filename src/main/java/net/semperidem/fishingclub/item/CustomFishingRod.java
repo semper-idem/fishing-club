@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
@@ -140,9 +142,23 @@ public class CustomFishingRod extends FishingRodItem {
         return getStat(stat, customParts);
     }
 
+    @Override
+    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        int power = Math.max(1, Math.min(5, (getMaxUseTime(stack) - remainingUseTicks + 60) / 60));
+        castHook(world, (PlayerEntity) user, user.getStackInHand(Hand.MAIN_HAND).isOf(stack.getItem()) ? Hand.MAIN_HAND : Hand.OFF_HAND, power);
+    }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity2, Hand hand) {
+    public boolean isUsedOnRelease(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getMaxUseTime(ItemStack stack) {
+        return 72000;
+    }
+
+    private TypedActionResult<ItemStack> castHook(World world, PlayerEntity playerEntity2, Hand hand, int power){
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (playerEntity2.fishHook != null) {
             if (!world.isClient) {
@@ -154,7 +170,7 @@ public class CustomFishingRod extends FishingRodItem {
         } else {
             world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
             if (!world.isClient) {
-                world.spawnEntity(new CustomFishingBobberEntity(playerEntity2, world, this));
+                world.spawnEntity(new CustomFishingBobberEntity(playerEntity2, world, this, power));
             }
             playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
             playerEntity2.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -162,6 +178,16 @@ public class CustomFishingRod extends FishingRodItem {
         return TypedActionResult.success(itemStack, world.isClient());
     }
 
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity2, Hand hand) {
+        playerEntity2.setCurrentHand(hand);
+        return TypedActionResult.consume(playerEntity2.getStackInHand(hand));
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
+    }
 
     //TODO MOVE TO UTIL
     public static float getStat(FishGameLogic.Stat stat, HashMap<FishingRodPartItem.PartType, ItemStack> customParts){

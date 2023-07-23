@@ -13,9 +13,13 @@ public class FishingPerks {
     //H - Special
     public static FishingPerk BOBBER_THROW_CHARGE = FishingPerk
             .createPerk("bobber_throw_charge", ROOT_HOBBYIST)
-            .withLabel("Distance Thrower")
-            .withDescription("Can charge bobber throw to increase distance and fish quality")
-            .withDetailedDesc("Your strong arm and sharp aim allow you to throw the bobber further, attracting higher quality fish.");
+            .withLabel("Expert Technique")
+            .withDescription("Charge rod cast to throw bobber further")
+            .withDetailedDesc(
+                    "Charge rod cast to throw bobber further which increases average quality of fish.\n" +
+                    "~5% quality increase per 16 blocks, up to 64 (doesn't include height)\n" +
+                    "Note: Without this throw distance doesn't impact fish quality"
+            );
 
     //H - UTIL
     public static FishingPerk CARRY_TWO_NETS = FishingPerk

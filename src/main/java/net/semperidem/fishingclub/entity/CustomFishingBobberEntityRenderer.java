@@ -11,7 +11,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -88,8 +87,8 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         float x = (float)(q - u);
         VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
         MatrixStack.Entry entry2 = matrixStack.peek();
-        for (int z = 0; z <= 16; ++z) {
-            renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
+        for (int z = 0; z <= 8; ++z) {
+            renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 8), percentage(z + 1, 8));
         }
         matrixStack.pop();
     }
@@ -110,7 +109,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         float o = g * (j * j + j) * 0.5f + 0.25f - l;
         float p = h * j - m;
         float q = MathHelper.sqrt(n * n + o * o + p * p);
-        vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(0, 0, 0, 255).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
+        vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
     }
 
     @Override

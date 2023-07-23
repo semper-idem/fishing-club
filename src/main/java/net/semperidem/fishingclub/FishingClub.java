@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -24,13 +23,13 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
-import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.FishermanEntityRenderer;
-import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItems;
@@ -61,7 +60,7 @@ public class FishingClub implements ModInitializer {
                     .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
                     .disableSummon()
                     .disableSaving()
-                    .trackRangeBlocks(4)
+                    .trackRangeBlocks(128)
                     .trackedUpdateRate(5)
                     .build()
     );
