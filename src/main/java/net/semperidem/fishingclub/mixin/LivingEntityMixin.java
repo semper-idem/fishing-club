@@ -7,7 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.util.FishingRodUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,7 +30,7 @@ public abstract class LivingEntityMixin {
     }
 
     private void tickRodPullPower(){
-        int power = CustomFishingRod.getPower(getItemUseTime());
+        int power = FishingRodUtil.getPower(getItemUseTime());
         if (power != this.rodPullPower) {
             this.rodPullPower = power;
             MinecraftClient.getInstance().player.sendMessage(Text.of("[" + ">".repeat(power) + "]"), true);

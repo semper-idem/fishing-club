@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
@@ -85,12 +85,12 @@ public class Fish {
 
 
     private float calculateFishWeight(){
-        float weightMultiplier = Math.min(1, FishingClub.CUSTOM_FISHING_ROD.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
+        float weightMultiplier = Math.min(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
         return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight * weightMultiplier, fishLevel / 100f);
     }
 
     private float calculateFishLength(){
-        float lengthMultiplier = Math.min(1, CustomFishingRod.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
+        float lengthMultiplier = Math.min(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
         return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength * lengthMultiplier, fishLevel / 100f);
     }
 
@@ -105,7 +105,7 @@ public class Fish {
     private int calculateGrade(){
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
-        float oneUpChance = Math.max(0, CustomFishingRod.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
+        float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
         return Math.min(5, Math.max(weightGrade, lengthGrade) + Math.random() < oneUpChance ? 1 : 0);
     }
 

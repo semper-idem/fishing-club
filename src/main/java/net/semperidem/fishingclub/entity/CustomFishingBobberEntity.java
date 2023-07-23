@@ -26,9 +26,9 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.fisher.FishingPerks;
-import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+import net.semperidem.fishingclub.util.FishingRodUtil;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
@@ -201,7 +201,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, CustomFishingRod.getStat(fishingRod, FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
     }
 
@@ -272,7 +272,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void setWaitCountdown() {
-        float catchRate = CustomFishingRod.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
+        float catchRate = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
         int minWait = (int) (MIN_WAIT * Math.max(0,(1 - catchRate)));
         int maxWait = minWait * 2;
         this.waitCountdown = MathHelper.nextInt(this.random, minWait, maxWait);
@@ -365,7 +365,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     FishingRodPartItem getBobber(){
-        return (FishingRodPartItem) CustomFishingRod.getRodPart(fishingRod, FishingRodPartItem.PartType.BOBBER).getItem().asItem();
+        return (FishingRodPartItem) FishingRodUtil.getRodPart(fishingRod, FishingRodPartItem.PartType.BOBBER).getItem().asItem();
     }
 
     enum State {

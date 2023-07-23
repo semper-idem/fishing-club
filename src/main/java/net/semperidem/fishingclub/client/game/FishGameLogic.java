@@ -8,9 +8,9 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
-import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
 
@@ -90,7 +90,7 @@ public class FishGameLogic {
 
         //PARTS
         float partsBonusLengthPercent = 0;
-        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+        for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
             if (part.getStatBonuses().containsKey(Stat.BOBBER_WIDTH)) {
                 partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
@@ -104,7 +104,7 @@ public class FishGameLogic {
 
     private void calculateFishDamage(){
         float damageReduction = 0;
-        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+        for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
             if (part.getStatBonuses().containsKey(Stat.DAMAGE_REDUCTION)) {
                 damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
@@ -116,7 +116,7 @@ public class FishGameLogic {
 
     private void calculateHealth(){
         float calculatedHealth = 0;
-        for(ItemStack partStack : CustomFishingRod.getRodParts(caughtUsing)) {
+        for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
             if (part.getStatBonuses().containsKey(Stat.LINE_HEALTH)) {
                 calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
@@ -175,7 +175,7 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += (0.0075f * Math.max(1, CustomFishingRod.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
+            progress += (0.0075f * Math.max(1, FishingRodUtil.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
             processVictory();

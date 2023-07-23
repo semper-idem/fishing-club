@@ -13,12 +13,10 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FisherInfoDB;
 import net.semperidem.fishingclub.fisher.FishingPerks;
-
-import java.util.ArrayList;
+import net.semperidem.fishingclub.util.FishingRodUtil;
 
 public class CustomFishingRod extends FishingRodItem {
     public CustomFishingRod(Settings settings) {
@@ -33,17 +31,6 @@ public class CustomFishingRod extends FishingRodItem {
         addPart(defaultStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
         addPart(defaultStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
         return defaultStack;
-    }
-
-    public boolean hasPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
-        NbtCompound rodNbt = rodStack.getNbt();
-        if (rodNbt.contains("parts")) {
-            NbtCompound partsNbt = rodNbt.getCompound("parts");
-            if (partsNbt.contains(partType.name())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public ItemStack getPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
@@ -86,41 +73,6 @@ public class CustomFishingRod extends FishingRodItem {
         return replacedStack;
     }
 
-    public static ArrayList<ItemStack> getRodParts(ItemStack rodStack){
-        ArrayList<ItemStack> rodParts = new ArrayList<>();
-        if (!rodStack.hasNbt()) {
-            return rodParts;
-        }
-        NbtCompound rodTag = rodStack.getNbt();
-        if (!rodTag.contains("parts")) {
-            return rodParts;
-        }
-        NbtCompound partsTag = rodTag.getCompound("parts");
-        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-            if (!partsTag.contains(partType.name())) {
-                continue;
-            }
-            rodParts.add(FishingRodPartItems.getStackFromCompound(partsTag.getCompound(partType.name())));
-        }
-
-        return rodParts;
-    }
-    public static ItemStack getRodPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
-        if (!rodStack.hasNbt()) {
-            return ItemStack.EMPTY;
-        }
-        NbtCompound rodTag = rodStack.getNbt();
-        if (!rodTag.contains("parts")) {
-            return ItemStack.EMPTY;
-        }
-        NbtCompound partsTag = rodTag.getCompound("parts");
-        if (!partsTag.contains(partType.name())) {
-            return ItemStack.EMPTY;
-        }
-
-       return FishingRodPartItems.getStackFromCompound(partsTag.getCompound(partType.name()));
-    }
-
     public ItemStack removePart(ItemStack rodStack, FishingRodPartItem.PartType slot){
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {
@@ -141,7 +93,7 @@ public class CustomFishingRod extends FishingRodItem {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        int power = getPower(getMaxUseTime(stack) - remainingUseTicks);
+        int power = FishingRodUtil.getPower(getMaxUseTime(stack) - remainingUseTicks);
         castHook(world, (PlayerEntity) user, power, stack);
     }
 
@@ -203,17 +155,4 @@ public class CustomFishingRod extends FishingRodItem {
         return UseAction.SPEAR;
     }
 
-    //TODO MOVE TO UTIL
-    public static float getStat(ItemStack fishingRod, FishGameLogic.Stat stat){
-        float result = 0;
-        for(ItemStack partStack : getRodParts(fishingRod)) {
-            FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();
-            result += partItem.getStatBonuses().getOrDefault(stat, 0f);
-        }
-        return result;
-    }
-
-    public static int getPower(int usageTick){
-        return Math.max(1, Math.min(5, (usageTick + 40) / 40));
-    }
 }
