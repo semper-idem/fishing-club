@@ -21,7 +21,7 @@ public class FishingPerks {
                     "Charge rod cast to throw bobber further \n" +
                     "which increases rarity of fish type by up to\n" +
                     "20% at 64 blocks (doesn't include height)"
-            );
+            ).withIcon("bobber_throw_charge.png");
 
     //H - UTIL
     public static FishingPerk CARRY_TWO_NETS = FishingPerk

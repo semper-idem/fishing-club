@@ -266,13 +266,13 @@ public class FisherInfoScreen extends Screen {
         }
     }
 
-
-
-
     @Override
     public boolean shouldPause() {
         return false;
     }
+
+
+
 
     class PerkButtonWidget extends ButtonWidget {
         FishingPerk fishingPerk;
@@ -284,21 +284,39 @@ public class FisherInfoScreen extends Screen {
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShaderTexture(0, SKILL_ICON);
+            RenderSystem.enableBlend();
+            renderBackground(matrices);
+            renderLink(matrices);
+            renderIcon(matrices);
+            RenderSystem.disableBlend();
+        }
+
+        private void renderBackground(MatrixStack matrices){
             boolean hasPerk = clientInfo.hasPerk(fishingPerk);
             boolean isAvailable = clientInfo.availablePerk(fishingPerk);
-            RenderSystem.enableBlend();
             if (hasPerk) {
                 RenderSystem.setShaderColor(0.5f,1,0.5f,1);
-            } else if (!isAvailable) {
-                RenderSystem.setShaderColor(1,0.9f,0.9f,0.5f);
             }
+            if (!isAvailable) {
+                RenderSystem.setShaderColor(0.6f,0.6f,0.6f,0.6f);
+            }
+            RenderSystem.setShaderTexture(0, SKILL_ICON);
             drawTexture(matrices, x, y, 0, 0, 20, 20, 20, 20);
+        }
+
+        private void renderLink(MatrixStack matrices){
             if (fishingPerk.parentIsRoot()) {
                 fill(matrices, x, y + 9, x - 10, y + 11, TEXT_COLOR);
             }
+        }
+
+        private void renderIcon(MatrixStack matrices){
             RenderSystem.setShaderColor(1,1,1,1);
-            RenderSystem.disableBlend();
+            Identifier icon = fishingPerk.getIcon();
+            if (icon != null) {
+                RenderSystem.setShaderTexture(0, fishingPerk.getIcon());
+                drawTexture(matrices, x, y, 0, 0, 20, 20, 20, 20);
+            }
         }
     }
 }

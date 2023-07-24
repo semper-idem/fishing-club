@@ -1,6 +1,8 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ public class FishingPerk {
     ArrayList<Text> detailedDescription;
     FishingPerk parent;
     ArrayList<FishingPerk> children = new ArrayList<>();
+    Identifier icon;
 
     private FishingPerk(String name){
         this.name = name;
@@ -44,6 +47,14 @@ public class FishingPerk {
         return this.children.size() > 0;
     }
 
+    public FishingPerk withIcon(String iconName){
+        this.icon = new Identifier(FishingClub.MOD_ID, "textures/gui/skill/" + iconName);
+        return this;
+    }
+
+    public Identifier getIcon(){
+        return this.icon;
+    }
     public boolean parentIsRoot(){
         if (this.parent == null) {
             return false;
