@@ -70,6 +70,10 @@ public class FisherInfo {
         return this.skillPoints;
     }
 
+    public boolean hasSkillPoints(){
+        return this.skillPoints > 0;
+    }
+
     public int nextLevelXP(){
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }

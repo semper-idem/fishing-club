@@ -62,7 +62,7 @@ public class ServerPacketHandlers {
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             server.execute(() -> {
                 FisherInfo fisherInfo = FisherInfos.getPlayerFisherInfo(player.getUuid());
-                if (fisherInfo.getSkillPoints() > 0) {
+                if (fisherInfo.hasSkillPoints()) {
                     fisherInfo.addPerk(perk);
                     ServerPacketSender.sendFisherInfoSyncPacket(player);
                 }

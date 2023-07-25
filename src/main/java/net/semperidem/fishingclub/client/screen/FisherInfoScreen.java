@@ -21,13 +21,10 @@ public class FisherInfoScreen extends Screen {
     //512 x 288
     private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
-    int backgroundTextureWidth = 512;
-    int backgroundTextureHeight = 352;
+    int backgroundTextureWidth = 384;
+    int backgroundTextureHeight = 264;
 
     int x, y;
-    float scale = .7f; //TODO RENAME TO BACKGROUND SCALE
-    int backgroundWidth = backgroundTextureWidth;
-    int backgroundHeight = backgroundTextureHeight;
 
     private static final int TEXT_COLOR = Color.WHITE.getRGB();
 
@@ -53,12 +50,18 @@ public class FisherInfoScreen extends Screen {
     ButtonWidget unlockButton;
 
 
-    int buttonWidth = 72;
-    int infoButtonWidth = 40;
-    int buttonHeight = 20;
-    int buttonsX = x + 95;
-    int buttonsY = y + 6;
-    int lastButtonX = buttonsX;
+    int buttonWidth;
+    int infoButtonWidth;
+    int buttonHeight;
+    int buttonsX;
+    int buttonsY;
+    int lastButtonX;
+
+    int bannerWidth = 96;
+    int borderThickness = 6;
+    int buttonGap = 2;
+    int buttonsWidth;
+
 
     ArrayList<PerkButtonWidget> perkButtonWidgets = new ArrayList<>();
 
@@ -75,25 +78,25 @@ public class FisherInfoScreen extends Screen {
         this.level = String.valueOf(clientInfo.getLevel());
         this.exp = clientInfo.getExp() + "/" + clientInfo.nextLevelXP();
         this.credit = String.valueOf(clientInfo.getFisherCredit());
-        this.hasSkillPoints = clientInfo.getSkillPoints() > 0;
+        this.hasSkillPoints = clientInfo.hasSkillPoints();
         this.skillPoints = String.valueOf(clientInfo.getSkillPoints());
 
     }
 
     @Override
     protected void init() {
-        backgroundWidth = (int) (backgroundTextureWidth * scale);
-        backgroundHeight = (int) (backgroundTextureHeight * scale);
 
-        x = (width - backgroundWidth) / 2;
-        y = (height - backgroundHeight) / 2;
+        x = (width - backgroundTextureWidth - bannerWidth) / 2;
+        y = (height - backgroundTextureHeight) / 2;
 
 
-        buttonWidth = 72;
         infoButtonWidth = 40;
+        buttonWidth = 72;
         buttonHeight = 20;
-        buttonsX = x + 93;
-        buttonsY = y + 6;
+        buttonsWidth = infoButtonWidth + buttonWidth * 3 + buttonGap * 3;
+
+        buttonsX = x + bannerWidth + (backgroundTextureWidth - bannerWidth - buttonsWidth) / 2;
+        buttonsY = y + borderThickness + 2;
         lastButtonX = buttonsX;
 
         initInfoButton();
@@ -102,6 +105,7 @@ public class FisherInfoScreen extends Screen {
         resetButtonState();
         addPageButtons();
     }
+
 
     private void resetButtonState(){
         infoButton.active = false;
@@ -117,7 +121,7 @@ public class FisherInfoScreen extends Screen {
             lockClicked(button);
             clearPerkButtons();
         });
-        lastButtonX += infoButtonWidth;
+        lastButtonX += infoButtonWidth + buttonGap;
     }
 
     private void initSkillButtons(){
@@ -127,12 +131,11 @@ public class FisherInfoScreen extends Screen {
     }
 
     private void initUnlockButton(){
-        unlockButton = new ButtonWidget(x + backgroundWidth - 65 ,y + backgroundHeight - 103,50, 20, Text.of("Unlock"), button -> {
+        unlockButton = new ButtonWidget(x + backgroundTextureWidth - 62  ,y + backgroundTextureHeight - 114,50, 20, Text.of("Unlock"), button -> {
             if (clientInfo.availablePerk(selectedPerk) && !clientInfo.hasPerk(selectedPerk)) {
                 ClientPacketSender.unlockPerk(selectedPerk.getName());
+                unlockButton.visible = false;
             }
-            unlockButton.setMessage(Text.of("Unlocked"));
-            unlockButton.active = false;
         });
     }
 
@@ -141,9 +144,8 @@ public class FisherInfoScreen extends Screen {
             rootPerk = fishingPerk;
             lockClicked(button);
             addPerks();
-            unlockButton.setMessage(Text.of("Unlock"));
         });
-        lastButtonX += buttonWidth;
+        lastButtonX += buttonWidth + buttonGap;
         return skillButton;
     }
 
@@ -167,7 +169,7 @@ public class FisherInfoScreen extends Screen {
     @Override
     public void renderBackground(MatrixStack matrices) {
         RenderSystem.setShaderTexture(0, BACKGROUND);
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight, backgroundWidth, backgroundHeight);
+        drawTexture(matrices, x, y, 0, 0, backgroundTextureWidth, backgroundTextureHeight, backgroundTextureWidth, backgroundTextureHeight);
     }
 
     @Override
@@ -176,26 +178,27 @@ public class FisherInfoScreen extends Screen {
         updateData();
     }
 
-    private void renderInfoLine(MatrixStack matrices, int x, int y, String left, String right){
+    private void renderInfoLine(MatrixStack matrices, int x, int y, String left, String right, int lineWidth){
         textRenderer.drawWithShadow(matrices,left, x, y, TEXT_COLOR);
         int rightLength = textRenderer.getWidth(right);
-        int lineWidth = 74;
         int rightX = x + lineWidth - rightLength;
         textRenderer.drawWithShadow(matrices,right, rightX, y, TEXT_COLOR);
 
     }
 
     public void renderFisherInfo(MatrixStack matrices){
-        int elementX = x + 8;
+        String divider = "_____________";
+        int dividerWidth = textRenderer.getWidth(divider);
+        int elementX = x + (bannerWidth - dividerWidth) / 2;
         int elementY = y + 8;
         textRenderer.drawWithShadow(matrices,fisherInfoString, elementX, elementY, TEXT_COLOR);
-        renderInfoLine(matrices, elementX, elementY + 11, "", name);
-        textRenderer.drawWithShadow(matrices,"-------------", elementX - 2, elementY + 18, TEXT_COLOR);
-        renderInfoLine(matrices, elementX, elementY + 26, "Lvl.", level);
-        renderInfoLine(matrices, elementX, elementY + 37, "Exp:", exp);
-        renderInfoLine(matrices, elementX, elementY + 48, "$", credit);
+        renderInfoLine(matrices, elementX, elementY + 11, "", name, dividerWidth);
+        textRenderer.drawWithShadow(matrices,divider, elementX  , elementY + 14 , TEXT_COLOR);
+        renderInfoLine(matrices, elementX, elementY + 26, "Lvl.", level, dividerWidth);
+        renderInfoLine(matrices, elementX, elementY + 37, "Exp:", exp, dividerWidth);
+        renderInfoLine(matrices, elementX, elementY + 48, "$", credit, dividerWidth);
         if (hasSkillPoints) {
-            renderInfoLine(matrices, elementX, elementY + 59, "Skill points:", skillPoints);
+            renderInfoLine(matrices, elementX, elementY + 59, "Skill points:", skillPoints, dividerWidth);
         }
 
     }
@@ -204,6 +207,11 @@ public class FisherInfoScreen extends Screen {
         renderBackground(matrices);
         renderFisherInfo(matrices);
         super.render(matrices, mouseX, mouseY, delta);
+        renderTooltip(matrices, mouseX, mouseY);
+        renderSelectedPerk(matrices);
+    }
+
+    private void renderTooltip(MatrixStack matrices, int mouseX, int mouseY){
         hoveredElement(mouseX, mouseY).ifPresent(hovered -> {
             if (hovered instanceof PerkButtonWidget) {
                 FishingPerk fishingPerk = ((PerkButtonWidget) hovered).fishingPerk;
@@ -213,17 +221,17 @@ public class FisherInfoScreen extends Screen {
                 renderTooltip(matrices, lines, mouseX, mouseY);
             }
         });
-        renderSelectedPerk(matrices);
     }
 
     private void renderSelectedPerk(MatrixStack matrices){
         if (selectedPerk == null) return;
-        textRenderer.drawWithShadow(matrices,selectedPerk.getLabel(), x + 100, y + backgroundHeight - 102, TEXT_COLOR);
+        int selectedPerkY = y + backgroundTextureHeight - 107   ;
+        textRenderer.drawWithShadow(matrices,selectedPerk.getLabel(), buttonsX, selectedPerkY, TEXT_COLOR);
 
         ArrayList<Text> lines = selectedPerk.getDetailedDescription();
         int offset = 0;
         for(Text line : lines) {
-            textRenderer.drawWithShadow(matrices, line, x + 100, y + backgroundHeight - 80 + offset, TEXT_COLOR);
+                textRenderer.drawWithShadow(matrices, line, buttonsX, selectedPerkY + 20  + offset, TEXT_COLOR);
             offset += textRenderer.fontHeight + 2;
         }
     }
@@ -242,8 +250,8 @@ public class FisherInfoScreen extends Screen {
             return;
         }
 
-        int perksX = x + 100;
-        int perksY = y + 30;
+        int perksX = buttonsX;
+        int perksY = buttonsY + buttonHeight + 6;
 
         ArrayList<FishingPerk> children = this.rootPerk.getChildren();
         int childY = 0;
@@ -256,9 +264,7 @@ public class FisherInfoScreen extends Screen {
     private void addPerk(FishingPerk fishingPerk, int perkX, int perkY){
         addDrawableChild(new PerkButtonWidget(perkX, perkY, 20, 20, Text.empty(), button -> {
             selectedPerk = fishingPerk;
-            unlockButton.visible = true;
-            unlockButton.setMessage(Text.of(clientInfo.hasPerk(fishingPerk) ? "Unlocked" : "Unlock"));
-            unlockButton.active = clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk);
+            unlockButton.visible = clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk) && clientInfo.hasSkillPoints();
         }, fishingPerk));
         ArrayList<FishingPerk> children = fishingPerk.getChildren();
         for(FishingPerk child : children) {
@@ -270,9 +276,6 @@ public class FisherInfoScreen extends Screen {
     public boolean shouldPause() {
         return false;
     }
-
-
-
 
     class PerkButtonWidget extends ButtonWidget {
         FishingPerk fishingPerk;
