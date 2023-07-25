@@ -24,7 +24,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> implements ScreenHandlerProvider<FisherInfoScreenHandler> {
-    private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
+    private static final Identifier BACKGROUND_INV = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info_inv.png");
+    private static final Identifier BACKGROUND_SKILL = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
+    private static Identifier BACKGROUND = BACKGROUND_INV;
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
     int backgroundTextureWidth = 384;
     int backgroundTextureHeight = 264;
@@ -133,15 +135,17 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         infoButton.active = false;
         unlockButton.visible = false;
         selectedPerk = null;
+        rootPerk = null;
         clearPerkButtons();
     }
 
     private void initInfoButton(){
         String info = "Info";
         infoButton = new ButtonWidget(lastButtonX,buttonsY,infoButtonWidth, buttonHeight, Text.of(info), button -> {
-            rootPerk = null;
+            resetButtonState();
             lockClicked(button);
-            clearPerkButtons();
+            BACKGROUND = BACKGROUND_INV;
+            this.handler.addPlayerInventorySlots();
         });
         lastButtonX += infoButtonWidth + buttonGap;
     }
@@ -164,6 +168,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private ButtonWidget getButtonForSkill(FishingPerk fishingPerk) {
         ButtonWidget skillButton = new ButtonWidget(lastButtonX,buttonsY,buttonWidth, buttonHeight, Text.of(fishingPerk.getLabel()), button -> {
+            BACKGROUND = BACKGROUND_SKILL;
+            this.handler.removePlayerInventorySlots();
             rootPerk = fishingPerk;
             lockClicked(button);
             addPerks();
