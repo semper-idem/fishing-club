@@ -14,7 +14,8 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.fisher.FisherInfoDB;
+import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
@@ -94,7 +95,7 @@ public class CustomFishingRod extends FishingRodItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int power = FishingRodUtil.getPower(getMaxUseTime(stack) - remainingUseTicks);
-        castHook(world, (PlayerEntity) user, power, stack);
+        castHook(world, (PlayerEntity) user, power, stack, FisherInfos.getFisher((PlayerEntity) user));
     }
 
     @Override
@@ -107,10 +108,10 @@ public class CustomFishingRod extends FishingRodItem {
         return 1200;
     }
 
-    private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod){
+    private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod, FisherInfo fisherInfo){
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power));
+            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, fisherInfo));
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -124,8 +125,9 @@ public class CustomFishingRod extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        if (!FisherInfoDB.hasPerk(user, FishingPerks.BOBBER_THROW_CHARGE)) {
-            castHook(world, user, 1, fishingRod);
+        FisherInfo fisherInfo = FisherInfos.getFisher(user);
+        if (!fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
+            castHook(world, user, 1, fishingRod, fisherInfo);
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

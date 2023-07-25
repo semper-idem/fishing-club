@@ -89,22 +89,20 @@ public class ShopScreenHandler extends ScreenHandler {
     }
 
     //Server
-    public void soldContainer(ServerPlayerEntity player, int creditGained){
-        FisherInfos.addCredit(player.getUuid(), creditGained);
+    public void soldContainer(ServerPlayerEntity player, int amount){
+        FisherInfos.addCredit(player, amount);
         for (int i = 0; i < sellContainer.size(); i++) {
             sellContainer.removeStack(i);
         }
-        ServerPacketSender.sendFisherInfoSyncPacket(player);
     }
 
     //Server
-    public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int cost){
-        if (!FisherInfos.removeCredit(player.getUuid(), cost)) return;
+    public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int amount){
+        if (!FisherInfos.addCredit(player, -amount)) return;
         for(ItemStack itemStack : basket) {
             player.getInventory().insertStack(itemStack.copy());
         }
         ServerPacketSender.sendShopScreenInventorySyncPacket(player);
-        ServerPacketSender.sendFisherInfoSyncPacket(player);
     }
 
     @Override

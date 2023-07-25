@@ -1,0 +1,40 @@
+package net.semperidem.fishingclub.util;
+
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+
+public class InventoryUtil {
+    //Main difference from vanilla inventory to nbt methods is it remembers slot number
+    public static SimpleInventory readInventory(NbtCompound inventoryTag){
+        int size = inventoryTag.getInt("size");
+        SimpleInventory inventory = new SimpleInventory(size);
+        NbtList inventoryListTag = inventoryTag.getList("content", NbtElement.COMPOUND_TYPE);
+        inventoryListTag.forEach(nbtElement -> {
+            NbtCompound stackTag = (NbtCompound) nbtElement;
+            int slot = stackTag.getInt("slot");
+            ItemStack stack = ItemStack.fromNbt(stackTag.getCompound("stack"));
+            inventory.setStack(slot, stack);
+        });
+        return inventory;
+    }
+
+    public static NbtCompound writeInventory(SimpleInventory inventory){
+        NbtCompound inventoryTag = new NbtCompound();
+        inventoryTag.putInt("size", inventory.size());
+        NbtList inventoryListTag = new NbtList();
+        for(int slot = 0; slot < inventory.size(); slot++) {
+            ItemStack stack = inventory.getStack(slot);
+            if (!stack.isEmpty()) {
+                NbtCompound stackTag = new NbtCompound();
+                stackTag.putInt("slot", slot);
+                stackTag.put("stack", stack.writeNbt(new NbtCompound()));
+            }
+        }
+        inventoryTag.put("content", inventoryListTag);
+
+        return inventoryTag;
+    }
+}

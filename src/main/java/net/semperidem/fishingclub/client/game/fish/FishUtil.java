@@ -29,7 +29,7 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish){
-        FisherInfos.grantExperience(player.getUuid(), fish.experience);
+        FisherInfos.addExperience(player, fish.experience);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
         if (player.getInventory().getEmptySlot() == -1) {
@@ -41,7 +41,7 @@ public class FishUtil {
     }
 
     public static void grantExp(ServerPlayerEntity player, int exp){
-        FisherInfos.grantExperience(player.getUuid(), exp);
+        FisherInfos.addExperience(player, exp);
         player.addExperience(Math.max(1, exp / 10));
     }
 

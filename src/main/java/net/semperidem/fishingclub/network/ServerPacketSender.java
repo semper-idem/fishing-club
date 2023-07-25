@@ -1,22 +1,23 @@
 package net.semperidem.fishingclub.network;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfos;
 
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SYNC;
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
+import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_SYNC_INFO;
 
 public class ServerPacketSender {
 
     private static void sendPacket(ServerPlayerEntity player, Identifier identifier, PacketByteBuf buf){
-        if (player != null) {
+        if (player != null && player.networkHandler != null) {
             ServerPlayNetworking.send( player, identifier, buf);
         }
     }
@@ -32,17 +33,19 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFisherInfoSyncPacket(ServerPlayerEntity player) {
-        sendFisherInfoSyncPacket(player, FisherInfos.getPlayerFisherInfoBuf(player.getUuid()));
-    }
-
-    public static void sendFisherInfoSyncPacket(ServerPlayerEntity player, PacketByteBuf buf) {
-        sendPacket(player, S2C_F_DATA_SYNC, buf);
-    }
-
     public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, Fish fish){
         PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         fishGameStartPacket.writeItemStack(fishingRod);
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
+    }
+    public static void sendFisherInfoSync(ServerPlayerEntity player){
+        sendFisherInfoSync(player, player.writeNbt(new NbtCompound()));
+    }
+
+    public static void sendFisherInfoSync(ServerPlayerEntity player, NbtCompound playerTag){
+        PacketByteBuf fisherInfoBuf = PacketByteBufs.create();
+        NbtCompound fisherInfoNbt = playerTag.getCompound("fisher_info");
+        fisherInfoBuf.writeNbt(fisherInfoNbt);
+        sendPacket(player, S2C_F_SYNC_INFO, fisherInfoBuf);
     }
 }

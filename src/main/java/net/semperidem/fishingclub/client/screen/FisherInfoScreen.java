@@ -2,9 +2,14 @@ package net.semperidem.fishingclub.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -13,12 +18,12 @@ import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerk;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class FisherInfoScreen extends Screen {
-    //512 x 288
+public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> implements ScreenHandlerProvider<FisherInfoScreenHandler> {
     private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
     int backgroundTextureWidth = 384;
@@ -65,8 +70,8 @@ public class FisherInfoScreen extends Screen {
 
     ArrayList<PerkButtonWidget> perkButtonWidgets = new ArrayList<>();
 
-    public FisherInfoScreen(Text text) {
-        super(text);
+    public FisherInfoScreen(FisherInfoScreenHandler fisherInfoScreenHandler, PlayerInventory playerInventory, Text text) {
+        super(fisherInfoScreenHandler, playerInventory, text);
         this.client = MinecraftClient.getInstance();
         this.clientInfo = FisherInfos.getClientInfo();
         updateData();
@@ -77,10 +82,27 @@ public class FisherInfoScreen extends Screen {
         this.name = this.client.player.getName().getString();
         this.level = String.valueOf(clientInfo.getLevel());
         this.exp = clientInfo.getExp() + "/" + clientInfo.nextLevelXP();
-        this.credit = String.valueOf(clientInfo.getFisherCredit());
+        this.credit = String.valueOf(clientInfo.getCredit());
         this.hasSkillPoints = clientInfo.hasSkillPoints();
         this.skillPoints = String.valueOf(clientInfo.getSkillPoints());
 
+    }
+
+    public static void openScreen(PlayerEntity player){
+        if(player.world != null && !player.world.isClient) {
+            player.openHandledScreen(new NamedScreenHandlerFactory() {
+
+                @Override
+                public Text getDisplayName() {
+                    return Text.translatable("Fisher Info");
+                }
+
+                @Override
+                public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new FisherInfoScreenHandler(syncId, inv);
+                }
+            });
+        }
     }
 
     @Override
@@ -135,6 +157,7 @@ public class FisherInfoScreen extends Screen {
             if (clientInfo.availablePerk(selectedPerk) && !clientInfo.hasPerk(selectedPerk)) {
                 ClientPacketSender.unlockPerk(selectedPerk.getName());
                 unlockButton.visible = false;
+                this.clientInfo = FisherInfos.getClientInfo();
             }
         });
     }
@@ -172,12 +195,6 @@ public class FisherInfoScreen extends Screen {
         drawTexture(matrices, x, y, 0, 0, backgroundTextureWidth, backgroundTextureHeight, backgroundTextureWidth, backgroundTextureHeight);
     }
 
-    @Override
-    public void tick() {
-        this.clientInfo = FisherInfos.getClientInfo();
-        updateData();
-    }
-
     private void renderInfoLine(MatrixStack matrices, int x, int y, String left, String right, int lineWidth){
         textRenderer.drawWithShadow(matrices,left, x, y, TEXT_COLOR);
         int rightLength = textRenderer.getWidth(right);
@@ -204,11 +221,19 @@ public class FisherInfoScreen extends Screen {
     }
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        renderFisherInfo(matrices);
         super.render(matrices, mouseX, mouseY, delta);
-        renderTooltip(matrices, mouseX, mouseY);
+    }
+
+    @Override
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        renderBackground(matrices);
+    }
+
+    @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        renderFisherInfo(matrices);
         renderSelectedPerk(matrices);
+        renderTooltip(matrices, mouseX, mouseY);
     }
 
     private void renderTooltip(MatrixStack matrices, int mouseX, int mouseY){
@@ -265,6 +290,7 @@ public class FisherInfoScreen extends Screen {
         addDrawableChild(new PerkButtonWidget(perkX, perkY, 20, 20, Text.empty(), button -> {
             selectedPerk = fishingPerk;
             unlockButton.visible = clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk) && clientInfo.hasSkillPoints();
+            updateData();
         }, fishingPerk));
         ArrayList<FishingPerk> children = fishingPerk.getChildren();
         for(FishingPerk child : children) {

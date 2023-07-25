@@ -8,12 +8,11 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.FisherInfoScreen;
-import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
 
@@ -43,7 +42,7 @@ public class FishingClubClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (infoScreenKeybind.wasPressed()) {
-                client.setScreen(new FisherInfoScreen(Text.of("Fisher Info")));
+                ClientPacketSender.sendOpenFisherInfoScreen();
             }
 
             while (shopSellScreenKeybind.wasPressed()) {
@@ -63,5 +62,6 @@ public class FishingClubClient implements ClientModInitializer {
 
 
         HandledScreens.register(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
+        HandledScreens.register(ShopScreenUtil.FISHER_INFO_SCREEN, FisherInfoScreen::new);
     }
 }

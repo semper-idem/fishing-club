@@ -24,7 +24,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfoDB;
+import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -51,16 +51,19 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private int power;
     private float throwDistance;
 
+    private FisherInfo fisherInfo;
+
 
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FisherInfo fisherInfo) {
         this(FishingClub.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
+        this.fisherInfo = fisherInfo;
         this.power = power;
         setThrowDirection();
     }
@@ -190,10 +193,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void handleFishOnHook(ServerWorld serverWorld){
         float fishTypeRarityMultiplier = 1;
-        if (FisherInfoDB.hasPerk(this.getOwner(), FishingPerks.BOBBER_THROW_CHARGE)) {
+        if (fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 320, 0, 0.2);
         }
-        caughtFish = FishUtil.getFishOnHook(FisherInfoDB.get(getOwner().getUuid()), fishingRod, fishTypeRarityMultiplier);
+        caughtFish = FishUtil.getFishOnHook(fisherInfo, fishingRod, fishTypeRarityMultiplier);
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;

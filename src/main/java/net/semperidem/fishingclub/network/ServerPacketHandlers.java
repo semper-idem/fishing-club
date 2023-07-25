@@ -8,9 +8,9 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.client.screen.FisherInfoScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 
@@ -23,16 +23,14 @@ public class ServerPacketHandlers {
         Fish fish = FishUtil.fishFromPacketBuf(buf);
         server.execute(() -> {
             FishUtil.grantReward(player, fish);
-            ServerPacketSender.sendFisherInfoSyncPacket(player);
         });
-    }
-
-    public static void handleFishingDataRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> ServerPacketSender.sendFisherInfoSyncPacket(player));
     }
 
     public static void handleFishingShopOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> ShopScreenUtil.openShopScreen(player));
+    }
+    public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> FisherInfoScreen.openScreen(player));
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -61,11 +59,7 @@ public class ServerPacketHandlers {
         String perkName = buf.readString();
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             server.execute(() -> {
-                FisherInfo fisherInfo = FisherInfos.getPlayerFisherInfo(player.getUuid());
-                if (fisherInfo.hasSkillPoints()) {
-                    fisherInfo.addPerk(perk);
-                    ServerPacketSender.sendFisherInfoSyncPacket(player);
-                }
+                FisherInfos.addPerk(player, perkName);
             });
         });
     }

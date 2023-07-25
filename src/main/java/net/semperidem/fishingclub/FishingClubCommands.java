@@ -1,14 +1,13 @@
 package net.semperidem.fishingclub;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfos;
-
-import java.util.UUID;
 
 public class FishingClubCommands {
 
@@ -27,42 +26,49 @@ public class FishingClubCommands {
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        UUID uuid = context.getSource().getPlayer().getUuid();
-                                        FisherInfos.addCredit(uuid, amount);
+                                        FisherInfos.addCredit(context.getSource().getPlayer(), amount);
                                         context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
-
                                         return 1;
                                     })
                             )
                     )
             );
+
+            rootCommand.then(CommandManager.literal("set")
+                    .then(CommandManager.literal("skill_points")
+                            .then(CommandManager.argument("amount", IntegerArgumentType.integer())
+                                    .executes(context -> {
+                                        int amount = IntegerArgumentType.getInteger(context, "amount");
+                                        FisherInfos.addCredit(context.getSource().getPlayer(), amount);
+                                        context.getSource().sendMessage(Text.literal("Set available skill points to " + amount));
+                                        return 1;
+                                    })
+                            )
+                    )
+            );
+
+
 
             rootCommand.then(CommandManager.literal("remove")
                     .then(CommandManager.literal("credit")
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        UUID uuid = context.getSource().getPlayer().getUuid();
-                                        String response = FisherInfos.removeCredit(uuid, amount) ?
-                                                "Removed" + amount + "credit from self" :
-                                                "Tried to remove too high amount";
-
-                                                context.getSource().sendMessage(Text.literal(response));
-
+                                        FisherInfos.addCredit(context.getSource().getPlayer(), -amount);
+                                        context.getSource().sendMessage(Text.literal("Removed" + amount + "credit from self"));
                                         return 1;
                                     })
                             )
                     )
-            );
-            rootCommand.then(CommandManager.literal("zero")
-                    .then(CommandManager.literal("credit")
+                    .then(CommandManager.literal("perk")
+                            .then(CommandManager.argument("amount", StringArgumentType.string())
                                     .executes(context -> {
-                                        UUID uuid = context.getSource().getPlayer().getUuid();
-                                        FisherInfos.zeroCredit(uuid);
-                                        context.getSource().sendMessage(Text.literal("Zeroed self credit"));
-
+                                        String perkName = StringArgumentType.getString(context, "perkName");
+                                        FisherInfos.removePerk(context.getSource().getPlayer(), perkName);
+                                        context.getSource().sendMessage(Text.literal("Removed" + perkName + " perk from self"));
                                         return 1;
                                     })
+                            )
                     )
             );
 

@@ -13,12 +13,12 @@ public class ClientPacketSender {
     public static void sendFishGameGrantReward(Fish fish) {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, FishUtil.fishToPacketBuf(fish));
     }
-    public static void sendFishingInfoDataRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_DATA_SYNC_REQ, PacketByteBufs.empty());
-    }
 
     public static void sendOpenSellShopRequest() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_OPEN, PacketByteBufs.empty());
+    }
+    public static void sendOpenFisherInfoScreen() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_INFO_OPEN, PacketByteBufs.empty());
     }
     public static void sellShopContainer(int containerValue) {
         if (containerValue <= 0 ) return;
