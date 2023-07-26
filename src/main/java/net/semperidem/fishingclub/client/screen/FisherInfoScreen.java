@@ -31,8 +31,6 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     int backgroundTextureWidth = 384;
     int backgroundTextureHeight = 264;
 
-    int x, y;
-
     private static final int TEXT_COLOR = Color.WHITE.getRGB();
 
 
@@ -112,6 +110,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
         x = (width - backgroundTextureWidth - bannerWidth) / 2;
         y = (height - backgroundTextureHeight) / 2;
+        backgroundWidth = backgroundTextureWidth;
+        backgroundHeight = backgroundTextureHeight;
 
 
         infoButtonWidth = 40;
@@ -228,6 +228,9 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
+        renderFisherInfo(matrices);
+        renderSelectedPerk(matrices);
+        renderTooltip(matrices, mouseX, mouseY);
     }
 
     @Override
@@ -237,9 +240,6 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        renderFisherInfo(matrices);
-        renderSelectedPerk(matrices);
-        renderTooltip(matrices, mouseX, mouseY);
     }
 
     private void renderTooltip(MatrixStack matrices, int mouseX, int mouseY){

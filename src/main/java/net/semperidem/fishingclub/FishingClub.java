@@ -34,8 +34,11 @@ import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
 import net.semperidem.fishingclub.network.ServerPacketReceiver;
 
+import java.util.ArrayList;
+
 public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
+    public static ArrayList<Item> BOATS = new ArrayList<>();
 
     public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build(new Identifier(MOD_ID, "fishing_club_group"), () -> new ItemStack(Items.COD));
     public static final CustomFishingRod CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));

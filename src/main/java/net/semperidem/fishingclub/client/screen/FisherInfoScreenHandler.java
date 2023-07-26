@@ -10,7 +10,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.client.screen.workbench.FishingRodSlot;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(ShopScreenUtil.FISHER_INFO_SCREEN, syncId);
+        enableSyncing();
         this.playerInventory = playerInventory;
         this.fisherInventory = FisherInfos.getClientInfo().getFisherInventory();
         addFisherInventory();
@@ -49,10 +49,10 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addSlot(new FishingRodSlot(fisherInventory, 0, 105, 235));
-        addSlot(new BoatSlot(fisherInventory, 1, 135, 235));
-        addSlot(new FishingNetSlot(fisherInventory, 2, 105, 265));
-        addSlot(new FishingNetSlot(fisherInventory, 3, 135, 265)); //TODO MOVE AFTER RESCALE
+        addSlot(new FishingRodSlot(fisherInventory, 0, 25, 199));
+        addSlot(new BoatSlot(fisherInventory, 1, 55, 199));
+        addSlot(new FishingNetSlot(fisherInventory, 2, 25, 229));
+        addSlot(new FishingNetSlot(fisherInventory, 3, 55, 229)); //TODO MOVE AFTER RESCALE
     }
 
     public Inventory getFisherInventory() {
@@ -62,14 +62,14 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     private void addPlayerInventory(){
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 9; ++x) {
-                addSlot(new Slot(playerInventory, x + y * SLOTS_PER_ROW + 9, 237 + x * SLOT_SIZE, 202 + y * SLOT_SIZE));
+                addSlot(new Slot(playerInventory, x + y * SLOTS_PER_ROW + 9, 157 + x * SLOT_SIZE, 166 + y * SLOT_SIZE));
             }
         }
     }
 
     private void addPlayerHotbar(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addSlot(new Slot(playerInventory, x, 237 + x * SLOT_SIZE, 262));
+            addSlot(new Slot(playerInventory, x, 157 + x * SLOT_SIZE, 226));
         }
     }
 
@@ -127,6 +127,16 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             return stack.isOf(FishingClub.FISHING_NET);
         }
     }
+    class FishingRodSlot extends Slot {
+        public FishingRodSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return stack.isOf(FishingClub.CUSTOM_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);
+        }
+    }
 
     class BoatSlot extends Slot {
 
@@ -136,7 +146,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return stack.isOf(Items.ACACIA_BOAT);
+            return FishingClub.BOATS.contains(stack.getItem());
         }
     }
 }
