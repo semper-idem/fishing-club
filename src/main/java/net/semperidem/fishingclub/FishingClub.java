@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
+import net.semperidem.fishingclub.client.screen.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
@@ -46,6 +47,7 @@ public class FishingClub implements ModInitializer {
     public static final Item FISHER_WORKBENCH_BLOCK_ITEM = new BlockItem(FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static Item FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP));
     public static ScreenHandlerType<FisherWorkbenchScreenHandler> FISHER_WORKBENCH_SCREEN_HANDLER;
+    public static ScreenHandlerType<FisherInfoScreenHandler> FISHER_INFO_SCREEN;
 
 
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
@@ -110,6 +112,7 @@ public class FishingClub implements ModInitializer {
 
 
         FISHER_WORKBENCH_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
+        FISHER_INFO_SCREEN = ScreenHandlerRegistry.registerExtended(new Identifier(FishingClub.MOD_ID, "fisher_info_screen"), FisherInfoScreenHandler::new);
 
         FishingRodPartItems.registerParts();
     }

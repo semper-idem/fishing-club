@@ -39,7 +39,7 @@ public class FishingClubCommands {
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        FisherInfos.addCredit(context.getSource().getPlayer(), amount);
+                                        FisherInfos.setSkillPoint(context.getSource().getPlayer(), amount);
                                         context.getSource().sendMessage(Text.literal("Set available skill points to " + amount));
                                         return 1;
                                     })

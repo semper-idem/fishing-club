@@ -28,8 +28,6 @@ public class PlayerEntityMixin extends Entity {
         ServerPacketSender.sendFisherInfoSync((ServerPlayerEntity) (Object)this, nbtCompound);
     }
 
-
-
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeCustomDataToNbt(NbtCompound nbtCompound, CallbackInfo ci){
         fisherInfo.writeNbt(nbtCompound);

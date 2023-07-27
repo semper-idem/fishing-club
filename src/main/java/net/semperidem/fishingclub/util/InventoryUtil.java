@@ -31,6 +31,7 @@ public class InventoryUtil {
                 NbtCompound stackTag = new NbtCompound();
                 stackTag.putInt("slot", slot);
                 stackTag.put("stack", stack.writeNbt(new NbtCompound()));
+                inventoryListTag.add(stackTag);
             }
         }
         inventoryTag.put("content", inventoryListTag);

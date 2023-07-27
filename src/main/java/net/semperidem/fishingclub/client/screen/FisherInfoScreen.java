@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -8,8 +9,10 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -73,9 +76,10 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     public FisherInfoScreen(FisherInfoScreenHandler fisherInfoScreenHandler, PlayerInventory playerInventory, Text text) {
         super(fisherInfoScreenHandler, playerInventory, text);
         this.client = MinecraftClient.getInstance();
-        this.clientInfo = FisherInfos.getClientInfo();
+        this.clientInfo = this.getScreenHandler().fisherInfo;
         updateData();
         addPageButtons();
+        BACKGROUND = BACKGROUND_INV;
     }
 
     private void updateData(){
@@ -90,7 +94,12 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     public static void openScreen(PlayerEntity player){
         if(player.world != null && !player.world.isClient) {
-            player.openHandledScreen(new NamedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+
+                @Override
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    buf.writeNbt(player.writeNbt(new NbtCompound()));
+                }
 
                 @Override
                 public Text getDisplayName() {
@@ -99,7 +108,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
                 @Override
                 public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new FisherInfoScreenHandler(syncId, inv);
+                    return new FisherInfoScreenHandler(syncId, inv, FisherInfos.getFisher(player));
                 }
             });
         }
@@ -159,9 +168,9 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private void initUnlockButton(){
         unlockButton = new ButtonWidget(x + backgroundTextureWidth - 62  ,y + backgroundTextureHeight - 114,50, 20, Text.of("Unlock"), button -> {
             if (clientInfo.availablePerk(selectedPerk) && !clientInfo.hasPerk(selectedPerk)) {
+                clientInfo.addPerk(selectedPerk.getName());
                 ClientPacketSender.unlockPerk(selectedPerk.getName());
                 unlockButton.visible = false;
-                this.clientInfo = FisherInfos.getClientInfo();
             }
         });
     }

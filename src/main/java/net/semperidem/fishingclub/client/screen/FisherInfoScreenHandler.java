@@ -6,11 +6,13 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.ArrayList;
 
@@ -26,14 +28,32 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
     private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
 
+    private NbtCompound lastSavedNbt;
+    FisherInfo fisherInfo;
 
-    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(ShopScreenUtil.FISHER_INFO_SCREEN, syncId);
+    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
+        this(syncId, playerInventory, new FisherInfo(playerInventory.player, buf.readNbt()));//todo find when to set it
+    }
+
+    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, FisherInfo fisherInfo) {
+        super(FishingClub.FISHER_INFO_SCREEN, syncId);
         enableSyncing();
+        this.fisherInfo = fisherInfo;
         this.playerInventory = playerInventory;
-        this.fisherInventory = FisherInfos.getClientInfo().getFisherInventory();
+        this.fisherInventory = fisherInfo.getFisherInventory();
+        this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
         addFisherInventory();
         addPlayerInventorySlots();
+        this.fisherInventory.addListener(sender -> {
+            NbtCompound playerNbt = new NbtCompound();
+            playerInventory.player.writeNbt(playerNbt);
+            NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
+            if (!fisherInventoryTag.equals(lastSavedNbt)) {
+                playerNbt.getCompound("fisher_info").put("inventory", fisherInventoryTag);
+                playerInventory.player.readNbt(playerNbt);
+                lastSavedNbt = fisherInventoryTag;
+            }
+        });
 
     }
 

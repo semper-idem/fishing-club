@@ -10,21 +10,18 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.FisherInfoScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopScreenUtil {
     public final static int SLOTS_PER_ROW = 9;
     public final static int SLOT_SIZE = 18;
     public static ScreenHandlerType<ShopScreenHandler> SHOP_SCREEN;
-    public static ScreenHandlerType<FisherInfoScreenHandler> FISHER_INFO_SCREEN;
 
 
     public static void register(){
         //TODO don't use deprecated method
         SHOP_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "sell_screen"), ShopScreenHandler::new);
-        FISHER_INFO_SCREEN = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_info_screen"), FisherInfoScreenHandler::new);
-    }
+  }
     public static void registerClient(){
         HandledScreens.register(SHOP_SCREEN, ShopScreen::new);
     }

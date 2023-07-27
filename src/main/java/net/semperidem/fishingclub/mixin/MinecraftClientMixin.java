@@ -15,4 +15,5 @@ public class MinecraftClientMixin {
     private void onDisconnect(Screen screen, CallbackInfo ci){
         FisherInfos.resetClientInfo();
     }
+
 }

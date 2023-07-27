@@ -62,6 +62,6 @@ public class FishingClubClient implements ClientModInitializer {
 
 
         HandledScreens.register(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
-        HandledScreens.register(ShopScreenUtil.FISHER_INFO_SCREEN, FisherInfoScreen::new);
+        HandledScreens.register(FishingClub.FISHER_INFO_SCREEN, FisherInfoScreen::new);
     }
 }

@@ -18,6 +18,7 @@ public class ClientPacketReceiver {
         });
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_SYNC_INFO, (client, handler, buf, responseSender) -> {
+
             NbtCompound playerTag = client.player.writeNbt(new NbtCompound());
             NbtCompound fisherInfoTag = buf.readNbt();
             playerTag.put("fisher_info", fisherInfoTag);
