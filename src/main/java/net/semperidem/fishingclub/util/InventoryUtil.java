@@ -21,6 +21,35 @@ public class InventoryUtil {
         return inventory;
     }
 
+    public static SimpleInventory readFishingNetInventory(ItemStack fishingNetStack){
+        NbtCompound fishingNetInventoryTag;
+        if (!fishingNetStack.getOrCreateNbt().contains("inventory")) {
+            fishingNetInventoryTag = new NbtCompound();
+            fishingNetInventoryTag.putInt("size", 27);
+            fishingNetInventoryTag.put("content", new NbtList());
+            fishingNetStack.getNbt().put("inventory", fishingNetInventoryTag);
+        } else {
+            fishingNetInventoryTag = fishingNetStack.getNbt().getCompound("inventory");
+        }
+
+        int size = fishingNetInventoryTag.getInt("size");
+        SimpleInventory inventory = new SimpleInventory(size){
+            @Override
+            public void markDirty() {
+                fishingNetStack.getOrCreateNbt().put("inventory", InventoryUtil.writeInventory(this));
+                super.markDirty();
+            }
+        };
+        NbtList inventoryListTag = fishingNetInventoryTag.getList("content", NbtElement.COMPOUND_TYPE);
+        inventoryListTag.forEach(nbtElement -> {
+            NbtCompound stackTag = (NbtCompound) nbtElement;
+            int slot = stackTag.getInt("slot");
+            ItemStack stack = ItemStack.fromNbt(stackTag.getCompound("stack"));
+            inventory.setStack(slot, stack);
+        });
+        return inventory;
+    }
+
     public static NbtCompound writeInventory(SimpleInventory inventory){
         NbtCompound inventoryTag = new NbtCompound();
         inventoryTag.putInt("size", inventory.size());

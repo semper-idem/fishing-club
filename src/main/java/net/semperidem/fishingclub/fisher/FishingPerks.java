@@ -25,14 +25,14 @@ public class FishingPerks {
             ).withIcon("bobber_throw_charge.png");
 
     //H - UTIL
-    public static FishingPerk CARRY_TWO_NETS = FishingPerk
-            .createPerk("carry_two_nets", ROOT_HOBBYIST)
-            .withLabel("Double Net")
-            .withDescription("Hold up to 2 fishing nets")
-            .withDetailedDesc("You can hold up to 2 fishing nets which function like shulker boxes but just for fishes (without this perk you can only carry 1)");
+    public static FishingPerk FISHING_NET = FishingPerk
+            .createPerk("fishing_net", ROOT_HOBBYIST)
+            .withLabel("Fishing Net")
+            .withDescription("Unlock fishing net recipe")
+            .withDetailedDesc("You can craft Fishing Nets which function like shulker boxes but just for fishes");
 
     public static FishingPerk UPGRADE_NET = FishingPerk
-            .createPerk("upgrade_net", CARRY_TWO_NETS)
+            .createPerk("upgrade_net", FISHING_NET)
             .withLabel("Net Upgrade")
             .withDescription("Fishing Net can now be crafted into Double Fishing Net allowing for twice as much fish")
             .withDetailedDesc("Enhance your fishing nets to have twice the capacity");

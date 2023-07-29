@@ -36,7 +36,7 @@ public class FishermanEntity extends WanderingTraderEntity {
             // Spawn the boat in the world.
             world.spawnEntity(boat);
         }
-        return super.initialize(world, difficulty, spawnReason, (EntityData)entityData, entityNbt);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override

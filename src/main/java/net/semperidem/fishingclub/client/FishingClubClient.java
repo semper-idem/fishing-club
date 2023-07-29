@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
+import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -63,5 +64,6 @@ public class FishingClubClient implements ClientModInitializer {
 
         HandledScreens.register(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
         HandledScreens.register(FishingClub.FISHER_INFO_SCREEN, FisherInfoScreen::new);
+        HandledScreens.register(FishingClub.FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
     }
 }
