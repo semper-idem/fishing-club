@@ -137,7 +137,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return stack.isOf(FishingClub.FISHING_NET);
+            return stack.isOf(FishingClub.FISHING_NET) || stack.isOf(FishingClub.DOUBLE_FISHING_NET);
         }
     }
     private static class FishingRodSlot extends Slot {

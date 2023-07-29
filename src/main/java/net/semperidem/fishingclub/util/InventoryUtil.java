@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.semperidem.fishingclub.FishingClub;
 
 public class InventoryUtil {
     //Main difference from vanilla inventory to nbt methods is it remembers slot number
@@ -25,7 +26,7 @@ public class InventoryUtil {
         NbtCompound fishingNetInventoryTag;
         if (!fishingNetStack.getOrCreateNbt().contains("inventory")) {
             fishingNetInventoryTag = new NbtCompound();
-            fishingNetInventoryTag.putInt("size", 27);
+            fishingNetInventoryTag.putInt("size", fishingNetStack.isOf(FishingClub.FISHING_NET) ? 27 : 54);
             fishingNetInventoryTag.put("content", new NbtList());
             fishingNetStack.getNbt().put("inventory", fishingNetInventoryTag);
         } else {

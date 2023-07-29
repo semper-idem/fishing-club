@@ -31,6 +31,7 @@ import net.semperidem.fishingclub.entity.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.FishermanEntityRenderer;
 import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.item.DoubleFishingNetItem;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ClientPacketReceiver;
@@ -47,6 +48,7 @@ public class FishingClub implements ModInitializer {
     public static final Block FISHER_WORKBENCH_BLOCK = new FisherWorkbenchBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE));
     public static final Item FISHER_WORKBENCH_BLOCK_ITEM = new BlockItem(FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static Item FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP));
+    public static Item DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP));
     public static ScreenHandlerType<FisherWorkbenchScreenHandler> FISHER_WORKBENCH_SCREEN_HANDLER;
     public static ScreenHandlerType<FisherInfoScreenHandler> FISHER_INFO_SCREEN;
     public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER;
@@ -55,7 +57,7 @@ public class FishingClub implements ModInitializer {
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,
             new Identifier(MOD_ID, "fisherman"),
-            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, FishermanEntity::new)
+            FabricEntityTypeBuilder.<FishermanEntity>create(SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world))
                     .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                     .build()
     );
@@ -111,6 +113,7 @@ public class FishingClub implements ModInitializer {
         Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "fisher_workbench"), FISHER_WORKBENCH_BLOCK);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "fisher_workbench"), FISHER_WORKBENCH_BLOCK_ITEM);
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "fishing_net"), FISHING_NET);
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "double_fishing_net"), DOUBLE_FISHING_NET);
 
 
         FISHER_WORKBENCH_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);

@@ -15,7 +15,7 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS
 
 public class FishingNetScreenHandler extends ScreenHandler {
     int slotCount;
-    int ROWS = 3;
+    int rows;
 
     SimpleInventory fishingNetInventory;
     PlayerInventory playerInventory;
@@ -27,8 +27,8 @@ public class FishingNetScreenHandler extends ScreenHandler {
 
     public FishingNetScreenHandler(int syncId,PlayerInventory playerInventory, ItemStack itemStack) {
         super(FishingClub.FISHING_NET_SCREEN_HANDLER, syncId);
-
-        this.slotCount = SLOTS_PER_ROW * ROWS;
+        this.rows = itemStack.isOf(FishingClub.FISHING_NET) ? 3 : 6;
+        this.slotCount = SLOTS_PER_ROW * rows;
         this.playerInventory = playerInventory;
         this.fishingNetStack = itemStack;
         this.fishingNetInventory = InventoryUtil.readFishingNetInventory(itemStack);
@@ -36,17 +36,15 @@ public class FishingNetScreenHandler extends ScreenHandler {
         addFishingNetInventory();
         addPlayerInventory();
         addPlayerHotbar();
-
-
     }
 
 
     public int getRows(){
-        return this.ROWS;
+        return this.rows;
     }
 
     private void addFishingNetInventory(){
-        for (int j = 0; j < this.ROWS; ++j) {
+        for (int j = 0; j < this.rows; ++j) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(fishingNetInventory, k + j * 9, 8 + k * 18, 18 + j * 18){
                     @Override
@@ -59,7 +57,7 @@ public class FishingNetScreenHandler extends ScreenHandler {
     }
 
     private void addPlayerInventory(){
-        int i = (this.ROWS - 4) * 18;
+        int i = (this.rows - 4) * 18;
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
@@ -68,7 +66,6 @@ public class FishingNetScreenHandler extends ScreenHandler {
     }
 
     private void addPlayerHotbar(){
-        int rows = 3;
         int i = (rows - 4) * 18;
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
             this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 161 + i));
