@@ -28,8 +28,10 @@ public class FishingPerk {
         FishingPerks.ALL_PERKS.add(this);
     }
 
-    static FishingPerk createPerk(String name){
-        return new FishingPerk(name);
+    static FishingPerk createRootPerk(String name){
+        FishingPerk rootPerk = new FishingPerk(name);
+        FishingPerks.ROOT_PERKS.add(rootPerk);
+        return rootPerk;
     }
     static FishingPerk createPerk(String name, FishingPerk parent){
         return new FishingPerk(name, parent);

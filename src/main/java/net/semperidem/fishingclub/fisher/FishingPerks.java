@@ -6,9 +6,10 @@ import java.util.Optional;
 public class FishingPerks {
     static ArrayList<FishingPerk> ALL_USABLE_PERKS = new ArrayList<>();
     static ArrayList<FishingPerk> ALL_PERKS = new ArrayList<>();
-    public static FishingPerk ROOT_HOBBYIST = FishingPerk.createPerk("HOBBYIST");
-    public static FishingPerk ROOT_OPPORTUNIST = FishingPerk.createPerk("OPPORTUNIST");
-    public static FishingPerk ROOT_SOCIALIST = FishingPerk.createPerk("SOCIALIST");
+    static ArrayList<FishingPerk> ROOT_PERKS = new ArrayList<>();
+    public static FishingPerk ROOT_HOBBYIST = FishingPerk.createRootPerk("HOBBYIST");
+    public static FishingPerk ROOT_OPPORTUNIST = FishingPerk.createRootPerk("OPPORTUNIST");
+    public static FishingPerk ROOT_SOCIALIST = FishingPerk.createRootPerk("SOCIALIST");
 
     //H - Special
     public static FishingPerk BOBBER_THROW_CHARGE = FishingPerk

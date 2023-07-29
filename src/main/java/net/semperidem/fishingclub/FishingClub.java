@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
-import net.semperidem.fishingclub.client.screen.FisherInfoScreenHandler;
+import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;

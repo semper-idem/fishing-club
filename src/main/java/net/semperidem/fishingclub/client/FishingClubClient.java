@@ -10,7 +10,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.FisherInfoScreen;
+import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.network.ClientPacketSender;

@@ -1,8 +1,9 @@
-package net.semperidem.fishingclub.client.screen;
+package net.semperidem.fishingclub.client.screen.fisher_info;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,19 +21,17 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
 public class FisherInfoScreenHandler extends ScreenHandler {
-
     final static int SLOT_COUNT = 4;
 
     private final SimpleInventory fisherInventory;
     private final PlayerInventory playerInventory;
-
     private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
-
     private NbtCompound lastSavedNbt;
+
     FisherInfo fisherInfo;
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FisherInfo(playerInventory.player, buf.readNbt()));//todo find when to set it
+        this(syncId, playerInventory, new FisherInfo(playerInventory.player, buf.readNbt()));
     }
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, FisherInfo fisherInfo) {
@@ -44,7 +43,11 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
         addFisherInventory();
         addPlayerInventorySlots();
-        this.fisherInventory.addListener(sender -> {
+        this.fisherInventory.addListener(onInventoryChange());
+    }
+
+    private InventoryChangedListener onInventoryChange(){
+        return sender -> {
             NbtCompound playerNbt = new NbtCompound();
             playerInventory.player.writeNbt(playerNbt);
             NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
@@ -53,10 +56,15 @@ public class FisherInfoScreenHandler extends ScreenHandler {
                 playerInventory.player.readNbt(playerNbt);
                 lastSavedNbt = fisherInventoryTag;
             }
-        });
-
+        };
     }
 
+    private void addFisherInventory(){
+        addSlot(new FishingRodSlot(fisherInventory, 0, 25, 199));
+        addSlot(new BoatSlot(fisherInventory, 1, 55, 199));
+        addSlot(new FishingNetSlot(fisherInventory, 2, 25, 229));
+        addSlot(new FishingNetSlot(fisherInventory, 3, 55, 229));
+    }
 
     public void addPlayerInventorySlots(){
         addPlayerInventory();
@@ -67,44 +75,29 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         playerInventorySlots.forEach(slots::remove);
         playerInventorySlots.clear();
     }
-
-    private void addFisherInventory(){
-        addSlot(new FishingRodSlot(fisherInventory, 0, 25, 199));
-        addSlot(new BoatSlot(fisherInventory, 1, 55, 199));
-        addSlot(new FishingNetSlot(fisherInventory, 2, 25, 229));
-        addSlot(new FishingNetSlot(fisherInventory, 3, 55, 229)); //TODO MOVE AFTER RESCALE
-    }
-
-    public Inventory getFisherInventory() {
-        return fisherInventory;
+    
+    private void addPlayerInventorySlot(int index, int x, int y){
+        Slot slot = new Slot(playerInventory, index, x, y);
+        playerInventorySlots.add(slot);
+        addSlot(slot);
     }
 
     private void addPlayerInventory(){
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 9; ++x) {
-                addSlot(new Slot(playerInventory, x + y * SLOTS_PER_ROW + 9, 157 + x * SLOT_SIZE, 166 + y * SLOT_SIZE));
+                addPlayerInventorySlot(x + y * SLOTS_PER_ROW + 9, 157 + x * SLOT_SIZE, 166 + y * SLOT_SIZE);
             }
         }
     }
 
     private void addPlayerHotbar(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addSlot(new Slot(playerInventory, x, 157 + x * SLOT_SIZE, 226));
+            addPlayerInventorySlot(x, 157 + x * SLOT_SIZE, 226);
         }
     }
 
     public boolean canUse(PlayerEntity playerEntity) {
         return this.fisherInventory.canPlayerUse(playerEntity);
-    }
-
-
-    @Override
-    protected Slot addSlot(Slot slot) {
-        if (slot instanceof FishingRodSlot) return super.addSlot(slot);
-        if (slot instanceof FishingNetSlot) return super.addSlot(slot);
-        if (slot instanceof BoatSlot) return super.addSlot(slot);
-        playerInventorySlots.add(slot);
-        return super.addSlot(slot);
     }
 
     @Override
@@ -137,7 +130,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
 
-    class FishingNetSlot extends Slot {
+    private static class FishingNetSlot extends Slot {
         public FishingNetSlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -147,7 +140,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             return stack.isOf(FishingClub.FISHING_NET);
         }
     }
-    class FishingRodSlot extends Slot {
+    private static class FishingRodSlot extends Slot {
         public FishingRodSlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -158,8 +151,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         }
     }
 
-    class BoatSlot extends Slot {
-
+    private static class BoatSlot extends Slot {
         public BoatSlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
