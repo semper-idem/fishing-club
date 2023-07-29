@@ -1,5 +1,8 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.FishingClub;
+
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -28,14 +31,20 @@ public class FishingPerks {
     public static FishingPerk FISHING_NET = FishingPerk
             .createPerk("fishing_net", ROOT_HOBBYIST)
             .withLabel("Fishing Net")
-            .withDescription("Unlock fishing net recipe")
-            .withDetailedDesc("You can craft Fishing Nets which function like shulker boxes but just for fishes");
+            .withDescription("Unlock fishing net crafting")
+            .withDetailedDesc(
+                    "Fishing Nets which function like shulker boxes \n" +
+                    "but just for fishes. \n" +
+                    "You can only carry one in your inventory\n" +
+                    "(excluding specialized slots")
+            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "fishing_net")));
 
     public static FishingPerk UPGRADE_NET = FishingPerk
             .createPerk("upgrade_net", FISHING_NET)
             .withLabel("Net Upgrade")
             .withDescription("Fishing Net can now be crafted into Double Fishing Net allowing for twice as much fish")
-            .withDetailedDesc("Enhance your fishing nets to have twice the capacity");
+            .withDetailedDesc("Enhance your fishing nets to have twice the capacity")
+            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "double_fishing_net")));
 
 
     //H - Boat

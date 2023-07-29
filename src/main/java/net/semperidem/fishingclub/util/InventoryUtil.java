@@ -1,13 +1,23 @@
 package net.semperidem.fishingclub.util;
 
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.semperidem.fishingclub.FishingClub;
 
+import java.util.HashSet;
+
 public class InventoryUtil {
+    private static HashSet<Item> FISHING_NETS = new HashSet<>();
+    static {
+        FISHING_NETS.add(FishingClub.DOUBLE_FISHING_NET);
+        FISHING_NETS.add(FishingClub.FISHING_NET);
+    }
+
     //Main difference from vanilla inventory to nbt methods is it remembers slot number
     public static SimpleInventory readInventory(NbtCompound inventoryTag){
         int size = inventoryTag.getInt("size");
@@ -20,6 +30,23 @@ public class InventoryUtil {
             inventory.setStack(slot, stack);
         });
         return inventory;
+    }
+
+    public static boolean inventoryContainsUsedFishingNet(Inventory inventory){
+        if (!inventory.containsAny(FISHING_NETS)) return false;
+
+        for(int slot = 0; slot < inventory.size(); slot++) {
+            if (isUsedFishingNet(inventory.getStack(slot))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isUsedFishingNet(ItemStack itemStack) {
+        if (!FISHING_NETS.contains(itemStack.getItem())) return false;
+        if (!itemStack.hasNbt()) return false;
+        return itemStack.getOrCreateSubNbt("inventory").getList("content", NbtElement.COMPOUND_TYPE).size() != 0;
     }
 
     public static SimpleInventory readFishingNetInventory(ItemStack fishingNetStack){

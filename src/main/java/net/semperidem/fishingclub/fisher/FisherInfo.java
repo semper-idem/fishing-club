@@ -91,6 +91,7 @@ public class FisherInfo {
 
     public void addPerk(FishingPerk perk){
         if (availablePerk(perk) && hasSkillPoints()) {
+            perk.onEarn(fisher);
             this.perks.put(perk.name, perk);
             skillPoints--;
         }

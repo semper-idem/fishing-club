@@ -1,5 +1,9 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -14,6 +18,7 @@ public class FishingPerk {
     FishingPerk parent;
     ArrayList<FishingPerk> children = new ArrayList<>();
     Identifier icon;
+    PerkReward reward;
 
     private FishingPerk(String name){
         this.name = name;
@@ -37,6 +42,13 @@ public class FishingPerk {
         return new FishingPerk(name, parent);
     }
 
+
+    void onEarn(PlayerEntity playerEntity){
+        if (reward == null) return;
+        if (!(playerEntity instanceof ServerPlayerEntity)) return;
+        reward.onEarn(playerEntity);
+    }
+
     void addChild(FishingPerk fishingPerk){
         this.children.add(fishingPerk);
     }
@@ -54,6 +66,10 @@ public class FishingPerk {
         return this;
     }
 
+    public FishingPerk withReward(PerkReward perkReward){
+        this.reward = perkReward;
+        return this;
+    }
     public Identifier getIcon(){
         return this.icon;
     }
@@ -99,5 +115,13 @@ public class FishingPerk {
     }
     public ArrayList<Text> getDetailedDescription(){
         return detailedDescription;
+    }
+
+    static void grantAdvancement(PlayerEntity player, Identifier advancementId){
+        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementId);
+        AdvancementProgress advancementProgress =  ((ServerPlayerEntity)player).getAdvancementTracker().getProgress(advancement);
+        for(String criterion : advancementProgress.getUnobtainedCriteria()) {
+            ((ServerPlayerEntity)player).getAdvancementTracker().grantCriterion(advancement, criterion);
+        }
     }
 }
