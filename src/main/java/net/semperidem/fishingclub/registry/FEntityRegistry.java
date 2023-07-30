@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
@@ -18,14 +17,14 @@ public class FEntityRegistry {
 
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,
-            new Identifier(FishingClub.MOD_ID, "fisherman"),
+            FishingClub.getIdentifier("fisherman"),
             FabricEntityTypeBuilder.<FishermanEntity>create(SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world))
                     .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                     .build()
     );
     public static final EntityType<CustomFishingBobberEntity> CUSTOM_FISHING_BOBBER = Registry.register(
             Registry.ENTITY_TYPE,
-            new Identifier(FishingClub.MOD_ID, "custom_fishing_bobber"),
+            FishingClub.getIdentifier("custom_fishing_bobber"),
             FabricEntityTypeBuilder.<CustomFishingBobberEntity>create(SpawnGroup.MISC, CustomFishingBobberEntity::new)
                     .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
                     .disableSummon()
@@ -36,9 +35,9 @@ public class FEntityRegistry {
     );
 
     public static void register(){
-        FabricDefaultAttributeRegistry.register(FEntityRegistry.FISHERMAN, FishermanEntity.createMobAttributes());
-        EntityRendererRegistry.register(FEntityRegistry.FISHERMAN, FishermanEntityRenderer::new);
-        EntityRendererRegistry.register(FEntityRegistry.CUSTOM_FISHING_BOBBER, CustomFishingBobberEntityRenderer::new);
+        FabricDefaultAttributeRegistry.register(FISHERMAN, FishermanEntity.createMobAttributes());
+        EntityRendererRegistry.register(FISHERMAN, FishermanEntityRenderer::new);
+        EntityRendererRegistry.register(CUSTOM_FISHING_BOBBER, CustomFishingBobberEntityRenderer::new);
 
     }
 }

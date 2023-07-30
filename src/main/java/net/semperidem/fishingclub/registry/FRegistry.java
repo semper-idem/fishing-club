@@ -13,5 +13,7 @@ public class FRegistry {
     public static void registerClient(){
         FNetworkRegistry.registerClient();
         FScreenHandlerRegistry.registerClient();
+        FKeybindingRegistry.registerClient();
+        FModelPredicateProviderRegistry.registerClient();
     }
 }

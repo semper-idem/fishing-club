@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.registry;
 
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
@@ -24,10 +23,10 @@ public class FScreenHandlerRegistry {
 
     @SuppressWarnings("deprecation") //TODO FIX ME
     public static void register(){
-        FISHER_WORKBENCH_SCREEN_HANDLER = registerSimple(new Identifier(FishingClub.MOD_ID, "fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
-        FISHER_INFO_SCREEN = registerExtended(new Identifier(FishingClub.MOD_ID, "fisher_info_screen"), FisherInfoScreenHandler::new);
-        FISHING_NET_SCREEN_HANDLER = registerExtended(new Identifier(FishingClub.MOD_ID, "fishing_net_screen_handler"), FishingNetScreenHandler::new);
-        SHOP_SCREEN = registerSimple(new Identifier(FishingClub.MOD_ID, "sell_screen"), ShopScreenHandler::new);
+        FISHER_WORKBENCH_SCREEN_HANDLER = registerSimple(FishingClub.getIdentifier("fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
+        FISHER_INFO_SCREEN = registerExtended(FishingClub.getIdentifier("fisher_info_screen"), FisherInfoScreenHandler::new);
+        FISHING_NET_SCREEN_HANDLER = registerExtended(FishingClub.getIdentifier("fishing_net_screen_handler"), FishingNetScreenHandler::new);
+        SHOP_SCREEN = registerSimple(FishingClub.getIdentifier("sell_screen"), ShopScreenHandler::new);
     }
 
     public static void registerClient(){

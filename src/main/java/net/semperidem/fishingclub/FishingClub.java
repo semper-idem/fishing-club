@@ -7,7 +7,6 @@ import net.semperidem.fishingclub.registry.FRegistry;
 public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
 
-
     @Override
     public void onInitialize() {
         CommandsUtil.register();
