@@ -156,7 +156,7 @@ public class FishUtil {
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
         for (FishType fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fisherInfo, fishingRod, fishTypeRarityMultiplier);
+                return new Fish(fishType, fisherInfo, fishingRod);
             }
         }
         return new Fish();

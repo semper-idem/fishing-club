@@ -21,6 +21,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
+import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
@@ -121,5 +122,7 @@ public class FishingClub implements ModInitializer {
         FISHING_NET_SCREEN_HANDLER = ScreenHandlerRegistry.registerExtended(new Identifier(FishingClub.MOD_ID, "fishing_net_screen_handler"), FishingNetScreenHandler::new);
 
         FishingRodPartItems.registerParts();
+
+        Fish fish = new Fish();
     }
 }

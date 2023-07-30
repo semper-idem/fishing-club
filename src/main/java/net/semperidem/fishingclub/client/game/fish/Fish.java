@@ -32,14 +32,10 @@ public class Fish {
     public Fish(){
     }
 
-    public Fish(FishType fishType, FisherInfo fisherInfo){
+    public Fish(FishType fishType, FisherInfo fisherInfo) {
         this(fishType, fisherInfo, FishingClub.CUSTOM_FISHING_ROD.getDefaultStack());
     }
-
-    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod){
-        this(fishType, fisherInfo, fishingRod, 1);
-    }
-    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod, float qualityMultiplier){
+    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod) {
         this.caughtUsing = fishingRod;
         this.fishType = fishType;
         this.name = fishType.name;
