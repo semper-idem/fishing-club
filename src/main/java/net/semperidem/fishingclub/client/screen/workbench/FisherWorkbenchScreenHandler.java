@@ -8,12 +8,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 
-import static net.semperidem.fishingclub.FishingClub.FISHER_WORKBENCH_BLOCK;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType.*;
+import static net.semperidem.fishingclub.registry.FBlockRegistry.FISHER_WORKBENCH_BLOCK;
 
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
     private static final int SLOT_COUNT = 6;
@@ -24,7 +24,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         this(syncId, inventory, ScreenHandlerContext.create(inventory.player.world, inventory.player.getBlockPos()));
     }
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
+        super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(6);
         addRodPartSlots();

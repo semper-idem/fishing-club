@@ -11,9 +11,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, FisherInfo fisherInfo) {
-        super(FishingClub.FISHER_INFO_SCREEN, syncId);
+        super(FScreenHandlerRegistry.FISHER_INFO_SCREEN, syncId);
         enableSyncing();
         this.fisherInfo = fisherInfo;
         this.playerInventory = playerInventory;

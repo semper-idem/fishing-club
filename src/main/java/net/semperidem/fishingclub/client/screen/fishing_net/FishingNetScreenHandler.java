@@ -8,7 +8,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
@@ -26,8 +27,8 @@ public class FishingNetScreenHandler extends ScreenHandler {
     }
 
     public FishingNetScreenHandler(int syncId,PlayerInventory playerInventory, ItemStack itemStack) {
-        super(FishingClub.FISHING_NET_SCREEN_HANDLER, syncId);
-        this.rows = itemStack.isOf(FishingClub.FISHING_NET) ? 3 : 6;
+        super(FScreenHandlerRegistry.FISHING_NET_SCREEN_HANDLER, syncId);
+        this.rows = itemStack.isOf(FItemRegistry.FISHING_NET) ? 3 : 6;
         this.slotCount = SLOTS_PER_ROW * rows;
         this.playerInventory = playerInventory;
         this.fishingNetStack = itemStack;

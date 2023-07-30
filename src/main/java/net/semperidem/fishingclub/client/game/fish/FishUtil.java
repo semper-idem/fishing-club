@@ -16,7 +16,9 @@ import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
 
 public class FishUtil {
     public static final Item FISH_ITEM = Items.TROPICAL_FISH;
@@ -94,16 +96,20 @@ public class FishUtil {
     }
 
     public static int getWeightGrade(Fish fish){
-        float percentile = (fish.weight - fish.getFishType().fishMinWeight) / fish.weight;
+        FishType fishType = fish.getFishType();
+        float maxWeight = fishType.fishMinWeight + fishType.fishRandomWeight;
+        float percentile = (fish.weight - fish.getFishType().fishMinWeight) / maxWeight;
         return getGrade(percentile);
     }
     public static int getLengthGrade(Fish fish){
-        float percentile = (fish.length - fish.getFishType().fishMinLength) / fish.length;
+        FishType fishType = fish.getFishType();
+        float maxLength = fishType.fishMinLength + fishType.fishRandomLength;
+        float percentile = (fish.length - fish.getFishType().fishMinLength) / maxLength;
         return getGrade(percentile);
     }
 
     private static int getGrade(float percentile){
-        if (percentile < 0.1) {
+        if (percentile < 0.25) {
             return 1;
         }
         if (percentile < 0.50) {
@@ -141,6 +147,9 @@ public class FishUtil {
     }
 
     public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier){
+        return new Fish(FishTypes.COD, fisherInfo, fishingRod);
+        /*
+
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = new ArrayList<>();
@@ -159,7 +168,8 @@ public class FishUtil {
                 return new Fish(fishType, fisherInfo, fishingRod);
             }
         }
-        return new Fish();
+        return new Fish(availableFish.get(0), fisherInfo, fishingRod);
+         */
     }
 
 
@@ -167,7 +177,7 @@ public class FishUtil {
     public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
         return (float) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
     }
-    public static int getPseudoRandomValue(int base, int randomAdjustment, int skew){
+    public static int getPseudoRandomValue(int base, int randomAdjustment, float skew){
         return (int) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
     }
 

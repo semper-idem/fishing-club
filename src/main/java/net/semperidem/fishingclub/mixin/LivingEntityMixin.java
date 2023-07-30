@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LivingEntity.class)

@@ -28,6 +28,10 @@ public class FisherInfo {
     public FisherInfo(){
         initPerks();
     }
+    public FisherInfo(int level){
+        this();
+        this.level = level;
+    }
 
     public FisherInfo(PlayerEntity playerEntity, NbtCompound playerTag) {
         if (!playerTag.contains(FISHER_INFO_TAG_NAME)) {

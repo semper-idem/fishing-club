@@ -14,12 +14,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
+import net.semperidem.fishingclub.registry.FEntityRegistry;
 
 public class FishermanEntity extends WanderingTraderEntity {
     public FishermanEntity(World world) {
-        super(FishingClub.FISHERMAN, world);
+        super(FEntityRegistry.FISHERMAN, world);
     }
 
     @Override

@@ -10,8 +10,6 @@ public class FishType {
     FishPattern fishPattern;
 
     int fishMinLevel;
-    int fishRandomLevel;
-
     int fishEnergyLevel;
 
     float fishMinLength;
@@ -27,7 +25,6 @@ public class FishType {
             String name,
             FishPattern fishPattern,
             int fishMinLevel,
-            int fishRandomLevel,
             int fishEnergyLevel,
             float fishMinLength,
             float fishRandomLength,
@@ -38,7 +35,6 @@ public class FishType {
         this.name = name;
         this.fishPattern = fishPattern;
         this.fishMinLevel = fishMinLevel;
-        this.fishRandomLevel = fishRandomLevel;
         this.fishEnergyLevel = fishEnergyLevel;
         this.fishMinLength = fishMinLength;
         this.fishRandomLength = fishRandomLength;

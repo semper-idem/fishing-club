@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 
-public class FishingClubCommands {
+public class CommandsUtil {
 
     public static void register(){
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {

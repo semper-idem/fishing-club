@@ -12,6 +12,7 @@ import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
 
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(ShopScreenUtil.SHOP_SCREEN, syncId);
+        super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();

@@ -5,9 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.Objects;
 
@@ -50,11 +50,11 @@ public class RodPartSlot extends Slot {
                     }
                 }
             } else {
-                CustomFishingRod rodItem = FishingClub.CUSTOM_FISHING_ROD;
+                CustomFishingRod rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
                 rodItem.addPart(rodStack, stack, partType);
             }
         } else {
-            CustomFishingRod rodItem = FishingClub.CUSTOM_FISHING_ROD;
+            CustomFishingRod rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
             rodItem.removePart(rodStack, partType);
         }
         this.inventory.setStack(this.index, stack);

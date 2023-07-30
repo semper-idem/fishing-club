@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 
-import static net.semperidem.fishingclub.FishingClub.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
     public FishingRodSlot(Inventory inventory, int index, int x, int y) {

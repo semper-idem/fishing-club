@@ -2,8 +2,8 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.HashMap;
 
@@ -12,7 +12,7 @@ public class FishingRodPartItem extends Item {
     private PartType partType;
     private String key;
     public FishingRodPartItem(Settings settings, PartType partType, String key) {
-        super(settings.maxDamage(1).group(FishingClub.FISHING_CLUB_GROUP));
+        super(settings.maxDamage(1).group(FItemRegistry.FISHING_CLUB_GROUP));
         this.partType = partType;
         this.stats = new HashMap<>();
         FishingRodPartItems.KEY_TO_PART_MAP.put(key, this);

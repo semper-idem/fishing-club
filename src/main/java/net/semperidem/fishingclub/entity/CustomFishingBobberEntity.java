@@ -20,7 +20,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
@@ -28,6 +27,8 @@ import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+import net.semperidem.fishingclub.registry.FEntityRegistry;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
 
@@ -60,7 +61,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FisherInfo fisherInfo) {
-        this(FishingClub.CUSTOM_FISHING_BOBBER, world);
+        this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
         this.fisherInfo = fisherInfo;
@@ -325,8 +326,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private boolean removeIfInvalid(PlayerEntity playerEntity) {
         ItemStack itemStack = playerEntity.getMainHandStack();
         ItemStack itemStack2 = playerEntity.getOffHandStack();
-        boolean bl = itemStack.isOf(FishingClub.CUSTOM_FISHING_ROD);
-        boolean bl2 = itemStack2.isOf(FishingClub.CUSTOM_FISHING_ROD);
+        boolean bl = itemStack.isOf(FItemRegistry.CUSTOM_FISHING_ROD);
+        boolean bl2 = itemStack2.isOf(FItemRegistry.CUSTOM_FISHING_ROD);
         if (playerEntity.isRemoved() || !playerEntity.isAlive() || !bl && !bl2) {
             this.discard();
             return true;

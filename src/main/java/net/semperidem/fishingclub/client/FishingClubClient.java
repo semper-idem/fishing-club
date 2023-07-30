@@ -3,18 +3,14 @@ package net.semperidem.fishingclub.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
-import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.FRegistry;
 import org.lwjgl.glfw.GLFW;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
@@ -27,7 +23,7 @@ public class FishingClubClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-        ShopScreenUtil.registerClient();
+        FRegistry.registerClient();
         infoScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key." + MOD_ID + ".fisher_info_screen", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -51,7 +47,7 @@ public class FishingClubClient implements ClientModInitializer {
             }
         });
 
-        ModelPredicateProviderRegistry.register(FishingClub.CUSTOM_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
+        ModelPredicateProviderRegistry.register(FItemRegistry.CUSTOM_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }
@@ -62,8 +58,5 @@ public class FishingClubClient implements ClientModInitializer {
         });
 
 
-        HandledScreens.register(FishingClub.FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
-        HandledScreens.register(FishingClub.FISHER_INFO_SCREEN, FisherInfoScreen::new);
-        HandledScreens.register(FishingClub.FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
     }
 }

@@ -1,9 +1,9 @@
 package net.semperidem.fishingclub.client.game.fish;
 
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 
@@ -33,7 +33,7 @@ public class Fish {
     }
 
     public Fish(FishType fishType, FisherInfo fisherInfo) {
-        this(fishType, fisherInfo, FishingClub.CUSTOM_FISHING_ROD.getDefaultStack());
+        this(fishType, fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack());
     }
     public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod) {
         this.caughtUsing = fishingRod;
@@ -73,20 +73,21 @@ public class Fish {
     private int calculateFishLevel(){
         int adjustedFishLevel = FishUtil.getPseudoRandomValue(
                 fishType.fishMinLevel,
-                fishType.fishRandomLevel,
-                (int)Math.sqrt(fisherInfo.getLevel() / 100f)
+                Math.min(99 - fishType.fishMinLevel, fisherInfo.getLevel()),
+                Math.min(1, (float) (Math.min(0.5, (fisherInfo.getLevel() / 200f)) +
+                                (Math.sqrt(fisherInfo.getLevel()) / 50f)))
         );
         return FishUtil.clampValue(1, 99, adjustedFishLevel);
     }
 
 
     private float calculateFishWeight(){
-        float weightMultiplier = Math.min(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
+        float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
         return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight * weightMultiplier, fishLevel / 100f);
     }
 
     private float calculateFishLength(){
-        float lengthMultiplier = Math.min(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
+        float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
         return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength * lengthMultiplier, fishLevel / 100f);
     }
 
@@ -102,7 +103,7 @@ public class Fish {
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
         float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
-        return Math.min(5, Math.max(weightGrade, lengthGrade) + Math.random() < oneUpChance ? 1 : 0);
+        return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
 
