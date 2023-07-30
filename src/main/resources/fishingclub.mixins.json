@@ -6,7 +6,6 @@
   "mixins": [
     "BoatItemMixin",
     "CraftingResultInventoryMixin",
-    "ItemEntityMixin",
     "PlayerEntityMixin",
     "WanderingTraderEntityMixin"
   ],

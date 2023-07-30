@@ -2,17 +2,18 @@ package net.semperidem.fishingclub.client.screen.fisher_info;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.BoatItem;
+import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.ArrayList;
@@ -60,10 +61,30 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addSlot(new FishingRodSlot(fisherInventory, 0, 25, 199));
-        addSlot(new BoatSlot(fisherInventory, 1, 55, 199));
-        addSlot(new FishingNetSlot(fisherInventory, 2, 25, 229));
-        addSlot(new FishingNetSlot(fisherInventory, 3, 55, 229));
+        addSlot(new Slot(fisherInventory, 0, 25, 199){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() instanceof FishingRodItem;
+            }
+        });
+        addSlot(new Slot(fisherInventory, 1, 55, 199){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() instanceof BoatItem;
+            }
+        });
+        addSlot(new Slot(fisherInventory, 2, 25, 229){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() instanceof FishingNetItem;
+            }
+        });
+        addSlot(new Slot(fisherInventory, 3, 55, 229){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() instanceof FishingNetItem;
+            }
+        });
     }
 
     public void addPlayerInventorySlots(){
@@ -127,38 +148,5 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             slot.onTakeItem(player, itemStackInSlot);
         }
         return itemStackCopy;
-    }
-
-
-    private static class FishingNetSlot extends Slot {
-        public FishingNetSlot(Inventory inventory, int index, int x, int y) {
-            super(inventory, index, x, y);
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return stack.isOf(FishingClub.FISHING_NET) || stack.isOf(FishingClub.DOUBLE_FISHING_NET);
-        }
-    }
-    private static class FishingRodSlot extends Slot {
-        public FishingRodSlot(Inventory inventory, int index, int x, int y) {
-            super(inventory, index, x, y);
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return stack.isOf(FishingClub.CUSTOM_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);
-        }
-    }
-
-    private static class BoatSlot extends Slot {
-        public BoatSlot(Inventory inventory, int index, int x, int y) {
-            super(inventory, index, x, y);
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return FishingClub.BOATS.contains(stack.getItem());
-        }
     }
 }

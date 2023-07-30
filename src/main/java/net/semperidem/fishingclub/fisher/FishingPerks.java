@@ -34,17 +34,22 @@ public class FishingPerks {
             .withDescription("Unlock fishing net crafting")
             .withDetailedDesc(
                     "Fishing Nets which function like shulker boxes \n" +
-                    "but just for fishes. \n" +
-                    "You can only carry one in your inventory\n" +
-                    "(excluding specialized slots")
-            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "fishing_net")));
+                    "but just for fishes.")
+            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "fishing_net")))
+            .withIcon("fishing_net.png");
 
+    //Double Fishing Nets have double capacity of normal - is max lenght
     public static FishingPerk UPGRADE_NET = FishingPerk
-            .createPerk("upgrade_net", FISHING_NET)
-            .withLabel("Net Upgrade")
-            .withDescription("Fishing Net can now be crafted into Double Fishing Net allowing for twice as much fish")
-            .withDetailedDesc("Enhance your fishing nets to have twice the capacity")
-            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "double_fishing_net")));
+            .createPerk("double_fishing_net", FISHING_NET)
+            .withLabel("Make it double!")
+            .withDescription(
+                    "Fishing Net can now be crafted into Double Fishing Net")
+            .withDetailedDesc(
+                    "Double Fishing Nets have double capacity \n" +
+                    "of normal fishing net (who would've guest huh??)")
+            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "double_fishing_net")))
+            .withIcon("double_fishing_net.png");
+
 
 
     //H - Boat

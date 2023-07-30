@@ -23,6 +23,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private static final Identifier BACKGROUND_INV = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info_inv.png");
     private static final Identifier BACKGROUND_SKILL = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
+    private static final Identifier SELECTED_SKILL_BORDER = new Identifier(FishingClub.MOD_ID, "textures/gui/skill/selected_skill.png");
     private static Identifier BACKGROUND;
 
     private static final int TEXT_COLOR = Color.WHITE.getRGB();
@@ -58,6 +59,9 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private FishingPerk rootPerk;
     private FishingPerk selectedPerk;
+
+    private int selectedPerkX;
+    private int selectedPerkY;
 
     private ButtonWidget infoButton;
     private ButtonWidget hButton;
@@ -282,28 +286,34 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     }
 
     private void renderTooltip(MatrixStack matrices, int mouseX, int mouseY){
+        if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
+            super.renderTooltip(matrices, this.focusedSlot.getStack(), mouseX, mouseY);
+        }
         hoveredElement(mouseX, mouseY).ifPresent(hovered -> {
             if (!(hovered instanceof PerkButtonWidget)) return;
-
             FishingPerk fishingPerk = ((PerkButtonWidget) hovered).fishingPerk;
             ArrayList<Text> lines = new ArrayList<>();
             lines.add(Text.of(labelFormatter + fishingPerk.getLabel()));//Optimize Later TODO
             lines.addAll(fishingPerk.getDescription());
             renderTooltip(matrices, lines, mouseX, mouseY);
+
         });
     }
 
     private void renderSelectedPerk(MatrixStack matrices){
         if (selectedPerk == null) return;
-        int selectedPerkY = y + BACKGROUND_TEXTURE_HEIGHT - 107   ;
-        textRenderer.drawWithShadow(matrices,selectedPerk.getLabel(), buttonsX, selectedPerkY, TEXT_COLOR);
+        int selectedPerkNameY = y + BACKGROUND_TEXTURE_HEIGHT - 107   ;
+        textRenderer.drawWithShadow(matrices, labelFormatter + selectedPerk.getLabel(), buttonsX, selectedPerkNameY, TEXT_COLOR);
 
         ArrayList<Text> lines = selectedPerk.getDetailedDescription();
         int offset = 0;
         for(Text line : lines) {
-            textRenderer.drawWithShadow(matrices, line, buttonsX, selectedPerkY + 20  + offset, TEXT_COLOR);
+            textRenderer.drawWithShadow(matrices, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
             offset += textRenderer.fontHeight + 2;
         }
+
+        RenderSystem.setShaderTexture(0, SELECTED_SKILL_BORDER);
+        drawTexture(matrices, this.selectedPerkX - 1, this.selectedPerkY - 1, 0, 0, 22, 22, 22, 22);
     }
 
     private void clearPerkButtons(){
@@ -337,6 +347,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private ButtonWidget.PressAction onPerkClick(FishingPerk fishingPerk){
         return button -> {
             selectedPerk = fishingPerk;
+            selectedPerkX = button.x;
+            selectedPerkY = button.y;
             unlockButton.visible = clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk) && clientInfo.hasSkillPoints();
             updateData();
         };
