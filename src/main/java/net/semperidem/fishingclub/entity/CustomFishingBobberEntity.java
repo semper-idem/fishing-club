@@ -49,9 +49,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private Fish caughtFish;
     private int lastHookCountdown;
 
+
     private int power;
     private float throwDistance;
-
+    private boolean boatFishing;
     private FisherInfo fisherInfo;
 
 
@@ -60,12 +61,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FisherInfo fisherInfo) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FisherInfo fisherInfo, boolean boatFishing) {
         this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
         this.fisherInfo = fisherInfo;
         this.power = power;
+        this.boatFishing = boatFishing;
         setThrowDirection();
     }
 
@@ -346,7 +348,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             int reactionBonus = calculateReactionBonus();
             caughtFish.experience += reactionBonus;
             this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish);
+            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish, boatFishing);
         }
         if (this.onGround) {
             i = 2;

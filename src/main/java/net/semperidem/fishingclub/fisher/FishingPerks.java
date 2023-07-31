@@ -38,7 +38,6 @@ public class FishingPerks {
             .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, new Identifier(FishingClub.MOD_ID, "fishing_net")))
             .withIcon("fishing_net.png");
 
-    //Double Fishing Nets have double capacity of normal - is max lenght
     public static FishingPerk UPGRADE_NET = FishingPerk
             .createPerk("double_fishing_net", FISHING_NET)
             .withLabel("Make it double!")
@@ -55,9 +54,12 @@ public class FishingPerks {
     //H - Boat
     public static FishingPerk BOAT_BOBBER_SIZE = FishingPerk
             .createPerk("boat_bobber_size", ROOT_HOBBYIST)
-            .withLabel("Grand Bobber")
+            .withLabel("Boat it")
             .withDescription("Increases bobber size by 10% when in boat")
-            .withDetailedDesc("Your bobber grows in size while fishing from a boat, making it easier to catch fish.");
+            .withDetailedDesc(
+                    "Your bobber grows in size while fishing from a boat,\n" +
+                    "making it easier to catch fish.")
+            .withIcon("oak_boat.png");
 
     public static FishingPerk DOUBLE_FISH_BOAT = FishingPerk
             .createPerk("double_fish_boat", BOAT_BOBBER_SIZE)

@@ -33,9 +33,10 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, Fish fish){
+    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, Fish fish, boolean boatFishing){
         PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         fishGameStartPacket.writeItemStack(fishingRod);
+        fishGameStartPacket.writeBoolean(boatFishing);
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
     }
     public static void sendFisherInfoSync(ServerPlayerEntity player){

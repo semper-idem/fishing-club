@@ -38,9 +38,9 @@ public class FishGameScreen extends Screen {
     FishGameLogic fishGameLogic;
 
 
-    public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish) {
+    public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish, boolean boatFishing) {
         super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish);
+        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing);
     }
 
 

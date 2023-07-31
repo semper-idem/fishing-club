@@ -13,8 +13,9 @@ public class ClientPacketReceiver {
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
             Fish fish = FishUtil.fishFromPacketBuf(buf);
-            ItemStack fishingRood = buf.readItemStack();
-            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), fishingRood, fish)));
+            ItemStack fishingRod = buf.readItemStack();
+            boolean boatFishing = buf.readBoolean();
+            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), fishingRod, fish, boatFishing)));
         });
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_SYNC_INFO, (client, handler, buf, responseSender) -> {

@@ -42,13 +42,15 @@ public class FishGameLogic {
     float fishDamage;
 
     ItemStack caughtUsing;
+    boolean boatFishing;
 
 
-    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish){
+    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
         this.player = player;
         this.fisherInfo = FisherInfos.getClientInfo();
         this.fish = fish;
         this.caughtUsing = caughtUsing;
+        this.boatFishing = boatFishing;
         calculateBobberLength();
         calculateHealth();
         calculateFishDamage();
@@ -81,24 +83,25 @@ public class FishGameLogic {
     }
 
     private void calculateBobberLength(){
-        float calculateBobberLength = STARTING_BOBBER_LENGTH;
-
-        //SKILLS
+        float perksBonusLengthMultiplier = 1;
         if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
-            calculateBobberLength += 0.01f;
+            perksBonusLengthMultiplier += 0.1f;
+        }
+        if ((boatFishing && fisherInfo.hasPerk(FishingPerks.BOAT_BOBBER_SIZE))) {
+            perksBonusLengthMultiplier += 0.1f;
         }
 
+
         //PARTS
-        float partsBonusLengthPercent = 0;
+        float partsBonusLengthMultiplier = 1;
         for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
             if (part.getStatBonuses().containsKey(Stat.BOBBER_WIDTH)) {
-                partsBonusLengthPercent += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
+                partsBonusLengthMultiplier += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
             }
         }
-        calculateBobberLength += (calculateBobberLength * (1 + partsBonusLengthPercent));
 
-        this.bobberLength = calculateBobberLength;
+        this.bobberLength = STARTING_BOBBER_LENGTH * partsBonusLengthMultiplier * perksBonusLengthMultiplier;
     }
 
 
