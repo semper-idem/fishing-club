@@ -21,8 +21,9 @@ public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         Fish fish = FishUtil.fishFromPacketBuf(buf);
+        boolean boatFishing = buf.readBoolean();
         server.execute(() -> {
-            FishUtil.grantReward(player, fish);
+            FishUtil.grantReward(player, fish, boatFishing);
         });
     }
 

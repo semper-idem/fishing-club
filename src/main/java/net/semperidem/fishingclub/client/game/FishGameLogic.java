@@ -265,7 +265,7 @@ public class FishGameLogic {
     }
 
     private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish);
+        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing);
     }
 
     public enum Stat{

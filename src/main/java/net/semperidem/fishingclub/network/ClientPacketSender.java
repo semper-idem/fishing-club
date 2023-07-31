@@ -10,8 +10,10 @@ import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameGrantReward(Fish fish) {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, FishUtil.fishToPacketBuf(fish));
+    public static void sendFishGameGrantReward(Fish fish, boolean boatFishing) {
+        PacketByteBuf buf = FishUtil.fishToPacketBuf(fish);
+        buf.writeBoolean(boatFishing);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
     }
 
     public static void sendOpenSellShopRequest() {

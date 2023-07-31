@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FishingPerks;
 import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
@@ -32,16 +33,35 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, Fish fish){
+    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
         FisherInfos.addExperience(player, fish.experience);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
+        fishReward.setCount(getRewardMultiplier(FisherInfos.getFisher(player), boatFishing));
         if (player.getInventory().getEmptySlot() == -1) {
             player.dropItem(fishReward, false);
         } else {
             player.giveItemStack(fishReward);
         }
 
+    }
+
+    private static int getRewardMultiplier(FisherInfo fisherInfo, boolean boatFishing){
+        int rewardMultiplier = 1;
+        if (!boatFishing) {
+            return rewardMultiplier;
+        }
+        if (fisherInfo.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {
+            rewardMultiplier = 2;
+        }
+        if (fisherInfo.hasPerk(FishingPerks.TRIPLE_FISH_BOAT) && (Math.random() < 0.06)) {
+            rewardMultiplier = 3;
+        }
+        while (fisherInfo.hasPerk(FishingPerks.INFINITY_FISH) && Math.random() < 0.03) {
+                rewardMultiplier++;
+        }
+
+        return rewardMultiplier;
     }
 
     public static void grantExp(ServerPlayerEntity player, int exp){

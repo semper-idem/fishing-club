@@ -63,9 +63,12 @@ public class FishingPerks {
 
     public static FishingPerk DOUBLE_FISH_BOAT = FishingPerk
             .createPerk("double_fish_boat", BOAT_BOBBER_SIZE)
-            .withLabel("Bountiful Boat")
-            .withDescription("20% chance to double fish when in boat")
-            .withDetailedDesc("Increase your odds to catch two fish instead of one when fishing from a boat.");
+            .withLabel("OMG twins?")
+            .withDescription("9% chance to double fish when in boat")
+            .withDetailedDesc(
+                    "Gain 9% chance to catch additional fish\n" +
+                    "when fishing from boat")
+            .withIcon("double_fish.png");
 
 
     public static FishingPerk LINE_HEALTH_BOAT = FishingPerk
@@ -75,14 +78,18 @@ public class FishingPerks {
             .withDetailedDesc("Your fishing line's durability increases in the boat, resisting damage from all but the biggest fish.");
 
 
-    public static FishingPerk QUAD_FISH_BOAT = FishingPerk
-            .createPerk("quad_fish_boat", LINE_HEALTH_BOAT)
-            .withLabel("Treasure Trawler")
-            .withDescription("10% chance to catch four fish instead of one when fishing from a boat")
-            .withDetailedDesc("Your skillful angling can yield four times the usual catch when fishing from a boat.");
+    public static FishingPerk TRIPLE_FISH_BOAT = FishingPerk
+            .createPerk("triple_fish_boat", LINE_HEALTH_BOAT)
+            .withLabel("Triple kill")
+            .withDescription(
+                    "6% chance to catch three fish when in boat")
+            .withDetailedDesc(
+                    "Gain 6% chance to catch three fish\n" +
+                    "when fishing from boat")
+            .withIcon("triple_fish.png");
 
     public static FishingPerk DOUBLE_TREASURE_BOAT = FishingPerk
-            .createPerk("double_treasure_boat", QUAD_FISH_BOAT)
+            .createPerk("double_treasure_boat", TRIPLE_FISH_BOAT)
             .withLabel("Treasure Hoarder")
             .withDescription("Double chance for treasure to appear when in boat")
             .withDetailedDesc("Your luck soars while at sea, doubling the chances of treasures appearing during your fishing trips.");
@@ -93,11 +100,15 @@ public class FishingPerks {
             .withDescription("Triple chance for treasure to appear when in boat")
             .withDetailedDesc("Your fortune is amplified at sea, tripling the chance of finding treasures during your fishing trips.");
 
-    public static FishingPerk REPEAT_DOUBLE_FISH_BOAT = FishingPerk
-            .createPerk("repeat_double_fish_boat", TRIPLE_TREASURE_BOAT)
-            .withLabel("Double Catcher")
-            .withDescription("5% chance to double fish caught, repeating when in boat")
-            .withDetailedDesc("Your expertise allows a small chance to consistently double your fish catch when fishing from a boat.");
+    public static FishingPerk INFINITY_FISH = FishingPerk
+            .createPerk("recursive_fish", TRIPLE_TREASURE_BOAT)
+            .withLabel("Infinity fish")
+            .withDescription("3% chance to catch additional fish caught(repeating) when in boat")
+            .withDetailedDesc(
+                    "Gain 3% chance to catch additional fish\n" +
+                    "when in boat\n" +
+                    "If triggered, attempt to roll for additional fish")
+            .withIcon("stacked_fish.png");
 
     //H - MISC
     public static FishingPerk BAIT_CRAFTING = FishingPerk
