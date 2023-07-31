@@ -5,6 +5,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 
 import java.util.HashMap;
@@ -40,7 +41,8 @@ public class FisherInfos {
     }
 
     public static FisherInfo getFisher(PlayerEntity user){
-        return user.world.isClient() ? getPlayerFisherInfo(user) : FISHER_INFOS.get(user.getUuid());
+        return new FisherInfo(user, user.getDataTracker().get(FishingClub.FISHER_NBT));
+        //return user.world.isClient() ? getPlayerFisherInfo(user) : FISHER_INFOS.get(user.getUuid());
     }
 
     public static void addExperience(PlayerEntity playerEntity, int expGained){

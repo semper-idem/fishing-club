@@ -25,12 +25,8 @@ public class FishCoinBundleItem extends Item {
             value = bundleStackTag.getInt("value");
         }
         if (!user.world.isClient) {
-            NbtCompound playerNbt = new NbtCompound();
-            user.readCustomDataFromNbt(playerNbt);
             FisherInfo fisherInfo = FisherInfos.getFisher(user);
             fisherInfo.addCredit(value);
-            fisherInfo.writeNbt(playerNbt);
-            user.readNbt(playerNbt);
         }
         if (user.world.isClient) {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);

@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.HashMap;
@@ -33,13 +34,13 @@ public class FisherInfo {
         this.level = level;
     }
 
-    public FisherInfo(PlayerEntity playerEntity, NbtCompound playerTag) {
-        if (!playerTag.contains(FISHER_INFO_TAG_NAME)) {
-            return;
-        }
+    public FisherInfo(PlayerEntity playerEntity){
         this.fisher = playerEntity;
+        initPerks();
+    }
 
-        NbtCompound fisherTag = playerTag.getCompound(FISHER_INFO_TAG_NAME);
+    public FisherInfo(PlayerEntity playerEntity, NbtCompound fisherTag) {
+        this.fisher = playerEntity;
         this.level = fisherTag.getInt("level");
         this.exp = fisherTag.getInt("exp");
         this.credit = fisherTag.getInt("credit");
@@ -57,6 +58,10 @@ public class FisherInfo {
     }
 
     public void writeNbt(NbtCompound playerTag){
+        playerTag.put(FISHER_INFO_TAG_NAME, getNbt());
+    }
+
+    public NbtCompound getNbt(){
         NbtCompound fisherTag = new NbtCompound();
         fisherTag.putInt("level", this.level);
         fisherTag.putInt("exp", this.exp);
@@ -68,7 +73,7 @@ public class FisherInfo {
             perkListTag.add(NbtString.of(fishingPerkName));
         });
         fisherTag.put("perks", perkListTag);
-        playerTag.put(FISHER_INFO_TAG_NAME, fisherTag);
+        return fisherTag;
     }
 
     public int getLevel() {
@@ -170,6 +175,7 @@ public class FisherInfo {
         }
 
         this.credit += credit;
+        this.fisher.getDataTracker().set(FishingClub.FISHER_NBT, getNbt());
         return true;
     }
 
