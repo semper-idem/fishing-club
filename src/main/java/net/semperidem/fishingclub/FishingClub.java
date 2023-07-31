@@ -11,6 +11,7 @@ public class FishingClub implements ModInitializer {
     public void onInitialize() {
         CommandsUtil.register();
         FRegistry.register();
+        FishingClubTest.runTest();
     }
 
     public static Identifier getIdentifier(String resource){

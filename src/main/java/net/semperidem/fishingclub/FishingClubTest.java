@@ -8,9 +8,15 @@ import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
-import java.util.HashMap;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FishingClubTest {
+    private static final int N = 5000;
+    private static final ArrayList<String> RUNTIME_OUTPUT = new ArrayList<>();
 
 
     private static HashMap<FishType, Integer> countUp(HashMap<FishType, Integer> map, FishType key){
@@ -21,7 +27,7 @@ public class FishingClubTest {
         }
         return map;
     }
-    private static HashMap<Integer, Integer> countUp(HashMap<Integer, Integer> map, Integer key){
+    private static TreeMap<Integer, Integer> countUp(TreeMap<Integer, Integer> map, Integer key){
         if(map.containsKey(key)) {
             map.put(key, map.get(key) + 1);
         } else {
@@ -29,27 +35,99 @@ public class FishingClubTest {
         }
         return map;
     }
-    private static HashMap<Float, Integer> countUp(HashMap<Float, Integer> map, Float key){
+    private static TreeMap<Float, Integer> countUp(TreeMap<Float, Integer> map, Float key){
         if(map.containsKey(key)) {
             map.put(key, map.get(key) + 1);
         } else {
             map.put(key, 1);
         }
         return map;
+    }
+    private static TreeMap<Float, Integer> sortMap(TreeMap<Float, Integer> inputMap){
+        Set<Float> keySet = inputMap.keySet();
+        TreeMap<Float, Integer> resultMap = new TreeMap<>();
+        keySet.forEach(key -> {
+            resultMap.put(key, inputMap.get(key));
+        });
+
+        return resultMap;
+    }
+
+    private static TreeMap<Float, Integer> mergeMap(TreeMap<Float, Integer> inputMap, int mergeTimes){
+        if (mergeTimes < 2) return inputMap;
+        if (mergeTimes > inputMap.size()) return inputMap;
+        inputMap = sortMap(inputMap);
+        float[][] rawArray = new float[inputMap.size()][2];
+        ArrayList<Float> keyList = new ArrayList<>(inputMap.keySet());
+        for(int i = 0; i < keyList.size(); i++) {
+            rawArray[i][0] = keyList.get(i);
+            rawArray[i][1] = inputMap.get(keyList.get(i));
+        }
+
+        TreeMap<Float, Integer> mergedMap = new TreeMap<>();
+        for(int i = 0; i <= rawArray.length / mergeTimes; i++) {
+            float avgKey = 0;
+            float sumValue = 0;
+            for(int j = 0; j < mergeTimes; j++) {
+                if (i * mergeTimes + j >= rawArray.length) break;
+                avgKey += rawArray[i * mergeTimes + j][0];
+                sumValue += rawArray[i * mergeTimes + j][1];
+            }
+            avgKey /= mergeTimes;
+            mergedMap.put(avgKey, (int) sumValue);
+        }
+        return mergedMap;
+    }
+
+    private static void printResultFloat(TreeMap<Float, Integer> resultMap, String resultCategory, int mergeTimes){
+        final float[] avg = {0};
+        final float[] min = {0};
+        final float[] max = {0};
+        println("====================================");
+        resultMap.keySet().forEach(key -> {
+            if (key > max[0]) max[0] = key;
+            if (key < min[0]) min[0] = key;
+            avg[0] += (key * resultMap.get(key));
+//            println(resultCategory + ": " + key);
+//            println("Count: " + finalResultMap.get(key));
+//            println("%: " + (finalResultMap.get(key) / (N / 100f)));
+        });
+        println("Avg: " + (avg[0]/N));
+        println("Min: " + (min[0]));
+        println("Max: " + (max[0]));
+        drawGraph(resultMap, resultCategory);
+        println("====================================");
+    }
+
+    private static void printResultFishType(HashMap<FishType, Integer> resultMap, String resultCategory){
+        println("====================================");
+        resultMap.keySet().stream().sorted().forEach(key -> {
+            println(
+            (resultCategory + ": " + key.name) +
+            (" Count: " + resultMap.get(key)) +
+            (" %: " + (resultMap.get(key) / (N * 100f)))
+            );
+        });
+        println("====================================");
+
+    }
+
+    private static void printResultInteger(TreeMap<Integer, Integer> resultMap, String resultCategory, int mergeTimes){
+        TreeMap<Float, Integer> floatResultMap = new TreeMap<>();
+        resultMap.forEach((k,v) -> floatResultMap.put(Float.valueOf(k),v));
+        printResultFloat(floatResultMap, resultCategory, mergeTimes);
     }
 
     private static void runTestFor(FisherInfo fisherInfo){
-        System.out.println("====================================");
-        System.out.println("====================================");
-        System.out.println("====================================");
-        System.out.println("RUNNIG TEST FOR: " + fisherInfo.getLevel());
+        println("####################################");
+        println("RUNNING TEST FOR FISHER LEVEL:" + fisherInfo.getLevel());
         ItemStack fishingRod = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
-        HashMap<Integer, Integer> gradeResult = new HashMap<>();
-        HashMap<Integer, Integer> levelResult = new HashMap<>();
+        TreeMap<Integer, Integer> gradeResult = new TreeMap<>();
+        TreeMap<Integer, Integer> levelResult = new TreeMap<>();
         HashMap<FishType, Integer> typeResult = new HashMap<>();
-        HashMap<Float, Integer> weightResult = new HashMap<>();
-        HashMap<Float, Integer> sizeResult = new HashMap<>();
-        for(int i = 0; i < 1000; i++) {
+        TreeMap<Float, Integer> weightResult = new TreeMap<>();
+        TreeMap<Float, Integer> sizeResult = new TreeMap<>();
+        for(int i = 0; i < N; i++) {
             Fish fish = FishUtil.getFishOnHook(fisherInfo, fishingRod, 1);
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.fishLevel);
@@ -60,48 +138,62 @@ public class FishingClubTest {
             }
         }
 
-        System.out.println("====================================");
-        gradeResult.keySet().forEach(grade -> {
-            System.out.println("Grade " + grade + " count: " + gradeResult.get(grade));
-        });
+        printResultFloat(weightResult, "Weight", 1);
+//        printResultFloat(sizeResult, "Length", 1);
+//        printResultInteger(gradeResult, "Grade", 1);
+//        printResultInteger(levelResult, "Level", 1);
+//        printResultFishType(typeResult, "Fish Type");
 
-        final float[] avgLevel = {0};
-        System.out.println("====================================");
-        levelResult.keySet().forEach(level -> {
-            avgLevel[0] += (level * levelResult.get(level));
-            System.out.println("Level " + level + " count: " + levelResult.get(level));
-        });
-        System.out.println("Avg Level: " + (avgLevel[0]/1000));
-
-        System.out.println("====================================");
-        typeResult.keySet().forEach(type -> {
-            System.out.println("Fish Type " + type.name + " count: " + typeResult.get(type));
-        });
-
-        final float[] avgWeight = {0};
-        System.out.println("====================================");
-        weightResult.keySet().stream().sorted().forEach(weight -> {
-            avgWeight[0] += (weight * weightResult.get(weight));
-            System.out.println("Weight " + weight + " count: " + weightResult.get(weight) + ".".repeat(weightResult.get(weight)/5));
-        });
-        System.out.println("Avg Weight: " + (avgWeight[0]/1000));
-        System.out.println("====================================");
-
-
-//        System.out.println("====================================");
-//        sizeResult.keySet().stream().sorted().forEach(length -> {
-//            System.out.println("Length " + length + " count: " + sizeResult.get(length));
-//        });
-//        System.out.println("====================================");
-        System.out.println("====================================");
-        System.out.println("====================================");
-        System.out.println("====================================");
+        println("####################################");
     }
 
-    public static void runTest(){
+    private static void drawGraph(TreeMap<Float, Integer> inputMap, String title){
+        println("+++++++++++++++++++++++++++++++++++++");
+        println("---------- TITLE: " + title);
+        inputMap = mergeMap(inputMap, inputMap.size() / 10);
+        AtomicInteger maxCount = new AtomicInteger();
+        TreeMap<Float, Integer> finalInputMap = inputMap;
+        inputMap.keySet().forEach(key -> {
+            int value = finalInputMap.get(key);
+            if (maxCount.get() < value) maxCount.set(value);
+        });
+        inputMap.keySet().forEach(key -> {
+            int count = finalInputMap.get(key);
+            int dotCount = (int) (count / (maxCount.get() / 20f));
+            println(".".repeat(dotCount) + " ".repeat(25 - dotCount) + key);
+        });
+        println("+++++++++++++++++++++++++++++++++++++");
+    }
+    public static void runTest() {
         runTestFor(new FisherInfo(1));
+        runTestFor(new FisherInfo(25));
+        runTestFor(new FisherInfo(60));
         runTestFor(new FisherInfo(100));
         runTestFor(new FisherInfo(1000));
+        runTestFor(new FisherInfo(2500));
+        writeFile(RUNTIME_OUTPUT);
         throw new RuntimeException();
+    }
+    
+    private static void println(String line){
+        System.out.println(line);
+        RUNTIME_OUTPUT.add(line);
+    }
+
+    public static void writeFile(ArrayList<String> outputLines) {
+        Date date = new Date() ;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss") ;
+        FileWriter fw;
+        try {
+            fw = new FileWriter("fish_test_"+ dateFormat.format(date) +".txt");
+   
+        for (int i = 0; i < outputLines.size(); i++) {
+            fw.write(outputLines.get(i) +"\n");
+        }
+        fw.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

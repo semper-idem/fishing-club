@@ -18,10 +18,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.TreeMap;
 
 public class FishUtil {
     public static final Item FISH_ITEM = Items.TROPICAL_FISH;
+    private static final Random RANDOM = new java.util.Random(42L);
 
 
     public static ItemStack prepareFishItemStack(Fish fish){
@@ -118,7 +120,7 @@ public class FishUtil {
         if (percentile < 0.80) {
             return 3;
         }
-        if (percentile < 0.95) {
+        if (percentile < 0.90) {
             return 4;
         }
         return 5;
@@ -175,10 +177,16 @@ public class FishUtil {
 
 
     public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
-        return (float) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
+        float skewPercentage = 0.5f;
+        skew = (float) Math.sqrt(skew) * 0.7f; //This deliberately lefts top 15% of randomAdjustments "unused" so we leave space for future bonuses
+        double skewPart = randomAdjustment * skew * skewPercentage;
+        double nextG = Math.max(-3, Math.min( 3, RANDOM.nextGaussian()));
+        double mappedG = (nextG + 3) / 6;
+        double randomPart = randomAdjustment * mappedG * (1 - skewPercentage);
+        return (float) (base + skewPart + randomPart);
     }
     public static int getPseudoRandomValue(int base, int randomAdjustment, float skew){
-        return (int) (base + randomAdjustment / 2 * skew + randomAdjustment / 2 * Math.random());
+        return (int) getPseudoRandomValue(Float.valueOf(base), Float.valueOf(randomAdjustment), skew);
     }
 
 
