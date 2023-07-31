@@ -9,12 +9,19 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 
 public class FishCoinBundleItem extends Item {
     public FishCoinBundleItem(Settings settings) {
         super(settings);
     }
 
+
+    public static ItemStack ofValue(int value){
+        ItemStack bundleStack = FItemRegistry.FISH_COIN_BUNDLE.getDefaultStack();
+        bundleStack.getOrCreateNbt().putInt("value", value);
+        return bundleStack;
+    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack bundleStack = user.getStackInHand(hand);
