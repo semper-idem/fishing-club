@@ -8,7 +8,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,19 +23,19 @@ public class PlayerEntityMixin extends Entity {
 
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void onInitDataTracker(CallbackInfo ci){
-        dataTracker.startTracking(FishingClub.FISHER_NBT, new FisherInfo((PlayerEntity) (Object)this).getNbt());
+        dataTracker.startTracking(FisherInfo.TRACKED_DATA, new FisherInfo((PlayerEntity) (Object)this).toNbt());
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void readCustomDataFromNbt(NbtCompound nbtCompound, CallbackInfo ci){
         if (nbtCompound.contains("fisher_info")) {
-            dataTracker.set(FishingClub.FISHER_NBT, nbtCompound.getCompound("fisher_info"));
+            dataTracker.set(FisherInfo.TRACKED_DATA, nbtCompound.getCompound("fisher_info"));
         }
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeCustomDataToNbt(NbtCompound nbtCompound, CallbackInfo ci){
-        NbtCompound fisherTag = dataTracker.get(FishingClub.FISHER_NBT);
+        NbtCompound fisherTag = dataTracker.get(FisherInfo.TRACKED_DATA);
         nbtCompound.put("fisher_info", fisherTag);
     }
 

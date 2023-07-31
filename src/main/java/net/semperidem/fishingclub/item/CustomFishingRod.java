@@ -16,8 +16,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfos;
-import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
 public class CustomFishingRod extends FishingRodItem {
@@ -96,7 +96,7 @@ public class CustomFishingRod extends FishingRodItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int power = FishingRodUtil.getPower(getMaxUseTime(stack) - remainingUseTicks);
-        castHook(world, (PlayerEntity) user, power, stack, FisherInfos.getFisher((PlayerEntity) user));
+        castHook(world, (PlayerEntity) user, power, stack, FisherInfoManager.getFisher((PlayerEntity) user));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class CustomFishingRod extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        FisherInfo fisherInfo = FisherInfos.getFisher(user);
+        FisherInfo fisherInfo = FisherInfoManager.getFisher(user);
         if (!fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod, fisherInfo);
             return TypedActionResult.success(user.getStackInHand(hand));

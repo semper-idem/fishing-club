@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fisher;
+package net.semperidem.fishingclub.fisher.perks;
 
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
@@ -43,7 +43,7 @@ public class FishingPerk {
     }
 
 
-    void onEarn(PlayerEntity playerEntity){
+    public void onEarn(PlayerEntity playerEntity){
         if (reward == null) return;
         if (!(playerEntity instanceof ServerPlayerEntity)) return;
         reward.onEarn(playerEntity);
@@ -82,6 +82,9 @@ public class FishingPerk {
 
     public String getName(){
         return name;
+    }
+    public FishingPerk getParent(){
+        return parent;
     }
 
     FishingPerk withLabel(String label){

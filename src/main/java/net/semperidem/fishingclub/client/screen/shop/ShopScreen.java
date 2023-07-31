@@ -17,7 +17,6 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.fisher.FisherInfos;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.ArrayList;
@@ -297,7 +296,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
                 drawTexture(matrixStack, x, y, 0, 0, width, height, 128, 128);
 
                 textRenderer.drawWithShadow(matrixStack,"Balance:", x + 6, y + 6, 0xcdcdf7);
-                String balanceString = "$" + FisherInfos.getClientInfo().getCredit();
+                String balanceString = "$" + getScreenHandler().fisherInfo.getCredit();
                 int balanceStringWidth = textRenderer.getWidth(balanceString);
                 textRenderer.drawWithShadow(matrixStack, balanceString, x + 74 - balanceStringWidth, y + 25, 0xcdcdf7);
                 matrixStack.pop();
@@ -439,7 +438,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             } else {
                 orderListWidget.removeFromBasket(this);
             }
-            checkoutButton.active = orderListWidget.getBasketTotal() <= FisherInfos.getClientInfo().getCredit();
+            checkoutButton.active = orderListWidget.getBasketTotal() <= getScreenHandler().fisherInfo.getCredit();
             return true;
         }
 
@@ -594,7 +593,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
         public boolean buyContainer(){
             int cost = getBasketTotal();
-            int currentCredit =  FisherInfos.getClientInfo().getCredit();
+            int currentCredit =  handler.fisherInfo.getCredit();
             if (cost <= currentCredit) {
                 lastBalanceChange = cost * -1;
                 ClientPacketSender.buyShopContainer(cost, getBasket());

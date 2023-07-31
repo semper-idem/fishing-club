@@ -8,8 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
 
 public class FishCoinBundleItem extends Item {
     public FishCoinBundleItem(Settings settings) {
@@ -25,10 +24,8 @@ public class FishCoinBundleItem extends Item {
             value = bundleStackTag.getInt("value");
         }
         if (!user.world.isClient) {
-            FisherInfo fisherInfo = FisherInfos.getFisher(user);
-            fisherInfo.addCredit(value);
-        }
-        if (user.world.isClient) {
+            FisherInfoManager.addCredit(user, value);
+        } else {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);
         }
         bundleStack.setCount(0);

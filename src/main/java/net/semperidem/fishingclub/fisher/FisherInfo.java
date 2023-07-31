@@ -1,18 +1,23 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.HashMap;
 
 public class FisherInfo {
-    private static final String FISHER_INFO_TAG_NAME = "fisher_info";
+    public static TrackedData<NbtCompound> TRACKED_DATA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
+    public static final String TAG = "fisher_info";
 
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
@@ -34,34 +39,43 @@ public class FisherInfo {
         this.level = level;
     }
 
-    public FisherInfo(PlayerEntity playerEntity){
+    public FisherInfo(PlayerEntity playerEntity) {
         this.fisher = playerEntity;
-        initPerks();
-    }
+        if (!trackerInitialized(playerEntity)) return;
 
-    public FisherInfo(PlayerEntity playerEntity, NbtCompound fisherTag) {
-        this.fisher = playerEntity;
+        NbtCompound fisherTag = playerEntity.getDataTracker().get(TRACKED_DATA);
         this.level = fisherTag.getInt("level");
         this.exp = fisherTag.getInt("exp");
         this.credit = fisherTag.getInt("credit");
         this.skillPoints = fisherTag.getInt("skill_points");
         this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
+        setPerks(fisherTag);
+    }
+
+    private boolean trackerInitialized(PlayerEntity playerEntity){
+        final boolean[] result = {false};
+        playerEntity.getDataTracker().getAllEntries().forEach(trackedData -> {
+            if (trackedData.getData() == TRACKED_DATA) result[0] = true;
+        });
+        return result[0];
+    }
+
+    private void setPerks(NbtCompound fisherTag){
         NbtList perkListTag = fisherTag.getList("perks", NbtElement.STRING_TYPE);
         if (perkListTag.size() == 0) {
             initPerks();
         } else {
             perkListTag.forEach(
                     nbtElement -> FishingPerks.getPerkFromName(nbtElement.asString()).ifPresent(
-                            fishingPerk -> this.perks.put(fishingPerk.name, fishingPerk)));
+                            fishingPerk -> this.perks.put(fishingPerk.getName(), fishingPerk)));
         }
-        FisherInfos.updateFisher(playerEntity.getUuid(), this);
     }
 
     public void writeNbt(NbtCompound playerTag){
-        playerTag.put(FISHER_INFO_TAG_NAME, getNbt());
+        playerTag.put(TAG, toNbt());
     }
 
-    public NbtCompound getNbt(){
+    public NbtCompound toNbt(){
         NbtCompound fisherTag = new NbtCompound();
         fisherTag.putInt("level", this.level);
         fisherTag.putInt("exp", this.exp);
@@ -94,15 +108,21 @@ public class FisherInfo {
         addRootPerk(FishingPerks.ROOT_SOCIALIST);
     }
 
-    public void addRootPerk(FishingPerk perk){
-        this.perks.put(perk.name, perk);
+    private void updateDataTracker(){
+        if (this.fisher == null) return;
+        this.fisher.getDataTracker().set(TRACKED_DATA, toNbt());
     }
 
-    public void addPerk(FishingPerk perk){
+    private void addRootPerk(FishingPerk perk){
+        this.perks.put(perk.getName(), perk);
+    }
+
+    void addPerk(FishingPerk perk){
         if (availablePerk(perk) && hasSkillPoints()) {
             perk.onEarn(fisher);
-            this.perks.put(perk.name, perk);
+            this.perks.put(perk.getName(), perk);
             skillPoints--;
+            updateDataTracker();
         }
     }
 
@@ -111,11 +131,12 @@ public class FisherInfo {
     }
 
     public boolean availablePerk(FishingPerk perk){
-        return perk.parent == null || this.perks.containsKey(perk.parent.name);
+        return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
     }
 
     private void addSkillPoint(){
         this.skillPoints++;
+        updateDataTracker();
     }
 
     public int getSkillPoints(){
@@ -125,21 +146,26 @@ public class FisherInfo {
     public boolean hasSkillPoints(){
         return this.skillPoints > 0;
     }
-    public void setSkillPoints(int skillPoints){
+
+    void setSkillPoints(int skillPoints){
         this.skillPoints = skillPoints;
+        updateDataTracker();
     }
 
-    public void removePerk(String perkName){
+
+    void removePerk(String perkName){
         if (!this.perks.containsKey(perkName)) return;
         this.perks.remove(perkName);
         this.skillPoints++;
+        updateDataTracker();
     }
 
     public int nextLevelXP(){
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
-    public void grantExperience(double gainedXP){
+
+    void grantExperience(double gainedXP){
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
         while (this.exp >= nextLevelXP) {
@@ -147,11 +173,12 @@ public class FisherInfo {
             this.level++;
             onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
-
         }
+        updateDataTracker();
     }
 
-    public void onLevelUpBehaviour(){
+
+    private void onLevelUpBehaviour(){
         addSkillPoint();
         if (fisher == null){
             return;
@@ -161,37 +188,22 @@ public class FisherInfo {
 
     }
 
-    public boolean removeCredit(int credit) {
-        if (this.credit - credit < 0) {
-            return false;
-        }
-        this.credit -= credit;
-        return true;
-    }
-
-    public boolean addCredit(int credit) {
+    boolean addCredit(int credit) {
         if (this.credit + credit < 0) {
             return false;
         }
 
         this.credit += credit;
-        this.fisher.getDataTracker().set(FishingClub.FISHER_NBT, getNbt());
+        updateDataTracker();
         return true;
     }
-
-//
-//    public void grantPerk(String perkName){
-//        if (Objects.equals(perkName, "all")) {
-//            perks.addAll(FishingPerks.ALL_PERKS);
-//        }
-//    }
 
     public HashMap<String, FishingPerk> getPerks(){
         return perks;
     }
 
     public boolean hasPerk(FishingPerk perk) {
-        return perks.containsKey(perk.name);
+        return perks.containsKey(perk.getName());
     }
 
     public SimpleInventory getFisherInventory(){

@@ -9,8 +9,7 @@
     "WanderingTraderEntityMixin"
   ],
   "client": [
-    "LivingEntityMixin",
-    "MinecraftClientMixin"
+    "LivingEntityMixin"
   ],
   "server": [
   ],

@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FisherInfos;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
 
 public class CommandsUtil {
 
@@ -17,7 +17,7 @@ public class CommandsUtil {
             LiteralArgumentBuilder<ServerCommandSource> rootCommand = CommandManager.literal(FishingClub.MOD_ID);
 
             rootCommand.then(CommandManager.literal("info").executes(context -> {
-                context.getSource().sendMessage(Text.literal(FisherInfos.getClientInfo().toString()));
+                context.getSource().sendMessage(Text.literal(FisherInfoManager.getFisher(context.getSource().getPlayer()).toString()));
                 return 1;
             }));
 
@@ -26,7 +26,7 @@ public class CommandsUtil {
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        FisherInfos.addCredit(context.getSource().getPlayer(), amount);
+                                        FisherInfoManager.addCredit(context.getSource().getPlayer(), amount);
                                         context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
                                         return 1;
                                     })
@@ -39,7 +39,7 @@ public class CommandsUtil {
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        FisherInfos.setSkillPoint(context.getSource().getPlayer(), amount);
+                                        FisherInfoManager.setSkillPoint(context.getSource().getPlayer(), amount);
                                         context.getSource().sendMessage(Text.literal("Set available skill points to " + amount));
                                         return 1;
                                     })
@@ -54,7 +54,7 @@ public class CommandsUtil {
                             .then(CommandManager.argument("amount", IntegerArgumentType.integer())
                                     .executes(context -> {
                                         int amount = IntegerArgumentType.getInteger(context, "amount");
-                                        FisherInfos.addCredit(context.getSource().getPlayer(), -amount);
+                                        FisherInfoManager.addCredit(context.getSource().getPlayer(), -amount);
                                         context.getSource().sendMessage(Text.literal("Removed" + amount + "credit from self"));
                                         return 1;
                                     })
@@ -64,7 +64,7 @@ public class CommandsUtil {
                             .then(CommandManager.argument("amount", StringArgumentType.string())
                                     .executes(context -> {
                                         String perkName = StringArgumentType.getString(context, "perkName");
-                                        FisherInfos.removePerk(context.getSource().getPlayer(), perkName);
+                                        FisherInfoManager.removePerk(context.getSource().getPlayer(), perkName);
                                         context.getSource().sendMessage(Text.literal("Removed" + perkName + " perk from self"));
                                         return 1;
                                     })

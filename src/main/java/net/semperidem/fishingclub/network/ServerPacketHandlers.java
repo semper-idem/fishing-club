@@ -11,8 +11,8 @@ import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.fisher.FisherInfos;
-import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,7 +60,7 @@ public class ServerPacketHandlers {
         String perkName = buf.readString();
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             server.execute(() -> {
-                FisherInfos.addPerk(player, perkName);
+                FisherInfoManager.addPerk(player, perkName);
             });
         });
     }

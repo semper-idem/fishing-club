@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fisher;
+package net.semperidem.fishingclub.fisher.perks;
 
 import net.minecraft.entity.player.PlayerEntity;
 

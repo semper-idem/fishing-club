@@ -32,7 +32,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     FisherInfo fisherInfo;
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FisherInfo(playerInventory.player, buf.readNbt()));
+        this(syncId, playerInventory, new FisherInfo(playerInventory.player));
     }
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, FisherInfo fisherInfo) {
@@ -53,7 +53,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             playerInventory.player.writeNbt(playerNbt);
             NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
             if (!fisherInventoryTag.equals(lastSavedNbt)) {
-                playerNbt.getCompound("fisher_info").put("inventory", fisherInventoryTag);
+                playerNbt.getCompound(FisherInfo.TAG).put("inventory", fisherInventoryTag);
                 playerInventory.player.readNbt(playerNbt);
                 lastSavedNbt = fisherInventoryTag;
             }

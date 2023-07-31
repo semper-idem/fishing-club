@@ -24,7 +24,7 @@ import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;

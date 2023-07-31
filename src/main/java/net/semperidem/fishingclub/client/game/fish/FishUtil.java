@@ -11,8 +11,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfos;
-import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
@@ -34,10 +34,10 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
-        FisherInfos.addExperience(player, fish.experience);
+        FisherInfoManager.addExperience(player, fish.experience);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
-        fishReward.setCount(getRewardMultiplier(FisherInfos.getFisher(player), boatFishing));
+        fishReward.setCount(getRewardMultiplier(FisherInfoManager.getFisher(player), boatFishing));
         if (player.getInventory().getEmptySlot() == -1) {
             player.dropItem(fishReward, false);
         } else {
@@ -65,7 +65,7 @@ public class FishUtil {
     }
 
     public static void grantExp(ServerPlayerEntity player, int exp){
-        FisherInfos.addExperience(player, exp);
+        FisherInfoManager.addExperience(player, exp);
         player.addExperience(Math.max(1, exp / 10));
     }
 

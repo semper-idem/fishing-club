@@ -12,8 +12,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FishingPerk;
-import net.semperidem.fishingclub.fisher.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
