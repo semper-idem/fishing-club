@@ -113,6 +113,9 @@ public class FishGameLogic {
                 damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
             }
         }
+        if (boatFishing && fisherInfo.hasPerk(FishingPerks.LINE_HEALTH_BOAT)) {
+            damageReduction += 0.2f;
+        }
         float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fisherInfo.getLevel() / 4f)) / 20f);
         this.fishDamage =  fishRawDamage * (1 - Math.max(0, Math.min(1, damageReduction)));
     }

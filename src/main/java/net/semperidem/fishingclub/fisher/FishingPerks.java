@@ -74,8 +74,11 @@ public class FishingPerks {
     public static FishingPerk LINE_HEALTH_BOAT = FishingPerk
             .createPerk("line_health_boat", DOUBLE_FISH_BOAT)
             .withLabel("Sturdy Line")
-            .withDescription("Line health takes 50% reduced damage when in boat")
-            .withDetailedDesc("Your fishing line's durability increases in the boat, resisting damage from all but the biggest fish.");
+            .withDescription(
+                    "Fishing line takes 20% reduced damage when in boat")
+            .withDetailedDesc(
+                    "Gain 20% fishing line's damage reduction when in boat")
+            .withIcon("sturdy_line.png");
 
 
     public static FishingPerk TRIPLE_FISH_BOAT = FishingPerk

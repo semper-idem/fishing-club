@@ -114,7 +114,7 @@ public class FishingRodPartItems {
                 new Item.Settings().rarity(Rarity.UNCOMMON),
                 PartType.HOOK,
                 "HOOK_IRON")
-                .withStat(Stat.DAMAGE_REDUCTION, 0.25f);
+                .withStat(Stat.DAMAGE_REDUCTION, 0.1f);
         HOOK_GOLD = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.RARE),
                 PartType.HOOK,
@@ -127,7 +127,7 @@ public class FishingRodPartItems {
                 new Item.Settings().fireproof().rarity(Rarity.EPIC),
                 PartType.HOOK,
                 "HOOK_NETHERITE")
-                .withStat(Stat.DAMAGE_REDUCTION, 0.75f)
+                .withStat(Stat.DAMAGE_REDUCTION, 0.3f)
                 .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
                 .withStat(Stat.FISH_MAX_LENGTH_MULTIPLIER, 1.1f)
                 .withStat(Stat.CATCH_RATE, 0.1f)
