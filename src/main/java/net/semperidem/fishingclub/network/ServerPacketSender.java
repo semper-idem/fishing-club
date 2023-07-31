@@ -1,9 +1,7 @@
 package net.semperidem.fishingclub.network;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,7 +10,6 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_SYNC_INFO;
 
 public class ServerPacketSender {
 
@@ -38,15 +35,5 @@ public class ServerPacketSender {
         fishGameStartPacket.writeItemStack(fishingRod);
         fishGameStartPacket.writeBoolean(boatFishing);
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
-    }
-    public static void sendFisherInfoSync(ServerPlayerEntity player){
-        sendFisherInfoSync(player, player.writeNbt(new NbtCompound()));
-    }
-
-    public static void sendFisherInfoSync(ServerPlayerEntity player, NbtCompound playerTag){
-        PacketByteBuf fisherInfoBuf = PacketByteBufs.create();
-        NbtCompound fisherInfoNbt = playerTag.getCompound("fisher_info");
-        fisherInfoBuf.writeNbt(fisherInfoNbt);
-        sendPacket(player, S2C_F_SYNC_INFO, fisherInfoBuf);
     }
 }
