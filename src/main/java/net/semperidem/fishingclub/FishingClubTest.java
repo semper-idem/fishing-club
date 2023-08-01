@@ -1,10 +1,12 @@
 package net.semperidem.fishingclub;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishType;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class FishingClubTest {
     private static final int N = 5000;
@@ -118,7 +121,7 @@ public class FishingClubTest {
         printResultFloat(floatResultMap, resultCategory, mergeTimes);
     }
 
-    private static void runTestFor(FisherInfo fisherInfo){
+    private static void runFishTest(FisherInfo fisherInfo){
         println("####################################");
         println("RUNNING TEST FOR FISHER LEVEL:" + fisherInfo.getLevel());
         ItemStack fishingRod = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
@@ -138,13 +141,117 @@ public class FishingClubTest {
             }
         }
 
-        printResultFloat(weightResult, "Weight", 1);
-//        printResultFloat(sizeResult, "Length", 1);
-//        printResultInteger(gradeResult, "Grade", 1);
-//        printResultInteger(levelResult, "Level", 1);
-//        printResultFishType(typeResult, "Fish Type");
+       printResultFloat(weightResult, "Weight", 1);
+        printResultFloat(sizeResult, "Length", 1);
+        printResultInteger(gradeResult, "Grade", 1);
+        printResultInteger(levelResult, "Level", 1);
+        printResultFishType(typeResult, "Fish Type");
 
-        println("####################################");
+    }
+
+    private static void runTreasureTest(){
+        //treasureTestCost();
+        //treasureTestGrade();
+        treasureTestLoot();
+    }
+
+    private static void treasureTestGrade(){
+        for(int i = 2; i < 12; i++) {
+            HashMap<Integer, Integer> resultMap = new HashMap<>();
+            for(int j = 1; j < 8; j++) {
+                resultMap.put(j, 0);
+            }
+            int avgGrade = 0;
+            int maxCount = 0;
+            FisherInfo fisherInfo = new FisherInfo((int) Math.pow(2, i));
+            for(int j = 0 ; j < N; j++) {
+                int grade = Rewards.getGrade(fisherInfo);
+                for(Integer key : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
+                    if (grade == key) {
+                        resultMap.put(key, resultMap.get(key) + 1);
+                        avgGrade+= grade;
+                        if (resultMap.get(key) > maxCount) {
+                            maxCount = resultMap.get(key);
+                        }
+                        break;
+                    }
+                }
+            }
+            println("============================================================");
+            println("Result for Grade Test - Fisher Level:" + fisherInfo.getLevel());
+            int scale = maxCount / 30;
+            for(Integer grade : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
+                int count = resultMap.get(grade);
+                if (count == 0) continue;
+
+                println("Grade: " + grade + " - " + count + " ".repeat(5 - (int)(Math.log10(count) + 1)) + " " + ".".repeat(count / scale));
+            }
+            println("Avg Grade: " + (avgGrade * 1f / N));
+            println("============================================================");
+        }
+        writeFile("grade_test");
+    }
+
+    private static void treasureTestCost(){
+        for(int i = 2; i < 12; i++) {
+            HashMap<Integer, Integer> resultMap = new HashMap<>();
+            for(int j = 0; j < 1500; j+=25) {
+                resultMap.put(j, 0);
+            }
+            int avgCost = 0;
+            int maxCount = 0;
+            FisherInfo fisherInfo = new FisherInfo((int) Math.pow(2, i));
+            for(int j = 0 ; j < N; j++) {
+                int cost = Rewards.getCost(fisherInfo);
+                for(Integer key : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
+                    if (cost < key) {
+                        resultMap.put(key, resultMap.get(key) + 1);
+                        avgCost+= cost;
+                        if (resultMap.get(key) > maxCount) {
+                            maxCount = resultMap.get(key);
+                        }
+                        break;
+                    }
+                }
+            }
+            println("============================================================");
+            println("Result for Cost Test - Fisher Level:" + fisherInfo.getLevel());
+            int scale = maxCount / 30;
+            for(Integer cost : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
+                int count = resultMap.get(cost);
+                if (count == 0) continue;
+
+                println("Cost <" + cost + " - " + count + " ".repeat(5 - (int)(Math.log10(count) + 1)) + " " + ".".repeat(count / scale));
+            }
+            println("Avg Cost: " + (avgCost / N));
+            println("============================================================");
+        }
+        writeFile("cost_test");
+    }
+
+    private static void treasureTestLoot(){
+        for(int i = 0; i <= 5; i++) {
+            HashMap<Item, Integer> resultMap = new HashMap<>();
+            FisherInfo fisherInfo = new FisherInfo(i * 50);
+            for(int j = 0 ; j < N; j++) {
+                ArrayList<ItemStack> rewards = Rewards.roll(fisherInfo);
+                for(ItemStack reward : rewards) {
+                    Item asItem = reward.getItem();
+                    if (resultMap.containsKey(asItem)) {
+                        resultMap.put(asItem, resultMap.get(asItem) + 1);
+                    } else {
+                        resultMap.put(asItem, 1);
+                    }
+                }
+            }
+            println("============================================================");
+            println("Result for Loot Test - Fisher Level:" + fisherInfo.getLevel());
+            for(Item item : resultMap.keySet().stream().sorted(Comparator.comparingInt(resultMap::get).reversed()).collect(Collectors.toCollection(LinkedHashSet::new))) {
+                println("Item: " + item.getName().getString() + " count: " + resultMap.get(item));
+            }
+            println("============================================================");
+        }
+        writeFile("loot_test");
     }
 
     private static void drawGraph(TreeMap<Float, Integer> inputMap, String title){
@@ -165,13 +272,8 @@ public class FishingClubTest {
         println("+++++++++++++++++++++++++++++++++++++");
     }
     public static void runTest() {
-        runTestFor(new FisherInfo(1));
-        runTestFor(new FisherInfo(25));
-        runTestFor(new FisherInfo(60));
-        runTestFor(new FisherInfo(100));
-        runTestFor(new FisherInfo(1000));
-        runTestFor(new FisherInfo(2500));
-        writeFile(RUNTIME_OUTPUT);
+        runFishTest(new FisherInfo(1));
+        runTreasureTest();
         throw new RuntimeException();
     }
     
@@ -180,20 +282,20 @@ public class FishingClubTest {
         RUNTIME_OUTPUT.add(line);
     }
 
-    public static void writeFile(ArrayList<String> outputLines) {
+    public static void writeFile(String testName) {
         Date date = new Date() ;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss") ;
         FileWriter fw;
         try {
-            fw = new FileWriter("fish_test_"+ dateFormat.format(date) +".txt");
+            fw = new FileWriter("test/" + testName + "_" + dateFormat.format(date) +".txt");
    
-        for (int i = 0; i < outputLines.size(); i++) {
-            fw.write(outputLines.get(i) +"\n");
+        for (int i = 0; i < RUNTIME_OUTPUT.size(); i++) {
+            fw.write(RUNTIME_OUTPUT.get(i) +"\n");
         }
         fw.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        RUNTIME_OUTPUT.clear();
     }
 }

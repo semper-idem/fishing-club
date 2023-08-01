@@ -35,15 +35,15 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(1,40,16, Items.SEAGRASS, 5));
         ALL_REWARDS.add(new TreasureReward(1,40,4, Items.SEA_PICKLE, 3));
 
-        ALL_REWARDS.add(new TreasureReward(1,40,4, Items.BONE, 3));
-        ALL_REWARDS.add(new TreasureReward(1,40,8, Items.STICK, 5));
-        ALL_REWARDS.add(new TreasureReward(1,40,2, Items.BOWL, 5));
-        ALL_REWARDS.add(new TreasureReward(1,40,2, Items.LILY_PAD, 3));
-        ALL_REWARDS.add(new TreasureReward(1,40,4, Items.ROTTEN_FLESH, 3));
-        ALL_REWARDS.add(new TreasureReward(1,40,2, Items.STRING, 3));
-        ALL_REWARDS.add(new TreasureReward(1,40,4, Items.INK_SAC, 3));
+        ALL_REWARDS.add(new TreasureReward(1,60,4, Items.BONE, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,8, Items.STICK, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,2, Items.BOWL, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,2, Items.LILY_PAD, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,4, Items.ROTTEN_FLESH, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,2, Items.STRING, 2));
+        ALL_REWARDS.add(new TreasureReward(1,60,4, Items.INK_SAC, 2));
 
-        ALL_REWARDS.add(new TreasureReward(1,20,4, FItemRegistry.FISH_COIN_BUNDLE, 10));
+        ALL_REWARDS.add(new TreasureReward(1,30,4, FItemRegistry.FISH_COIN_BUNDLE, 10));
 
 
 
@@ -60,7 +60,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(2,160,1, Items.TROPICAL_FISH, 3));
         ALL_REWARDS.add(new TreasureReward(2,160,4, Items.SALMON, 4));
 
-        ALL_REWARDS.add(new TreasureReward(2,200,8, Items.COAL, 4));
+        ALL_REWARDS.add(new TreasureReward(2,60,8, Items.COAL, 4));
 
         ALL_REWARDS.add(new TreasureReward(2,30,10, FItemRegistry.FISH_COIN_BUNDLE, 10));
 
@@ -69,20 +69,20 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.HOOK_COPPER, 1));
         ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.LINE_SPIDER_SILK, 1));
 
-        ALL_REWARDS.add(new TreasureReward(3,250,16, Items.IRON_NUGGET, 3));
-        ALL_REWARDS.add(new TreasureReward(3,250,12, Items.GOLD_NUGGET, 3));
+        ALL_REWARDS.add(new TreasureReward(3,80,16, Items.IRON_NUGGET, 5));
+        ALL_REWARDS.add(new TreasureReward(3,80,12, Items.GOLD_NUGGET, 10));
 
 
-        ALL_REWARDS.add(new TreasureReward(3,250,0.8f, Items.LEATHER_BOOTS, 1));
-        ALL_REWARDS.add(new TreasureReward(3,250,0.8f, Items.LEATHER_CHESTPLATE, 1));
-        ALL_REWARDS.add(new TreasureReward(3,250,0.8f, Items.LEATHER_HELMET, 1));
-        ALL_REWARDS.add(new TreasureReward(3,250,0.8f, Items.LEATHER_LEGGINGS, 1));
+        ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_BOOTS, 1));
+        ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_CHESTPLATE, 1));
+        ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_HELMET, 1));
+        ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_LEGGINGS, 1));
 
         ALL_REWARDS.add(new TreasureReward(3,45,12, FItemRegistry.FISH_COIN_BUNDLE, 5));
 
 
-        ALL_REWARDS.add(new TreasureReward(4,250,4, Items.IRON_INGOT, 3));
-        ALL_REWARDS.add(new TreasureReward(4,250,4, Items.GOLD_INGOT, 3));
+        ALL_REWARDS.add(new TreasureReward(4,120,3, Items.IRON_INGOT, 5));
+        ALL_REWARDS.add(new TreasureReward(4,120,3, Items.GOLD_INGOT, 10));
 
         ALL_REWARDS.add(new TreasureReward(4,60,16, FItemRegistry.FISH_COIN_BUNDLE, 5));
 
@@ -93,16 +93,16 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.HOOK_IRON, 1));
         ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.LINE_FIBER_THREAD, 1));
 
-        ALL_REWARDS.add(new TreasureReward(5,350,0.8f, Items.GOLDEN_BOOTS, 1));
-        ALL_REWARDS.add(new TreasureReward(5,350,0.8f, Items.GOLDEN_CHESTPLATE, 1));
-        ALL_REWARDS.add(new TreasureReward(5,350,0.8f, Items.GOLDEN_HELMET, 1));
-        ALL_REWARDS.add(new TreasureReward(5,350,0.8f, Items.GOLDEN_LEGGINGS, 1));
+        ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_BOOTS, 1));
+        ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_CHESTPLATE, 1));
+        ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_HELMET, 1));
+        ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_LEGGINGS, 1));
 
         ALL_REWARDS.add(new TreasureReward(5,250,1, Items.NAUTILUS_SHELL, 1));
         ALL_REWARDS.add(new TreasureReward(5,250,1, Items.SADDLE, 2));
         ALL_REWARDS.add(new TreasureReward(5,250,1, Items.NAME_TAG, 3));
 
-        ALL_REWARDS.add(new TreasureReward(5,350,8, Items.EMERALD, 3));
+        ALL_REWARDS.add(new TreasureReward(5,300,8, Items.EMERALD, 3));
 
         ALL_REWARDS.add(new TreasureReward(5,80,20, FItemRegistry.FISH_COIN_BUNDLE, 5));
 
@@ -110,10 +110,10 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(6,250,1, FItemRegistry.FISHING_NET, 2));
         ALL_REWARDS.add(new TreasureReward(6,350,1, FItemRegistry.DOUBLE_FISHING_NET, 1));
 
-        ALL_REWARDS.add(new TreasureReward(6,400,0.6f, Items.IRON_BOOTS, 1));
-        ALL_REWARDS.add(new TreasureReward(6,400,0.6f, Items.IRON_CHESTPLATE, 1));
-        ALL_REWARDS.add(new TreasureReward(6,400,0.6f, Items.IRON_HELMET, 1));
-        ALL_REWARDS.add(new TreasureReward(6,400,0.6f, Items.IRON_LEGGINGS, 1));
+        ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_BOOTS, 1));
+        ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_CHESTPLATE, 1));
+        ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_HELMET, 1));
+        ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_LEGGINGS, 1));
 
         ALL_REWARDS.add(new TreasureReward(6,100,30, FItemRegistry.FISH_COIN_BUNDLE, 5));
 
@@ -136,16 +136,20 @@ public class Rewards {
 
     public static ArrayList<ItemStack> roll(FisherInfo fisher){
 
-        int avgCost = (int) (20 * Math.sqrt(fisher.getLevel()));
-        int cost = (int) (100 + avgCost + Math.abs(random.nextGaussian() / 2));
-        int avgGrade = (int) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 5));
-        int grade = (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian() / 2))));
-
-        return roll(cost, grade);
+        return roll(getCost(fisher), getGrade(fisher));
     }
 
+    public  static int getCost(FisherInfo fisher){
+        int avgCost = (int) (60 * Math.sqrt(fisher.getLevel()));
+        return (int) (60 + (60 + avgCost * Math.abs(random.nextGaussian() / 2)));
+    }
 
-    static ArrayList<ItemStack> roll(int costTotal, int grade){
+    public static int getGrade(FisherInfo fisher){
+        float avgGrade = (float) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 3));
+        return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
+    }
+
+    public static ArrayList<ItemStack> roll(int costTotal, int grade){
         ArrayList<ItemStack> rollResult = new ArrayList<>();
         int costLeft = costTotal;
         for(int i = 0; i < ((3 + grade) / 2f); i++) {
