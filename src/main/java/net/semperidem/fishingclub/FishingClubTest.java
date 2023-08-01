@@ -234,7 +234,7 @@ public class FishingClubTest {
             HashMap<Item, Integer> resultMap = new HashMap<>();
             FisherInfo fisherInfo = new FisherInfo(i * 50);
             for(int j = 0 ; j < N; j++) {
-                ArrayList<ItemStack> rewards = Rewards.roll(fisherInfo);
+                ArrayList<ItemStack> rewards = Rewards.roll(fisherInfo).getContent();
                 for(ItemStack reward : rewards) {
                     Item asItem = reward.getItem();
                     if (resultMap.containsKey(asItem)) {

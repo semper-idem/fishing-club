@@ -134,9 +134,9 @@ public class Rewards {
     }
 
 
-    public static ArrayList<ItemStack> roll(FisherInfo fisher){
-
-        return roll(getCost(fisher), getGrade(fisher));
+    public static Reward roll(FisherInfo fisher){
+        int grade = getGrade(fisher);
+        return new Reward(roll(getCost(fisher), grade), grade);
     }
 
     public  static int getCost(FisherInfo fisher){

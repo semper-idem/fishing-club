@@ -5,6 +5,8 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.treasure.Reward;
+import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -15,35 +17,46 @@ import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
 
 public class FishGameLogic {
-    //TODO IMPLEMENT TREASURE MECHANIC - "time event"
 
     private static final float sinePeriod = (float) (Math.PI * 2);
-    private static final float STARTING_BOBBER_LENGTH = 0.1f;
+    private static final float STARTING_BOBBER_LENGTH = 0.25f;
+    private static final float FISH_LENGTH = 0.0625f;
+    private static final float REELING_ACCELERATION = 0.005f;
+    private static final float REELING_DECELERATION = 0.0035f;
+    private static final float WAVE_SPEED = 5;
+    private static final float WAVE_STRENGTH = 0.05f;
+    private static final float PROGRESS_GAIN = 0.0075f;
 
     PlayerEntity player;
-    float lineHealth = 0;
-    float progress = 0;
-    float fishPos = 0;
-    int ticks = 0;
-    float bobberPos = 0;
+    float lineHealth;
+    float progress;
+    float fishPos;
+    float fishPosCenter;
+    int ticks;
+    float bobberPos;
     float bobberLength;
-    float bobberSpeed = 0f;
-    float fishLength = 0.0625f; //possible future upgrade
-    float reelingAcceleration = 0.005f; //possible future upgrade
-    float gravityAcceleration = 0.0035f;//possible future upgrade
+    float bobberSpeed;
     Fish fish;
     boolean isFinished = false;
-    boolean isWon = false;
+    boolean isFishWon = false;
+    public boolean isTreasureWon = false;
     FisherInfo fisherInfo;
     float totalDuration;
-    float waveSpeed = 5; //TODO make bobber in world dependant eg. ocean = bigger waves
-    float waveStrength = 0.05f;//TODO above
 
     float fishDamage;
 
     ItemStack caughtUsing;
     boolean boatFishing;
 
+    public boolean treasure ;
+    public boolean treasureOnHook = false;
+    public int treasureAvailableTicks;
+    public float treasureTriggerTime;
+    public float arrowSpeed = 1;
+    public int treasureHookedTicks;
+    public float treasureSpotSize;
+    public float arrowPos;
+    Reward treasureReward;
 
     public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
         this.player = player;
@@ -56,14 +69,16 @@ public class FishGameLogic {
         calculateFishDamage();
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
         this.bobberPos = nextBobberPos();
+        this.treasure = true; //Math.random() < 0.05;
+        this.treasureTriggerTime = (float) (Math.random() * 0.5 + 0.25f);
     }
 
     public boolean isFinished() {
         return isFinished;
     }
 
-    public boolean isWon() {
-        return isWon;
+    public boolean isFishWon() {
+        return isFishWon;
     }
 
     public float getFishPos() {
@@ -135,15 +150,12 @@ public class FishGameLogic {
         return bobberLength;
     }
 
-    private boolean isReeling(){
-       return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_SPACE);
-    }
 
     private float getBobberAcceleration(){
-        return isReeling() ? reelingAcceleration : -gravityAcceleration;
+        return isReeling() ? REELING_ACCELERATION : -REELING_DECELERATION;
     }
 
-    private float nextBobberPos(){
+    public float nextBobberPos(){
         float nextBobberPosUnbound = bobberPos + bobberSpeed;
         return Math.max(Math.min(nextBobberPosUnbound, 1), bobberLength);
     }
@@ -170,8 +182,8 @@ public class FishGameLogic {
     }
 
     private void processProgress(){
-        float fishPosCenter = fishPos - fishLength / 2;
         boolean bobberHasFish = bobberPos >= fishPosCenter && bobberPos - bobberLength <= fishPosCenter;
+        if (treasureAvailableTicks > 0) return;
         if (bobberHasFish) {
             grantProgress();
         } else {
@@ -181,10 +193,19 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += (0.0075f * Math.max(1, FishingRodUtil.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
+            progress += (PROGRESS_GAIN * Math.max(1, FishingRodUtil.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
             processVictory();
+        }
+        if (!treasure) return;
+        if (progress > treasureTriggerTime) {
+            treasure = false;
+            treasureAvailableTicks = 50;
+            treasureReward = Rewards.roll(fisherInfo);
+            arrowSpeed = 1 + treasureReward.getGrade();
+            treasureSpotSize = (float) (0.225 - (treasureReward.getGrade()) / 40f);
+            treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
         }
     }
 
@@ -194,33 +215,84 @@ public class FishGameLogic {
             progress = Math.max(0, progress - 0.005f - fishDamage / 100);
         }
     }
+    private boolean keyPressed(int keyCode){
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
+    }
+
+    private boolean isReeling(){
+        return keyPressed(GLFW.GLFW_KEY_SPACE);
+    }
+
+    private boolean isYanking(){
+        return keyPressed(GLFW.GLFW_KEY_ENTER);
+    }
 
     private void processVictory(){
         this.isFinished = true;
-        this.isWon = true;
+        this.isFishWon = true;
         grantReward();
     }
 
-    public void tick() {
+    private void processMovement(){
+        processBobberMovement();
+        processFishMovement();
+        processTreasureArrowMovement();
+    }
+
+    private void processTreasureArrowMovement(){
+        if(treasureOnHook) {
+            float nextArrowPos = getNextArrowPos();
+            arrowPos = nextArrowPos;
+        }
+    }
+
+    private void processFishMovement(){
         fishPos = nextFishPosition();
+        fishPosCenter = fishPos - (FISH_LENGTH / 2);
+    }
+
+    private void processBobberMovement(){
         bobberSpeed += getBobberAcceleration();
         bobberPos = nextBobberPos();
         bobberCollideWithBound();
-        processProgress();
-        ticks++;
     }
 
-    float nextFishPosition() {
+    public void tick() {
+        processMovement();
+        processProgress();
+        if (treasureAvailableTicks > 0 && !treasureOnHook) {
+            treasureAvailableTicks--;
+            if (treasureAvailableTicks == 0) treasureOnHook = false;
+            if (!isReeling() && isYanking()) treasureOnHook = true;
+        }
+        if (isReeling() && !isYanking() && treasureOnHook) {
+            this.isFinished = true;
+            float actualArrowPos = (1 - Math.abs(arrowPos - 1));
+            if ((actualArrowPos >= (0.5f - treasureSpotSize / 2)) && (actualArrowPos <= (0.5f + treasureSpotSize))) {
+                this.isTreasureWon = true;
+            }
+        }
+        if(treasureOnHook && treasureHookedTicks == 0) this.isFinished = true;
+        if (!isReeling() && isYanking() && !treasureOnHook) this.isFinished = true;
+        ticks++;
+        treasureHookedTicks--;
+    }
+
+    public float getNextArrowPos(){
+        return ((float) Math.sin(ticks / (12f - arrowSpeed)) + 1) / 2;
+    }
+
+    public float nextFishPosition() {
         float fishSpeed = Math.max(fish.fishMinEnergyLevel, fish.fishEnergy) / (fish.fishMaxEnergyLevel * 1f);
         float fishSpeedScaledToLevel = fishSpeed * 0.75f + (fish.fishLevel / 200f);
         float elapsedTime = (fishSpeedScaledToLevel * ticks) % totalDuration;
         float nextFishPosUnbound = nextFishPosOnCurve(elapsedTime) + nextFishPosOnWave(elapsedTime);
-        return Math.max(Math.min(nextFishPosUnbound, 1), fishLength);
+        return Math.max(Math.min(nextFishPosUnbound, 1), FISH_LENGTH);
     }
 
     private float nextFishPosOnWave(float elapsedTime){
         float percentElapsedTime = elapsedTime / totalDuration;
-        return  (float) (Math.sin(sinePeriod * percentElapsedTime * waveSpeed) * waveStrength);
+        return  (float) (Math.sin(sinePeriod * percentElapsedTime * WAVE_SPEED) * WAVE_STRENGTH);
     }
 
     private float nextFishPosOnCurve(float elapsedTime) {
