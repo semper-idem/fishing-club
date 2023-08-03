@@ -37,9 +37,6 @@ public class FishGameScreen extends Screen {
     int barWidth = 8;
     int barHeight = 128;
 
-    int barBorderWidth = 14;
-    int barBorderHeight = 140;
-
     int bobberHeight = 32;
 
 
@@ -86,30 +83,26 @@ public class FishGameScreen extends Screen {
     }
 
     private void renderTreasureBar(MatrixStack matrices){
-
         RenderSystem.setShaderTexture(0, TREASURE_BACKGROUND);
-        drawTexture(matrices, windowX, windowY + bgHeight - 28, 0, 0, 160, 28, 160, 28);
+        drawTexture(matrices, windowX, windowY + bgHeight - 28, 0, 0, bgWidth, 28, bgWidth, 28);
     }
 
     private void renderTreasureArrow(MatrixStack matrices, float delta){
-        float engineArrowPos = (1 - Math.abs(fishGameLogic.arrowPos - 1));
-        float nextArrowPos = (1 - Math.abs(fishGameLogic.getNextArrowPos() - 1));
+        float engineArrowPos = fishGameLogic.arrowPos;
+        float nextArrowPos = fishGameLogic.getNextArrowPos();
         float arrowPos = engineArrowPos + (nextArrowPos - engineArrowPos) * delta;
         RenderSystem.setShaderTexture(0, TREASURE_ARROW);
         drawTexture(matrices, (int) (windowX + arrowPos * 152 -5 + 4), windowY + bgHeight - 24, 0, 0, 10, 20, 10, 20);
     }
 
     private void renderTreasureSpot(MatrixStack matrices){
-        int width = (int) (160 * fishGameLogic.treasureSpotSize);
+        int width = (int) (bgWidth * fishGameLogic.treasureSpotSize);
         int totalWidth = width + 12;
         RenderSystem.setShaderTexture(0, TREASURE_SPOT_L);
 
-        //LEFT
         drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2), windowY + bgHeight - 24, 0, 0, 6, 20, 6, 20);
-        //MID
         RenderSystem.setShaderTexture(0, TREASURE_SPOT_M);
         drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2) + 6, windowY + bgHeight - 24, 0, 0, width, 20, width, 20);
-        //RIGHT
         RenderSystem.setShaderTexture(0, TREASURE_SPOT_R);
         drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2) + width + 6, windowY + bgHeight - 24, 0, 0, 6, 20, 6, 20);
     }
@@ -124,8 +117,8 @@ public class FishGameScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 
-        windowX = (this.width - 160) / 2;
-        windowY = (this.height- 160) / 2;
+        windowX = (this.width - bgWidth) / 2;
+        windowY = (this.height- bgHeight) / 2;
 
         matrices.push();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -199,10 +192,10 @@ public class FishGameScreen extends Screen {
         }
 
         int healthLabelLength = textRenderer.getWidth(healthLabel);
-        textRenderer.drawWithShadow(matrices, Text.of(healthLabel), windowX + 80 - healthLabelLength / 2f,windowY + 75,color);
+        textRenderer.drawWithShadow(matrices, Text.of(healthLabel), windowX + (bgWidth - healthLabelLength) / 2f,windowY + 75,color);
 
         int healthInfoLength = textRenderer.getWidth(healthInfo);
-        textRenderer.drawWithShadow(matrices, Text.of(healthInfo), windowX + 80 - healthInfoLength / 2f,windowY + 90,0xFFFFFF);
+        textRenderer.drawWithShadow(matrices, Text.of(healthInfo), windowX + (bgWidth - healthInfoLength) / 2f,windowY + 90,0xFFFFFF);
     }
 
     @Override
