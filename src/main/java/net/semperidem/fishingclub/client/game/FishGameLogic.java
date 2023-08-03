@@ -49,13 +49,13 @@ public class FishGameLogic {
     boolean boatFishing;
 
     public boolean treasure ;
-    public boolean treasureOnHook = false;
     public int treasureAvailableTicks;
     public float treasureTriggerTime;
     public float arrowSpeed = 1;
     public int treasureHookedTicks;
     public float treasureSpotSize;
     public float arrowPos;
+    public boolean reelingTreasure = false;
     Reward treasureReward;
 
     public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
@@ -71,6 +71,11 @@ public class FishGameLogic {
         this.bobberPos = nextBobberPos();
         this.treasure = true; //Math.random() < 0.05;
         this.treasureTriggerTime = (float) (Math.random() * 0.5 + 0.25f);
+        if (this.treasure) {
+            treasureReward = Rewards.roll(fisherInfo);
+            arrowSpeed = 1 + treasureReward.getGrade();
+            treasureSpotSize = (float) (0.225 - (treasureReward.getGrade()) / 40f);
+        }
     }
 
     public boolean isFinished() {
@@ -202,10 +207,6 @@ public class FishGameLogic {
         if (progress > treasureTriggerTime) {
             treasure = false;
             treasureAvailableTicks = 50;
-            treasureReward = Rewards.roll(fisherInfo);
-            arrowSpeed = 1 + treasureReward.getGrade();
-            treasureSpotSize = (float) (0.225 - (treasureReward.getGrade()) / 40f);
-            treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
         }
     }
 
@@ -236,14 +237,6 @@ public class FishGameLogic {
     private void processMovement(){
         processBobberMovement();
         processFishMovement();
-        processTreasureArrowMovement();
-    }
-
-    private void processTreasureArrowMovement(){
-        if(treasureOnHook) {
-            float nextArrowPos = getNextArrowPos();
-            arrowPos = nextArrowPos;
-        }
     }
 
     private void processFishMovement(){
@@ -257,25 +250,48 @@ public class FishGameLogic {
         bobberCollideWithBound();
     }
 
-    public void tick() {
+
+    private void tickHookedTreasure(){
+        if (!reelingTreasure) return;
+        arrowPos = getNextArrowPos();
+        treasureHookedTicks--;
+        if (treasureHookedTicks == 0) this.isFinished = true;
+        if (isReeling() && !isYanking()) reelTreasure();
+    }
+
+    private void tickUnhookedTreasure(){
+        if (treasureAvailableTicks == 0 && !reelingTreasure) return;
+        treasureAvailableTicks--;
+        if (!isReeling() && isYanking()) {
+            reelingTreasure = true;
+            treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
+        };
+    }
+
+    private void reelTreasure(){
+        this.isTreasureWon = isTreasureReeled();
+        this.isFinished = true;
+    }
+
+    private boolean isTreasureReeled(){
+        return (arrowPos >= (0.5f - treasureSpotSize / 2)) && (arrowPos <= (0.5f + treasureSpotSize));
+    }
+
+    private void tickFishGame(){
+        if (!isReeling() && isYanking() && treasureAvailableTicks == 0) this.isFinished = true;
         processMovement();
         processProgress();
-        if (treasureAvailableTicks > 0 && !treasureOnHook) {
-            treasureAvailableTicks--;
-            if (treasureAvailableTicks == 0) treasureOnHook = false;
-            if (!isReeling() && isYanking()) treasureOnHook = true;
+        tickUnhookedTreasure();
+    }
+
+
+    public void tick() {
+        if (reelingTreasure) {
+            tickHookedTreasure();
+        } else {
+            tickFishGame();
         }
-        if (isReeling() && !isYanking() && treasureOnHook) {
-            this.isFinished = true;
-            float actualArrowPos = (1 - Math.abs(arrowPos - 1));
-            if ((actualArrowPos >= (0.5f - treasureSpotSize / 2)) && (actualArrowPos <= (0.5f + treasureSpotSize))) {
-                this.isTreasureWon = true;
-            }
-        }
-        if(treasureOnHook && treasureHookedTicks == 0) this.isFinished = true;
-        if (!isReeling() && isYanking() && !treasureOnHook) this.isFinished = true;
         ticks++;
-        treasureHookedTicks--;
     }
 
     public float getNextArrowPos(){

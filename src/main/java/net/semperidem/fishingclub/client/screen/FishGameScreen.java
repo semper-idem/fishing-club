@@ -65,7 +65,7 @@ public class FishGameScreen extends Screen {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
             } else {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
-                if (this.fishGameLogic.isTreasureWon) {
+                    if (this.fishGameLogic.isTreasureWon) {
                     MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
                 }
             }
@@ -131,7 +131,7 @@ public class FishGameScreen extends Screen {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        if (fishGameLogic.treasureOnHook) {
+        if (fishGameLogic.reelingTreasure) {
             renderTreasure(matrices, delta);
         } else {
             renderWindow(matrices);
@@ -187,12 +187,12 @@ public class FishGameScreen extends Screen {
         String healthLabel = "Line Health";
         String healthInfo = String.format("%.1f" ,fishGameLogic.getLineHealth());
         int color = 0xFFFFFF;
-        if (fishGameLogic.treasureOnHook) {
+        if (fishGameLogic.reelingTreasure) {
             healthLabel = "Treasure!";
             healthInfo = String.valueOf(fishGameLogic.treasureHookedTicks / 20);
         }
 
-        if (fishGameLogic.treasureAvailableTicks > 0 && !fishGameLogic.treasureOnHook) {
+        if (fishGameLogic.treasureAvailableTicks > 0 && !fishGameLogic.reelingTreasure) {
             healthLabel = "Treasure!";
             healthInfo = "[Enter]";
             color = ((ticks / 3 ) % 2) == 1 ?  0xFFFFFF :  0xffbb33;
