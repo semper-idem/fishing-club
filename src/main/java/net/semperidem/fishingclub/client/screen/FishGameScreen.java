@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -13,47 +12,90 @@ import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 
 public class FishGameScreen extends Screen {
-    private static final Identifier BOBBER = new Identifier(FishingClub.MOD_ID, "textures/gui/bobber_8x32.png");
-    private static final Identifier FISH = new Identifier(FishingClub.MOD_ID, "textures/gui/fish_icon_8x8.png");
-    private static final Identifier BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/minigame_background_160x160.png");
-    private static final Identifier BACKGROUND_EMPTY = new Identifier(FishingClub.MOD_ID, "textures/gui/minigame_background_empty.png");
-    private static final Identifier WATER_BAR = new Identifier(FishingClub.MOD_ID, "textures/gui/water_bar_detailed_8x128.png");
-    private static final Identifier PROGRESS_BAR = new Identifier(FishingClub.MOD_ID, "textures/gui/progress_bar_8x128.png");
-    private static final Identifier BAR_BORDER = new Identifier(FishingClub.MOD_ID, "textures/gui/water_border_14x140.png");
+    private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";
 
-    private static final Identifier TREASURE_BACKGROUND = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_background.png");
-    private static final Identifier TREASURE_ARROW = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_arrow.png");
-    private static final Identifier TREASURE_SPOT_L = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_spot_l.png");
-    private static final Identifier TREASURE_SPOT_M = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_spot_m.png");
-    private static final Identifier TREASURE_SPOT_R = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_spot_r.png");
-    private static final Identifier TREASURE_MARK = new Identifier(FishingClub.MOD_ID, "textures/gui/treasure_mark.png");
+    private static final int DEFAULT_COLOR = 0xFFFFFF;
+    private static final int TREASURE_COLOR = 0xFFBB33;
 
-    int windowX = 0;
-    int windowY = 0;
+    private static final String HEALTH_LABEL = "Line Health:";
+    private static final String TREASURE_LABEL = "Treasure!";
+    private static final String TREASURE_REEL_LABEL  = "[Enter]";
 
-    int bgWidth = 160;
-    int bgHeight = 160;
+    private static final int backgroundWidth = 160, backgroundHeight = 160;
+    private static final int barWidth = 8, barHeight = 128;
+    private static final int bobberWidth = barWidth, bobberHeight = 32;
+    private static final int fishIconWidth = barWidth, fishIconHeight = 8;
 
-    int barWidth = 8;
-    int barHeight = 128;
+    private static final int treasureBarWidth = backgroundWidth, treasureBarHeight = 28;
+    private static final int treasureArrowWidth = 10, treasureArrowHeight = treasureBarHeight;
+    private static final int treasureSpotWidth = 24, treasureSpotHeight = treasureBarHeight;
+    private static final int treasureMarkWidth = 16, treasureMarkHeight = 16;
 
-    int bobberHeight = 32;
 
+    private static final Texture BACKGROUND = new Texture("background.png", backgroundWidth, backgroundHeight);
+    private static final Texture BACKGROUND_EMPTY = new Texture("background_empty.png", backgroundWidth, backgroundHeight);
+    private static final Texture BOBBER = new Texture("bobber.png", bobberWidth, bobberHeight);
+    private static final Texture FISH = new Texture("fish_icon.png", fishIconWidth, fishIconHeight);
+    private static final Texture PROGRESS_BAR = new Texture("progress_bar.png", barWidth, barHeight);
+
+    private static final Texture TREASURE_BAR = new Texture("treasure_bar.png", treasureBarWidth, treasureBarHeight);
+    private static final Texture TREASURE_ARROW = new Texture("treasure_arrow.png", treasureArrowWidth, treasureArrowHeight);
+    private static final Texture TREASURE_SPOT = new Texture("treasure_spot.png", treasureSpotWidth, treasureSpotHeight);
+    private static final Texture TREASURE_MARK = new Texture("treasure_mark.png", treasureMarkWidth, treasureMarkHeight);
+
+    int x, y;
+    int barX,barY;
+    int bobberX, bobberY;
+    int fishX,fishY;
+    int progressBarX,progressBarY;
+
+    int treasureBarX, treasureBarY;
+    int treasureArrowX, treasureArrowY;
+    int treasureSpotX, treasureSpotY;
+    int treasureMarkX, treasureMarkY;
 
     FishGameLogic fishGameLogic;
-
-    int ticks = 0;
-
+    boolean lightTick = false;
 
     public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish, boolean boatFishing) {
         super(text);
         this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing);
     }
 
+    @Override
+    protected void init() {
+        super.init();
+        x = (this.width - backgroundWidth) / 2;
+        y = (this.height- backgroundHeight) / 2;
+
+        barX = x + 26;
+        barY = y + 16;
+
+        bobberX = barX;
+        bobberY = barY;
+
+        fishX = barX;
+        fishY = barY;
+
+        progressBarX = barX + 100;
+        progressBarY = barY;
+
+        treasureBarX = x;
+        treasureBarY = y + backgroundHeight - treasureBarHeight;
+
+        treasureArrowX = treasureBarX;
+        treasureArrowY = treasureBarY;
+
+        treasureSpotX = x;
+        treasureSpotY = treasureBarY;
+
+        treasureMarkX = x + (backgroundWidth - treasureMarkWidth) / 2;
+        treasureMarkY = y + backgroundHeight / 2 - 36;
+    }
 
     @Override
     public void tick() {
-        ticks++;
+        lightTick = !lightTick;
         this.fishGameLogic.tick();
         if (this.fishGameLogic.isFinished()) {
             this.close();
@@ -69,7 +111,6 @@ public class FishGameScreen extends Screen {
         }
     }
 
-
     private void renderTreasure(MatrixStack matrices, float delta){
         renderTreasureBackground(matrices);
         renderTreasureBar(matrices);
@@ -77,125 +118,107 @@ public class FishGameScreen extends Screen {
         renderTreasureArrow(matrices, delta);
     }
 
-    private void renderTreasureBackground(MatrixStack matrices){
-        RenderSystem.setShaderTexture(0, BACKGROUND_EMPTY);
-        drawTexture(matrices, windowX, windowY, 0, 0, bgWidth, bgHeight, bgWidth, bgHeight);
-    }
-
     private void renderTreasureBar(MatrixStack matrices){
-        RenderSystem.setShaderTexture(0, TREASURE_BACKGROUND);
-        drawTexture(matrices, windowX, windowY + bgHeight - 28, 0, 0, bgWidth, 28, bgWidth, 28);
+        TREASURE_BAR.render(matrices, treasureBarX, treasureBarY);
     }
 
     private void renderTreasureArrow(MatrixStack matrices, float delta){
-        float engineArrowPos = fishGameLogic.arrowPos;
-        float nextArrowPos = fishGameLogic.getNextArrowPos();
-        float arrowPos = engineArrowPos + (nextArrowPos - engineArrowPos) * delta;
-        RenderSystem.setShaderTexture(0, TREASURE_ARROW);
-        drawTexture(matrices, (int) (windowX + arrowPos * 152 -5 + 4), windowY + bgHeight - 24, 0, 0, 10, 20, 10, 20);
+        treasureArrowX = x + (int) (getDeltaPosition(fishGameLogic.arrowPos, fishGameLogic.getNextArrowPos(), delta) * (treasureBarWidth - treasureArrowWidth));
+        TREASURE_ARROW.render(matrices, treasureArrowX, treasureArrowY);
     }
 
     private void renderTreasureSpot(MatrixStack matrices){
-        int width = (int) (bgWidth * fishGameLogic.treasureSpotSize);
-        int totalWidth = width + 12;
-        RenderSystem.setShaderTexture(0, TREASURE_SPOT_L);
-
-        drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2), windowY + bgHeight - 24, 0, 0, 6, 20, 6, 20);
-        RenderSystem.setShaderTexture(0, TREASURE_SPOT_M);
-        drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2) + 6, windowY + bgHeight - 24, 0, 0, width, 20, width, 20);
-        RenderSystem.setShaderTexture(0, TREASURE_SPOT_R);
-        drawTexture(matrices, windowX + ((bgWidth - totalWidth)/ 2) + width + 6, windowY + bgHeight - 24, 0, 0, 6, 20, 6, 20);
+        matrices.push();
+        float spotWidth = (treasureBarWidth * fishGameLogic.treasureSpotSize);
+        float spotScale = spotWidth / treasureSpotWidth;
+        matrices.scale(spotScale, 1,1);
+        treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
+        TREASURE_SPOT.render(matrices, treasureSpotX, treasureSpotY);
+        matrices.pop();
     }
 
     private void renderTreasureMark(MatrixStack matrices){
         if (fishGameLogic.treasureAvailableTicks == 0) return;
-        RenderSystem.setShaderTexture(0, TREASURE_MARK);
-        int shakeOffset = (ticks / 3 ) % 2;
-        drawTexture(matrices, windowX + (bgWidth - 16) / 2, windowY + bgHeight / 2 - 36 + shakeOffset, 0, 0, 16, 16, 16, 16);
+        int shakeOffset = lightTick ? 1 : 0;
+        TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-
-        windowX = (this.width - bgWidth) / 2;
-        windowY = (this.height- bgHeight) / 2;
-
         matrices.push();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
         if (fishGameLogic.reelingTreasure) {
             renderTreasure(matrices, delta);
         } else {
-            renderWindow(matrices);
-            renderBobber(matrices, delta);
             renderFish(matrices, delta);
-            renderProgressBar(matrices);
-            renderTreasureMark(matrices);
         }
-
-        renderLineHealth(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-
-
+        renderInfo(matrices);
         matrices.pop();
     }
 
-    private void renderWindow(MatrixStack matrices){
-        RenderSystem.setShaderTexture(0, BACKGROUND);
-        drawTexture(matrices, windowX, windowY, 0, 0, bgWidth, bgHeight, bgWidth, bgHeight);
+    private void renderFish(MatrixStack matrices, float delta){
+        renderFishBackground(matrices);
+        renderBobber(matrices, delta);
+        renderFishIcon(matrices, delta);
+        renderProgressBar(matrices);
+        renderTreasureMark(matrices);
+    }
+
+    private void renderTreasureBackground(MatrixStack matrices){
+        BACKGROUND_EMPTY.render(matrices, x,y);
+    }
+
+    private void renderFishBackground(MatrixStack matrices){
+        BACKGROUND.render(matrices, x, y);
     }
 
     private void renderBobber(MatrixStack matrices, float delta){
         matrices.push();
-        float engineBobberPos = fishGameLogic.getBobberPos();
-        float bobberPos = engineBobberPos + (fishGameLogic.nextBobberPos() - engineBobberPos) * delta;
-        float bobberLength = fishGameLogic.getBobberLength();
-        float bobberScale = barHeight * bobberLength / bobberHeight;
-        RenderSystem.setShaderTexture(0, BOBBER);
+        float bobberPos = getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.nextBobberPos(), delta);
+        float bobberScale = barHeight * fishGameLogic.getBobberLength() / bobberHeight;
         matrices.scale(1f,bobberScale,1f);
-        int y = (int) ( (windowY + 16 + barHeight - barHeight * bobberPos) * (1f / bobberScale));
-        drawTexture(matrices, windowX + 26, y, 0, 0, barWidth, bobberHeight, barWidth, bobberHeight);
-
+        bobberY = (int) ( (barY + barHeight - barHeight * bobberPos) * (1f / bobberScale));
+        BOBBER.render(matrices, bobberX, bobberY);
         matrices.pop();
-
     }
 
-    private void renderFish(MatrixStack matrices, float delta){
-        RenderSystem.setShaderTexture(0, FISH);
-        float engineFishPos = fishGameLogic.getFishPos();
-        float fishPos = engineFishPos + (fishGameLogic.nextFishPosition() - engineFishPos) * delta;
-        drawTexture(matrices, windowX + 26, (int) (windowY + 16 + barHeight - barHeight * fishPos), 0, 0, barWidth, barWidth, barWidth, barWidth);
-
+    private void renderFishIcon(MatrixStack matrices, float delta){
+        //TODO NEXT STEP create getFishPos method
+        fishY = (int) (barY + barHeight - barHeight * getDeltaPosition(fishGameLogic.getFishPos(),fishGameLogic.nextFishPosition(), delta));
+        FISH.render(matrices, fishX, fishY);
     }
 
-
-    public void renderProgressBar(MatrixStack matrices ) {
-        RenderSystem.setShaderTexture(0, PROGRESS_BAR);
-        int progressBarLength = (int) (barHeight * fishGameLogic.getProgress());
-        drawTexture(matrices, windowX + 126, windowY+ 16 + barHeight - progressBarLength, 0, 0, barWidth, progressBarLength, barWidth, barHeight);
-
+    private void renderProgressBar(MatrixStack matrices ) {
+        int progressBarHeight = (int) (barHeight * fishGameLogic.getProgress());
+        PROGRESS_BAR.render(matrices, progressBarX, progressBarY + barHeight - progressBarHeight, barWidth,progressBarHeight);
     }
-    public void renderLineHealth(MatrixStack matrices) {
-        String healthLabel = "Line Health";
-        String healthInfo = String.format("%.1f" ,fishGameLogic.getLineHealth());
-        int color = 0xFFFFFF;
-        if (fishGameLogic.reelingTreasure) {
-            healthLabel = "Treasure!";
-            healthInfo = String.valueOf(fishGameLogic.treasureHookedTicks / 20);
-        }
 
-        if (fishGameLogic.treasureAvailableTicks > 0 && !fishGameLogic.reelingTreasure) {
-            healthLabel = "Treasure!";
-            healthInfo = "[Enter]";
-            color = ((ticks / 3 ) % 2) == 1 ?  0xFFFFFF :  0xffbb33;
-        }
+    private void renderInfo(MatrixStack matrices) {
+        String infoLabel = (isTreasureHooked() || isTreasureOnHook())? TREASURE_LABEL : HEALTH_LABEL;
+        String infoValue = isTreasureHooked() ? getTimeLeft() : isTreasureOnHook() ? TREASURE_REEL_LABEL : getLineHealth();
+        int labelColor = isTreasureOnHook() && ! isTreasureHooked() ? (
+                lightTick ?
+                        DEFAULT_COLOR :
+                        TREASURE_COLOR)
+                : DEFAULT_COLOR;
 
-        int healthLabelLength = textRenderer.getWidth(healthLabel);
-        textRenderer.drawWithShadow(matrices, Text.of(healthLabel), windowX + (bgWidth - healthLabelLength) / 2f,windowY + 75,color);
+        textRenderer.drawWithShadow(matrices, Text.of(infoLabel), x + (backgroundWidth - textRenderer.getWidth(infoLabel)) / 2f, y + 75,labelColor);
+        textRenderer.drawWithShadow(matrices, Text.of(infoValue), x + (backgroundWidth - textRenderer.getWidth(infoValue)) / 2f, y + 90,DEFAULT_COLOR);
+    }
 
-        int healthInfoLength = textRenderer.getWidth(healthInfo);
-        textRenderer.drawWithShadow(matrices, Text.of(healthInfo), windowX + (bgWidth - healthInfoLength) / 2f,windowY + 90,0xFFFFFF);
+    private String getTimeLeft(){
+        return String.valueOf(fishGameLogic.treasureHookedTicks / 20);
+    }
+
+    private String getLineHealth(){
+        return String.format("%.1f" ,fishGameLogic.getLineHealth());
+    }
+
+    private boolean isTreasureOnHook(){
+        return fishGameLogic.treasureAvailableTicks > 0;
+    }
+
+    private boolean isTreasureHooked(){
+        return fishGameLogic.reelingTreasure;
     }
 
     @Override
@@ -203,4 +226,27 @@ public class FishGameScreen extends Screen {
         return false;
     }
 
+    private static float getDeltaPosition(float initialPosition, float nextPosition, float delta){
+     return initialPosition + (nextPosition - initialPosition) * delta;
+    }
+
+    static class Texture {
+        Identifier texture;
+        int textureWidth;
+        int textureHeight;
+
+        Texture(String fileName, int textureWidth, int textureHeight){
+            this.texture = new Identifier(FishingClub.MOD_ID, TEXTURE_DIR_ROOT + fileName);
+            this.textureWidth = textureWidth;
+            this.textureHeight = textureHeight;
+        }
+        private void render(MatrixStack matrices, int x, int y){
+            render(matrices,x, y, textureWidth, textureHeight);
+        }
+
+        private void render(MatrixStack matrices, int x, int y, int width, int height){
+            RenderSystem.setShaderTexture(0, this.texture);
+            drawTexture(matrices, x, y, 0, 0, width, height, this.textureWidth, this.textureHeight);
+        }
+    }
 }

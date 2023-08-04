@@ -286,6 +286,7 @@ public class FishGameLogic {
 
 
     public void tick() {
+        if(!keyPressed(GLFW.GLFW_KEY_C)) return;
         if (reelingTreasure) {
             tickHookedTreasure();
         } else {
