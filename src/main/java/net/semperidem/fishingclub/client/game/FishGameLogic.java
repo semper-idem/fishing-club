@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class FishGameLogic {
 
-    private static final float sinePeriod = (float) (Math.PI * 2);
+    private static final float SINE_PERIOD = (float) (Math.PI * 2);
     private static final float STARTING_BOBBER_LENGTH = 0.25f;
     private static final float FISH_LENGTH = 0.0625f;
     private static final float REELING_ACCELERATION = 0.005f;
@@ -27,36 +27,46 @@ public class FishGameLogic {
     private static final float WAVE_STRENGTH = 0.05f;
     private static final float PROGRESS_GAIN = 0.0075f;
 
-    PlayerEntity player;
-    float lineHealth;
-    float progress;
-    float fishPos;
-    float fishPosCenter;
-    int ticks;
-    float bobberPos;
-    float bobberLength;
-    float bobberSpeed;
-    Fish fish;
-    boolean isFinished = false;
-    boolean isFishWon = false;
-    public boolean isTreasureWon = false;
-    FisherInfo fisherInfo;
-    float totalDuration;
+    private static final float TREASURE_MIN_CHANCE = 0.05f;
+    private static final float TREASURE_MIN_TRIGGER_TIME = 0.5f;
+    private static final float TREASURE_MAX_TRIGGER_TIME = 0.25f;
+    private static final float TREASURE_MAX_SPOT_SIZE = 0.225f;
+    private static final float TREASURE_GRADE_TO_SPOT_SIZE_RATIO = 0.025f;
 
-    float fishDamage;
 
-    ItemStack caughtUsing;
-    boolean boatFishing;
+    private final PlayerEntity player;
+    private final Fish fish;
+    private final FisherInfo fisherInfo;
+    private final float totalDuration;
+    private final ItemStack caughtUsing;
+    private final boolean boatFishing;
 
-    public boolean treasure ;
-    public int treasureAvailableTicks;
-    public float treasureTriggerTime;
-    public float arrowSpeed = 1;
-    public int treasureHookedTicks;
-    public float treasureSpotSize;
-    public float arrowPos;
-    public boolean reelingTreasure = false;
-    Reward treasureReward;
+    private boolean isFinished;
+    private boolean isFishWon;
+    private boolean isTreasureWon;
+    private boolean reelingTreasure;
+
+    private int ticks;
+
+    private float lineHealth;
+    private float progress;
+
+    private float fishDamage;
+    private float fishPos;
+    private float fishPosCenter;
+
+    private float bobberPos;
+    private float bobberLength;
+    private float bobberSpeed;
+
+    private boolean treasureAvailable;
+    private int treasureAvailableTicks;
+    private float treasureTriggerTime;
+    private int treasureHookedTicks;
+    private float treasureSpotSize;
+    private float arrowSpeed;
+    private float arrowPos;
+    private Reward treasureReward;
 
     public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
         this.player = player;
@@ -68,38 +78,18 @@ public class FishGameLogic {
         calculateHealth();
         calculateFishDamage();
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
-        this.bobberPos = nextBobberPos();
-        this.treasure = true; //Math.random() < 0.05;
-        this.treasureTriggerTime = (float) (Math.random() * 0.5 + 0.25f);
-        if (this.treasure) {
-            treasureReward = Rewards.roll(fisherInfo);
-            arrowSpeed = 1 + treasureReward.getGrade();
-            treasureSpotSize = (float) (0.225 - (treasureReward.getGrade()) / 40f);
+        this.bobberPos = bobberLength;
+        this.treasureAvailable = Math.random() < TREASURE_MIN_CHANCE;
+        treasureRoll(player, caughtUsing, boatFishing);
+    }
+
+    private void treasureRoll(PlayerEntity player, ItemStack caughtUsing, boolean boatFishing){
+        if (this.treasureAvailable) {
+            this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
+            this.treasureReward = Rewards.roll(fisherInfo);
+            this.arrowSpeed = 1 + treasureReward.getGrade();
+            this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
         }
-    }
-
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public boolean isFishWon() {
-        return isFishWon;
-    }
-
-    public float getFishPos() {
-        return fishPos;
-    }
-
-    public float getProgress() {
-        return progress;
-    }
-
-    public float getBobberPos() {
-        return bobberPos;
-    }
-
-    public float getLineHealth() {
-        return lineHealth;
     }
 
     private void calculateBobberLength(){
@@ -151,30 +141,46 @@ public class FishGameLogic {
         this.lineHealth = calculatedHealth;
     }
 
-    public float getBobberLength() {
-        return bobberLength;
+
+    public void tick() {
+        if(!keyPressed(GLFW.GLFW_KEY_C)) return;
+        if (reelingTreasure) {
+            tickHookedTreasure();
+        } else {
+            tickFishGame();
+        }
+        ticks++;
     }
 
-
-    private float getBobberAcceleration(){
-        return isReeling() ? REELING_ACCELERATION : -REELING_DECELERATION;
+    private void tickFishGame(){
+        if (!isReeling() && isYanking() && treasureAvailableTicks == 0) this.isFinished = true;
+        tickMovement();
+        tickProgress();
+        tickUnhookedTreasure();
     }
 
-    public float nextBobberPos(){
-        float nextBobberPosUnbound = bobberPos + bobberSpeed;
-        return Math.max(Math.min(nextBobberPosUnbound, 1), bobberLength);
+    private void tickMovement(){
+        tickBobberMovement();
+        tickFishMovement();
     }
 
-    private void bobberCollideWithBound(){
+    private void tickFishMovement(){
+        fishPos = nextFishPosition();
+        fishPosCenter = fishPos - (FISH_LENGTH / 2);
+    }
+
+    private void tickBobberMovement(){
+        bobberSpeed += getBobberAcceleration();
+        bobberPos = nextBobberPos();
+        tickBobberMovementCollision();
+    }
+
+    private void tickBobberMovementCollision(){
         if (bobberPos <= bobberLength) {
-            bobberBounce();
+            bobberSpeed = bobberSpeed < 0 ? bobberSpeed * -0.5f : 0;
         } else if (bobberPos >= 1) {
             bobberSpeed = 0;
         }
-    }
-
-    private void bobberBounce(){
-        bobberSpeed = bobberSpeed < 0 ? bobberSpeed * -0.5f : 0;
     }
 
     private void tickHealth(){
@@ -186,7 +192,7 @@ public class FishGameLogic {
         }
     }
 
-    private void processProgress(){
+    private void tickProgress(){
         boolean bobberHasFish = bobberPos >= fishPosCenter && bobberPos - bobberLength <= fishPosCenter;
         if (treasureAvailableTicks > 0) return;
         if (bobberHasFish) {
@@ -201,11 +207,13 @@ public class FishGameLogic {
             progress += (PROGRESS_GAIN * Math.max(1, FishingRodUtil.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
-            processVictory();
+            this.isFinished = true;
+            this.isFishWon = true;
+            grantReward();
         }
-        if (!treasure) return;
+        if (!treasureAvailable) return;
         if (progress > treasureTriggerTime) {
-            treasure = false;
+            treasureAvailable = false;
             treasureAvailableTicks = 50;
         }
     }
@@ -216,47 +224,16 @@ public class FishGameLogic {
             progress = Math.max(0, progress - 0.005f - fishDamage / 100);
         }
     }
-    private boolean keyPressed(int keyCode){
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
-    }
-
-    private boolean isReeling(){
-        return keyPressed(GLFW.GLFW_KEY_SPACE);
-    }
-
-    private boolean isYanking(){
-        return keyPressed(GLFW.GLFW_KEY_ENTER);
-    }
-
-    private void processVictory(){
-        this.isFinished = true;
-        this.isFishWon = true;
-        grantReward();
-    }
-
-    private void processMovement(){
-        processBobberMovement();
-        processFishMovement();
-    }
-
-    private void processFishMovement(){
-        fishPos = nextFishPosition();
-        fishPosCenter = fishPos - (FISH_LENGTH / 2);
-    }
-
-    private void processBobberMovement(){
-        bobberSpeed += getBobberAcceleration();
-        bobberPos = nextBobberPos();
-        bobberCollideWithBound();
-    }
-
 
     private void tickHookedTreasure(){
         if (!reelingTreasure) return;
         arrowPos = getNextArrowPos();
         treasureHookedTicks--;
         if (treasureHookedTicks == 0) this.isFinished = true;
-        if (isReeling() && !isYanking()) reelTreasure();
+        if (isReeling() && !isYanking()){
+            this.isTreasureWon = isTreasureReeled();
+            this.isFinished = true;
+        }
     }
 
     private void tickUnhookedTreasure(){
@@ -266,37 +243,6 @@ public class FishGameLogic {
             reelingTreasure = true;
             treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
         };
-    }
-
-    private void reelTreasure(){
-        this.isTreasureWon = isTreasureReeled();
-        this.isFinished = true;
-    }
-
-    private boolean isTreasureReeled(){
-        return (arrowPos >= (0.5f - treasureSpotSize / 2)) && (arrowPos <= (0.5f + treasureSpotSize));
-    }
-
-    private void tickFishGame(){
-        if (!isReeling() && isYanking() && treasureAvailableTicks == 0) this.isFinished = true;
-        processMovement();
-        processProgress();
-        tickUnhookedTreasure();
-    }
-
-
-    public void tick() {
-        if(!keyPressed(GLFW.GLFW_KEY_C)) return;
-        if (reelingTreasure) {
-            tickHookedTreasure();
-        } else {
-            tickFishGame();
-        }
-        ticks++;
-    }
-
-    public float getNextArrowPos(){
-        return ((float) Math.sin(ticks / (12f - arrowSpeed)) + 1) / 2;
     }
 
     public float nextFishPosition() {
@@ -309,7 +255,7 @@ public class FishGameLogic {
 
     private float nextFishPosOnWave(float elapsedTime){
         float percentElapsedTime = elapsedTime / totalDuration;
-        return  (float) (Math.sin(sinePeriod * percentElapsedTime * WAVE_SPEED) * WAVE_STRENGTH);
+        return  (float) (Math.sin(SINE_PERIOD * percentElapsedTime * WAVE_SPEED) * WAVE_STRENGTH);
     }
 
     private float nextFishPosOnCurve(float elapsedTime) {
@@ -345,6 +291,48 @@ public class FishGameLogic {
         return oneMinusT * oneMinusT * p0 + 2 * oneMinusT * t * p1 + t * t * p2;
     }
 
+
+    private void grantReward(){
+        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing);
+    }
+
+
+
+    private float getBobberAcceleration(){
+        return isReeling() ? REELING_ACCELERATION : -REELING_DECELERATION;
+    }
+
+    public float nextBobberPos(){
+        float nextBobberPosUnbound = bobberPos + bobberSpeed;
+        return Math.max(Math.min(nextBobberPosUnbound, 1), bobberLength);
+    }
+
+
+    public float getNextArrowPos(){
+        return ((float) Math.sin(ticks / (12f - arrowSpeed)) + 1) / 2;
+    }
+
+
+    private boolean isTreasureReeled(){
+        return (arrowPos >= (0.5f - treasureSpotSize / 2)) && (arrowPos <= (0.5f + treasureSpotSize));
+    }
+
+    private boolean keyPressed(int keyCode){
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
+    }
+
+    private boolean isReeling(){
+        return keyPressed(GLFW.GLFW_KEY_SPACE);
+    }
+
+    private boolean isYanking(){
+        return keyPressed(GLFW.GLFW_KEY_ENTER);
+    }
+
+    public float getBobberLength() {
+        return bobberLength;
+    }
+
     public int getLevel() {
         return fish.fishLevel;
     }
@@ -352,12 +340,59 @@ public class FishGameLogic {
     public String getName() {
         return fish.getFishType().name;
     }
+
     public int getExperience() {
         return fish.experience;
     }
 
-    private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing);
+    public float getTreasureSpotSize(){
+        return this.treasureSpotSize;
+    }
+
+    public int getTimeLeft(){
+        return treasureHookedTicks / 20;
+    }
+
+    public boolean isTreasureOnHook(){
+        return treasureAvailableTicks > 0;
+    }
+
+    public boolean isReelingTreasure(){
+        return reelingTreasure;
+    }
+
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public boolean isFishWon() {
+        return isFishWon;
+    }
+
+    public boolean isTreasureWon(){
+        return isTreasureWon;
+    }
+
+    public float getArrowPos(){
+        return arrowPos;
+    }
+
+    public float getFishPos() {
+        return fishPos;
+    }
+
+    public float getBobberPos() {
+        return bobberPos;
+    }
+
+    public float getProgress() {
+        return progress;
+    }
+
+
+    public float getLineHealth() {
+        return lineHealth;
     }
 
     public enum Stat{

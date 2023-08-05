@@ -104,7 +104,7 @@ public class FishGameScreen extends Screen {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
             } else {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
-                    if (this.fishGameLogic.isTreasureWon) {
+                    if (this.fishGameLogic.isTreasureWon()) {
                     MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
                 }
             }
@@ -114,7 +114,7 @@ public class FishGameScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         matrices.push();
-        if (fishGameLogic.reelingTreasure) {
+        if (isTreasureHooked()) {
             renderTreasure(matrices, delta);
         } else {
             renderFish(matrices, delta);
@@ -149,7 +149,7 @@ public class FishGameScreen extends Screen {
 
     private void renderTreasureSpot(MatrixStack matrices){
         matrices.push();
-        float spotWidth = (treasureBarWidth * fishGameLogic.treasureSpotSize);
+        float spotWidth = (treasureBarWidth * fishGameLogic.getTreasureSpotSize());
         float spotScale = spotWidth / treasureSpotWidth;
         matrices.scale(spotScale, 1,1);
         treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
@@ -158,7 +158,7 @@ public class FishGameScreen extends Screen {
     }
 
     private void renderTreasureMark(MatrixStack matrices){
-        if (fishGameLogic.treasureAvailableTicks == 0) return;
+        if (!isTreasureOnHook()) return;
         int shakeOffset = lightTick ? 1 : 0;
         TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
     }
@@ -204,7 +204,7 @@ public class FishGameScreen extends Screen {
     }
 
     private String getTimeLeft(){
-        return String.valueOf(fishGameLogic.treasureHookedTicks / 20);
+        return String.valueOf(fishGameLogic.getTimeLeft());
     }
 
     private String getLineHealth(){
@@ -212,11 +212,11 @@ public class FishGameScreen extends Screen {
     }
 
     private boolean isTreasureOnHook(){
-        return fishGameLogic.treasureAvailableTicks > 0;
+        return fishGameLogic.isTreasureOnHook();
     }
 
     private boolean isTreasureHooked(){
-        return fishGameLogic.reelingTreasure;
+        return fishGameLogic.isReelingTreasure();
     }
 
 
@@ -229,7 +229,7 @@ public class FishGameScreen extends Screen {
     }
 
     private float getArrowPos(float delta){
-        return getDeltaPosition(fishGameLogic.arrowPos, fishGameLogic.getNextArrowPos(), delta);
+        return getDeltaPosition(fishGameLogic.getArrowPos(), fishGameLogic.getNextArrowPos(), delta);
     }
 
     private static float getDeltaPosition(float initialPosition, float nextPosition, float delta){
