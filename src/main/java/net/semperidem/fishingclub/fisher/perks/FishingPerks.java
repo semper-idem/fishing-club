@@ -129,15 +129,26 @@ public class FishingPerks {
 
     public static FishingPerk FISHING_HAT = FishingPerk
             .createPerk("fishing_hat", BAIT_CRAFTING)
-            .withLabel("Fisherman's Hat")
+            .withLabel("Fisher Hat")
             .withDescription("Craft a fishing hat to increase fish quality")
-            .withDetailedDesc("Put on your trusty fishing hat to catch higher quality fish.");
+            .withDetailedDesc(
+                    "Unlock fisher hat crafting.\n" +
+                    "Fisher Hat decreases time it takes for fish to bite by 15%")
+            .withIcon("fisher_hat.png");
 
-    public static FishingPerk FISHING_OUTFIT = FishingPerk
+    public static FishingPerk FISHING_OUTFIT = FishingPerk//TODO
             .createPerk("fishing_outfit", FISHING_HAT)
-            .withLabel("Fisherman's Outfit")
-            .withDescription("Craft a fishing outfit to slow fish movement")
-            .withDetailedDesc("In your specialized fishing outfit, fish move slower, making them easier to catch.");
+            .withLabel("Fisher Vest")
+            .withDescription(
+                    "Craft a fishing vest to slow fish movement \n" +
+                    "and gain bonus xp")
+            .withDetailedDesc(
+                    "Unlock fisher vest crafting.\n" +
+                    "Fisher Vest slows fish movement \n" +
+                    "and each fish caught gives bonus 20% fisher xp\n" +
+                    "All fisher attire effects double if it's your\n" +
+                    "only equipped armor")
+            .withIcon("fisher_vest.png");
 
 
     public static FishingPerk HOOK_CRAFTING = FishingPerk
