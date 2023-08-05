@@ -64,7 +64,7 @@ public class FishingPerks {
     public static FishingPerk DOUBLE_FISH_BOAT = FishingPerk
             .createPerk("double_fish_boat", BOAT_BOBBER_SIZE)
             .withLabel("OMG twins?")
-            .withDescription("9% chance to double fish when in boat")
+            .withDescription("Gain 9% chance to double fish when in boat")
             .withDetailedDesc(
                     "Gain 9% chance to catch additional fish\n" +
                     "when fishing from boat")
@@ -85,7 +85,7 @@ public class FishingPerks {
             .createPerk("triple_fish_boat", LINE_HEALTH_BOAT)
             .withLabel("Triple kill")
             .withDescription(
-                    "6% chance to catch three fish when in boat")
+                    "Gain 6% chance to catch three fish when in boat")
             .withDetailedDesc(
                     "Gain 6% chance to catch three fish\n" +
                     "when fishing from boat")
@@ -93,15 +93,22 @@ public class FishingPerks {
 
     public static FishingPerk DOUBLE_TREASURE_BOAT = FishingPerk
             .createPerk("double_treasure_boat", TRIPLE_FISH_BOAT)
-            .withLabel("Treasure Hoarder")
-            .withDescription("Double chance for treasure to appear when in boat")
-            .withDetailedDesc("Your luck soars while at sea, doubling the chances of treasures appearing during your fishing trips.");
+            .withLabel("Golden Boat")
+            .withDescription("Double chance for treasure when in boat")
+            .withDetailedDesc(
+                    "Double base chance for treasure (5% -> 10%)\n" +
+                    "to appear when in boat")
+            .withIcon("golden_boat.png");
 
     public static FishingPerk TRIPLE_TREASURE_BOAT = FishingPerk
             .createPerk("triple_treasure_boat", DOUBLE_TREASURE_BOAT)
-            .withLabel("Treasure Magnet")
-            .withDescription("Triple chance for treasure to appear when in boat")
-            .withDetailedDesc("Your fortune is amplified at sea, tripling the chance of finding treasures during your fishing trips.");
+            .withLabel("Diamond Boat")
+            .withDescription(
+                    "Triple base chance for treasure when in boat")
+            .withDetailedDesc(
+                    "Triple base chance for treasure (5% -> 15%)\n" +
+                    "to appear when in boat")
+            .withIcon("diamond_boat.png");
 
     public static FishingPerk INFINITY_FISH = FishingPerk
             .createPerk("recursive_fish", TRIPLE_TREASURE_BOAT)

@@ -79,8 +79,16 @@ public class FishGameLogic {
         calculateFishDamage();
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
         this.bobberPos = bobberLength;
-        this.treasureAvailable = Math.random() < TREASURE_MIN_CHANCE;
+        this.treasureAvailable = rollForTreasure();
         treasureRoll(player, caughtUsing, boatFishing);
+    }
+
+    private boolean rollForTreasure(){
+        float treasureChance = TREASURE_MIN_CHANCE;
+        if (fisherInfo.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
+            treasureChance *= 2;
+        }
+        return Math.random() < treasureChance;
     }
 
     private void treasureRoll(PlayerEntity player, ItemStack caughtUsing, boolean boatFishing){
