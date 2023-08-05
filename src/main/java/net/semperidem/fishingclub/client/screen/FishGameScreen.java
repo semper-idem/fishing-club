@@ -43,16 +43,16 @@ public class FishGameScreen extends Screen {
     private static final Texture TREASURE_SPOT = new Texture("treasure_spot.png", treasureSpotWidth, treasureSpotHeight);
     private static final Texture TREASURE_MARK = new Texture("treasure_mark.png", treasureMarkWidth, treasureMarkHeight);
 
-    int x, y;
-    int barX,barY;
-    int bobberX, bobberY;
-    int fishX,fishY;
-    int progressBarX,progressBarY;
+    private int x, y;
+    private int barX,barY;
+    private int bobberX, bobberY;
+    private int fishX,fishY;
+    private int progressBarX,progressBarY;
 
-    int treasureBarX, treasureBarY;
-    int treasureArrowX, treasureArrowY;
-    int treasureSpotX, treasureSpotY;
-    int treasureMarkX, treasureMarkY;
+    private int treasureBarX, treasureBarY;
+    private int treasureArrowX, treasureArrowY;
+    private int treasureSpotX, treasureSpotY;
+    private int treasureMarkX, treasureMarkY;
 
     FishGameLogic fishGameLogic;
     boolean lightTick = false;
@@ -111,38 +111,6 @@ public class FishGameScreen extends Screen {
         }
     }
 
-    private void renderTreasure(MatrixStack matrices, float delta){
-        renderTreasureBackground(matrices);
-        renderTreasureBar(matrices);
-        renderTreasureSpot(matrices);
-        renderTreasureArrow(matrices, delta);
-    }
-
-    private void renderTreasureBar(MatrixStack matrices){
-        TREASURE_BAR.render(matrices, treasureBarX, treasureBarY);
-    }
-
-    private void renderTreasureArrow(MatrixStack matrices, float delta){
-        treasureArrowX = x + (int) (getDeltaPosition(fishGameLogic.arrowPos, fishGameLogic.getNextArrowPos(), delta) * (treasureBarWidth - treasureArrowWidth));
-        TREASURE_ARROW.render(matrices, treasureArrowX, treasureArrowY);
-    }
-
-    private void renderTreasureSpot(MatrixStack matrices){
-        matrices.push();
-        float spotWidth = (treasureBarWidth * fishGameLogic.treasureSpotSize);
-        float spotScale = spotWidth / treasureSpotWidth;
-        matrices.scale(spotScale, 1,1);
-        treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
-        TREASURE_SPOT.render(matrices, treasureSpotX, treasureSpotY);
-        matrices.pop();
-    }
-
-    private void renderTreasureMark(MatrixStack matrices){
-        if (fishGameLogic.treasureAvailableTicks == 0) return;
-        int shakeOffset = lightTick ? 1 : 0;
-        TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
-    }
-
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         matrices.push();
@@ -163,6 +131,38 @@ public class FishGameScreen extends Screen {
         renderTreasureMark(matrices);
     }
 
+    private void renderTreasure(MatrixStack matrices, float delta){
+        renderTreasureBackground(matrices);
+        renderTreasureBar(matrices);
+        renderTreasureSpot(matrices);
+        renderTreasureArrow(matrices, delta);
+    }
+
+    private void renderTreasureBar(MatrixStack matrices){
+        TREASURE_BAR.render(matrices, treasureBarX, treasureBarY);
+    }
+
+    private void renderTreasureArrow(MatrixStack matrices, float delta){
+        treasureArrowX = (int) (x + getArrowPos(delta) * (treasureBarWidth - treasureArrowWidth));
+        TREASURE_ARROW.render(matrices, treasureArrowX, treasureArrowY);
+    }
+
+    private void renderTreasureSpot(MatrixStack matrices){
+        matrices.push();
+        float spotWidth = (treasureBarWidth * fishGameLogic.treasureSpotSize);
+        float spotScale = spotWidth / treasureSpotWidth;
+        matrices.scale(spotScale, 1,1);
+        treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
+        TREASURE_SPOT.render(matrices, treasureSpotX, treasureSpotY);
+        matrices.pop();
+    }
+
+    private void renderTreasureMark(MatrixStack matrices){
+        if (fishGameLogic.treasureAvailableTicks == 0) return;
+        int shakeOffset = lightTick ? 1 : 0;
+        TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
+    }
+
     private void renderTreasureBackground(MatrixStack matrices){
         BACKGROUND_EMPTY.render(matrices, x,y);
     }
@@ -173,17 +173,15 @@ public class FishGameScreen extends Screen {
 
     private void renderBobber(MatrixStack matrices, float delta){
         matrices.push();
-        float bobberPos = getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.nextBobberPos(), delta);
         float bobberScale = barHeight * fishGameLogic.getBobberLength() / bobberHeight;
         matrices.scale(1f,bobberScale,1f);
-        bobberY = (int) ( (barY + barHeight - barHeight * bobberPos) * (1f / bobberScale));
+        bobberY = (int) ( (barY + barHeight - barHeight * getBobberPos(delta)) * (1f / bobberScale));
         BOBBER.render(matrices, bobberX, bobberY);
         matrices.pop();
     }
 
     private void renderFishIcon(MatrixStack matrices, float delta){
-        //TODO NEXT STEP create getFishPos method
-        fishY = (int) (barY + barHeight - barHeight * getDeltaPosition(fishGameLogic.getFishPos(),fishGameLogic.nextFishPosition(), delta));
+        fishY = (int) (barY + barHeight - barHeight * getFishPos(delta));
         FISH.render(matrices, fishX, fishY);
     }
 
@@ -221,13 +219,26 @@ public class FishGameScreen extends Screen {
         return fishGameLogic.reelingTreasure;
     }
 
-    @Override
-    public boolean shouldPause() {
-        return false;
+
+    private float getFishPos(float delta) {
+        return getDeltaPosition(fishGameLogic.getFishPos(),fishGameLogic.nextFishPosition(), delta);
+    }
+
+    private float getBobberPos(float delta){
+        return getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.nextBobberPos(), delta);
+    }
+
+    private float getArrowPos(float delta){
+        return getDeltaPosition(fishGameLogic.arrowPos, fishGameLogic.getNextArrowPos(), delta);
     }
 
     private static float getDeltaPosition(float initialPosition, float nextPosition, float delta){
      return initialPosition + (nextPosition - initialPosition) * delta;
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
     }
 
     static class Texture {
