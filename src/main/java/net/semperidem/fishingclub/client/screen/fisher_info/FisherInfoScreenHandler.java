@@ -12,6 +12,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
@@ -64,25 +65,25 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         addSlot(new Slot(fisherInventory, 0, 25, 199){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof FishingRodItem;
+                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof FishingRodItem;
             }
         });
         addSlot(new Slot(fisherInventory, 1, 55, 199){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof BoatItem;
+                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof BoatItem;
             }
         });
         addSlot(new Slot(fisherInventory, 2, 25, 229){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof FishingNetItem;
+                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof FishingNetItem;
             }
         });
         addSlot(new Slot(fisherInventory, 3, 55, 229){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() instanceof FishingNetItem;
+                return fisherInfo.hasPerk(FishingPerks.FISHING_) && stack.getItem() instanceof FishingNetItem;
             }
         });
     }

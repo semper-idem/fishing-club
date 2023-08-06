@@ -123,29 +123,32 @@ public class FishingPerks {
     //H - MISC
     public static FishingPerk BAIT_CRAFTING = FishingPerk
             .createPerk("bait_crafting", ROOT_HOBBYIST)
-            .withLabel("Bait Craftsmanship")
-            .withDescription("Unlock bait crafting")
-            .withDetailedDesc("Gain the knowledge to craft your own bait.");
+            .withLabel("Bait master")
+            .withDescription("Unlock recipes for all baits")
+            .withDetailedDesc(
+                    "Unlock recipe and ability to craft\n" +
+                    "all baits")
+            .withIcon("bait.png");
 
     public static FishingPerk FISHING_HAT = FishingPerk
             .createPerk("fishing_hat", BAIT_CRAFTING)
             .withLabel("Fisher Hat")
-            .withDescription("Craft a fishing hat to increase fish quality")
+            .withDescription("Unlock Fisher Hat crafting")
             .withDetailedDesc(
-                    "Unlock fisher hat crafting.\n" +
-                    "Fisher Hat decreases time it takes for fish to bite by 15%")
+                    "Unlock Fisher Hat crafting.\n" +
+                    "Fisher Hat decreases time it takes for fish to bite\n" +
+                    "by 15%")
             .withIcon("fisher_hat.png");
 
-    public static FishingPerk FISHING_OUTFIT = FishingPerk//TODO
+    public static FishingPerk FISHING_OUTFIT = FishingPerk
             .createPerk("fishing_outfit", FISHING_HAT)
             .withLabel("Fisher Vest")
             .withDescription(
-                    "Craft a fishing vest to slow fish movement \n" +
-                    "and gain bonus xp")
+                    "Unlock Fisher Vest crafting")
             .withDetailedDesc(
-                    "Unlock fisher vest crafting.\n" +
+                    "Unlock Fisher Vest crafting.\n" +
                     "Fisher Vest slows fish movement \n" +
-                    "and each fish caught gives bonus 20% fisher xp\n" +
+                    "and each fish caught gives bonus 10% fisher xp\n" +
                     "All fisher attire effects double if it's your\n" +
                     "only equipped armor")
             .withIcon("fisher_vest.png");
@@ -153,15 +156,21 @@ public class FishingPerks {
 
     public static FishingPerk HOOK_CRAFTING = FishingPerk
             .createPerk("hook_crafting", FISHING_OUTFIT)
-            .withLabel("Hook Craftsmanship")
-            .withDescription("Unlock hook crafting")
-            .withDetailedDesc("Gain the knowledge to craft your own hooks.");
+            .withLabel("Hook crafting")
+            .withDescription("Unlock recipes for all hooks")
+            .withDetailedDesc(
+                    "Unlock recipe and ability to craft\n" +
+                    "all hooks")
+            .withIcon("hook.png");
 
     public static FishingPerk LINE_BOBBER_CRAFTING = FishingPerk
             .createPerk("line_bobber_crafting", HOOK_CRAFTING)
-            .withLabel("Line and Bobber Craftsmanship")
-            .withDescription("Unlock line and bobber crafting")
-            .withDetailedDesc("Gain the knowledge to craft your own lines and bobbers.");
+            .withLabel("Line and Bobber crafting")
+            .withDescription("Unlock recipes for all fishing lines and bobbers")
+            .withDetailedDesc(
+                    "Unlock recipe and ability to craft\n" +
+                    "all fishing lines and bobbers")
+            .withIcon("bobber_line.png");
 
 
     //O - Slot
