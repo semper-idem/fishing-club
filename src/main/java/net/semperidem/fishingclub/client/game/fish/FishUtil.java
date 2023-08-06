@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.game.fish;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,6 +14,7 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
@@ -346,5 +348,30 @@ public class FishUtil {
             result.append(point.toString()).append(";");
         }
         return result.toString();
+    }
+
+
+    public static boolean hasFishingHat(PlayerEntity owner){
+        final boolean[] result = {false};
+        owner.getArmorItems().forEach(armorStack -> {
+            if (armorStack.isOf(FItemRegistry.FISHER_HAT)) result[0] = true;
+        });
+        return result[0];
+    }
+
+    public static boolean hasFishingVest(PlayerEntity owner){
+        final boolean[] result = {false};
+        owner.getArmorItems().forEach(armorStack -> {
+            if (armorStack.isOf(FItemRegistry.FISHER_VEST)) result[0] = true;
+        });
+        return result[0];
+    }
+
+    public static boolean hasNonFishingEquipment(PlayerEntity owner){
+        final boolean[] result = {false};
+        owner.getArmorItems().forEach(armorStack -> {
+            if (!(armorStack.isOf(FItemRegistry.FISHER_VEST) || armorStack.isOf(FItemRegistry.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
+        });
+        return result[0];
     }
 }

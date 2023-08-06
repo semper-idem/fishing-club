@@ -279,9 +279,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void setWaitCountdown() {
         float catchRate = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
-        if (hasFishingHat()) {
+        if (FishUtil.hasFishingHat(this.getPlayerOwner())) {
             catchRate += 0.15f;
-            if (!hasNonFishingEquipment()) {
+            if (!FishUtil.hasNonFishingEquipment(this.getPlayerOwner())) {
                 catchRate += 0.15f;
             }
         }
@@ -290,29 +290,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         this.waitCountdown = MathHelper.nextInt(this.random, minWait, maxWait);
     }
 
-    private boolean hasFishingHat(){
-        final boolean[] result = {false};
-        this.getOwner().getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(FItemRegistry.FISHER_HAT)) result[0] = true;
-        });
-        return result[0];
-    }
-
-    private boolean hasFishingVest(){
-        final boolean[] result = {false};
-        this.getOwner().getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(FItemRegistry.FISHER_VEST)) result[0] = true;
-        });
-        return result[0];
-    }
-
-    private boolean hasNonFishingEquipment(){
-        final boolean[] result = {false};
-        this.getOwner().getArmorItems().forEach(armorStack -> {
-            if (!(armorStack.isOf(FItemRegistry.FISHER_VEST) || armorStack.isOf(FItemRegistry.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
-        });
-        return result[0];
-    }
 
 
 

@@ -65,7 +65,7 @@ public class Fish {
     }
 
     private void initEnergyLevels(){
-        this.fishEnergy = 1000 + fishType.fishEnergyLevel * 2000;
+        this.fishEnergy = 200 + fishType.fishEnergyLevel * 250;
         this.fishMinEnergyLevel = this.fishEnergy / 2;
         this.fishMaxEnergyLevel = this.fishEnergy;
     }
@@ -105,6 +105,5 @@ public class Fish {
         float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
-
 
 }

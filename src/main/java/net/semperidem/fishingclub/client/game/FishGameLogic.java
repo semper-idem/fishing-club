@@ -5,6 +5,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.game.treasure.Reward;
 import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FisherInfo;
@@ -32,6 +33,9 @@ public class FishGameLogic {
     private static final float TREASURE_MAX_TRIGGER_TIME = 0.25f;
     private static final float TREASURE_MAX_SPOT_SIZE = 0.225f;
     private static final float TREASURE_GRADE_TO_SPOT_SIZE_RATIO = 0.025f;
+
+    private static final float FISHER_VEST_SLOW_BONUS = -0.15f;
+    private static final float FISHER_VEST_EXP_BONUS = 0.1f;
 
 
     private final PlayerEntity player;
@@ -81,6 +85,19 @@ public class FishGameLogic {
         this.bobberPos = bobberLength;
         this.treasureAvailable = rollForTreasure();
         treasureRoll(player, caughtUsing, boatFishing);
+        applyFisherVestEffect();
+    }
+
+    private void applyFisherVestEffect(){
+        if (!FishUtil.hasFishingVest(player)) return;
+        float slowRatio = 1 + FISHER_VEST_SLOW_BONUS;
+        float expRatio = 1 + FISHER_VEST_EXP_BONUS;
+        if (!FishUtil.hasNonFishingEquipment(player)) {
+            slowRatio += FISHER_VEST_SLOW_BONUS;
+            expRatio += FISHER_VEST_EXP_BONUS;
+        }
+        this.fish.fishEnergy = (int) (this.fish.fishEnergy * slowRatio);
+        this.fish.experience = (int) (this.fish.experience * expRatio);
     }
 
     private boolean rollForTreasure(){
