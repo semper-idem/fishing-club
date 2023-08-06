@@ -27,6 +27,8 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
     static {
         ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHING_NET, FishingPerks.FISHING_NET);
         ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.DOUBLE_FISHING_NET, FishingPerks.UPGRADE_NET);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHER_HAT, FishingPerks.FISHER_HAT);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHER_VEST, FishingPerks.FISHER_VEST);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_FEATHER, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_MAGNET, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_CRAFTED, FishingPerks.BAIT_CRAFTING);

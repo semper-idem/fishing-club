@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "KCK",
+    " K "
+  ],
+  "key": {
+    "S": {
+      "tag": "minecraft:string"
+    },
+    "C": {
+      "tag": "minecraft:leather_chestplate"
+    },
+    "K": {
+      "tag": "minecraft:dried_kelp"
+    }
+  },
+  "result": {
+    "item": "fishing-club:fisher_vest"
+  }
+}

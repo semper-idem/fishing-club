@@ -130,8 +130,8 @@ public class FishingPerks {
                     "all baits")
             .withIcon("bait.png");
 
-    public static FishingPerk FISHING_HAT = FishingPerk
-            .createPerk("fishing_hat", BAIT_CRAFTING)
+    public static FishingPerk FISHER_HAT = FishingPerk
+            .createPerk("fisher_hat", BAIT_CRAFTING)
             .withLabel("Fisher Hat")
             .withDescription("Unlock Fisher Hat crafting")
             .withDetailedDesc(
@@ -140,8 +140,8 @@ public class FishingPerks {
                     "by 15%")
             .withIcon("fisher_hat.png");
 
-    public static FishingPerk FISHING_OUTFIT = FishingPerk
-            .createPerk("fishing_outfit", FISHING_HAT)
+    public static FishingPerk FISHER_VEST = FishingPerk
+            .createPerk("fisher_vest", FISHER_HAT)
             .withLabel("Fisher Vest")
             .withDescription(
                     "Unlock Fisher Vest crafting")
@@ -155,7 +155,7 @@ public class FishingPerks {
 
 
     public static FishingPerk HOOK_CRAFTING = FishingPerk
-            .createPerk("hook_crafting", FISHING_OUTFIT)
+            .createPerk("hook_crafting", FISHER_VEST)
             .withLabel("Hook crafting")
             .withDescription("Unlock recipes for all hooks")
             .withDetailedDesc(
