@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "  S",
-    " |B",
-    "|  "
+    "ISR",
+    "S|S",
+    "RSI"
   ],
   "key": {
-    "B": {
-      "item": "minecraft:barrel"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
     },
     "S": {
       "item": "minecraft:string"
@@ -17,6 +20,6 @@
     }
   },
   "result": {
-    "item": "fishing-club:fishing_net"
+    "item": "fishing-club:bait_feather"
   }
 }

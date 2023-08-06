@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PSF",
+    "S|S",
+    "GSP"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "F": {
+      "item": "minecraft:feather"
+    },
+    "P": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "|": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "fishing-club:bait_feather"
+  }
+}

@@ -1,13 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "  S",
-    " |B",
-    "|  "
+    " SF",
+    "S|S",
+    " S "
   ],
   "key": {
-    "B": {
-      "item": "minecraft:barrel"
+    "F": {
+      "item": "minecraft:feather"
     },
     "S": {
       "item": "minecraft:string"
@@ -17,6 +17,6 @@
     }
   },
   "result": {
-    "item": "fishing-club:fishing_net"
+    "item": "fishing-club:bait_feather"
   }
 }

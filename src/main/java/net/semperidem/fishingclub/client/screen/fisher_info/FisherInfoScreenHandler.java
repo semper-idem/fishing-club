@@ -83,7 +83,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         addSlot(new Slot(fisherInventory, 3, 55, 229){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.FISHING_) && stack.getItem() instanceof FishingNetItem;
+                return fisherInfo.hasPerk(FishingPerks.UPGRADE_NET) && stack.getItem() instanceof FishingNetItem;
             }
         });
     }
