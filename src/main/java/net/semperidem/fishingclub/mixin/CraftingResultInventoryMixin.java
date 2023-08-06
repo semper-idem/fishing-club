@@ -30,6 +30,16 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_FEATHER, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_MAGNET, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_CRAFTED, FishingPerks.BAIT_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BOBBER_WOODEN, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BOBBER_PLANT, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BOBBER_ANCIENT, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.LINE_FIBER_THREAD, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.LINE_SPIDER_SILK, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.LINE_WOOL_THREAD, FishingPerks.LINE_BOBBER_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_COPPER, FishingPerks.HOOK_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_IRON, FishingPerks.HOOK_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_GOLD, FishingPerks.HOOK_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_NETHERITE, FishingPerks.HOOK_CRAFTING);
     }
 
     @Override

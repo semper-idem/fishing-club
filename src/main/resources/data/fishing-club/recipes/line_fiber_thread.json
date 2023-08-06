@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " KW",
+    " WK",
+    "   "
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "K": {
+      "item": "minecraft:kelp"
+    }
+  },
+  "result": {
+    "item": "fishing-club:line_fiber_thread",
+    "count": 4
+  }
+}
