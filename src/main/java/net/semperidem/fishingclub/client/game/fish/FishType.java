@@ -1,9 +1,6 @@
 package net.semperidem.fishingclub.client.game.fish;
 
-import java.util.HashMap;
-
 public class FishType {
-    public static HashMap<String, FishType> allFishTypes = new HashMap<>();
 
     public String name;
 
@@ -41,6 +38,6 @@ public class FishType {
         this.fishMinWeight = fishMinWeight;
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
-        allFishTypes.put(name, this);
+        FishTypes.ALL_FISH_TYPES.put(name, this);
     }
 }
