@@ -120,8 +120,8 @@ public class FishingPerk {
         return detailedDescription;
     }
 
-    static void grantAdvancement(PlayerEntity player, Identifier advancementId){
-        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementId);
+    static void grantAdvancement(PlayerEntity player, Identifier advancementIdentifier){
+        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementIdentifier);
         AdvancementProgress advancementProgress =  ((ServerPlayerEntity)player).getAdvancementTracker().getProgress(advancement);
         for(String criterion : advancementProgress.getUnobtainedCriteria()) {
             ((ServerPlayerEntity)player).getAdvancementTracker().grantCriterion(advancement, criterion);
