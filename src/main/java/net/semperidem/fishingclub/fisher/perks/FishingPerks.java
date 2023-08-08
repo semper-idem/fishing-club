@@ -206,21 +206,29 @@ public class FishingPerks {
     //O - Rain
     public static FishingPerk RAINY_FISH = FishingPerk
             .createPerk("rainy_fish", ROOT_OPPORTUNIST)
-            .withLabel("Rainy Day Catch")
-            .withDescription("Catch fish twice as often when it's raining")
-            .withDetailedDesc("Rainy weather boosts your fishing rate, helping you catch fish twice as often.");
+            .withLabel("Fish o'clock")
+            .withDescription("Double raining catch rate bonus")
+            .withDetailedDesc("When casting bobber in rain increase raining\n" +
+                    " catch rate to 25%.\n" +
+                    "(Default rain catch rate bonus is 12.5%)")
+            .withIcon("raining_cloud.png");
 
     public static FishingPerk RAINY_FISH_PLUS = FishingPerk
             .createPerk("rainy_fish_plus", RAINY_FISH)
-            .withLabel("Rainy Day Catch Plus")
-            .withDescription("Catch fish four times as often when it's raining")
-            .withDetailedDesc("Rainy weather super boosts your fishing rate, helping you catch fish four times as often.");
+            .withLabel("Fish hours")
+            .withDescription("Quadruple raining catch rate bonus")
+            .withDetailedDesc("When casting bobber in rain increase raining\n" +
+                    " catch rate to 50%.")
+            .withIcon("raining_cloud_2.png");
 
     public static FishingPerk RAIN_SUMMON = FishingPerk
             .createPerk("rain_summon", RAINY_FISH_PLUS)
             .withLabel("Rain Summon")
-            .withDescription("Summon rain for 2-5 minutes")
-            .withDetailedDesc("Create a rainstorm for 2-5 minutes, increasing fish catch rates.");
+            .withDescription("Unlock Summon rain spell")
+            .withDetailedDesc("Unlock summmon rain spell available in fish spells\n" +
+                    "60 min cooldown" +
+                    "By default \"N\"")
+            .withIcon("rain_summon.png");
 
     //O - First catch of the day
     public static FishingPerk FIRST_CATCH = FishingPerk

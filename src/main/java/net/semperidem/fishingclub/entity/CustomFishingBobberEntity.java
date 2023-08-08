@@ -280,6 +280,16 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private void setWaitCountdown() {
         float catchRate;
         float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
+        if (world.isRaining()) {
+            float rainBonus = 0.125f;
+            if (fisherInfo.hasPerk(FishingPerks.RAINY_FISH)) {
+                rainBonus *= 2;
+            }
+            if (fisherInfo.hasPerk(FishingPerks.RAINY_FISH_PLUS)) {
+                rainBonus *= 2;
+            }
+            catchRateReduction += rainBonus;
+        }
         if (FishUtil.hasFishingHat(this.getPlayerOwner())) {
             catchRateReduction += 0.15f;
             if (!FishUtil.hasNonFishingEquipment(this.getPlayerOwner())) {
