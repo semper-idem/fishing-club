@@ -11,9 +11,12 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class FisherInfo {
     public static TrackedData<NbtCompound> TRACKED_DATA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
@@ -28,6 +31,7 @@ public class FisherInfo {
     private int skillPoints = 0;
     private HashMap<String, FishingPerk> perks = new HashMap<>();
     private SimpleInventory fisherInventory = new SimpleInventory(4);
+    private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
 
     private PlayerEntity fisher;
 
@@ -50,6 +54,7 @@ public class FisherInfo {
         this.skillPoints = fisherTag.getInt("skill_points");
         this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
         setPerks(fisherTag);
+        setSpells(fisherTag);
     }
 
     private boolean trackerInitialized(PlayerEntity playerEntity){
@@ -71,6 +76,20 @@ public class FisherInfo {
         }
     }
 
+    private void setSpells(NbtCompound fisherTag){
+        NbtList spellListTag = fisherTag.getList("spells", NbtElement.COMPOUND_TYPE);
+        for(int i = 0; i < spellListTag.size(); i++) {
+            NbtCompound spellTag = spellListTag.getCompound(i);
+            String perkName = spellTag.getString("key");
+            long nextCast = spellTag.getLong("nextCast");
+            Optional<FishingPerk> optionalPerk = FishingPerks.getPerkFromName(perkName);
+            if (optionalPerk.isEmpty()) continue;
+            FishingPerk fishingPerk = optionalPerk.get();
+            SpellInstance spellInstance = SpellInstance.getSpellInstance(fishingPerk, nextCast);
+            spells.put(fishingPerk, spellInstance);
+        }
+    }
+
     public void writeNbt(NbtCompound playerTag){
         playerTag.put(TAG, toNbt());
     }
@@ -87,6 +106,14 @@ public class FisherInfo {
             perkListTag.add(NbtString.of(fishingPerkName));
         });
         fisherTag.put("perks", perkListTag);
+        NbtList spellListTag = new NbtList();
+        for(SpellInstance spellInstance : spells.values()) {
+            NbtCompound spellTag = new NbtCompound();
+            spellTag.putString("key", spellInstance.getKey());
+            spellTag.putLong("nextCast", spellInstance.getNextCast());
+            spellListTag.add(spellTag);
+        }
+        fisherTag.put("spells", spellListTag);
         return fisherTag;
     }
 
@@ -121,6 +148,9 @@ public class FisherInfo {
         if (availablePerk(perk) && hasSkillPoints()) {
             perk.onEarn(fisher);
             this.perks.put(perk.getName(), perk);
+            if (Spells.perkHasSpell(perk)) {
+                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
+            }
             skillPoints--;
             updateDataTracker();
         }

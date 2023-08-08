@@ -9,6 +9,7 @@
     "WanderingTraderEntityMixin"
   ],
   "client": [
+    "InGameHudMixin",
     "LivingEntityMixin"
   ],
   "server": [

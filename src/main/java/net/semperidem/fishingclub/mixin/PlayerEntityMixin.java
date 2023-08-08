@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends Entity {
-
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void onInitDataTracker(CallbackInfo ci){
         dataTracker.startTracking(FisherInfo.TRACKED_DATA, new FisherInfo((PlayerEntity) (Object)this).toNbt());
@@ -35,9 +34,6 @@ public class PlayerEntityMixin extends Entity {
         NbtCompound fisherTag = dataTracker.get(FisherInfo.TRACKED_DATA);
         nbtCompound.put(FisherInfo.TAG, fisherTag);
     }
-
-
-
 
 
 
