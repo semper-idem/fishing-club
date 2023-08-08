@@ -7,7 +7,10 @@
   },
   "rewards": {
     "recipes": [
-      "fishing-club:fishing_net"
+      "fishing-club:hook_copper",
+      "fishing-club:hook_iron",
+      "fishing-club:hook_gold",
+      "fishing-club:hook_netherite"
     ]
   }
 }

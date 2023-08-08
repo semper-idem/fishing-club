@@ -7,7 +7,9 @@
   },
   "rewards": {
     "recipes": [
-      "fishing-club:fishing_net"
+      "fishing-club:bait_crafted",
+      "fishing-club:bait_feather",
+      "fishing-club:bait_magnet"
     ]
   }
 }

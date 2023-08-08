@@ -1,17 +1,5 @@
 {
   "parent": "minecraft:story/root",
-  "display": {
-    "icon": {
-      "item": "fishing-club:double_fishing_net"
-    },
-    "title": "unlock_double_fishing_net",
-    "description": "unlock_double_fishing_net.description",
-    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
-    "frame": "goal",
-    "show_toast": false,
-    "announce_to_chat": false,
-    "hidden": true
-  },
   "criteria": {
     "impossible": {
       "trigger": "minecraft:impossible"

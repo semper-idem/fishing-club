@@ -1,0 +1,18 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "fishing-club:bobber_plant",
+      "fishing-club:bobber_ancient",
+      "fishing-club:bobber_wooden",
+      "fishing-club:line_fiber_thread",
+      "fishing-club:line_spider_silk",
+      "fishing-club:line_wool_thread"
+    ]
+  }
+}
