@@ -33,7 +33,7 @@ import net.semperidem.fishingclub.util.FishingRodUtil;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
-    private static final int MIN_WAIT = 20;
+    private static final int MIN_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
     private final Random velocityRandom = Random.create();
@@ -197,7 +197,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private void handleFishOnHook(ServerWorld serverWorld){
         float fishTypeRarityMultiplier = 1;
         if (fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
-            fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 320, 0, 0.2);
+            fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
         caughtFish = FishUtil.getFishOnHook(fisherInfo, fishingRod, fishTypeRarityMultiplier);
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
@@ -278,16 +278,21 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     private void setWaitCountdown() {
-        float catchRate = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
+        float catchRate;
+        float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
         if (FishUtil.hasFishingHat(this.getPlayerOwner())) {
-            catchRate += 0.15f;
+            catchRateReduction += 0.15f;
             if (!FishUtil.hasNonFishingEquipment(this.getPlayerOwner())) {
-                catchRate += 0.15f;
+                catchRateReduction += 0.15f;
             }
         }
-        int minWait = (int) (MIN_WAIT * Math.max(0.4f,(1 - catchRate)));
+        catchRate = Math.max(0.4f,(1 - catchRateReduction));
+        if (power > 1) {
+            catchRate /= MathHelper.clamp((128 - this.distanceTraveled) / 128 ,0.5, 1);
+        }
+        int minWait = (int) (MIN_WAIT * catchRate);
         int maxWait = minWait * 2;
-        this.waitCountdown = MathHelper.nextInt(this.random, minWait, maxWait);
+        this.waitCountdown = 20;//MathHelper.nextInt(this.random, minWait, maxWait);
     }
 
 
@@ -354,7 +359,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if ((hookCountdown > 0)){
             int reactionBonus = calculateReactionBonus();
             caughtFish.experience += reactionBonus;
-            this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
+            if (reactionBonus > 0) this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
+
             ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish, boatFishing);
         }
         if (this.onGround) {

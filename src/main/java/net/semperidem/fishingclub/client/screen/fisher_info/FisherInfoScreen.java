@@ -8,10 +8,10 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -49,7 +49,6 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private static final String sDiv = "_____________";
     private static final String labelFormatter = "§6§l";
 
-    private final FisherInfo clientInfo;
     private String name;
     private String level;
     private String exp;
@@ -57,7 +56,6 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private String skillPoints;
     private boolean hasSkillPoints;
 
-    private FishingPerk rootPerk;
     private FishingPerk selectedPerk;
 
     private int selectedPerkX;
@@ -85,7 +83,6 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     public FisherInfoScreen(FisherInfoScreenHandler fisherInfoScreenHandler, PlayerInventory playerInventory, Text text) {
         super(fisherInfoScreenHandler, playerInventory, text);
         this.client = MinecraftClient.getInstance();
-        this.clientInfo = this.getScreenHandler().fisherInfo;
         updateData();
         addButtons();
         BACKGROUND = BACKGROUND_INV;
@@ -93,11 +90,11 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private void updateData(){
         this.name = this.client.player.getName().getString();
-        this.level = String.valueOf(clientInfo.getLevel());
-        this.exp = clientInfo.getExp() + "/" + clientInfo.nextLevelXP();
-        this.credit = String.valueOf(clientInfo.getCredit());
-        this.hasSkillPoints = clientInfo.hasSkillPoints();
-        this.skillPoints = String.valueOf(clientInfo.getSkillPoints());
+        this.level = String.valueOf(this.getScreenHandler().fisherInfo.getLevel());
+        this.exp = this.getScreenHandler().fisherInfo.getExp() + "/" + this.getScreenHandler().fisherInfo.nextLevelXP();
+        this.credit = String.valueOf(this.getScreenHandler().fisherInfo.getCredit());
+        this.hasSkillPoints = this.getScreenHandler().fisherInfo.hasSkillPoints();
+        this.skillPoints = String.valueOf(this.getScreenHandler().fisherInfo.getSkillPoints());
     }
 
     public static void openScreen(PlayerEntity player){
@@ -143,7 +140,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         infoButton.active = false;
         unlockButton.visible = false;
         selectedPerk = null;
-        rootPerk = null;
+        this.handler.rootPerk = null;
         clearPerkButtons();
     }
 
@@ -193,7 +190,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         return button -> {
             BACKGROUND = BACKGROUND_SKILL;
             this.handler.removePlayerInventorySlots();
-            rootPerk = fishingPerk;
+            this.handler.rootPerk = fishingPerk;
             lockClicked(button);
             addPerks();
         };
@@ -212,8 +209,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            if (!clientInfo.availablePerk(selectedPerk) || clientInfo.hasPerk(selectedPerk)) return;
-            clientInfo.addPerk(selectedPerk.getName());
+            if (!this.getScreenHandler().fisherInfo.availablePerk(selectedPerk) || this.getScreenHandler().fisherInfo.hasPerk(selectedPerk)) return;
+            this.getScreenHandler().fisherInfo.addPerk(selectedPerk.getName());
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
         };
@@ -274,8 +271,18 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         renderFisherInfo(matrices);
         renderSelectedPerk(matrices);
         renderTooltip(matrices, mouseX, mouseY);
+        renderSlotDisabled(matrices);
     }
 
+
+    private void renderSlotDisabled(MatrixStack matrices){
+        if (this.handler.rootPerk != null) return;
+        for(Slot slot : this.handler.slots) {
+            if (!(slot instanceof FisherInfoScreenHandler.FisherSlot)) continue;
+            if (slot.isEnabled()) continue;;
+            fill(matrices, x + slot.x, y + slot.y, x + slot.x+16, y + slot.y+ 16, 0x55000000);
+        }
+    }
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         renderBackground(matrices);
@@ -326,11 +333,11 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private void addPerks(){
         clearPerkButtons();
-        if (this.rootPerk == null || !this.rootPerk.hasChildren()) {
+        if (this.handler.rootPerk == null || !this.handler.rootPerk.hasChildren()) {
             return;
         }
 
-        ArrayList<FishingPerk> children = this.rootPerk.getChildren();
+        ArrayList<FishingPerk> children = this.handler.rootPerk.getChildren();
         int childY = 0;
         for(FishingPerk child : children) {
             addPerk(child, perksX, perksY + childY);
@@ -349,7 +356,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
             selectedPerk = fishingPerk;
             selectedPerkX = button.x;
             selectedPerkY = button.y;
-            unlockButton.visible = clientInfo.availablePerk(fishingPerk) && !clientInfo.hasPerk(fishingPerk) && clientInfo.hasSkillPoints();
+            unlockButton.visible = this.getScreenHandler().fisherInfo.availablePerk(fishingPerk) && !this.getScreenHandler().fisherInfo.hasPerk(fishingPerk) && this.getScreenHandler().fisherInfo.hasSkillPoints();
             updateData();
         };
     }
@@ -377,8 +384,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         }
 
         private void renderBackground(MatrixStack matrices){
-            boolean hasPerk = clientInfo.hasPerk(fishingPerk);
-            boolean isAvailable = clientInfo.availablePerk(fishingPerk);
+            boolean hasPerk = getScreenHandler().fisherInfo.hasPerk(fishingPerk);
+            boolean isAvailable = getScreenHandler().fisherInfo.availablePerk(fishingPerk);
             if (hasPerk) {
                 RenderSystem.setShaderColor(0.5f,1,0.5f,1);
             }

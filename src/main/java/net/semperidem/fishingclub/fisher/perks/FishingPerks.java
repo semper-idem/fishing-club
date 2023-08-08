@@ -23,7 +23,8 @@ public class FishingPerks {
             ).withDetailedDesc(
                     "Charge rod cast to throw bobber further \n" +
                     "which increases rarity of fish type by up to\n" +
-                    "20% at 64 blocks (doesn't include height)"
+                    "100% at 64 blocks (doesn't include height)\n" +
+                    "This also decreases catch-rate by up to 50%"
             ).withIcon("bobber_throw_charge.png");
 
     //H - UTIL
@@ -53,7 +54,7 @@ public class FishingPerks {
     //H - Boat
     public static FishingPerk BOAT_BOBBER_SIZE = FishingPerk
             .createPerk("boat_bobber_size", ROOT_HOBBYIST)
-            .withLabel("Boat it")
+            .withLabel("Immersive fishing")
             .withDescription("Increases bobber size by 10% when in boat")
             .withDetailedDesc(
                     "Your bobber grows in size while fishing from a boat,\n" +
@@ -122,11 +123,11 @@ public class FishingPerks {
     //H - MISC
     public static FishingPerk BAIT_CRAFTING = FishingPerk
             .createPerk("bait_crafting", ROOT_HOBBYIST)
-            .withLabel("Bait master")
+            .withLabel("Bait crafting")
             .withDescription("Unlock recipes for all baits")
             .withDetailedDesc(
                     "Unlock recipe and ability to craft\n" +
-                    "all baits")
+                    "all craftable baits")
             .withIcon("bait.png")
             .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("bait")));
 
@@ -136,7 +137,7 @@ public class FishingPerks {
             .withDescription("Unlock recipes for all hooks")
             .withDetailedDesc(
                     "Unlock recipe and ability to craft\n" +
-                            "all hooks")
+                    "all hooks")
             .withIcon("hook.png")
             .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("hook")));
 
@@ -182,20 +183,25 @@ public class FishingPerks {
     public static FishingPerk FISHING_ROD_SLOT = FishingPerk
             .createPerk("fishing_rod_slot", ROOT_OPPORTUNIST)
             .withLabel("This one goes straight to my heart")
-            .withDescription("Unlock extra inventory slot dedicated for fishing rod")
-            .withDetailedDesc("silly");
-
-    public static FishingPerk NET_SLOT_UNLOCK = FishingPerk
-            .createPerk("net_slot_unlock", FISHING_ROD_SLOT)
-            .withLabel("Fishing Net Slot")
-            .withDescription("Unlock a slot for your fishing net")
-            .withDetailedDesc("You can now carry a fishing net in your dedicated slot.");
+            .withDescription("Unlock fishing rod slot")
+            .withDetailedDesc("Unlock extra inventory slot dedicated\n" +
+                    "for fishing rod")
+            .withIcon("fishing_rod.png");
 
     public static FishingPerk BOAT_SLOT = FishingPerk
-            .createPerk("boat_slot", NET_SLOT_UNLOCK)
-            .withLabel("Boat Slot")
-            .withDescription("Unlock a slot for your boat")
-            .withDetailedDesc("Unlock a slot specifically for your boat, providing more space for other items.");
+            .createPerk("boat_slot", FISHING_ROD_SLOT)
+            .withLabel("Mobilization")
+            .withDescription("Unlock boat slot")
+            .withDetailedDesc("Unlock extra inventory slot dedicated for boat")
+            .withIcon("oak_boat.png");
+
+    public static FishingPerk NET_SLOT_UNLOCK = FishingPerk
+            .createPerk("net_slot_unlock", BOAT_SLOT)
+            .withLabel("No fish left behind")
+            .withDescription("Unlock 2 slots for your fishing net")
+            .withDetailedDesc("Unlock 2 extra inventory slots dedicated for\n" +
+                    "fishing nets")
+            .withIcon("fishing_net.png");
 
     //O - Rain
     public static FishingPerk RAINY_FISH = FishingPerk

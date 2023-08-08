@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.client.screen.fisher_info;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BoatItem;
@@ -12,6 +13,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
@@ -31,6 +33,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     private NbtCompound lastSavedNbt;
 
     FisherInfo fisherInfo;
+    FishingPerk rootPerk;
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory, new FisherInfo(playerInventory.player));
@@ -62,28 +65,30 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addSlot(new Slot(fisherInventory, 0, 25, 199){
+        addSlot(new FisherSlot(fisherInventory, 0, 25, 199, FishingPerks.FISHING_ROD_SLOT){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof FishingRodItem;
+                return fisherInfo.hasPerk(FishingPerks.FISHING_ROD_SLOT) && stack.getItem() instanceof FishingRodItem;
+            }
+
+        });
+        addSlot(new FisherSlot(fisherInventory, 1, 55, 199, FishingPerks.BOAT_SLOT){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return fisherInfo.hasPerk(FishingPerks.BOAT_SLOT) && stack.getItem() instanceof BoatItem;
+            }
+
+        });
+        addSlot(new FisherSlot(fisherInventory, 2, 25, 229, FishingPerks.NET_SLOT_UNLOCK){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return fisherInfo.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
             }
         });
-        addSlot(new Slot(fisherInventory, 1, 55, 199){
+        addSlot(new FisherSlot(fisherInventory, 3, 55, 229, FishingPerks.NET_SLOT_UNLOCK){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof BoatItem;
-            }
-        });
-        addSlot(new Slot(fisherInventory, 2, 25, 229){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.FISHING_NET) && stack.getItem() instanceof FishingNetItem;
-            }
-        });
-        addSlot(new Slot(fisherInventory, 3, 55, 229){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.UPGRADE_NET) && stack.getItem() instanceof FishingNetItem;
+                return fisherInfo.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
             }
         });
     }
@@ -149,5 +154,19 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             slot.onTakeItem(player, itemStackInSlot);
         }
         return itemStackCopy;
+    }
+
+    class FisherSlot extends Slot{
+        FishingPerk requiredPerk;
+        public FisherSlot(Inventory inventory, int index, int x, int y, FishingPerk requiredPerk) {
+            super(inventory, index, x, y);
+            this.requiredPerk = requiredPerk;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return rootPerk == null && fisherInfo.hasPerk(requiredPerk);
+        }
+
     }
 }

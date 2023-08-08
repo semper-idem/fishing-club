@@ -19,10 +19,7 @@ import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 
 public class FishUtil {
     public static final Item FISH_ITEM = Items.TROPICAL_FISH;
@@ -170,18 +167,11 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier){
-        return new Fish(FishTypes.COD, fisherInfo, fishingRod);
-        /*
 
+    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<FishType> availableFish = new ArrayList<>();
-        for (FishType fishType : FishType.allFishTypes.values()) {
-            if (fisherInfo.getLevel() > fishType.fishMinLevel) {
-                availableFish.add(fishType);
-            }
-        }
+        ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fisherInfo);
         for (FishType fishType : availableFish) {
             totalRarity += fishType.fishRarity;
             fishTypeToThreshold.put(fishType, totalRarity);
@@ -192,8 +182,7 @@ public class FishUtil {
                 return new Fish(fishType, fisherInfo, fishingRod);
             }
         }
-        return new Fish(availableFish.get(0), fisherInfo, fishingRod);
-         */
+        return new Fish(FishTypes.COD, fisherInfo, fishingRod);
     }
 
 
@@ -320,7 +309,7 @@ public class FishUtil {
     static Fish fromNbt(NbtCompound nbtCompound){
         Fish fish = new Fish();
         fish.name = nbtCompound.getString("name");
-        fish.setFishType(FishType.allFishTypes.get(fish.name));
+        fish.setFishType(FishTypes.ALL_FISH_TYPES.get(fish.name));
         fish.grade = nbtCompound.getInt("grade");
         fish.fishLevel = nbtCompound.getInt("fishLevel");
         fish.experience = nbtCompound.getInt("experience");
