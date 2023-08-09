@@ -15,6 +15,12 @@ public class SpellListWidget{
     public static ArrayList<SpellInstance> availableSpells = new ArrayList<>();
     private static FisherInfo fisherInfo;
     public static boolean pressed = false;
+    float xPercent = 0.55f;
+    float yPercent = 0.55f;
+    private static long animationTimeStart = 0;
+    float minScale = 0.85f;
+    private static final long animationTimeInMilis = 250;
+    private static final int spaceBetween = 15;
 
     public static void updateFisherInfo(FisherInfo newFisherInfo){
         if (pressed) return;
@@ -31,14 +37,31 @@ public class SpellListWidget{
         pressed = true;
     }
     public void render(MatrixStack matrices, float tickDelta){
+        if(selectedSpell == null) return;
         if (!FKeybindingRegistry.SPELL_SELECT_KB.isPressed()){
             pressed = false;
             return;
         }
-        if(selectedSpell == null) return;
-        renderSpell(matrices, prevSpell(selectedSpellIndex), 100, 20, Color.WHITE.getRGB());
-        renderSpell(matrices, selectedSpell, 100, 40, Color.RED.getRGB());
-        renderSpell(matrices, nextSpell(selectedSpellIndex), 100, 60, Color.WHITE.getRGB());
+        int x = (int) (MinecraftClient.getInstance().getWindow().getScaledWidth() * xPercent);
+        int y = (int) (MinecraftClient.getInstance().getWindow().getScaledHeight() * yPercent);
+        matrices.push();
+        matrices.scale(minScale, minScale, minScale);
+        int scaledX = (int) (x / (minScale));
+        int scaledYPrev = (int) ((y - spaceBetween) / minScale);
+        int scaledYNext = (int) ((y + spaceBetween) / minScale);
+        renderSpell(matrices, prevSpell(selectedSpellIndex), scaledX, scaledYPrev, Color.WHITE.getRGB());
+        renderSpell(matrices, nextSpell(selectedSpellIndex), scaledX, scaledYNext, Color.WHITE.getRGB());
+        matrices.pop();
+        matrices.push();
+        long animationTime = System.currentTimeMillis() - animationTimeStart;
+        float animationTimePercent = Math.min(1, animationTime / (animationTimeInMilis * 1f));
+        float scale = 1 - (0.2f * (1 - animationTimePercent));
+        matrices.scale(scale, scale, scale);
+        scaledX = (int) ((int) ((x) / (scale)) + 3 * animationTimePercent);
+        int scaledY = (int) ((int) ((y) / (scale)) - 2 * animationTimePercent);
+        renderSpell(matrices, selectedSpell, scaledX, scaledY, Color.RED.getRGB());
+        matrices.pop();
+        animationTimeStart++;
     }
 
 
@@ -99,5 +122,6 @@ public class SpellListWidget{
         }
         selectedSpell = availableSpells.get(index);
         selectedSpellIndex = index;
+        animationTimeStart = System.currentTimeMillis();
     }
 }
