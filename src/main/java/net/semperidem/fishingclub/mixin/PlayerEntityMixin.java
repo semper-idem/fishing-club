@@ -36,7 +36,6 @@ public class PlayerEntityMixin extends Entity {
     }
 
 
-
     public PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }

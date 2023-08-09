@@ -15,6 +15,7 @@ import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -48,6 +49,14 @@ public class FisherInfo {
         if (!trackerInitialized(playerEntity)) return;
 
         NbtCompound fisherTag = playerEntity.getDataTracker().get(TRACKED_DATA);
+        fromNbt(fisherTag);
+    }
+
+    public FisherInfo(NbtCompound fisherTag) {
+        fromNbt(fisherTag);
+    }
+
+    private void fromNbt(NbtCompound fisherTag){
         this.level = fisherTag.getInt("level");
         this.exp = fisherTag.getInt("exp");
         this.credit = fisherTag.getInt("credit");
@@ -88,6 +97,10 @@ public class FisherInfo {
             SpellInstance spellInstance = SpellInstance.getSpellInstance(fishingPerk, nextCast);
             spells.put(fishingPerk, spellInstance);
         }
+    }
+
+    public Collection<SpellInstance> getSpells(){
+        return this.spells.values();
     }
 
     public void writeNbt(NbtCompound playerTag){
@@ -182,6 +195,13 @@ public class FisherInfo {
         updateDataTracker();
     }
 
+    public void useSpell(FishingPerk fishingPerk){
+        if (!perks.containsKey(fishingPerk.getName())) return;
+        SpellInstance spellInstance = spells.get(fishingPerk);
+        spellInstance.use(fisher);
+        spells.put(fishingPerk, spellInstance);
+        updateDataTracker();
+    }
 
     void removePerk(String perkName){
         if (!this.perks.containsKey(perkName)) return;

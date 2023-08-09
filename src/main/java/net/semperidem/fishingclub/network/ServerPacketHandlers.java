@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -65,7 +66,14 @@ public class ServerPacketHandlers {
         });
     }
 
-
-
+    public static void handleSpellCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        String perkName = buf.readString();
+        FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
+            if (!Spells.perkHasSpell(perk)) return;
+            server.execute(() -> {
+                FisherInfoManager.getFisher(player).useSpell(perk);
+            });
+        });
+    }
 
 }

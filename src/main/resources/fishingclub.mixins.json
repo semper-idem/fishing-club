@@ -10,7 +10,8 @@
   ],
   "client": [
     "InGameHudMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "MouseMixin"
   ],
   "server": [
   ],

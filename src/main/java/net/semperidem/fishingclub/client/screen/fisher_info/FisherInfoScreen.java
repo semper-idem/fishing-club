@@ -12,6 +12,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -211,6 +212,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         return button -> {
             if (!this.getScreenHandler().fisherInfo.availablePerk(selectedPerk) || this.getScreenHandler().fisherInfo.hasPerk(selectedPerk)) return;
             this.getScreenHandler().fisherInfo.addPerk(selectedPerk.getName());
+            SpellListWidget.updateFisherInfo(this.getScreenHandler().fisherInfo);
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
         };

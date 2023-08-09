@@ -17,7 +17,7 @@ public class SpellInstance {
         return new SpellInstance(fishingPerk, nextCast);
     }
 
-    void use(PlayerEntity playerEntity){
+    public void use(PlayerEntity playerEntity){
         long worldTime = playerEntity.world.getTime();
         if (worldTime < nextAvailableCastTime) return;
         this.nextAvailableCastTime = worldTime + spell.cooldown;

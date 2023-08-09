@@ -12,5 +12,6 @@ public class PacketIdentifiers {
     public static final Identifier C2S_F_INFO_OPEN = getIdentifier("c2s_f_info_open");
     public static final Identifier C2S_F_SHOP_SELL = getIdentifier("c2s_f_shop_sell");
     public static final Identifier C2S_F_SHOP_BUY = getIdentifier("c2s_f_shop_buy");
+    public static final Identifier C2S_CAST_SPELL = getIdentifier("c2s_cast_spell");
 
 }
