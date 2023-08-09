@@ -36,6 +36,10 @@ public class SpellInstance {
         return spell.requiredPerk.getName();
     }
 
+    public String getLabel(){
+        return spell.requiredPerk.getLabel();
+    }
+
     public long getNextCast(){
         return nextPossibleCastTime;
     }

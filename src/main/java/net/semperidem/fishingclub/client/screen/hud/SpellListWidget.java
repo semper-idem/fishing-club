@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -20,7 +21,8 @@ public class SpellListWidget{
     private static long animationTimeStart = 0;
     float minScale = 0.85f;
     private static final long animationTimeInMilis = 250;
-    private static final int spaceBetween = 15;
+    private static final int spaceBetween = 16;
+    private static final int entryWidth = 150;
 
     public static void updateFisherInfo(FisherInfo newFisherInfo){
         fisherInfo = newFisherInfo;
@@ -44,30 +46,21 @@ public class SpellListWidget{
         }
         int x = (int) (MinecraftClient.getInstance().getWindow().getScaledWidth() * xPercent);
         int y = (int) (MinecraftClient.getInstance().getWindow().getScaledHeight() * yPercent);
-        matrices.push();
-        matrices.scale(minScale, minScale, minScale);
-        int scaledX = (int) (x / (minScale));
-        int scaledYPrev = (int) ((y - spaceBetween) / minScale);
-        int scaledYNext = (int) ((y + spaceBetween) / minScale);
-        renderSpell(matrices, prevSpell(selectedSpellIndex), scaledX, scaledYPrev, Color.WHITE.getRGB());
-        renderSpell(matrices, nextSpell(selectedSpellIndex), scaledX, scaledYNext, Color.WHITE.getRGB());
-        matrices.pop();
-        matrices.push();
-        long animationTime = System.currentTimeMillis() - animationTimeStart;
-        float animationTimePercent = Math.min(1, animationTime / (animationTimeInMilis * 1f));
-        float scale = 1 - (0.2f * (1 - animationTimePercent));
-        matrices.scale(scale, scale, scale);
-        scaledX = (int) ((int) ((x) / (scale)) + 3 * animationTimePercent);
-        int scaledY = (int) ((int) ((y) / (scale)) - 2 * animationTimePercent);
-        renderSpell(matrices, selectedSpell, scaledX, scaledY, Color.RED.getRGB());
+        renderSpell(matrices, prevSpell(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+        renderSpell(matrices, selectedSpell, x, y, Color.WHITE.getRGB(), 0x99000000);
+        renderSpell(matrices, nextSpell(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         matrices.pop();
         animationTimeStart++;
     }
 
 
-    private void renderSpell(MatrixStack matrixStack, SpellInstance spell, int x, int y, int color){
-        String text = spell.getKey() + " " + getCooldownString(spell);
-        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, text , x,y, color);
+    private void renderSpell(MatrixStack matrixStack, SpellInstance spell, int x, int y, int color, int bgColor){
+        String spellName = spell.getLabel();
+        String spellCd = getCooldownString(spell);
+        int spellCdLen = MinecraftClient.getInstance().textRenderer.getWidth(spellCd);
+        DrawableHelper.fill(matrixStack, x - 4, y - 4, x + entryWidth, y + 12, bgColor);
+        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellName , x,y, color);
+        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellCd , x + entryWidth - spellCdLen - 4,y, color);
 
     }
 
@@ -77,19 +70,17 @@ public class SpellListWidget{
 
     private String getCooldownString(SpellInstance spellInstance){
         int cdTimer = getCooldown(spellInstance);
-        String result = "CD: [";
+        String result = "";
         int cdSeconds = cdTimer / 20;
         int hours = cdSeconds / 3600;
         int minutes = (cdSeconds % 3600) / 60;
         int seconds = cdSeconds % 60;
         if (hours > 0) {
-            result += String.format("%02d:%02d:%02d", hours, minutes, seconds) + "]";
+            result += String.format("[%02dh %02dm %02ds]", hours, minutes, seconds);
         } else if (minutes > 0){
-            result += String.format("%02d:%02d", minutes, seconds) + "]";
+            result += String.format("[%02dm %02ds]", minutes, seconds);
         } else if (seconds > 0){
-            result += String.format("%02d", seconds) + "]";
-        } else {
-            result = "";
+            result += String.format("[%02ds]", seconds);
         }
         return result;
     }
