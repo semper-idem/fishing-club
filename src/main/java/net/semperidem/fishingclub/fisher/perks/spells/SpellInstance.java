@@ -5,22 +5,30 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 
 public class SpellInstance {
     final Spell spell;
-    long nextAvailableCastTime;
+    int cooldown;
+    long nextPossibleCastTime;
 
-    private SpellInstance(FishingPerk fishingPerk,long nextCast){
+
+    private SpellInstance(FishingPerk fishingPerk,int cooldown, long nextPossibleCastTime){
         this.spell = Spells.getSpellFromPerk(fishingPerk);
-        this.nextAvailableCastTime = nextCast;
+        this.cooldown = cooldown;
+        this.nextPossibleCastTime = nextPossibleCastTime;
     }
 
-    public static SpellInstance getSpellInstance(FishingPerk fishingPerk, long nextCast){
+    public static SpellInstance getSpellInstance(FishingPerk fishingPerk,int cooldown, long nextPossibleCastTime){
         if (!Spells.perkHasSpell(fishingPerk)) return null;
-        return new SpellInstance(fishingPerk, nextCast);
+        return new SpellInstance(fishingPerk, cooldown, nextPossibleCastTime);
+    }
+
+    public void tick(){
+        if (this.cooldown == 0) return;
+        this.cooldown--;
     }
 
     public void use(PlayerEntity playerEntity){
-        long worldTime = playerEntity.world.getTime();
-        if (worldTime < nextAvailableCastTime) return;
-        this.nextAvailableCastTime = worldTime + spell.cooldown;
+        if (cooldown > 0) return;
+        this.cooldown = spell.cooldown;
+        this.nextPossibleCastTime = playerEntity.world.getTime() + cooldown;
         spell.effect.cast(playerEntity);
     }
 
@@ -29,6 +37,9 @@ public class SpellInstance {
     }
 
     public long getNextCast(){
-        return this.nextAvailableCastTime;
+        return nextPossibleCastTime;
+    }
+    public int getCooldown(){
+        return cooldown;
     }
 }

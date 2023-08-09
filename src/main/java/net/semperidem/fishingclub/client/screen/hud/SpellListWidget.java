@@ -23,7 +23,6 @@ public class SpellListWidget{
     private static final int spaceBetween = 15;
 
     public static void updateFisherInfo(FisherInfo newFisherInfo){
-        if (pressed) return;
         fisherInfo = newFisherInfo;
         availableSpells.clear();
         availableSpells.addAll(fisherInfo.getSpells());
@@ -33,6 +32,7 @@ public class SpellListWidget{
     }
 
     public static void stickPress(FisherInfo newFisherInfo){
+        if (pressed) return;
         updateFisherInfo(newFisherInfo);
         pressed = true;
     }

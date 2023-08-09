@@ -56,6 +56,12 @@ public class FisherInfo {
         fromNbt(fisherTag);
     }
 
+    public void tick(){
+        for(SpellInstance spellInstance : spells.values()) {
+            spellInstance.tick();
+        }
+        updateDataTracker();
+    }
     private void fromNbt(NbtCompound fisherTag){
         this.level = fisherTag.getInt("level");
         this.exp = fisherTag.getInt("exp");
@@ -90,11 +96,12 @@ public class FisherInfo {
         for(int i = 0; i < spellListTag.size(); i++) {
             NbtCompound spellTag = spellListTag.getCompound(i);
             String perkName = spellTag.getString("key");
+            int cooldown = spellTag.getInt("cooldown");
             long nextCast = spellTag.getLong("nextCast");
             Optional<FishingPerk> optionalPerk = FishingPerks.getPerkFromName(perkName);
             if (optionalPerk.isEmpty()) continue;
             FishingPerk fishingPerk = optionalPerk.get();
-            SpellInstance spellInstance = SpellInstance.getSpellInstance(fishingPerk, nextCast);
+            SpellInstance spellInstance = SpellInstance.getSpellInstance(fishingPerk, cooldown, nextCast);
             spells.put(fishingPerk, spellInstance);
         }
     }
@@ -123,6 +130,7 @@ public class FisherInfo {
         for(SpellInstance spellInstance : spells.values()) {
             NbtCompound spellTag = new NbtCompound();
             spellTag.putString("key", spellInstance.getKey());
+            spellTag.putInt("cooldown", spellInstance.getCooldown());
             spellTag.putLong("nextCast", spellInstance.getNextCast());
             spellListTag.add(spellTag);
         }
@@ -162,7 +170,7 @@ public class FisherInfo {
             perk.onEarn(fisher);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
+                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, fisher.world.getTime()));
             }
             skillPoints--;
             updateDataTracker();
