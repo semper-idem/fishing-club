@@ -7,7 +7,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import org.jetbrains.annotations.Nullable;
 
 public class FisherInfoScreenFactory implements ExtendedScreenHandlerFactory {
@@ -21,6 +20,6 @@ public class FisherInfoScreenFactory implements ExtendedScreenHandlerFactory {
     }
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FisherInfoScreenHandler(syncId, inv, FisherInfoManager.getFisher(player));
+        return new FisherInfoScreenHandler(syncId, inv);
     }
 }

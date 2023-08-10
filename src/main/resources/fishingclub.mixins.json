@@ -6,6 +6,7 @@
   "mixins": [
     "CraftingResultInventoryMixin",
     "PlayerEntityMixin",
+    "PlayerManagerMixin",
     "WanderingTraderEntityMixin"
   ],
   "client": [

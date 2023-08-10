@@ -4,12 +4,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.game.treasure.Reward;
 import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -74,7 +74,7 @@ public class FishGameLogic {
 
     public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
         this.player = player;
-        this.fisherInfo = FisherInfoManager.getFisher(player);
+        this.fisherInfo = FishingClubClient.CLIENT_INFO;
         this.fish = fish;
         this.caughtUsing = caughtUsing;
         this.boatFishing = boatFishing;

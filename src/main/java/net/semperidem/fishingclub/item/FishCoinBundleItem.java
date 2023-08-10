@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -31,7 +32,7 @@ public class FishCoinBundleItem extends Item {
             value = bundleStackTag.getInt("value");
         }
         if (!user.world.isClient) {
-            FisherInfoManager.addCredit(user, value);
+            FisherInfoManager.addCredit((ServerPlayerEntity) user, value);
         } else {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);
         }

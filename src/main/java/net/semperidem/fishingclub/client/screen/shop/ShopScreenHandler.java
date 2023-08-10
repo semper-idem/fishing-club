@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
@@ -33,7 +34,7 @@ public class ShopScreenHandler extends ScreenHandler {
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fisherInfo = FisherInfoManager.getFisher(player);
+        this.fisherInfo = FishingClubClient.CLIENT_INFO;
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();
         addPlayerInventory(player.getInventory());

@@ -6,6 +6,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -14,6 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
@@ -96,7 +98,7 @@ public class CustomFishingRod extends FishingRodItem {
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
         int power = FishingRodUtil.getPower(getMaxUseTime(stack) - remainingUseTicks);
-        castHook(world, (PlayerEntity) user, power, stack, FisherInfoManager.getFisher((PlayerEntity) user));
+        castHook(world, (PlayerEntity) user, power, stack);
     }
 
     @Override
@@ -109,11 +111,11 @@ public class CustomFishingRod extends FishingRodItem {
         return 1200;
     }
 
-    private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod, FisherInfo fisherInfo){
+    private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod){
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
             boolean boatFishing = user.getVehicle() instanceof BoatEntity;
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, fisherInfo, boatFishing));
+            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, FisherInfoManager.getFisher((ServerPlayerEntity) user), boatFishing));
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -127,9 +129,9 @@ public class CustomFishingRod extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        FisherInfo fisherInfo = FisherInfoManager.getFisher(user);
+        FisherInfo fisherInfo = world.isClient ? FishingClubClient.CLIENT_INFO : FisherInfoManager.getFisher((ServerPlayerEntity) user);
         if (!fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
-            castHook(world, user, 1, fishingRod, fisherInfo);
+            castHook(world, user, 1, fishingRod);
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

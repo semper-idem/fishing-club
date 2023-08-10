@@ -8,41 +8,35 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends Entity {
+    @Unique
     FisherInfo fisherInfo;
-    @Inject(method = "initDataTracker", at = @At("TAIL"))
-    private void onInitDataTracker(CallbackInfo ci){
-        dataTracker.startTracking(FisherInfo.TRACKED_DATA, new FisherInfo((PlayerEntity) (Object)this).toNbt());
-    }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void readCustomDataFromNbt(NbtCompound nbtCompound, CallbackInfo ci){
-        if (nbtCompound.contains(FisherInfo.TAG)) {
-            dataTracker.set(FisherInfo.TRACKED_DATA, nbtCompound.getCompound(FisherInfo.TAG));
-            fisherInfo = new FisherInfo((PlayerEntity) (Object)this);
-        }
+        if (!nbtCompound.contains(FisherInfo.TAG)) return;
+        fisherInfo = new FisherInfo((PlayerEntity) (Object) this, nbtCompound.getCompound(FisherInfo.TAG));
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeCustomDataToNbt(NbtCompound nbtCompound, CallbackInfo ci){
-        NbtCompound fisherTag = dataTracker.get(FisherInfo.TRACKED_DATA);
-        nbtCompound.put(FisherInfo.TAG, fisherTag);
+        nbtCompound.put(FisherInfo.TAG, fisherInfo.toNbt());
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci){
-        if (fisherInfo == null) {
-            fisherInfo = new FisherInfo((PlayerEntity) (Object)this);
-            SpellListWidget.updateFisherInfo(fisherInfo);
+        if (fisherInfo == null && world.isClient){
+            fisherInfo = FishingClubClient.CLIENT_INFO;
         }
         fisherInfo.tick();
     }

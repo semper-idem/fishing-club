@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -36,13 +37,13 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     FishingPerk rootPerk;
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FisherInfo(playerInventory.player));
+        this(syncId, playerInventory);
     }
 
-    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, FisherInfo fisherInfo) {
+    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.FISHER_INFO_SCREEN, syncId);
         enableSyncing();
-        this.fisherInfo = fisherInfo;
+        this.fisherInfo = FishingClubClient.CLIENT_INFO;
         this.playerInventory = playerInventory;
         this.fisherInventory = fisherInfo.getFisherInventory();
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());

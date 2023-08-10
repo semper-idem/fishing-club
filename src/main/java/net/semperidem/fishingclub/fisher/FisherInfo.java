@@ -1,18 +1,18 @@
 package net.semperidem.fishingclub.fisher;
 
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.Collection;
@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class FisherInfo {
-    public static TrackedData<NbtCompound> TRACKED_DATA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     public static final String TAG = "fisher_info";
 
     private static final int BASE_EXP = 50;
@@ -44,12 +43,15 @@ public class FisherInfo {
         this.level = level;
     }
 
+    public FisherInfo(PlayerEntity playerEntity, NbtCompound fisherTag) {
+        this.fisher = playerEntity;
+        fromNbt(fisherTag);
+    }
     public FisherInfo(PlayerEntity playerEntity) {
         this.fisher = playerEntity;
-        if (!trackerInitialized(playerEntity)) return;
-
-        NbtCompound fisherTag = playerEntity.getDataTracker().get(TRACKED_DATA);
-        fromNbt(fisherTag);
+        NbtCompound playerCustomTag = new NbtCompound();
+        playerEntity.writeCustomDataToNbt(playerCustomTag);
+        fromNbt(playerCustomTag.getCompound(TAG));
     }
 
     public FisherInfo(NbtCompound fisherTag) {
@@ -60,9 +62,8 @@ public class FisherInfo {
         for(SpellInstance spellInstance : spells.values()) {
             spellInstance.tick();
         }
-        updateDataTracker();
     }
-    private void fromNbt(NbtCompound fisherTag){
+    public void fromNbt(NbtCompound fisherTag){
         this.level = fisherTag.getInt("level");
         this.exp = fisherTag.getInt("exp");
         this.credit = fisherTag.getInt("credit");
@@ -72,15 +73,12 @@ public class FisherInfo {
         setSpells(fisherTag);
     }
 
-    private boolean trackerInitialized(PlayerEntity playerEntity){
-        final boolean[] result = {false};
-        playerEntity.getDataTracker().getAllEntries().forEach(trackedData -> {
-            if (trackedData.getData() == TRACKED_DATA) result[0] = true;
-        });
-        return result[0];
+    public void setClientEntity(MinecraftClient client){
+        this.fisher = client.player;
     }
 
     private void setPerks(NbtCompound fisherTag){
+        this.perks.clear();
         NbtList perkListTag = fisherTag.getList("perks", NbtElement.STRING_TYPE);
         if (perkListTag.size() == 0) {
             initPerks();
@@ -92,6 +90,7 @@ public class FisherInfo {
     }
 
     private void setSpells(NbtCompound fisherTag){
+        this.spells.clear();
         NbtList spellListTag = fisherTag.getList("spells", NbtElement.COMPOUND_TYPE);
         for(int i = 0; i < spellListTag.size(); i++) {
             NbtCompound spellTag = spellListTag.getCompound(i);
@@ -156,9 +155,14 @@ public class FisherInfo {
         addRootPerk(FishingPerks.ROOT_SOCIALIST);
     }
 
-    private void updateDataTracker(){
+    private void syncFisherInfo(){
         if (this.fisher == null) return;
-        this.fisher.getDataTracker().set(TRACKED_DATA, toNbt());
+        if (!(this.fisher instanceof ServerPlayerEntity)) return;
+        NbtCompound playerCustomTag = new NbtCompound();
+        this.fisher.writeCustomDataToNbt(playerCustomTag);
+        playerCustomTag.put(TAG, toNbt());
+        this.fisher.readCustomDataFromNbt(playerCustomTag);
+        ServerPacketSender.sendFisherInfo((ServerPlayerEntity) this.fisher, this);
     }
 
     private void addRootPerk(FishingPerk perk){
@@ -173,7 +177,7 @@ public class FisherInfo {
                 this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, fisher.world.getTime()));
             }
             skillPoints--;
-            updateDataTracker();
+            syncFisherInfo();
         }
     }
 
@@ -187,7 +191,7 @@ public class FisherInfo {
 
     private void addSkillPoint(){
         this.skillPoints++;
-        updateDataTracker();
+        syncFisherInfo();
     }
 
     public int getSkillPoints(){
@@ -200,7 +204,7 @@ public class FisherInfo {
 
     void setSkillPoints(int skillPoints){
         this.skillPoints = skillPoints;
-        updateDataTracker();
+        syncFisherInfo();
     }
 
     public void useSpell(FishingPerk fishingPerk){
@@ -208,14 +212,14 @@ public class FisherInfo {
         SpellInstance spellInstance = spells.get(fishingPerk);
         spellInstance.use(fisher);
         spells.put(fishingPerk, spellInstance);
-        updateDataTracker();
+        syncFisherInfo();
     }
 
     void removePerk(String perkName){
         if (!this.perks.containsKey(perkName)) return;
         this.perks.remove(perkName);
         this.skillPoints++;
-        updateDataTracker();
+        syncFisherInfo();
     }
 
     public int nextLevelXP(){
@@ -232,7 +236,7 @@ public class FisherInfo {
             onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
         }
-        updateDataTracker();
+        syncFisherInfo();
     }
 
 
@@ -252,7 +256,7 @@ public class FisherInfo {
         }
 
         this.credit += credit;
-        updateDataTracker();
+        syncFisherInfo();
         return true;
     }
 
@@ -267,7 +271,6 @@ public class FisherInfo {
     public SimpleInventory getFisherInventory(){
         return this.fisherInventory;
     }
-
 
 
     @Override
