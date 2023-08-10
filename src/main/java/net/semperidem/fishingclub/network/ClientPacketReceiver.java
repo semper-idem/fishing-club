@@ -25,7 +25,6 @@ public class ClientPacketReceiver {
                 if (fisherTag == null) return;
                 FishingClubClient.CLIENT_INFO.fromNbt(fisherTag);
                 FishingClubClient.CLIENT_INFO.setClientEntity(client);
-                //fixme screens dont refresh after changing client info
             });
         });
     }

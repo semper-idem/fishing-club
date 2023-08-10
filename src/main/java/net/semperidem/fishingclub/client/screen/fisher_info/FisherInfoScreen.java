@@ -12,7 +12,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -91,11 +91,11 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private void updateData(){
         this.name = this.client.player.getName().getString();
-        this.level = String.valueOf(this.getScreenHandler().fisherInfo.getLevel());
-        this.exp = this.getScreenHandler().fisherInfo.getExp() + "/" + this.getScreenHandler().fisherInfo.nextLevelXP();
-        this.credit = String.valueOf(this.getScreenHandler().fisherInfo.getCredit());
-        this.hasSkillPoints = this.getScreenHandler().fisherInfo.hasSkillPoints();
-        this.skillPoints = String.valueOf(this.getScreenHandler().fisherInfo.getSkillPoints());
+        this.level = String.valueOf(FishingClubClient.CLIENT_INFO.getLevel());
+        this.exp = FishingClubClient.CLIENT_INFO.getExp() + "/" + FishingClubClient.CLIENT_INFO.nextLevelXP();
+        this.credit = String.valueOf(FishingClubClient.CLIENT_INFO.getCredit());
+        this.hasSkillPoints = FishingClubClient.CLIENT_INFO.hasSkillPoints();
+        this.skillPoints = String.valueOf(FishingClubClient.CLIENT_INFO.getSkillPoints());
     }
 
     public static void openScreen(PlayerEntity player){
@@ -210,9 +210,9 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            if (!this.getScreenHandler().fisherInfo.availablePerk(selectedPerk) || this.getScreenHandler().fisherInfo.hasPerk(selectedPerk)) return;
-            this.getScreenHandler().fisherInfo.addPerk(selectedPerk.getName());
-            SpellListWidget.updateFisherInfo(this.getScreenHandler().fisherInfo);
+            if (!FishingClubClient.CLIENT_INFO.availablePerk(selectedPerk) || FishingClubClient.CLIENT_INFO.hasPerk(selectedPerk)) return;
+            FishingClubClient.CLIENT_INFO.addPerk(selectedPerk.getName());
+            
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
         };
@@ -262,8 +262,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         renderInfoLine(matrices, infoLineX, infoLineY + 26, sLevel, level, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 37, sExp, exp, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 48, sCredit, credit, dividerWidth);
-        if (hasSkillPoints) {
-            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, skillPoints, dividerWidth);
+        if (FishingClubClient.CLIENT_INFO.hasSkillPoints()) {
+            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, String.valueOf(FishingClubClient.CLIENT_INFO.getSkillPoints()), dividerWidth);
         }
 
     }
@@ -358,7 +358,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
             selectedPerk = fishingPerk;
             selectedPerkX = button.x;
             selectedPerkY = button.y;
-            unlockButton.visible = this.getScreenHandler().fisherInfo.availablePerk(fishingPerk) && !this.getScreenHandler().fisherInfo.hasPerk(fishingPerk) && this.getScreenHandler().fisherInfo.hasSkillPoints();
+            unlockButton.visible = FishingClubClient.CLIENT_INFO.availablePerk(fishingPerk) && !FishingClubClient.CLIENT_INFO.hasPerk(fishingPerk) && FishingClubClient.CLIENT_INFO.hasSkillPoints();
             updateData();
         };
     }
