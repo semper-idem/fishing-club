@@ -33,7 +33,7 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
-        FisherInfoManager.addExperience(player, fish.experience);
+        FisherInfoManager.fishCaught(player, fish.experience);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
         fishReward.setCount(getRewardMultiplier(FisherInfoManager.getFisher(player), boatFishing));
@@ -63,10 +63,6 @@ public class FishUtil {
         return rewardMultiplier;
     }
 
-    public static void grantExp(ServerPlayerEntity player, int exp){
-        FisherInfoManager.addExperience(player, exp);
-        player.addExperience(Math.max(1, exp / 10));
-    }
 
     private static void setFishDetails(ItemStack stack, Fish fish){
         if (!stack.hasNbt()) {
@@ -143,6 +139,16 @@ public class FishUtil {
             return 4;
         }
         return 5;
+    }
+
+    public static float getPercentile(int grade){
+        switch (grade){
+            case 2: return 0.25f;
+            case 3: return 0.50f;
+            case 4: return 0.80f;
+            case 5: return 0.90f;
+            default: return 0;
+        }
     }
     private static Text getCaughtText(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE, dd LLL yyyy HH:mm");

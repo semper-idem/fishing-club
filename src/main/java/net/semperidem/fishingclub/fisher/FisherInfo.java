@@ -29,6 +29,7 @@ public class FisherInfo {
     private int exp = 0;
     private int credit = 0;
     private int skillPoints = 0;
+    private long lastFishCaughtTime = 0;
     private HashMap<String, FishingPerk> perks = new HashMap<>();
     private SimpleInventory fisherInventory = new SimpleInventory(4);
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
@@ -68,6 +69,7 @@ public class FisherInfo {
         this.exp = fisherTag.getInt("exp");
         this.credit = fisherTag.getInt("credit");
         this.skillPoints = fisherTag.getInt("skill_points");
+        this.lastFishCaughtTime = fisherTag.getLong("last_fish_caught_time");
         this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
         setPerks(fisherTag);
         setSpells(fisherTag);
@@ -119,6 +121,7 @@ public class FisherInfo {
         fisherTag.putInt("exp", this.exp);
         fisherTag.putInt("credit", this.credit);
         fisherTag.putInt("skill_points", this.skillPoints);
+        fisherTag.putLong("last_fish_caught_time", this.lastFishCaughtTime);
         fisherTag.put("inventory", InventoryUtil.writeInventory(this.fisherInventory));
         NbtList perkListTag = new NbtList();
         this.perks.forEach((fishingPerkName, fishingPerk) -> {
@@ -226,6 +229,9 @@ public class FisherInfo {
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
+    public void setFishCaughtTime(long time){
+        this.lastFishCaughtTime = time;
+    }
 
     void grantExperience(double gainedXP){
         this.exp += gainedXP;

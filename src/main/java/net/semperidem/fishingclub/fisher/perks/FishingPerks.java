@@ -225,9 +225,8 @@ public class FishingPerks {
             .createPerk("rain_summon", RAINY_FISH_PLUS)
             .withLabel("Rain Summon")
             .withDescription("Unlock Summon rain spell")
-            .withDetailedDesc("Unlock summmon rain spell available in fish spells\n" +
-                    "60 min cooldown" +
-                    "By default \"N\"")
+            .withDetailedDesc("Unlock summon rain spell available in fisher spells\n" +
+                    "Rain lasts for 5min and has 60 min cooldown")
             .withIcon("rain_summon.png");
 
     //O - First catch of the day
@@ -239,9 +238,11 @@ public class FishingPerks {
 
     public static FishingPerk QUALITY_INCREASE_FIRST_CATCH = FishingPerk
             .createPerk("quality_increase_first_catch", FIRST_CATCH)
-            .withLabel("Quality Boost")
-            .withDescription("After your first catch, fish quality increases")
-            .withDetailedDesc("The quality of fish you catch increases after your first catch of the day.");
+            .withLabel("Few more first catches")
+            .withDescription("Gain buff to fish quality after first catch of the day")
+            .withDetailedDesc(
+                    "Gain buff to fish quality after first catch of the day\n" +
+                    "Increasing fish quality by ~25%, lasting 5min");
 
     public static FishingPerk FREQUENT_CATCH_FIRST_CATCH = FishingPerk
             .createPerk("frequent_catch_first_catch", QUALITY_INCREASE_FIRST_CATCH)

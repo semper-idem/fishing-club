@@ -45,6 +45,8 @@ public class SpellListWidget{
         renderSpell(matrices, selectedSpell, x, y, Color.WHITE.getRGB(), 0x99000000);
         if (availableSpells.size() > 1) {
             renderSpell(matrices, prevSpell(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+        }
+        if (availableSpells.size() > 2) {
             renderSpell(matrices, nextSpell(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         }
     }

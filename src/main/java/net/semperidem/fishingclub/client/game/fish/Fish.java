@@ -83,6 +83,7 @@ public class Fish {
 
     private float calculateFishWeight(){
         float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
+        int minGrade = 4;
         return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight * weightMultiplier, fishLevel / 100f);
     }
 
