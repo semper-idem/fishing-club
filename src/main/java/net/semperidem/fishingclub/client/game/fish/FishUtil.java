@@ -114,14 +114,12 @@ public class FishUtil {
 
     public static int getWeightGrade(Fish fish){
         FishType fishType = fish.getFishType();
-        float maxWeight = fishType.fishMinWeight + fishType.fishRandomWeight;
-        float percentile = (fish.weight - fish.getFishType().fishMinWeight) / maxWeight;
+        float percentile = (fish.weight) / fishType.fishMinWeight + fishType.fishRandomWeight;
         return getGrade(percentile);
     }
     public static int getLengthGrade(Fish fish){
         FishType fishType = fish.getFishType();
-        float maxLength = fishType.fishMinLength + fishType.fishRandomLength;
-        float percentile = (fish.length - fish.getFishType().fishMinLength) / maxLength;
+        float percentile = (fish.length) / fishType.fishMinLength + fishType.fishRandomLength;
         return getGrade(percentile);
     }
 

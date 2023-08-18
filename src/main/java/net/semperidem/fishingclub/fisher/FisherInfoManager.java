@@ -13,8 +13,8 @@ public class FisherInfoManager {
 
     public static void fishCaught(ServerPlayerEntity playerEntity, int expGained){
         FisherInfo fisherInfo = getFisher(playerEntity);
-        fisherInfo.grantExperience(expGained);
         fisherInfo.setFishCaughtTime(playerEntity.world.getTime());
+        fisherInfo.grantExperience(expGained);
     }
 
     public static void addPerk(ServerPlayerEntity playerEntity, String perkName) {

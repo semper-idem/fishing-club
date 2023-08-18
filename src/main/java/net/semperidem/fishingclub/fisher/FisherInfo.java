@@ -197,6 +197,10 @@ public class FisherInfo {
         syncFisherInfo();
     }
 
+    public int getMinGrade(){
+        return 4;//hasPerk(FishingPerks.FIRST_CATCH) ? this.lastFishCaughtTime + 24000 < this.fisher.world.getTime()  ? 4 : 0 : 0;
+    }
+
     public int getSkillPoints(){
         return this.skillPoints;
     }

@@ -83,13 +83,18 @@ public class Fish {
 
     private float calculateFishWeight(){
         float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
-        int minGrade = 4;
-        return FishUtil.getPseudoRandomValue(fishType.fishMinWeight, fishType.fishRandomWeight * weightMultiplier, fishLevel / 100f);
+        float minGradeBuff = fisherInfo.getMinGrade() / 5f;
+        float minWeight = fishType.fishMinWeight + fishType.fishRandomWeight * minGradeBuff;
+        float weightRange = fishType.fishRandomWeight * weightMultiplier * (1 - minGradeBuff);
+        return FishUtil.getPseudoRandomValue(minWeight, weightRange, fishLevel / 100f);
     }
 
     private float calculateFishLength(){
         float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
-        return FishUtil.getPseudoRandomValue(fishType.fishMinLength, fishType.fishRandomLength * lengthMultiplier, fishLevel / 100f);
+        float minGradeBuff = fisherInfo.getMinGrade() / 5f;
+        float minLength = fishType.fishMinLength + fishType.fishRandomLength * minGradeBuff;
+        float lenghtRange = fishType.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
+        return FishUtil.getPseudoRandomValue(minLength, lenghtRange, fishLevel / 100f);
     }
 
     private int calculateFishExp(){
