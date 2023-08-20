@@ -29,6 +29,7 @@ import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
 
@@ -264,15 +265,15 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         BlockPos aboveBobberPos = bobberPos.up();
         int countdownDecrement = 1;
 
-        //Raining Buff
-        if (this.random.nextFloat() < 0.25f && this.world.hasRain(aboveBobberPos)) {
-            ++countdownDecrement;
-        }
-
-        //Cave Fishing de-buff
-        if (this.random.nextFloat() < 0.5f && !this.world.isSkyVisible(aboveBobberPos)) {
-            --countdownDecrement;
-        }
+//        //Raining Buff
+//        if (this.random.nextFloat() < 0.25f && this.world.hasRain(aboveBobberPos)) {
+//            ++countdownDecrement;
+//        }
+//
+//        //Cave Fishing de-buff
+//        if (this.random.nextFloat() < 0.5f && !this.world.isSkyVisible(aboveBobberPos)) {
+//            --countdownDecrement;
+//        }
 
         return countdownDecrement;
     }
@@ -290,13 +291,18 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             }
             catchRateReduction += rainBonus;
         }
+        if (this.getPlayerOwner() == null) return; //shouldn't happen but ¯\(o_o)/¯
         if (FishUtil.hasFishingHat(this.getPlayerOwner())) {
             catchRateReduction += 0.15f;
             if (!FishUtil.hasNonFishingEquipment(this.getPlayerOwner())) {
                 catchRateReduction += 0.15f;
             }
         }
-        catchRate = Math.max(0.4f,(1 - catchRateReduction));
+
+        if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.FREQUENCY_BUFF)) {
+            catchRateReduction += 0.1f;
+        }
+        catchRate = Math.max(.33f,(1 - catchRateReduction));
         if (power > 1) {
             catchRate /= MathHelper.clamp((128 - this.distanceTraveled) / 128 ,0.5, 1);
         }

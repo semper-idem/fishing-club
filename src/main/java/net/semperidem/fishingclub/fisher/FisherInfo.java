@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
@@ -13,6 +14,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.Collection;
@@ -198,7 +200,13 @@ public class FisherInfo {
     }
 
     public int getMinGrade(){
-        return 4;//hasPerk(FishingPerks.FIRST_CATCH) ? this.lastFishCaughtTime + 24000 < this.fisher.world.getTime()  ? 4 : 0 : 0;
+        if (this.lastFishCaughtTime + 24000 < this.fisher.world.getTime()) {
+            return hasPerk(FishingPerks.FIRST_CATCH) ?  3 : 1;
+        }
+        if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF)) {
+            return 1;
+        }
+        return 0;
     }
 
     public int getSkillPoints(){
@@ -235,6 +243,20 @@ public class FisherInfo {
 
     public void setFishCaughtTime(long time){
         this.lastFishCaughtTime = time;
+    }
+
+    void fishCaught(int expGained){
+        if (fisher.world.getTime() > lastFishCaughtTime + 24000) {
+            setFishCaughtTime(fisher.world.getTime());
+            if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
+                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,300));
+            }
+            if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
+                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,300));
+            }
+
+        }
+        grantExperience(expGained);
     }
 
     void grantExperience(double gainedXP){

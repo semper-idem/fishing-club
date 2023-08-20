@@ -232,23 +232,31 @@ public class FishingPerks {
     //O - First catch of the day
     public static FishingPerk FIRST_CATCH = FishingPerk
             .createPerk("first_catch", ROOT_OPPORTUNIST)
-            .withLabel("First Catch of the Day")
-            .withDescription("Benefit from your first catch of the day (Grade 4+)")
-            .withDetailedDesc("Your first catch of the day is always a Grade 4 or above fish.");
+            .withLabel("First-est Catch of the Day")
+            .withDescription("Increase min grade of first fish of the day")
+            .withDetailedDesc("Your first catch of the day is always \n" +
+                    "grade 4 or above")
+            .withIcon("first.png");
 
     public static FishingPerk QUALITY_INCREASE_FIRST_CATCH = FishingPerk
             .createPerk("quality_increase_first_catch", FIRST_CATCH)
-            .withLabel("Few more first catches")
+            .withLabel("Few more first")
             .withDescription("Gain buff to fish quality after first catch of the day")
             .withDetailedDesc(
-                    "Gain buff to fish quality after first catch of the day\n" +
-                    "Increasing fish quality by ~25%, lasting 5min");
+                    "After first catch of the day gain buff:\n" +
+                    "Increasing fish quality by 25%\n" +
+                    "Duration: 5min")
+            .withIcon("first_buff.png");
 
     public static FishingPerk FREQUENT_CATCH_FIRST_CATCH = FishingPerk
             .createPerk("frequent_catch_first_catch", QUALITY_INCREASE_FIRST_CATCH)
             .withLabel("Frequent Catches")
-            .withDescription("After your first catch, you catch fish 1.5 times as often")
-            .withDetailedDesc("Increase your fishing rate by 1.5 times after your first catch of the day.");
+            .withDescription("Gain buff to fish catch rate after first catch of the day")
+            .withDetailedDesc(
+                    "After first catch of the day gain buff:\n" +
+                    "Decreasing fish wait time by 10%\n" +
+                    "Duration: 5min")
+            .withIcon("first_freq.png");
 
     public static FishingPerk CHUNK_QUALITY_INCREASE = FishingPerk
             .createPerk("chunk_quality_increase", FREQUENT_CATCH_FIRST_CATCH)
