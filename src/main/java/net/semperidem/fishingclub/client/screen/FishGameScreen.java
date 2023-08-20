@@ -22,9 +22,9 @@ public class FishGameScreen extends Screen {
     private static final String TREASURE_REEL_LABEL  = "[Enter]";
 
     private static final int backgroundWidth = 160, backgroundHeight = 160;
-    private static final int barWidth = 8, barHeight = 128;
-    private static final int bobberWidth = barWidth, bobberHeight = 32;
-    private static final int fishIconWidth = barWidth, fishIconHeight = 8;
+    private static final int barWidth = 128, barHeight = 8;
+    private static final int bobberWidth = 128, bobberHeight = 8;
+    private static final int fishIconWidth = 8, fishIconHeight = 8;
 
     private static final int treasureBarWidth = backgroundWidth, treasureBarHeight = 28;
     private static final int treasureArrowWidth = 10, treasureArrowHeight = treasureBarHeight;
@@ -63,13 +63,29 @@ public class FishGameScreen extends Screen {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        float saveZone = 0.02f;
+
+        if (mouseX > width / 2f - width * saveZone && mouseX < width / 2f + width *saveZone) {
+            fishGameLogic.dragForce = 0;
+        } else if (mouseX < width / 2f - width * saveZone){
+            fishGameLogic.dragForce = (((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f;
+        } else if (mouseX > width / 2f + width * saveZone) {
+            fishGameLogic.dragForce = (((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f;
+        }
+        super.mouseMoved(mouseX, mouseY);
+    }
+
+
+
+    @Override
     protected void init() {
         super.init();
         x = (this.width - backgroundWidth) / 2;
         y = (this.height- backgroundHeight) / 2;
 
-        barX = x + 26;
-        barY = y + 16;
+        barX = x + 16;
+        barY = y + backgroundHeight - barHeight - 16;
 
         bobberX = barX;
         bobberY = barY;
@@ -77,8 +93,8 @@ public class FishGameScreen extends Screen {
         fishX = barX;
         fishY = barY;
 
-        progressBarX = barX + 100;
-        progressBarY = barY;
+        progressBarX = barX;
+        progressBarY = y + 16;
 
         treasureBarX = x;
         treasureBarY = y + backgroundHeight - treasureBarHeight;
@@ -173,21 +189,22 @@ public class FishGameScreen extends Screen {
 
     private void renderBobber(MatrixStack matrices, float delta){
         matrices.push();
-        float bobberScale = barHeight * fishGameLogic.getBobberLength() / bobberHeight;
-        matrices.scale(1f,bobberScale,1f);
-        bobberY = (int) ( (barY + barHeight - barHeight * getBobberPos(delta)) * (1f / bobberScale));
+        float bobberScale = barWidth * fishGameLogic.getBobberLength() / barWidth;
+        matrices.scale(bobberScale,1f,1f);
+        bobberX = (int) ( (barX + barWidth * getBobberPos(delta)) * (1f / bobberScale));
         BOBBER.render(matrices, bobberX, bobberY);
         matrices.pop();
     }
 
     private void renderFishIcon(MatrixStack matrices, float delta){
-        fishY = (int) (barY + barHeight - barHeight * getFishPos(delta));
+        fishX = (int) (barX + barWidth * getFishPos(delta));
+        fishY = barY - (int)((Math.sqrt((10 - Math.abs(fishGameLogic.jumpTicks - 10))) * 4)) ;
         FISH.render(matrices, fishX, fishY);
     }
 
     private void renderProgressBar(MatrixStack matrices ) {
-        int progressBarHeight = (int) (barHeight * fishGameLogic.getProgress());
-        PROGRESS_BAR.render(matrices, progressBarX, progressBarY + barHeight - progressBarHeight, barWidth,progressBarHeight);
+        int progressBarWidth = (int) (barWidth * fishGameLogic.getProgress());
+        PROGRESS_BAR.render(matrices, progressBarX, progressBarY, progressBarWidth,barHeight);
     }
 
     private void renderInfo(MatrixStack matrices) {

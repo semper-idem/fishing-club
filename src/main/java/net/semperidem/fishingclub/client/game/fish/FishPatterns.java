@@ -54,157 +54,157 @@ public class FishPatterns {
     static {
         DEFAULT = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(50, 600),
-                        new Point(100, 200),
-                        new Point(150, 600),
-                        new Point(200, 0)
+                        new Point(0, 500),
+                        new Point(50, 700),
+                        new Point(100, 500),
+                        new Point(150, 300),
+                        new Point(200, 500)
                 }
         );
 
         EASY1 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(50, 200),
-                        new Point(100, 100),
-                        new Point(150, 300),
-                        new Point(200, 0)
+                        new Point(0, 500),
+                        new Point(50, 400),
+                        new Point(100, 600),
+                        new Point(150, 400),
+                        new Point(200, 500)
                 }
         );
 
         EASY2 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(50, 400),
-                        new Point(100, 800),
-                        new Point(150, 400),
-                        new Point(200, 0)
+                        new Point(0, 500),
+                        new Point(50, 600),
+                        new Point(100, 400),
+                        new Point(150, 300),
+                        new Point(200, 500)
                 }
         );
         EASY3 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(50, 200),
-                        new Point(100, 0),
-                        new Point(150, 200),
-                        new Point(200, 0)
+                        new Point(0, 500),
+                        new Point(50, 600),
+                        new Point(100, 500),
+                        new Point(150, 400),
+                        new Point(200, 500)
                 }
         );
         EASY4 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(50, 300),
                         new Point(100, 100),
-                        new Point(150, 200),
-                        new Point(200, 0)
+                        new Point(150, 400),
+                        new Point(200, 500)
                 }
         );
         EASY5 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(50, 300),
                         new Point(100, 400),
                         new Point(150, 100),
-                        new Point(200, 0)
+                        new Point(200, 500)
                 }
         );
 
         MID1 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(40, 600),
-                        new Point(80, 200),
-                        new Point(120, 400),
+                        new Point(0, 500),
+                        new Point(40, 700),
+                        new Point(80, 500),
+                        new Point(120, 200),
                         new Point(160, 700),
-                        new Point(200, 0)
+                        new Point(200, 500)
                 }
         );
 
         MID2 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(40, 600),
-                        new Point(80, 200),
+                        new Point(0, 500),
+                        new Point(40, 700),
+                        new Point(80, 300),
                         new Point(120, 100),
-                        new Point(160, 200),
-                        new Point(200, 0)
+                        new Point(160, 300),
+                        new Point(200, 500)
                 }
         );
 
         MID3 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(40, 100),
-                        new Point(80, 150),
-                        new Point(120, 900),
-                        new Point(160, 500),
-                        new Point(200, 0)
+                        new Point(0, 500),
+                        new Point(40, 600),
+                        new Point(80, 700),
+                        new Point(120, 200),
+                        new Point(160, 300),
+                        new Point(200, 500)
                 }
         );
 
         MID4 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
-                        new Point(40, 700),
+                        new Point(0, 500),
+                        new Point(40, 900),
                         new Point(80, 600),
                         new Point(120, 400),
-                        new Point(160, 700),
-                        new Point(200, 0)}
+                        new Point(160, 950),
+                        new Point(200, 500)}
         );
 
         MID5 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(40, 300),
                         new Point(80, 600),
                         new Point(120, 400),
                         new Point(160, 100),
-                        new Point(200, 0)}
+                        new Point(200, 500)}
         );
 
         MID6 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(40, 900),
-                        new Point(80, 600),
+                        new Point(80, 200),
                         new Point(120, 900),
                         new Point(160, 700),
-                        new Point(200, 0)}
+                        new Point(200, 500)}
         );
 
         HARD1 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(35, 600),
                         new Point(70, 200),
                         new Point(105, 400),
                         new Point(140, 100),
                         new Point(170, 400),
-                        new Point(200, 0)
+                        new Point(200, 500)
                 }
         );
 
         HARD2 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(35, 600),
                         new Point(70, 200),
                         new Point(105, 400),
                         new Point(140, 100),
                         new Point(170, 400),
-                        new Point(200, 0)
+                        new Point(200, 500)
                 }
         );
 
         HARD3 = new FishPattern(
                 new Point[]{
-                        new Point(0, 0),
+                        new Point(0, 500),
                         new Point(35, 100),
                         new Point(70, 150),
                         new Point(105, 900),
                         new Point(140, 100),
                         new Point(170, 900),
-                        new Point(200, 0)
+                        new Point(200, 500)
                 }
         );
 
