@@ -201,7 +201,7 @@ public class FisherInfo {
 
     public int getMinGrade(){
         if (this.lastFishCaughtTime + 24000 < this.fisher.world.getTime()) {
-            return hasPerk(FishingPerks.FIRST_CATCH) ?  3 : 1;
+            return hasPerk(FishingPerks.FIRST_CATCH) ?  2 : 1;
         }
         if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF)) {
             return 1;

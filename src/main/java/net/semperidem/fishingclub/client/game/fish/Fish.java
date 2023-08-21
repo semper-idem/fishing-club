@@ -93,8 +93,8 @@ public class Fish {
         float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
         float minGradeBuff = fisherInfo.getMinGrade() / 5f;
         float minLength = fishType.fishMinLength + fishType.fishRandomLength * minGradeBuff;
-        float lenghtRange = fishType.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
-        return FishUtil.getPseudoRandomValue(minLength, lenghtRange, fishLevel / 100f);
+        float lengthRange = fishType.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
+        return FishUtil.getPseudoRandomValue(minLength, lengthRange, fishLevel / 100f);
     }
 
     private int calculateFishExp(){
