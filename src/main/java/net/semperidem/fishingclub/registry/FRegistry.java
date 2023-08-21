@@ -8,6 +8,7 @@ public class FRegistry {
         FEntityRegistry.register();
         FNetworkRegistry.register();
         FScreenHandlerRegistry.register();
+        FStatusEffectRegistry.register();
     }
 
     public static void registerClient(){

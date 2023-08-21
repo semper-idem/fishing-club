@@ -246,7 +246,7 @@ public class FisherInfo {
     }
 
     void fishCaught(int expGained){
-        if (fisher.world.getTime() > lastFishCaughtTime + 24000) {
+        if (fisher.world.getTime() >= lastFishCaughtTime + 24000) {
             setFishCaughtTime(fisher.world.getTime());
             if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
                 fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,300));
