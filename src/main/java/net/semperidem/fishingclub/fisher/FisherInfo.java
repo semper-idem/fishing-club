@@ -242,7 +242,7 @@ public class FisherInfo {
                 minGrade++;
             }
         }
-        return minGrade;
+        return Math.min(4, minGrade);
     }
 
     public int getSkillPoints(){
@@ -291,10 +291,10 @@ public class FisherInfo {
         if (worldTime >= firstFishOfTheDayCaughtTime + 24000) {
             setFirstFishOfTheDayCaughtTime(worldTime);
             if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,300));
+                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
             }
             if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,300));
+                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
             }
 
         }

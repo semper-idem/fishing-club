@@ -245,7 +245,7 @@ public class FishingPerks {
             .withDetailedDesc(
                     "After first catch of the day gain buff:\n" +
                     "25% chance to increase min fish grade by 1\n" +
-                    "Duration: 5min")
+                    "Duration: 2min")
             .withIcon("first_buff.png");
 
     public static FishingPerk FREQUENT_CATCH_FIRST_CATCH = FishingPerk
@@ -255,7 +255,7 @@ public class FishingPerks {
             .withDetailedDesc(
                     "After first catch of the day gain buff:\n" +
                     "Decreasing fish wait time by 10%\n" +
-                    "Duration: 5min")
+                    "Duration: 2min")
             .withIcon("first_freq.png");
 
     public static FishingPerk CHUNK_QUALITY_INCREASE = FishingPerk
@@ -271,8 +271,10 @@ public class FishingPerks {
             .withLabel("It gets better")
             .withDescription("The longer you don't fish, the higher the min grade of fish")
             .withDetailedDesc(
-                    "Every day you don't fish gain additional 25% chance to increase min grade by 1\n" +
-                    "(After reaching 100% gain 25% chance to increase min grade by additional 1)")
+                    "Every day you don't fish gain additional 25% chance\n" +
+                    "to increase min grade by 1\n" +
+                    "(After reaching 100% gain 25% chance to increase\n" +
+                            "min grade by additional 1)")
             .withIcon("quality_time_increment.png");
 
     //O - Misc
