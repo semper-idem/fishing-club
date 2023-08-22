@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client.game.fish;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
@@ -29,13 +30,16 @@ public class Fish {
     public Point[] curveControlPoints;
 
     public ItemStack caughtUsing;
+
+    public FisherInfo.Chunk caughtIn;
     public Fish(){
     }
 
     public Fish(FishType fishType, FisherInfo fisherInfo) {
-        this(fishType, fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack());
+        this(fishType, fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FisherInfo.Chunk(0,0));
     }
-    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod) {
+    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod, FisherInfo.Chunk chunk) {
+        this.caughtIn = chunk;
         this.caughtUsing = fishingRod;
         this.fishType = fishType;
         this.name = fishType.name;
@@ -109,6 +113,11 @@ public class Fish {
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
         float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
+        if (fisherInfo.hasPerk(FishingPerks.CHUNK_QUALITY_INCREASE)) {
+            if (fisherInfo.caughtInChunk(caughtIn)) {
+                oneUpChance = 1;
+            }
+        }
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 

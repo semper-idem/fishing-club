@@ -172,7 +172,7 @@ public class FishUtil {
     }
 
 
-    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier){
+    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier, FisherInfo.Chunk chunk){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fisherInfo);
@@ -183,10 +183,10 @@ public class FishUtil {
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
         for (FishType fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fisherInfo, fishingRod);
+                return new Fish(fishType, fisherInfo, fishingRod, chunk);
             }
         }
-        return new Fish(FishTypes.COD, fisherInfo, fishingRod);
+        return new Fish(FishTypes.COD, fisherInfo, fishingRod, chunk);
     }
 
 

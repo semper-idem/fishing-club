@@ -17,6 +17,7 @@ import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -32,9 +33,11 @@ public class FisherInfo {
     private int credit = 0;
     private int skillPoints = 0;
     private long lastFishCaughtTime = 0;
+    private long firstFishOfTheDayCaughtTime = 0;
     private HashMap<String, FishingPerk> perks = new HashMap<>();
     private SimpleInventory fisherInventory = new SimpleInventory(4);
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
+    private ArrayList<Chunk> fishedChunks = new ArrayList<>();
 
     private PlayerEntity fisher;
 
@@ -72,9 +75,19 @@ public class FisherInfo {
         this.credit = fisherTag.getInt("credit");
         this.skillPoints = fisherTag.getInt("skill_points");
         this.lastFishCaughtTime = fisherTag.getLong("last_fish_caught_time");
+        this.firstFishOfTheDayCaughtTime = fisherTag.getLong("ffotd_caught_time");
         this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
         setPerks(fisherTag);
         setSpells(fisherTag);
+        setChunks(fisherTag);
+    }
+
+    private void setChunks(NbtCompound fisherTag){
+        fishedChunks.clear();
+        NbtList chunkListTag = fisherTag.getList("fishedC_chunks", NbtElement.STRING_TYPE);
+        for(int i = 0; i < chunkListTag.size(); i++) {
+            fishedChunks.add(new Chunk(chunkListTag.getString(i)));
+        }
     }
 
     public void setClientEntity(MinecraftClient client){
@@ -124,6 +137,7 @@ public class FisherInfo {
         fisherTag.putInt("credit", this.credit);
         fisherTag.putInt("skill_points", this.skillPoints);
         fisherTag.putLong("last_fish_caught_time", this.lastFishCaughtTime);
+        fisherTag.putLong("ffotd_caught_time", this.firstFishOfTheDayCaughtTime);
         fisherTag.put("inventory", InventoryUtil.writeInventory(this.fisherInventory));
         NbtList perkListTag = new NbtList();
         this.perks.forEach((fishingPerkName, fishingPerk) -> {
@@ -139,6 +153,13 @@ public class FisherInfo {
             spellListTag.add(spellTag);
         }
         fisherTag.put("spells", spellListTag);
+
+        NbtList fishedChunksTag = new NbtList();
+        for(Chunk c : fishedChunks) {
+            fishedChunksTag.add(NbtString.of(c.toString()));
+        }
+        fisherTag.put("fished_chunks", fishedChunksTag);
+
         return fisherTag;
     }
 
@@ -200,13 +221,28 @@ public class FisherInfo {
     }
 
     public int getMinGrade(){
-        if (this.lastFishCaughtTime + 24000 < this.fisher.world.getTime()) {
-            return hasPerk(FishingPerks.FIRST_CATCH) ?  2 : 1;
+        int minGrade = 0;
+        long worldTime = this.fisher.world.getTime();
+        if (this.firstFishOfTheDayCaughtTime + 24000 < worldTime) {
+            if (hasPerk(FishingPerks.FIRST_CATCH)) {
+                minGrade++;
+            }
+            minGrade++;
         }
-        if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF)) {
-            return 1;
+        if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
+            minGrade++;
         }
-        return 0;
+        if (hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && lastFishCaughtTime - worldTime > 24000) {
+            int daysSinceLastFish = (int) ((lastFishCaughtTime - worldTime) / 24000f);
+            while (daysSinceLastFish > 4) {
+                minGrade++;
+                daysSinceLastFish -= 4;
+            }
+            if (Math.random() < 0.25f * daysSinceLastFish) {
+                minGrade++;
+            }
+        }
+        return minGrade;
     }
 
     public int getSkillPoints(){
@@ -241,13 +277,19 @@ public class FisherInfo {
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
-    public void setFishCaughtTime(long time){
+    public void setFirstFishOfTheDayCaughtTime(long time) {
+        this.firstFishOfTheDayCaughtTime = time;
+    }
+
+    public void setLastFishCaughtTime(long time){
         this.lastFishCaughtTime = time;
     }
 
     void fishCaught(int expGained){
-        if (fisher.world.getTime() >= lastFishCaughtTime + 24000) {
-            setFishCaughtTime(fisher.world.getTime());
+        long worldTime = fisher.world.getTime();
+        setLastFishCaughtTime(worldTime);
+        if (worldTime >= firstFishOfTheDayCaughtTime + 24000) {
+            setFirstFishOfTheDayCaughtTime(worldTime);
             if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
                 fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,300));
             }
@@ -304,6 +346,15 @@ public class FisherInfo {
         return this.fisherInventory;
     }
 
+    public boolean caughtInChunk(Chunk chunk){
+        for(Chunk caughtChunk : fishedChunks) {
+            boolean chunkMatch = caughtChunk.x == chunk.x && caughtChunk.z == chunk.z;
+            if (chunkMatch) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public String toString(){
@@ -313,5 +364,25 @@ public class FisherInfo {
                 "\nPerk Count: " + perks.size() +
                 "\nCredit: " + credit +
                 "\n============[Fisher Info]============";
+    }
+
+    public static class Chunk{
+        int x;
+        int z;
+
+        public Chunk(int x, int z) {
+            this.x = x;
+            this.z = z;
+        }
+
+        Chunk(String chunkString){
+            String[] chunkData = chunkString.split(";");
+            x = Integer.parseInt(chunkData[0]);
+            z = Integer.parseInt(chunkData[1]);
+        }
+
+        public String toString(){
+            return x + ";" + z;
+        }
     }
 }

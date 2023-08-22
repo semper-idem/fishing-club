@@ -235,7 +235,7 @@ public class FishingPerks {
             .withLabel("First-est Catch of the Day")
             .withDescription("Increase min grade of first fish of the day")
             .withDetailedDesc("Your first catch of the day is always \n" +
-                    "grade 4 or above")
+                    "grade 3 or above")
             .withIcon("first.png");
 
     public static FishingPerk QUALITY_INCREASE_FIRST_CATCH = FishingPerk
@@ -244,7 +244,7 @@ public class FishingPerks {
             .withDescription("Gain buff to fish quality after first catch of the day")
             .withDetailedDesc(
                     "After first catch of the day gain buff:\n" +
-                    "Increasing fish quality by 25%\n" +
+                    "25% chance to increase min fish grade by 1\n" +
                     "Duration: 5min")
             .withIcon("first_buff.png");
 
@@ -262,13 +262,18 @@ public class FishingPerks {
             .createPerk("chunk_quality_increase", FREQUENT_CATCH_FIRST_CATCH)
             .withLabel("Fresh Waters")
             .withDescription("If you're fishing for the first time in a chunk, fish quality increases")
-            .withDetailedDesc("Exploring new waters pays off! Fishing in a new chunk increases the quality of fish you catch.");
+            .withDetailedDesc("If you're fishing for the first time in a chunk\n" +
+                    "grade of first fish caught is increased by 1")
+            .withIcon("chunk.png");
 
-    public static FishingPerk QUALITY_INCREMENT = FishingPerk
-            .createPerk("quality_increment", CHUNK_QUALITY_INCREASE)
-            .withLabel("Quality Increment")
-            .withDescription("The longer you don't fish, the higher the guaranteed fish quality (stacks with first catch)")
-            .withDetailedDesc("Take a break! The longer you abstain from fishing, the higher the quality of fish you're guaranteed to catch.");
+    public static FishingPerk QUALITY_TIME_INCREMENT = FishingPerk
+            .createPerk("quality_time_increment", CHUNK_QUALITY_INCREASE)
+            .withLabel("It gets better")
+            .withDescription("The longer you don't fish, the higher the min grade of fish")
+            .withDetailedDesc(
+                    "Every day you don't fish gain additional 25% chance to increase min grade by 1\n" +
+                    "(After reaching 100% gain 25% chance to increase min grade by additional 1)")
+            .withIcon("quality_time_increment.png");
 
     //O - Misc
     public static FishingPerk INSTANT_FISH_CREDIT = FishingPerk

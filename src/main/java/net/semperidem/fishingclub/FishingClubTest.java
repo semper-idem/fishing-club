@@ -131,7 +131,7 @@ public class FishingClubTest {
         TreeMap<Float, Integer> weightResult = new TreeMap<>();
         TreeMap<Float, Integer> sizeResult = new TreeMap<>();
         for(int i = 0; i < N; i++) {
-            Fish fish = FishUtil.getFishOnHook(fisherInfo, fishingRod, 1);
+            Fish fish = FishUtil.getFishOnHook(fisherInfo, fishingRod, 1, new FisherInfo.Chunk(0,0));
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.fishLevel);
             countUp(typeResult,fish.getFishType());

@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -200,7 +201,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         if (fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
-        caughtFish = FishUtil.getFishOnHook(fisherInfo, fishingRod, fishTypeRarityMultiplier);
+        ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
+        caughtFish = FishUtil.getFishOnHook(fisherInfo, fishingRod, fishTypeRarityMultiplier, new FisherInfo.Chunk(worldChunkPos.x, worldChunkPos.z));
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
