@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -35,7 +36,7 @@ public class FisherInfo {
     private long lastFishCaughtTime = 0;
     private long firstFishOfTheDayCaughtTime = 0;
     private HashMap<String, FishingPerk> perks = new HashMap<>();
-    private SimpleInventory fisherInventory = new SimpleInventory(4);
+    private SimpleInventory fisherInventory = new SimpleInventory(FisherInfoScreenHandler.SLOT_COUNT);
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
     private ArrayList<Chunk> fishedChunks = new ArrayList<>();
 
@@ -57,6 +58,7 @@ public class FisherInfo {
         this.fisher = playerEntity;
         NbtCompound playerCustomTag = new NbtCompound();
         playerEntity.writeCustomDataToNbt(playerCustomTag);
+        if (!playerCustomTag.contains(TAG)) return;
         fromNbt(playerCustomTag.getCompound(TAG));
     }
 

@@ -281,8 +281,9 @@ public class FishingPerks {
     public static FishingPerk INSTANT_FISH_CREDIT = FishingPerk
             .createPerk("instant_fish_credit", ROOT_OPPORTUNIST)
             .withLabel("Instant Credit")
-            .withDescription("Turn fish into credit instantly")
-            .withDetailedDesc("Your catches are instantly turned into credits. No need to sell or trade!");
+            .withDescription("Unlock slot that lets you sell fish")
+            .withDetailedDesc("Unlock slot that lets you sell fish")
+            .withIcon("instant_credit.png");
 
     public static FishingPerk HARPOON_ROD = FishingPerk
             .createPerk("harpoon_rod", INSTANT_FISH_CREDIT)

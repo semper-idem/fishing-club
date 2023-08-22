@@ -48,6 +48,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private static final String sCredit = "$";
     private static final String sExp = "Exp.";
     private static final String sDiv = "_____________";
+    private static final String sSell = "Sell";
     private static final String labelFormatter = "§6§l";
 
     private String name;
@@ -67,8 +68,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private ButtonWidget oButton;
     private ButtonWidget sButton;
     private ButtonWidget unlockButton;
-
-
+    private ButtonWidget sellButton;
 
 
     private int buttonsX;
@@ -125,6 +125,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         initInfoButton();
         initSkillButtons();
         initUnlockButton();
+        initSellButton();
         resetButtonState();
         addButtons();
     }
@@ -135,6 +136,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         addDrawableChild(oButton);
         addDrawableChild(sButton);
         addDrawableChild(unlockButton);
+        addDrawable(sellButton);
     }
 
     private void resetButtonState(){
@@ -163,6 +165,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
             lockClicked(button);
             BACKGROUND = BACKGROUND_INV;
             this.handler.addPlayerInventorySlots();
+            sellButton.visible = true;
         };
     }
 
@@ -192,6 +195,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
             BACKGROUND = BACKGROUND_SKILL;
             this.handler.removePlayerInventorySlots();
             this.handler.rootPerk = fishingPerk;
+            sellButton.visible = false;
             lockClicked(button);
             addPerks();
         };
@@ -215,6 +219,28 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
             
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
+        };
+    }
+
+    private void initSellButton(){
+        sellButton = new ButtonWidget(
+                x + 343  ,
+                y + 224,
+                25,
+                BUTTON_HEIGHT,
+                Text.of(sSell),
+                sellButtonAction()
+        );
+
+        if (!FishingClubClient.CLIENT_INFO.hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
+            sellButton.visible = false;
+            sellButton.active = false;
+        }
+    }
+
+    private ButtonWidget.PressAction sellButtonAction(){
+        return button -> {
+            this.handler.sellSlot();
         };
     }
 
@@ -282,7 +308,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         for(Slot slot : this.handler.slots) {
             if (!(slot instanceof FisherInfoScreenHandler.FisherSlot)) continue;
             if (slot.isEnabled()) continue;;
-            fill(matrices, x + slot.x, y + slot.y, x + slot.x+16, y + slot.y+ 16, 0x55000000);
+            fill(matrices, x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0x55000001);
         }
     }
     @Override

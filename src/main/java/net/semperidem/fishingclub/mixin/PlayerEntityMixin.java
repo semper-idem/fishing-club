@@ -30,13 +30,18 @@ public class PlayerEntityMixin extends Entity {
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeCustomDataToNbt(NbtCompound nbtCompound, CallbackInfo ci){
+        if (fisherInfo == null) return;
         nbtCompound.put(FisherInfo.TAG, fisherInfo.toNbt());
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci){
-        if (fisherInfo == null && world.isClient){
-            fisherInfo = FishingClubClient.CLIENT_INFO;
+        if (fisherInfo == null){
+            if (world.isClient) {
+                fisherInfo = FishingClubClient.CLIENT_INFO;
+            } else {
+                fisherInfo = new FisherInfo((PlayerEntity) (Object) this);
+            }
         }
         fisherInfo.tick();
     }
