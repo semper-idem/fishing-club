@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
-public class InventoryUtil {
+public class  InventoryUtil {
 
     //Main difference from vanilla inventory to nbt methods is it remembers slot number
     public static SimpleInventory readInventory(NbtCompound inventoryTag){

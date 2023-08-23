@@ -79,7 +79,8 @@ public class FishUtil {
                 getGradeText(Math.max(lengthGrade, weightGrade)),
                 getWeightText(fish.weight, weightGrade),
                 getLengthText(fish.length, lengthGrade),
-                getCaughtText()
+                getCaughtText(),
+                getValueText(fish.value)
         );
     }
 
@@ -87,6 +88,10 @@ public class FishUtil {
         if (stack.getNbt() != null) {
             stack.getNbt().put("fish_details", FishUtil.toNbt(fish));
         }
+    }
+
+    private static Text getValueText(int value){
+        return Text.of("§3Value: §6" + value + "$");
     }
 
     private static Text getGradeText(int grade){

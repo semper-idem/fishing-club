@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.fisher_info;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -12,12 +13,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
@@ -36,6 +40,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
     FisherInfo fisherInfo;
     FishingPerk rootPerk;
+    FisherSlot sellSlot;
 
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory);
@@ -44,7 +49,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.FISHER_INFO_SCREEN, syncId);
         enableSyncing();
-        this.fisherInfo = FishingClubClient.CLIENT_INFO;
+        this.fisherInfo = playerInventory.player.world.isClient ? FishingClubClient.CLIENT_INFO : FisherInfoManager.getFisher((ServerPlayerEntity) playerInventory.player);
         this.playerInventory = playerInventory;
         this.fisherInventory = fisherInfo.getFisherInventory();
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
@@ -67,12 +72,26 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         };
     }
 
-    public void sellSlot(){
+    public void sellSlot(FisherInfoScreen parent){
+        int credit = FishUtil.getFishValue(sellSlot.getStack());
+        ClientPacketSender.sellSlot(credit);
+        sellSlot.setStack(ItemStack.EMPTY);
+        FishingClubClient.CLIENT_INFO.addCredit(credit);
+        parent.updateData();
+    }
 
+    public void soldSlot(ServerPlayerEntity player, int amount){
+        FisherInfoManager.addCredit(player, amount);
+        sellSlot.setStack(ItemStack.EMPTY);
     }
 
     private void addSellSlot(){
-        addSlot(new FisherSlot(fisherInventory, 4, 323, 226, FishingPerks.INSTANT_FISH_CREDIT){
+        sellSlot = new FisherSlot(fisherInventory, 4, 323, 226, FishingPerks.INSTANT_FISH_CREDIT){
+            @Override
+            public int getMaxItemCount() {
+                return 1;
+            }
+
             @Override
             public boolean canInsert(ItemStack stack) {
                 return fisherInfo.hasPerk(FishingPerks.INSTANT_FISH_CREDIT) && stack.isOf(FishUtil.FISH_ITEM);
@@ -80,9 +99,15 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
             @Override
             public void setStack(ItemStack stack) {
+                if (stack.isOf(FishUtil.FISH_ITEM) && !this.getStack().isEmpty()) {
+                    if (playerInventory.player.world.isClient && MinecraftClient.getInstance().currentScreen != null) {
+                        sellSlot((FisherInfoScreen) MinecraftClient.getInstance().currentScreen);
+                    }
+                }
                 super.setStack(stack);
             }
-        });
+        };
+        addSlot(sellSlot);
     }
 
     private void addFisherInventory(){

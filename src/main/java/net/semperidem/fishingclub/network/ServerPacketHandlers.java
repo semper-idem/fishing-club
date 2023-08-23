@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
+import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
@@ -75,5 +76,19 @@ public class ServerPacketHandlers {
             });
         });
     }
+
+
+    public static void handleSlotSold(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        int creditGained = buf.readInt();
+        server.execute(() -> {
+            Optional.ofNullable(player.currentScreenHandler)
+                            .filter(FisherInfoScreenHandler.class::isInstance)
+                            .map(FisherInfoScreenHandler.class::cast)
+                            .ifPresent(screenHandler -> screenHandler.soldSlot(player, creditGained));
+            ServerPacketSender.sendFisherInfo(player);
+        }
+        );
+    }
+
 
 }

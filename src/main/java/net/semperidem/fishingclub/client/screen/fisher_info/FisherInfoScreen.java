@@ -89,7 +89,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         BACKGROUND = BACKGROUND_INV;
     }
 
-    private void updateData(){
+    public void updateData(){
         this.name = this.client.player.getName().getString();
         this.level = String.valueOf(FishingClubClient.CLIENT_INFO.getLevel());
         this.exp = FishingClubClient.CLIENT_INFO.getExp() + "/" + FishingClubClient.CLIENT_INFO.nextLevelXP();
@@ -136,7 +136,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         addDrawableChild(oButton);
         addDrawableChild(sButton);
         addDrawableChild(unlockButton);
-        addDrawable(sellButton);
+        addDrawableChild(sellButton);
     }
 
     private void resetButtonState(){
@@ -230,7 +230,13 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
                 BUTTON_HEIGHT,
                 Text.of(sSell),
                 sellButtonAction()
-        );
+        ){
+            @Override
+            public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+                if (!handler.sellSlot.hasStack()) return;
+                super.renderButton(matrices, mouseX, mouseY, delta);
+            }
+        };
 
         if (!FishingClubClient.CLIENT_INFO.hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
             sellButton.visible = false;
@@ -239,9 +245,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     }
 
     private ButtonWidget.PressAction sellButtonAction(){
-        return button -> {
-            this.handler.sellSlot();
-        };
+        return button -> this.handler.sellSlot(this);
     }
 
 

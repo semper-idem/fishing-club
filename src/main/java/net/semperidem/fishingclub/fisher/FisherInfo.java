@@ -326,7 +326,7 @@ public class FisherInfo {
 
     }
 
-    boolean addCredit(int credit) {
+    public boolean addCredit(int credit) {
         if (this.credit + credit < 0) {
             return false;
         }
