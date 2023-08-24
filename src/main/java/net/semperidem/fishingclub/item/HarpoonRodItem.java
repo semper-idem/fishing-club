@@ -26,27 +26,20 @@ public class HarpoonRodItem extends FishingRodItem {
             return;
         }
         PlayerEntity playerEntity = (PlayerEntity)user;
-        int i = this.getMaxUseTime(stack) - remainingUseTicks;
-        if (i < 1) {
+        int usePower = getPower(this.getMaxUseTime(stack) - remainingUseTicks);
+        if (usePower < 1) {
             return;
         }
 
 
-        if (!world.isClient) {
-            stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
-            HarpoonEntity tridentEntity = new HarpoonEntity(world, playerEntity, stack);
-                tridentEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, 2.5f, 1.0f);
-                world.spawnEntity(tridentEntity);
-                world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        }
 
-//
-//        int power = FishingRodUtil.getPower(getMaxUseTime(stack) - remainingUseTicks);
-//        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-//        if (!world.isClient) {
-//            boolean boatFishing = user.getVehicle() instanceof BoatEntity;
-//            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, FisherInfoManager.getFisher((ServerPlayerEntity) user), boatFishing));
-//        }
+        stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
+        HarpoonEntity harpoonEntity = new HarpoonEntity(world, playerEntity, stack);
+        harpoonEntity.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0f, Math.min(4f, 1.5f + usePower * 0.5f), 1.0f);
+        world.spawnEntity(harpoonEntity);
+        world.playSoundFromEntity(null, harpoonEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);
+        playerEntity.getInventory().removeOne(stack);
+
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
     }
@@ -72,5 +65,9 @@ public class HarpoonRodItem extends FishingRodItem {
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.SPEAR;
+    }
+
+    public static int getPower(int useTime){
+        return useTime / 40;
     }
 }

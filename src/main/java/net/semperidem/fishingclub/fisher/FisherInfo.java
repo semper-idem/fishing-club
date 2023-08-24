@@ -358,6 +358,14 @@ public class FisherInfo {
         return false;
     }
 
+    public FisherInfo getHarpoonFisherInfo(){
+        FisherInfo hFisherInfo = new FisherInfo();
+        hFisherInfo.fisher = this.fisher;
+        hFisherInfo.perks = this.perks;
+        hFisherInfo.fishedChunks = this.fishedChunks;
+        return hFisherInfo;
+    }
+
     @Override
     public String toString(){
         return "\n============[Fisher Info]============" +

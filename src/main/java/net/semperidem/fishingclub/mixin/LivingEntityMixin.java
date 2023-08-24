@@ -7,6 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.semperidem.fishingclub.item.HarpoonRodItem;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,19 +22,26 @@ import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_R
 @Environment(EnvType.CLIENT)
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Unique private int rodPullPower = 0;
+    @Unique private int pullPower = 0;
 
 
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
-        if (!activeStack.isOf(CUSTOM_FISHING_ROD)) return;
-        tickRodPullPower();
+        int power;
+        if (activeStack.isOf(CUSTOM_FISHING_ROD)){
+            power = FishingRodUtil.getPower(getItemUseTime());
+            tickPullPower(power);
+        } else if (activeStack.isOf(FItemRegistry.HARPOON_ROD)) {
+            power = HarpoonRodItem.getPower(getItemUseTime());
+        } else {
+            return;
+        }
+        tickPullPower(power);
     }
 
-    private void tickRodPullPower(){
-        int power = FishingRodUtil.getPower(getItemUseTime());
-        if (power != this.rodPullPower) {
-            this.rodPullPower = power;
+    private void tickPullPower(int power){
+        if (power != this.pullPower && power != 0) {
+            this.pullPower = power;
             MinecraftClient.getInstance().player.sendMessage(Text.of("[" + ">".repeat(power) + "]"), true);
         }
     }
