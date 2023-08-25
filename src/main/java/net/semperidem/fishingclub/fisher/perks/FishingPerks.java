@@ -287,22 +287,27 @@ public class FishingPerks {
 
     public static FishingPerk HARPOON_ROD = FishingPerk
             .createPerk("harpoon_rod", INSTANT_FISH_CREDIT)
-            .withLabel("Harpoon Rod")
-            .withDescription("Unlock the Harpoon Rod")
-            .withDetailedDesc("Unlock the ability to craft and use the Harpoon Rod.");
-
-    public static FishingPerk STICKY_HOOK = FishingPerk
-            .createPerk("sticky_hook", HARPOON_ROD)
-            .withLabel("Sticky Hook")
-            .withDescription("Unlock the Sticky Hook")
-            .withDetailedDesc("Unlock the ability to craft and use the Sticky Hook. Not great for fishing, but helpful for reaching far places.");
+            .withLabel("Harpoon")
+            .withDescription("Unlock Harpoon Rod")
+            .withDetailedDesc("Unlock the ability to craft Harpoon.")
+            .withIcon("harpoon_rod.png")
+            .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity,  FishingClub.getIdentifier("harpoon_rod")));
 
     public static FishingPerk BOW_FISHING = FishingPerk
-            .createPerk("bow_fishing", STICKY_HOOK)
-            .withLabel("Bow Fishing")
-            .withDescription("Unlock bow fishing (needs arrows with line)")
-            .withDetailedDesc("Unlock the ability to use a bow for fishing. Requires arrows equipped with a line.");
+            .createPerk("bow_fishing", HARPOON_ROD)
+            .withLabel("Bow fishing")
+            .withDescription("Unlock bow fishing")
+            .withDetailedDesc("Unlock the ability to craft arrow with line.\n" +
+                    "Which when shot from bow/crossbow can catch fish.")
+            .withIcon("bow_fishing.png");
 
+
+    public static FishingPerk BOMB_FISHING = FishingPerk
+            .createPerk("bomb_fishing", BOW_FISHING)
+            .withLabel("Explosive fishing")
+            .withDescription("TNT can now catch fish")
+            .withDetailedDesc("TNT prime by you and under water can \"catch\" fish")
+            .withIcon("tnt.png");
 
     //S - Active Aura
     public static FishingPerk FISHING_SCHOOL = FishingPerk
