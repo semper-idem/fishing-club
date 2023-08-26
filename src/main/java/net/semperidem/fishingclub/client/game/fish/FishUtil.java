@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.game.fish;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,9 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -32,17 +36,36 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
+    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing, BlockPos rewardPos){
         FisherInfoManager.fishCaught(player, fish.experience);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
         fishReward.setCount(getRewardMultiplier(FisherInfoManager.getFisher(player), boatFishing));
-        if (player.getInventory().getEmptySlot() == -1) {
-            player.dropItem(fishReward, false);
+        if (rewardPos == null) {
+            if (player.getInventory().getEmptySlot() == -1) {
+                player.dropItem(fishReward, false);
+            } else {
+                player.giveItemStack(fishReward);
+            }
         } else {
-            player.giveItemStack(fishReward);
+            player.world.spawnEntity(throwRandomly(player.world, rewardPos, fishReward));
         }
+    }
 
+    private static ItemEntity throwRandomly(World world, BlockPos pos, ItemStack stack){
+        if (stack.isEmpty()) {
+            return null;
+        }
+        ItemEntity itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, stack);
+        itemEntity.setPickupDelay(40);
+        float f = world.random.nextFloat() * 0.25f;
+        float g = world.random.nextFloat() * ((float)Math.PI * 2);
+        itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.75f, MathHelper.cos(g) * f);
+        return itemEntity;
+    }
+
+    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
+        grantReward(player, fish, boatFishing, null);
     }
 
     private static int getRewardMultiplier(FisherInfo fisherInfo, boolean boatFishing){
