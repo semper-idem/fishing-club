@@ -42,6 +42,8 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_IRON, FishingPerks.HOOK_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_GOLD, FishingPerks.HOOK_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_NETHERITE, FishingPerks.HOOK_CRAFTING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.HARPOON_ROD, FishingPerks.HARPOON_ROD);
+        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.LINE_ARROW, FishingPerks.BOW_FISHING);
     }
 
     @Override

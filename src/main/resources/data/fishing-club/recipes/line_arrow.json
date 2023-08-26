@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "aaa",
+    "aLa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:arrow"
+    },
+    "L": {
+      "item": "fishing-club:line_strider_thread"
+    }
+  },
+  "result": {
+    "item": "fishing-club:line_arrow",
+    "count": 8
+  }
+}

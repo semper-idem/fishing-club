@@ -44,14 +44,29 @@ public class FEntityRegistry {
                     .trackedUpdateRate(20)
                     .build()
     );
+
+    public static final EntityType<LineArrowEntity> LINE_ARROW_ENTITY = Registry.register(
+            Registry.ENTITY_TYPE,
+            FishingClub.getIdentifier("line_arrow_entity"),
+            FabricEntityTypeBuilder.<LineArrowEntity>create(SpawnGroup.MISC, LineArrowEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
+                    .disableSummon()
+                    .disableSaving()
+                    .trackRangeBlocks(64)
+                    .trackedUpdateRate(20)
+                    .build()
+    );
     public static final EntityModelLayer MODEL_HARPOON_LAYER = new EntityModelLayer(FishingClub.getIdentifier("harpoon_rod"), "main");
 
 
     public static void register(){
         FabricDefaultAttributeRegistry.register(FISHERMAN, FishermanEntity.createMobAttributes());
+
         EntityRendererRegistry.register(FISHERMAN, FishermanEntityRenderer::new);
         EntityRendererRegistry.register(CUSTOM_FISHING_BOBBER, CustomFishingBobberEntityRenderer::new);
         EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
+        EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
+
         EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
 
     }

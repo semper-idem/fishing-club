@@ -1,47 +1,39 @@
 package net.semperidem.fishingclub.entity;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.entity.ProjectileEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
 
-public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
-    public static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/harpoon_rod.png");
-    private final HarpoonEntityModel model;
-    public HarpoonEntityRenderer(EntityRendererFactory.Context context) {
+public class LineArrowEntityRenderer extends ProjectileEntityRenderer<LineArrowEntity> {
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(ArrowEntityRenderer.TEXTURE);
+
+    public LineArrowEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
-        this.model = new HarpoonEntityModel(context.getPart(FEntityRegistry.MODEL_HARPOON_LAYER));
     }
 
-
     @Override
-    public void render(HarpoonEntity harpoonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevYaw, harpoonEntity.getYaw()) - 90.0f));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevPitch, harpoonEntity.getPitch()) + 90.0f));
-        VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(harpoonEntity)), false, false);
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
-        matrixStack.pop();
+    public Identifier getTexture(LineArrowEntity entity) {
+        return ArrowEntityRenderer.TEXTURE;
+    }
 
+    public void render(LineArrowEntity lineArrowEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.render(lineArrowEntity, f, g, matrixStack, vertexConsumerProvider, i);
         double s;
         float r;
         double q;
         double p;
         double o;
-        if (harpoonEntity.getOwner() != null && harpoonEntity.getOwner() instanceof PlayerEntity playerEntity) {
+        if (lineArrowEntity.getOwner() != null && lineArrowEntity.getOwner() instanceof PlayerEntity playerEntity) {
             matrixStack.push();
             int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
             float h = playerEntity.getHandSwingProgress(g);
@@ -66,9 +58,9 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
                 q = MathHelper.lerp(g, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
                 r = playerEntity.getStandingEyeHeight();
             }
-            s = MathHelper.lerp(g, harpoonEntity.prevX, harpoonEntity.getX());
-            double t = MathHelper.lerp(g, harpoonEntity.prevY, harpoonEntity.getY()) + 0.25;
-            double u = MathHelper.lerp(g, harpoonEntity.prevZ, harpoonEntity.getZ());
+            s = MathHelper.lerp(g, lineArrowEntity.prevX, lineArrowEntity.getX());
+            double t = MathHelper.lerp(g, lineArrowEntity.prevY, lineArrowEntity.getY()) + 0.25;
+            double u = MathHelper.lerp(g, lineArrowEntity.prevZ, lineArrowEntity.getZ());
             float v = (float)(o - s);
             float w = (float)(p - t) + r;
             float x = (float)(q - u);
@@ -80,7 +72,6 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
             matrixStack.pop();
 
         }
-
     }
 
     private static float percentage(int i, int j) {
@@ -98,8 +89,4 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
         vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
     }
 
-    @Override
-    public Identifier getTexture(HarpoonEntity tridentEntity) {
-        return TEXTURE;
-    }
 }

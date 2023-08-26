@@ -89,6 +89,7 @@ public class HarpoonEntity extends TridentEntity {
                 }
                 ++this.returnTimer;
             }
-        }super.tick();
+        }
+        super.tick();
     }
 }

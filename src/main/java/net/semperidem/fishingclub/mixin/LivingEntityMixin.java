@@ -25,6 +25,11 @@ public abstract class LivingEntityMixin {
     @Unique private int pullPower = 0;
 
 
+    @Inject(method = "stopUsingItem", at = @At("TAIL"))
+    private void onStopUsingItem(CallbackInfo ci){
+        pullPower = 0;
+    }
+
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
         int power;
@@ -39,6 +44,7 @@ public abstract class LivingEntityMixin {
         tickPullPower(power);
     }
 
+
     private void tickPullPower(int power){
         if (power != this.pullPower && power != 0) {
             this.pullPower = power;
@@ -46,4 +52,5 @@ public abstract class LivingEntityMixin {
         }
     }
     @Shadow public abstract int getItemUseTime();
+
 }

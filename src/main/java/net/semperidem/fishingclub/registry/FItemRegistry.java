@@ -21,6 +21,7 @@ public class FItemRegistry {
     public static final Item FISHER_HAT = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item FISHER_VEST = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.CHEST, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item HARPOON_ROD = new HarpoonRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
+    public static final Item LINE_ARROW = new LineArrowItem(new Item.Settings().group(FISHING_CLUB_GROUP));
 
     public static void register(){
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_workbench"), FISHER_WORKBENCH);
@@ -31,6 +32,7 @@ public class FItemRegistry {
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_hat"), FISHER_HAT);
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_vest"), FISHER_VEST);
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("harpoon_rod"), HARPOON_ROD);
+        Registry.register(Registry.ITEM, FishingClub.getIdentifier("line_arrow"), LINE_ARROW);
         FishingRodPartItems.registerParts();
 
     }
