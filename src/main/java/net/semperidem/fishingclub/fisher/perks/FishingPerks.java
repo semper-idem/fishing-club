@@ -226,7 +226,8 @@ public class FishingPerks {
             .withLabel("Rain Summon")
             .withDescription("Unlock Summon rain spell")
             .withDetailedDesc("Unlock summon rain spell available in fisher spells\n" +
-                    "Rain lasts for 5min and has 60 min cooldown")
+                    "Duration: 5min\n" +
+                    "Cooldown: 60min")
             .withIcon("rain_summon.png");
 
     //O - First catch of the day
@@ -312,98 +313,153 @@ public class FishingPerks {
     //S - Active Aura
     public static FishingPerk FISHING_SCHOOL = FishingPerk
             .createPerk("fishing_school", ROOT_SOCIALIST)
-            .withLabel("Even odds")
-            .withDescription("Grants you and players near you buff to bobber width")
-            .withDetailedDesc("Grants you and players near you(16 blocks radius, 3d, x,y,z) +25% bobber width");
+            .withLabel("Everyone learns sometime")
+            .withDescription("[Spell] Grants you and players near you buff to bobber width")
+            .withDetailedDesc("[Spell]\n" +
+                    "Grants you and players near you\n" +
+                    "additional 25% bobber width\n" +
+                    "Duration: 5min\n" +
+                    "Cooldown: 15min\n" +
+                    "Range: 4 blocks")
+            .withIcon("fishing_school.png");
 
     public static FishingPerk SLOWER_FISH = FishingPerk
             .createPerk("slower_fish", FISHING_SCHOOL)
             .withLabel("Slower Fish")
-            .withDescription("Grants you and players near you slower fish")
-            .withDetailedDesc("Slows down fish for you and players within a certain radius, making them easier to catch.");
+            .withDescription("[Spell] Grants you and players near you buff slowing fish movement")
+            .withDetailedDesc("[Spell]\n" +
+                    "Slows down fish for you and players near you,\n" +
+                    "making them easier to catch.\n" +
+                    "Duration: 5min\n" +
+                    "Cooldown: 15min\n" +
+                    "Range: 4 blocks")
+            .withIcon("time_boost.png");
 
     public static FishingPerk EXPERIENCE_BOOST = FishingPerk
             .createPerk("experience_boost", SLOWER_FISH)
             .withLabel("Experience Boost")
-            .withDescription("Grants you and players near you an experience boost")
-            .withDetailedDesc("Provides an experience boost to you and nearby players, increasing the amount of experience gained from fishing.");
+            .withDescription("[Spell] Grants you and players near you buff to experience gained")
+            .withDetailedDesc("[Spell]\n" +
+                    "Provides an experience boost to you and nearby\n" +
+                    "players, increasing the amount of fishing experience \n" +
+                    "gained from fishing.\n" +
+                    "Duration: 5min\n" +
+                    "Cooldown: 15min\n" +
+                    "Range: 4 blocks")
+            .withIcon("exp_boost.png");
 
 
     public static FishingPerk LUCKY_FISHING = FishingPerk
             .createPerk("lucky_fishing", EXPERIENCE_BOOST)
-            .withDescription("Grants you and players near you increased fishing luck")
             .withLabel("Lucky Fishing")
-            .withDetailedDesc("Increases fishing luck for you and players within a certain radius, raising the chance to catch valuable items.");
+            .withDescription("[Spell] Grants you and players near you buff increasing fishing luck")
+            .withDetailedDesc("[Spell]\n" +
+                    "Increases fishing luck for you and nearby players, \n" +
+                    "raising the chance to catch valuable items.\n" +
+                    "Duration: 5min\n" +
+                    "Cooldown: 15min\n" +
+                    "Range: 4 blocks")
+            .withIcon("luck_boost.png");
 
     //S - Passive Aura
     public static FishingPerk PASSIVE_FISHING_XP = FishingPerk
             .createPerk("passive_fishing_xp", ROOT_SOCIALIST)
-            .withLabel("Passive Fishing Experience")
-            .withDescription("Passively fishing near you gives increased experience")
-            .withDetailedDesc("When players fish passively in your vicinity, they receive a boost to the amount of experience they gain.");
+            .withLabel("Watch and learn")
+            .withDescription("Players near you gain small buff to fishing experience they gain")
+            .withDetailedDesc("Players near you gain small buff to fishing\n" +
+                    "experience they gain.\n" +
+                    "Scales with level difference between fisherman\n" +
+                    "Range: 3 blocks")
+            .withIcon("passiv_exp.png");
 
     public static FishingPerk QUALITY_SHARING = FishingPerk
             .createPerk("quality_sharing", PASSIVE_FISHING_XP)
-            .withLabel("Quality Sharing")
-            .withDescription("Each time you catch a Grade 4-5 fish, players near you catch the same grade fish next")
-            .withDetailedDesc("Your high-grade catch inspires those around you. Each time you catch a Grade 4-5 fish, the next fish caught by players near you will be the same grade.");
+            .withLabel("Celebration!")
+            .withDescription("Each time you catch grade 4+ fish, players near you gain quality buff for their next catch")
+            .withDetailedDesc("Each time you catch grade 4+ fish,\n" +
+                    "players near you gain +1 to min grade of their\n" +
+                    "next catch")
+            .withIcon("quality_sharing.png");
 
     public static FishingPerk SHARED_BUFFS = FishingPerk
             .createPerk("shared_buffs", QUALITY_SHARING)
-            .withLabel("Shared Buffs")
-            .withDescription("When in a boat together, all your buffs are shared plus a bonus buff so it's not useless with link")
-            .withDetailedDesc("Catching fish in a boat together allows you and your friends to share all buffs and receive an additional bonus buff.");
+            .withLabel("Team expedition")
+            .withDescription("When in a boat together, each time you catch fish increase buff timer")
+            .withDetailedDesc("When in a boat together, \n" +
+                    "each time you catch fish increase buff timer by \n" +
+                    "10 seconds")
+            .withIcon("buff_sharing.png");
 
     //S - Link
     public static FishingPerk FISHERMAN_LINK = FishingPerk
             .createPerk("fisherman_link", ROOT_SOCIALIST)
             .withLabel("Fisherman Link")
             .withDescription("Link one fisherman to always have shared buffs")
-            .withDetailedDesc("Establish a link with another fisherman. When linked, you will always share fishing buffs.");
+            .withDetailedDesc("Establish a link with another fisherman. \n" +
+                    "When linked, you will always share fishing buffs, \n" +
+                    "regardless of range (This works both ways)")
+            .withIcon("fisher_link_1.png");
 
     public static FishingPerk DOUBLE_LINK = FishingPerk
             .createPerk("double_link", FISHERMAN_LINK)
             .withLabel("Double Link")
-            .withDescription("Link two fishermen to always have shared buffs")
-            .withDetailedDesc("Establish links with two other fishermen. When linked, you will always share fishing buffs.");
+            .withDescription("Link additional fisherman")
+            .withDetailedDesc("Link additional fisherman")
+            .withIcon("fisher_link_2.png");
 
     public static FishingPerk SHARED_BAIT = FishingPerk
             .createPerk("shared_bait", DOUBLE_LINK)
-            .withLabel("Shared Bait")
-            .withDescription("Linked fisherman can use your bait (doesn't consume)")
-            .withDetailedDesc("A linked fisherman can use your bait while fishing, and it won't be consumed from your inventory.");
+            .withLabel("Here, take some")
+            .withDescription("[Spell] Linked fisherman can use your bait (doesn't consume)")
+            .withDetailedDesc("[Spell]\n" +
+                    "Gain buff that will share your bait with linked\n" +
+                    "fisherman in case they run out of theirs\n" +
+                    "Duration: 10min\n" +
+                    "Cooldown: 10min")
+            .withIcon("bait_shared.png");
 
     public static FishingPerk FISHERMAN_SUMMON = FishingPerk
             .createPerk("fisherman_summon", SHARED_BAIT)
             .withLabel("Fisherman Summon")
-            .withDescription("Summon linked fisherman to your position")
-            .withDetailedDesc("Summon any fisherman you are linked with to your current location. Great for assembling a fishing party quickly!");
+            .withDescription("[Spell] Summon linked fisherman to your position")
+            .withDetailedDesc("[Spell]\n" +
+                    "Summon all fisherman you are linked with to\n" +
+                    "your current location.\n" +
+                    "(They still have to agree to it)\n" +
+                    "Cooldown: 60min")
+            .withIcon("linked_tp.png");
 
     //S - Misc
     public static FishingPerk DURABLE_RODS = FishingPerk
             .createPerk("durable_rods", ROOT_SOCIALIST)
             .withLabel("Durable Rods")
-            .withDescription("Repaired rods are twice as durable")
-            .withDetailedDesc("Fishing rods that you repair become twice as durable, lasting longer between repairs.");
+            .withDescription("Rod repaired by you gain 50% to not damage self after use")
+            .withDetailedDesc("Rod repaired by you gain 50%\n" +
+                    "to not damage self after use")
+            .withIcon("durable_rod.png");
 
     public static FishingPerk BIG_BOAT = FishingPerk
             .createPerk("big_boat", DURABLE_RODS)
-            .withLabel("Big Boat")
-            .withDescription("Craft a 4-player boat")
-            .withDetailedDesc("Unlock the ability to craft a larger boat that can fit up to 4 players. Fishing party, anyone?");
+            .withLabel("The Big Boat")
+            .withDescription("Unlock recipe and crafting of a 4-player boat")
+            .withDetailedDesc("Unlock the ability to craft a larger boat \n" +
+                    "that can fit up to 4 players")
+            .withIcon("big_boat.png");
 
     public static FishingPerk MAGIC_ROD_SUMMON = FishingPerk
             .createPerk("magic_rod_summon", BIG_BOAT)
             .withLabel("Magic Rod Summon")
-            .withDescription("Summon a magic rod (lasts x time and can be dropped for a friend)")
-            .withDetailedDesc("Summon a magic fishing rod that lasts for a certain amount of time. This rod can also be given to a friend.");
+            .withDescription("Summon a magic rod that lasts for 15 minutes")
+            .withDetailedDesc("Summon a magic rod that lasts for 15 minutes\n" +
+                    "(Can be dropped)")
+            .withIcon("magic_rod.png");
 
     public static FishingPerk FREE_SHOP_SUMMON = FishingPerk
             .createPerk("free_shop_summon", MAGIC_ROD_SUMMON)
-            .withLabel("Free Shop Summon")
+            .withLabel("Derek Express")
             .withDescription("Summon shop for free")
-            .withDetailedDesc("Summons a shop at your current location for free, allowing you and others to buy and sell goods on the spot.");
-
+            .withDetailedDesc("Summons a shop at your current location for free.")
+            .withIcon("free_shop.png");
 
 
 
