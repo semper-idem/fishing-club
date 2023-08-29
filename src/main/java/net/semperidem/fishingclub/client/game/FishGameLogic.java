@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 import org.lwjgl.glfw.GLFW;
@@ -58,6 +59,7 @@ public class FishGameLogic {
     private float fishDamage;
     private float fishPos;
     private float fishPosCenter;
+    private boolean slowedFish;
 
     private float bobberPos;
     private float bobberLength;
@@ -99,6 +101,8 @@ public class FishGameLogic {
         for(int i = 0; i < jumpCount; i++){
             jumpTimestamps[i] = (int) (segmentTime * Math.random() + segmentTime * i);
         }
+
+        this.slowedFish = player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF);
     }
 
     private void applyFisherVestEffect(){
@@ -132,9 +136,7 @@ public class FishGameLogic {
 
     private void calculateBobberLength(){
         float perksBonusLengthMultiplier = 1;
-        if(fisherInfo.hasPerk(FishingPerks.FISHING_SCHOOL)) {
-            perksBonusLengthMultiplier += 0.1f;
-        }
+
         if ((boatFishing && fisherInfo.hasPerk(FishingPerks.BOAT_BOBBER_SIZE))) {
             perksBonusLengthMultiplier += 0.1f;
         }
@@ -149,7 +151,12 @@ public class FishGameLogic {
             }
         }
 
-        this.bobberLength = STARTING_BOBBER_LENGTH * partsBonusLengthMultiplier * perksBonusLengthMultiplier;
+        float statusEffectLengthMultiplier = 1;
+        if (player.hasStatusEffect(FStatusEffectRegistry.BOBBER_BUFF)) {
+            statusEffectLengthMultiplier += 0.1f;
+        }
+
+        this.bobberLength = STARTING_BOBBER_LENGTH * partsBonusLengthMultiplier * perksBonusLengthMultiplier * statusEffectLengthMultiplier;
     }
 
 
@@ -293,6 +300,9 @@ public class FishGameLogic {
 
     public float nextFishPosition() {
         float fishSpeed = Math.max(fish.fishMinEnergyLevel, fish.fishEnergy) / (fish.fishMaxEnergyLevel * 1f);
+        if (slowedFish) {
+            fishSpeed *= 0.75;
+        }
         float fishSpeedScaledToLevel = fishSpeed * 0.75f + (fish.fishLevel / 200f);
         float elapsedTime = (fishSpeedScaledToLevel * ticks) % totalDuration;
         float nextFishPosUnbound = nextFishPosOnCurve(elapsedTime) + nextFishPosOnWave(elapsedTime);

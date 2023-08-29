@@ -215,7 +215,7 @@ public class FishingPerks {
 
     public static FishingPerk RAINY_FISH_PLUS = FishingPerk
             .createPerk("rainy_fish_plus", RAINY_FISH)
-            .withLabel("Fish hours")
+            .withLabel("Fishy hours")
             .withDescription("Quadruple raining catch rate bonus")
             .withDetailedDesc("When casting bobber in rain increase raining\n" +
                     " catch rate to 50%.")
@@ -223,9 +223,9 @@ public class FishingPerks {
 
     public static FishingPerk RAIN_SUMMON = FishingPerk
             .createPerk("rain_summon", RAINY_FISH_PLUS)
-            .withLabel("Rain Summon")
-            .withDescription("Unlock Summon rain spell")
-            .withDetailedDesc("Unlock summon rain spell available in fisher spells\n" +
+            .withLabel("Perfect conditions")
+            .withDescription("[Spell] Summon rain")
+            .withDetailedDesc("[Spell] Summon rain\n" +
                     "Duration: 5min\n" +
                     "Cooldown: 60min")
             .withIcon("rain_summon.png");
@@ -275,7 +275,7 @@ public class FishingPerks {
                     "Every day you don't fish gain additional 25% chance\n" +
                     "to increase min grade by 1\n" +
                     "(After reaching 100% gain 25% chance to increase\n" +
-                            "min grade by additional 1)")
+                    "min grade by additional 1)")
             .withIcon("quality_time_increment.png");
 
     //O - Misc
@@ -317,7 +317,7 @@ public class FishingPerks {
             .withDescription("[Spell] Grants you and players near you buff to bobber width")
             .withDetailedDesc("[Spell]\n" +
                     "Grants you and players near you\n" +
-                    "additional 25% bobber width\n" +
+                    "additional 10% bobber width\n" +
                     "Duration: 5min\n" +
                     "Cooldown: 15min\n" +
                     "Range: 4 blocks")
@@ -325,7 +325,7 @@ public class FishingPerks {
 
     public static FishingPerk SLOWER_FISH = FishingPerk
             .createPerk("slower_fish", FISHING_SCHOOL)
-            .withLabel("Slower Fish")
+            .withLabel("Slow Fish-o")
             .withDescription("[Spell] Grants you and players near you buff slowing fish movement")
             .withDetailedDesc("[Spell]\n" +
                     "Slows down fish for you and players near you,\n" +

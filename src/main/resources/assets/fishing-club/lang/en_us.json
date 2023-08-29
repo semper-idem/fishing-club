@@ -1,4 +1,7 @@
 {
-  "effect.fishing-club.fish_quality_buff_status_effect": "Fish Quality+",
-  "effect.fishing-club.fish_frequency_buff_status_effect": "Fish Catch-rate+"
+  "effect.fishing-club.quality_buff": "Fish Quality+",
+  "effect.fishing-club.frequency_buff": "Fish Catch-rate+",
+  "effect.fishing-club.exp_buff": "Fish Exp+",
+  "effect.fishing-club.slow_fish_buff": "Fish Slow-Mo",
+  "effect.fishing-club.bobber_buff": "Bobber Width+"
 }

@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class FisherInfoManager {
     public static FisherInfo getFisher(ServerPlayerEntity user){
@@ -13,6 +14,10 @@ public class FisherInfoManager {
 
     public static void fishCaught(ServerPlayerEntity playerEntity, int expGained){
         FisherInfo fisherInfo = getFisher(playerEntity);
+        if (playerEntity.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
+            float multiplier = (float) (1 + 0.1 * (playerEntity.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
+            expGained *= multiplier;
+        }
         fisherInfo.fishCaught(expGained);
     }
 
