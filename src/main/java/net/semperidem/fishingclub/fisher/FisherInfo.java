@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -66,6 +67,9 @@ public class FisherInfo {
         fromNbt(fisherTag);
     }
 
+    public PlayerEntity getFisher(){
+        return fisher;
+    }
     public void tick(){
         for(SpellInstance spellInstance : spells.values()) {
             spellInstance.tick();
@@ -233,7 +237,10 @@ public class FisherInfo {
         }
         if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
             minGrade++;
+        } else if (this.fisher.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
+            minGrade++;
         }
+
         if (hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && lastFishCaughtTime - worldTime > 24000) {
             int daysSinceLastFish = (int) ((lastFishCaughtTime - worldTime) / 24000f);
             while (daysSinceLastFish > 4) {
@@ -287,7 +294,7 @@ public class FisherInfo {
         this.lastFishCaughtTime = time;
     }
 
-    void fishCaught(int expGained){
+    void fishCaught(Fish fish, int boostedExp){
         long worldTime = fisher.world.getTime();
         setLastFishCaughtTime(worldTime);
         if (worldTime >= firstFishOfTheDayCaughtTime + 24000) {
@@ -298,9 +305,11 @@ public class FisherInfo {
             if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
                 fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
             }
-
         }
-        grantExperience(expGained);
+        if (!caughtInChunk(fish.caughtIn)) {
+            fishedChunks.add(fish.caughtIn);
+        }
+        grantExperience(boostedExp);
     }
 
     void grantExperience(double gainedXP){

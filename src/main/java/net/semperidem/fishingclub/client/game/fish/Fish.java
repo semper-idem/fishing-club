@@ -5,6 +5,7 @@ import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 
@@ -32,6 +33,8 @@ public class Fish {
     public ItemStack caughtUsing;
 
     public FisherInfo.Chunk caughtIn;
+
+    public boolean oneTimeBuffed;
     public Fish(){
     }
 
@@ -52,6 +55,7 @@ public class Fish {
         initEnergyLevels();
         initCurvePoints();
         this.value = FishUtil.getFishValue(this);
+        oneTimeBuffed = fisherInfo.getFisher().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
     }
 
     public FishType getFishType(){

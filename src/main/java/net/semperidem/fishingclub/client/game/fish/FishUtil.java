@@ -1,7 +1,9 @@
 package net.semperidem.fishingclub.client.game.fish;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,12 +15,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FisherInfo;
 import net.semperidem.fishingclub.fisher.FisherInfoManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
@@ -37,10 +41,20 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing, BlockPos rewardPos){
-        FisherInfoManager.fishCaught(player, fish.experience);
+        FisherInfoManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
-        fishReward.setCount(getRewardMultiplier(FisherInfoManager.getFisher(player), boatFishing));
+        FisherInfo fisherInfo = FisherInfoManager.getFisher(player);
+        fishReward.setCount(getRewardMultiplier(fisherInfo, boatFishing));
+        if (fish.grade >= 4 && fisherInfo.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.oneTimeBuffed) {
+            Box box = new Box(player.getBlockPos());
+            box.expand(3);
+            for(Entity entity : player.getEntityWorld().getOtherEntities(null, box)) {
+                if (entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+                    serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, 2400));
+                }
+            }
+        }
         if (rewardPos == null) {
             if (player.getInventory().getEmptySlot() == -1) {
                 player.dropItem(fishReward, false);

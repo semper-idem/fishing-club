@@ -1,6 +1,10 @@
 package net.semperidem.fishingclub.fisher;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Box;
+import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class FisherInfoManager {
@@ -12,14 +16,29 @@ public class FisherInfoManager {
         getFisher(playerEntity).grantExperience(expGained);
     }
 
-    public static void fishCaught(ServerPlayerEntity playerEntity, int expGained){
+    public static void fishCaught(ServerPlayerEntity playerEntity, Fish fish){
+        int expGained = fish.experience;
         FisherInfo fisherInfo = getFisher(playerEntity);
         if (playerEntity.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
             float multiplier = (float) (1 + 0.1 * (playerEntity.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
             expGained *= multiplier;
         }
-        fisherInfo.fishCaught(expGained);
+
+        Box box = new Box(playerEntity.getBlockPos());
+        box.expand(3);
+        float passivExpMultiplier = 1;
+        for(Entity entity : playerEntity.getEntityWorld().getOtherEntities(null, box)) {
+            if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+                if (getFisher(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                    passivExpMultiplier += 0.1;
+                }
+            }
+        }
+        expGained *= Math.min(passivExpMultiplier, 2);
+
+        fisherInfo.fishCaught(fish, expGained);
     }
+
 
     public static void addPerk(ServerPlayerEntity playerEntity, String perkName) {
         getFisher(playerEntity).addPerk(perkName);

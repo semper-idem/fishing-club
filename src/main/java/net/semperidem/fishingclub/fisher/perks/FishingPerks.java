@@ -378,7 +378,9 @@ public class FishingPerks {
             .withDescription("Each time you catch grade 4+ fish, players near you gain quality buff for their next catch")
             .withDetailedDesc("Each time you catch grade 4+ fish,\n" +
                     "players near you gain +1 to min grade of their\n" +
-                    "next catch")
+                    "next catch\n" +
+                    "Range: 4 blocks\n" +
+                    "Duration: 2min")
             .withIcon("quality_sharing.png");
 
     public static FishingPerk SHARED_BUFFS = FishingPerk

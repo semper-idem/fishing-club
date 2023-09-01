@@ -56,7 +56,7 @@ public class HarpoonEntity extends TridentEntity {
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
                 Fish hFish = FishUtil.getFishOnHook(fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .getHarpoonFish((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
-                FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity);
+                FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity, getBlockPos());
             }
         }
     }
