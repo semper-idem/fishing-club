@@ -1,8 +1,11 @@
 package net.semperidem.fishingclub.fisher;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -297,19 +300,77 @@ public class FisherInfo {
     void fishCaught(Fish fish, int boostedExp){
         long worldTime = fisher.world.getTime();
         setLastFishCaughtTime(worldTime);
-        if (worldTime >= firstFishOfTheDayCaughtTime + 24000) {
-            setFirstFishOfTheDayCaughtTime(worldTime);
-            if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
-            }
-            if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-                fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
-            }
+        firstFishOfTheDayCaught(worldTime);
+        fishCaughtInChunk(fish);
+        processOneTimeBuff(fish);
+        prolongStatusEffects();
+        grantExperience(boostedExp);
+    }
+
+    private void prolongStatusEffects(){
+        if (!hasPerk(FishingPerks.SHARED_BUFFS)) {
+            return;
         }
+
+        if (!this.fisher.hasVehicle()) {
+            return;
+        }
+
+        if (!(this.fisher.getVehicle() instanceof BoatEntity boatEntity)) {
+            return;
+        }
+
+        ImmutableList<Entity> passengers = (ImmutableList<Entity>) boatEntity.getPassengerList();
+        if (passengers.size() <= 1) {
+            return;
+        }
+        for(Entity passenger : passengers) {
+            if(!(passenger instanceof PlayerEntity playerPassenger)) continue;
+            playerPassenger.getStatusEffects().forEach(
+                    sei -> {
+                        sei.upgrade(new StatusEffectInstance(sei.getEffectType(), sei.getDuration() + 200, sei.getAmplifier()));
+                    });
+        }
+
+    }
+
+    private void firstFishOfTheDayCaught(long worldTime){
+        if (worldTime < firstFishOfTheDayCaughtTime + 24000) {
+            return;
+        }
+        setFirstFishOfTheDayCaughtTime(worldTime);
+        if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
+            fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
+        }
+        if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
+            fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
+        }
+    }
+
+    private void fishCaughtInChunk(Fish fish){
         if (!caughtInChunk(fish.caughtIn)) {
             fishedChunks.add(fish.caughtIn);
         }
-        grantExperience(boostedExp);
+    }
+
+    private void processOneTimeBuff(Fish fish){
+        if (!fish.oneTimeBuffed) {
+            return;
+        }
+        if (!fisher.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+            return;
+        }
+        decreaseOneTimeBuff();
+    }
+
+    private void decreaseOneTimeBuff(){
+        StatusEffectInstance sei = fisher.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        int effectPower = sei.getAmplifier();
+        if (effectPower == 0) {
+            fisher.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        } else {
+            sei.upgrade(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF,sei.getDuration(), effectPower - 1));
+        }
     }
 
     void grantExperience(double gainedXP){
