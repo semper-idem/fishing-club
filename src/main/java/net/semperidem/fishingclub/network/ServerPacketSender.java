@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SEND;
 import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
@@ -41,17 +41,17 @@ public class ServerPacketSender {
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
     }
 
-    public static void sendFisherInfo(ServerPlayerEntity playerEntity, FisherInfo fisherInfo){
+    public static void sendFisherInfo(ServerPlayerEntity playerEntity, FishingCard fishingCard){
         PacketByteBuf packet = PacketByteBufs.create();
-        packet.writeNbt(fisherInfo.toNbt());
+        packet.writeNbt(fishingCard.toNbt());
         sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
     }
     public static void sendFisherInfo(ServerPlayerEntity playerEntity){
         PacketByteBuf packet = PacketByteBufs.create();
         NbtCompound playerCustomNbt = new NbtCompound();
         playerEntity.writeCustomDataToNbt(playerCustomNbt);
-        if (!playerCustomNbt.contains(FisherInfo.TAG)) return;
-        packet.writeNbt(playerCustomNbt.getCompound(FisherInfo.TAG));
+        if (!playerCustomNbt.contains(FishingCard.TAG)) return;
+        packet.writeNbt(playerCustomNbt.getCompound(FishingCard.TAG));
         sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
     }
 }

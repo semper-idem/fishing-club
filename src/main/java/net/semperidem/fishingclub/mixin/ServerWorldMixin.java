@@ -18,8 +18,8 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,7 +53,7 @@ public abstract class ServerWorldMixin extends World {
             return;
         }
 
-        if (!FisherInfoManager.getFisher(igniter).hasPerk(FishingPerks.BOMB_FISHING)) {
+        if (!FishingCardManager.getPlayerCard(igniter).hasPerk(FishingPerks.BOMB_FISHING)) {
             return;
         }
         int fishCount = (int) (Math.random() * power);
@@ -65,9 +65,9 @@ public abstract class ServerWorldMixin extends World {
 
     private void pickupFish(ServerPlayerEntity igniter, BlockPos explosionPos){
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
-                FisherInfo fisherInfo = FisherInfoManager.getFisher(igniter).getHarpoonFisherInfo();
-                FisherInfo.Chunk chunk = new FisherInfo.Chunk(chunkPos.x, chunkPos.z);
-                Fish hFish = FishUtil.getFishOnHook(fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
+                FishingCard fishingCard = FishingCardManager.getPlayerCard(igniter).getHarpoonFisherInfo();
+                FishingCard.Chunk chunk = new FishingCard.Chunk(chunkPos.x, chunkPos.z);
+                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .getHarpoonFish(0.35f);
                 FishUtil.grantReward(igniter, hFish, igniter.getVehicle() instanceof BoatEntity, explosionPos);
     }

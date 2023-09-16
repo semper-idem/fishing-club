@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.client.game.treasure;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
@@ -134,17 +134,17 @@ public class Rewards {
     }
 
 
-    public static Reward roll(FisherInfo fisher){
+    public static Reward roll(FishingCard fisher){
         int grade = getGrade(fisher);
         return new Reward(roll(getCost(fisher), grade), grade);
     }
 
-    public  static int getCost(FisherInfo fisher){
+    public  static int getCost(FishingCard fisher){
         int avgCost = (int) (60 * Math.sqrt(fisher.getLevel()));
         return (int) (60 + (60 + avgCost * Math.abs(random.nextGaussian() / 2)));
     }
 
-    public static int getGrade(FisherInfo fisher){
+    public static int getGrade(FishingCard fisher){
         float avgGrade = (float) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 3));
         return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
     }

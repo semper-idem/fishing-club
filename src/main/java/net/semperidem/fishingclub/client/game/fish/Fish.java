@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.client.game.fish;
 
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -10,7 +10,7 @@ import net.semperidem.fishingclub.util.FishingRodUtil;
 import net.semperidem.fishingclub.util.Point;
 
 public class Fish {
-    FisherInfo fisherInfo;
+    FishingCard fishingCard;
 
     private FishType fishType;
 
@@ -32,21 +32,21 @@ public class Fish {
 
     public ItemStack caughtUsing;
 
-    public FisherInfo.Chunk caughtIn;
+    public FishingCard.Chunk caughtIn;
 
     public boolean oneTimeBuffed;
     public Fish(){
     }
 
-    public Fish(FishType fishType, FisherInfo fisherInfo) {
-        this(fishType, fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FisherInfo.Chunk(0,0));
+    public Fish(FishType fishType, FishingCard fishingCard) {
+        this(fishType, fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FishingCard.Chunk(0,0));
     }
-    public Fish(FishType fishType, FisherInfo fisherInfo, ItemStack fishingRod, FisherInfo.Chunk chunk) {
+    public Fish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk) {
         this.caughtIn = chunk;
         this.caughtUsing = fishingRod;
         this.fishType = fishType;
         this.name = fishType.name;
-        this.fisherInfo = fisherInfo;
+        this.fishingCard = fishingCard;
         this.fishLevel = calculateFishLevel();
         this.weight = calculateFishWeight();
         this.length = calculateFishLength();
@@ -55,7 +55,7 @@ public class Fish {
         initEnergyLevels();
         initCurvePoints();
         this.value = FishUtil.getFishValue(this);
-        oneTimeBuffed = fisherInfo.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        oneTimeBuffed = fishingCard.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
     }
 
     public FishType getFishType(){
@@ -81,9 +81,9 @@ public class Fish {
     private int calculateFishLevel(){
         int adjustedFishLevel = FishUtil.getPseudoRandomValue(
                 fishType.fishMinLevel,
-                Math.min(99 - fishType.fishMinLevel, fisherInfo.getLevel()),
-                Math.min(1, (float) (Math.min(0.5, (fisherInfo.getLevel() / 200f)) +
-                                (Math.sqrt(fisherInfo.getLevel()) / 50f)))
+                Math.min(99 - fishType.fishMinLevel, fishingCard.getLevel()),
+                Math.min(1, (float) (Math.min(0.5, (fishingCard.getLevel() / 200f)) +
+                                (Math.sqrt(fishingCard.getLevel()) / 50f)))
         );
         return FishUtil.clampValue(1, 99, adjustedFishLevel);
     }
@@ -91,7 +91,7 @@ public class Fish {
 
     private float calculateFishWeight(){
         float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
-        float minGradeBuff = fisherInfo.getMinGrade() / 5f;
+        float minGradeBuff = fishingCard.getMinGrade() / 5f;
         float minWeight = fishType.fishMinWeight + fishType.fishRandomWeight * minGradeBuff;
         float weightRange = fishType.fishRandomWeight * weightMultiplier * (1 - minGradeBuff);
         return FishUtil.getPseudoRandomValue(minWeight, weightRange, fishLevel / 100f);
@@ -99,7 +99,7 @@ public class Fish {
 
     private float calculateFishLength(){
         float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
-        float minGradeBuff = fisherInfo.getMinGrade() / 5f;
+        float minGradeBuff = fishingCard.getMinGrade() / 5f;
         float minLength = fishType.fishMinLength + fishType.fishRandomLength * minGradeBuff;
         float lengthRange = fishType.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
         return FishUtil.getPseudoRandomValue(minLength, lengthRange, fishLevel / 100f);
@@ -117,8 +117,8 @@ public class Fish {
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
         float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
-        if (fisherInfo.hasPerk(FishingPerks.CHUNK_QUALITY_INCREASE)) {
-            if (fisherInfo.caughtInChunk(caughtIn)) {
+        if (fishingCard.hasPerk(FishingPerks.CHUNK_QUALITY_INCREASE)) {
+            if (fishingCard.caughtInChunk(caughtIn)) {
                 oneUpChance = 1;
             }
         }

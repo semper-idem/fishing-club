@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -24,8 +24,8 @@ import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.*;
 
-public class FisherInfo {
-    public static final String TAG = "fisher_info";
+public class FishingCard {
+    public static final String TAG = "fishing_card";
 
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
@@ -37,26 +37,26 @@ public class FisherInfo {
     private long lastFishCaughtTime = 0;
     private long firstFishOfTheDayCaughtTime = 0;
     private HashMap<String, FishingPerk> perks = new HashMap<>();
-    private SimpleInventory fisherInventory = new SimpleInventory(FisherInfoScreenHandler.SLOT_COUNT);
+    private SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
     private ArrayList<Chunk> fishedChunks = new ArrayList<>();
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
 
     private PlayerEntity owner;
 
-    public FisherInfo(){
+    public FishingCard(){
         initPerks();
     }
-    public FisherInfo(int level){
+    public FishingCard(int level){
         this();
         this.level = level;
     }
 
-    public FisherInfo(PlayerEntity playerEntity, NbtCompound fisherTag) {
+    public FishingCard(PlayerEntity playerEntity, NbtCompound fisherTag) {
         this.owner = playerEntity;
         fromNbt(fisherTag);
     }
-    public FisherInfo(PlayerEntity playerEntity) {
+    public FishingCard(PlayerEntity playerEntity) {
         this.owner = playerEntity;
         NbtCompound playerCustomTag = new NbtCompound();
         playerEntity.writeCustomDataToNbt(playerCustomTag);
@@ -64,7 +64,7 @@ public class FisherInfo {
         fromNbt(playerCustomTag.getCompound(TAG));
     }
 
-    public FisherInfo(NbtCompound fisherTag) {
+    public FishingCard(NbtCompound fisherTag) {
         fromNbt(fisherTag);
     }
 
@@ -461,12 +461,12 @@ public class FisherInfo {
         return false;
     }
 
-    public FisherInfo getHarpoonFisherInfo(){
-        FisherInfo hFisherInfo = new FisherInfo();
-        hFisherInfo.owner = this.owner;
-        hFisherInfo.perks = this.perks;
-        hFisherInfo.fishedChunks = this.fishedChunks;
-        return hFisherInfo;
+    public FishingCard getHarpoonFisherInfo(){
+        FishingCard hFishingCard = new FishingCard();
+        hFishingCard.owner = this.owner;
+        hFishingCard.perks = this.perks;
+        hFishingCard.fishedChunks = this.fishedChunks;
+        return hFishingCard;
     }
 
 

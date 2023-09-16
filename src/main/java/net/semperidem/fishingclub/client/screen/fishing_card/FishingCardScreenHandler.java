@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fisher_info;
+package net.semperidem.fishingclub.client.screen.fishing_card;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,8 +16,8 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
-public class FisherInfoScreenHandler extends ScreenHandler {
+public class FishingCardScreenHandler extends ScreenHandler {
     public final static int SLOT_COUNT = 5;
 
     private final SimpleInventory fisherInventory;
@@ -38,20 +38,20 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
     private NbtCompound lastSavedNbt;
 
-    FisherInfo fisherInfo;
+    FishingCard fishingCard;
     FishingPerk rootPerk;
     FisherSlot sellSlot;
 
-    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
+    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory);
     }
 
-    public FisherInfoScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(FScreenHandlerRegistry.FISHER_INFO_SCREEN, syncId);
+    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory) {
+        super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
         enableSyncing();
-        this.fisherInfo = playerInventory.player.world.isClient ? FishingClubClient.CLIENT_INFO : FisherInfoManager.getFisher((ServerPlayerEntity) playerInventory.player);
+        this.fishingCard = playerInventory.player.world.isClient ? FishingClubClient.CLIENT_INFO : FishingCardManager.getPlayerCard((ServerPlayerEntity) playerInventory.player);
         this.playerInventory = playerInventory;
-        this.fisherInventory = fisherInfo.getFisherInventory();
+        this.fisherInventory = fishingCard.getFisherInventory();
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
         addFisherInventory();
         addSellSlot();
@@ -65,14 +65,14 @@ public class FisherInfoScreenHandler extends ScreenHandler {
             playerInventory.player.writeNbt(playerNbt);
             NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
             if (!fisherInventoryTag.equals(lastSavedNbt)) {
-                playerNbt.getCompound(FisherInfo.TAG).put("inventory", fisherInventoryTag);
+                playerNbt.getCompound(FishingCard.TAG).put("inventory", fisherInventoryTag);
                 playerInventory.player.readNbt(playerNbt);
                 lastSavedNbt = fisherInventoryTag;
             }
         };
     }
 
-    public void sellSlot(FisherInfoScreen parent){
+    public void sellSlot(FishingCardScreen parent){
         int credit = FishUtil.getFishValue(sellSlot.getStack());
         ClientPacketSender.sellSlot(credit);
         sellSlot.setStack(ItemStack.EMPTY);
@@ -81,7 +81,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
     }
 
     public void soldSlot(ServerPlayerEntity player, int amount){
-        FisherInfoManager.addCredit(player, amount);
+        FishingCardManager.addCredit(player, amount);
         sellSlot.setStack(ItemStack.EMPTY);
     }
 
@@ -94,14 +94,14 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.INSTANT_FISH_CREDIT) && stack.isOf(FishUtil.FISH_ITEM);
+                return fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT) && stack.isOf(FishUtil.FISH_ITEM);
             }
 
             @Override
             public void setStack(ItemStack stack) {
                 if (stack.isOf(FishUtil.FISH_ITEM) && !this.getStack().isEmpty()) {
                     if (playerInventory.player.world.isClient && MinecraftClient.getInstance().currentScreen != null) {
-                        sellSlot((FisherInfoScreen) MinecraftClient.getInstance().currentScreen);
+                        sellSlot((FishingCardScreen) MinecraftClient.getInstance().currentScreen);
                     }
                 }
                 super.setStack(stack);
@@ -114,7 +114,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         addSlot(new FisherSlot(fisherInventory, 0, 25, 199, FishingPerks.FISHING_ROD_SLOT){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.FISHING_ROD_SLOT) && stack.getItem() instanceof FishingRodItem;
+                return fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT) && stack.getItem() instanceof FishingRodItem;
             }
 
 
@@ -122,20 +122,20 @@ public class FisherInfoScreenHandler extends ScreenHandler {
         addSlot(new FisherSlot(fisherInventory, 1, 55, 199, FishingPerks.BOAT_SLOT){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.BOAT_SLOT) && stack.getItem() instanceof BoatItem;
+                return fishingCard.hasPerk(FishingPerks.BOAT_SLOT) && stack.getItem() instanceof BoatItem;
             }
 
         });
         addSlot(new FisherSlot(fisherInventory, 2, 25, 229, FishingPerks.NET_SLOT_UNLOCK){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
+                return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
             }
         });
         addSlot(new FisherSlot(fisherInventory, 3, 55, 229, FishingPerks.NET_SLOT_UNLOCK){
             @Override
             public boolean canInsert(ItemStack stack) {
-                return fisherInfo.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
+                return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
             }
         });
     }
@@ -212,7 +212,7 @@ public class FisherInfoScreenHandler extends ScreenHandler {
 
         @Override
         public boolean isEnabled() {
-            return rootPerk == null && fisherInfo.hasPerk(requiredPerk);
+            return rootPerk == null && fishingCard.hasPerk(requiredPerk);
         }
 
     }

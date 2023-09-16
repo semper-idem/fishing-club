@@ -9,7 +9,7 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,30 +20,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends Entity {
     @Unique
-    FisherInfo fisherInfo;
+    FishingCard fishingCard;
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void readCustomDataFromNbt(NbtCompound nbtCompound, CallbackInfo ci){
-        if (!nbtCompound.contains(FisherInfo.TAG)) return;
-        fisherInfo = new FisherInfo((PlayerEntity) (Object) this, nbtCompound.getCompound(FisherInfo.TAG));
+        if (!nbtCompound.contains(FishingCard.TAG)) return;
+        fishingCard = new FishingCard((PlayerEntity) (Object) this, nbtCompound.getCompound(FishingCard.TAG));
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeCustomDataToNbt(NbtCompound nbtCompound, CallbackInfo ci){
-        if (fisherInfo == null) return;
-        nbtCompound.put(FisherInfo.TAG, fisherInfo.toNbt());
+        if (fishingCard == null) return;
+        nbtCompound.put(FishingCard.TAG, fishingCard.toNbt());
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo ci){
-        if (fisherInfo == null){
+        if (fishingCard == null){
             if (world.isClient) {
-                fisherInfo = FishingClubClient.CLIENT_INFO;
+                fishingCard = FishingClubClient.CLIENT_INFO;
             } else {
-                fisherInfo = new FisherInfo((PlayerEntity) (Object) this);
+                fishingCard = new FishingCard((PlayerEntity) (Object) this);
             }
         }
-        fisherInfo.tick();
+        fishingCard.tick();
     }
 
 

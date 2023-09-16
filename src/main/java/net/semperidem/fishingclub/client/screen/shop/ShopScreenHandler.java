@@ -10,8 +10,8 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
@@ -28,13 +28,13 @@ public class ShopScreenHandler extends ScreenHandler {
     private final PlayerEntity player;
     private final Inventory sellContainer;
     private int sellContainerValue = 0;
-    FisherInfo fisherInfo;
+    FishingCard fishingCard;
 
 
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fisherInfo = FishingClubClient.CLIENT_INFO;
+        this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();
         addPlayerInventory(player.getInventory());
@@ -95,7 +95,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
     //Server
     public void soldContainer(ServerPlayerEntity player, int amount){
-        FisherInfoManager.addCredit(player, amount);
+        FishingCardManager.addCredit(player, amount);
         for (int i = 0; i < sellContainer.size(); i++) {
             sellContainer.removeStack(i);
         }
@@ -103,7 +103,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
     //Server
     public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int amount){
-        if (!FisherInfoManager.addCredit(player, -amount)) return;
+        if (!FishingCardManager.addCredit(player, -amount)) return;
         for(ItemStack itemStack : basket) {
             player.getInventory().insertStack(itemStack.copy());
         }

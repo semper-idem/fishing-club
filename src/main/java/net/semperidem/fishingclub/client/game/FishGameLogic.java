@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.game.treasure.Reward;
 import net.semperidem.fishingclub.client.game.treasure.Rewards;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -41,7 +41,7 @@ public class FishGameLogic {
 
     private final PlayerEntity player;
     private final Fish fish;
-    private final FisherInfo fisherInfo;
+    private final FishingCard fishingCard;
     private final float totalDuration;
     private final ItemStack caughtUsing;
     private final boolean boatFishing;
@@ -81,7 +81,7 @@ public class FishGameLogic {
 
     public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
         this.player = player;
-        this.fisherInfo = FishingClubClient.CLIENT_INFO;
+        this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.fish = fish;
         this.caughtUsing = caughtUsing;
         this.boatFishing = boatFishing;
@@ -119,7 +119,7 @@ public class FishGameLogic {
 
     private boolean rollForTreasure(){
         float treasureChance = TREASURE_MIN_CHANCE;
-        if (fisherInfo.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
+        if (fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
             treasureChance *= 2;
         }
         return Math.random() < treasureChance;
@@ -128,7 +128,7 @@ public class FishGameLogic {
     private void treasureRoll(PlayerEntity player, ItemStack caughtUsing, boolean boatFishing){
         if (this.treasureAvailable) {
             this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
-            this.treasureReward = Rewards.roll(fisherInfo);
+            this.treasureReward = Rewards.roll(fishingCard);
             this.arrowSpeed = 1 + treasureReward.getGrade();
             this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
         }
@@ -137,7 +137,7 @@ public class FishGameLogic {
     private void calculateBobberLength(){
         float perksBonusLengthMultiplier = 1;
 
-        if ((boatFishing && fisherInfo.hasPerk(FishingPerks.BOAT_BOBBER_SIZE))) {
+        if ((boatFishing && fishingCard.hasPerk(FishingPerks.BOAT_BOBBER_SIZE))) {
             perksBonusLengthMultiplier += 0.1f;
         }
 
@@ -168,10 +168,10 @@ public class FishGameLogic {
                 damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
             }
         }
-        if (boatFishing && fisherInfo.hasPerk(FishingPerks.LINE_HEALTH_BOAT)) {
+        if (boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT)) {
             damageReduction += 0.2f;
         }
-        float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fisherInfo.getLevel() / 4f)) / 20f);
+        float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fishingCard.getLevel() / 4f)) / 20f);
         this.fishDamage =  fishRawDamage * (1 - Math.max(0, Math.min(1, damageReduction)));
     }
 

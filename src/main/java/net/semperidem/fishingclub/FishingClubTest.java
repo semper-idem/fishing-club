@@ -7,7 +7,7 @@ import net.semperidem.fishingclub.client.game.fish.FishType;
 import net.semperidem.fishingclub.client.game.fish.FishTypes;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.game.treasure.Rewards;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.io.FileWriter;
@@ -121,9 +121,9 @@ public class FishingClubTest {
         printResultFloat(floatResultMap, resultCategory, mergeTimes);
     }
 
-    private static void runFishTest(FisherInfo fisherInfo){
+    private static void runFishTest(FishingCard fishingCard){
         println("####################################");
-        println("RUNNING TEST FOR FISHER LEVEL:" + fisherInfo.getLevel());
+        println("RUNNING TEST FOR FISHER LEVEL:" + fishingCard.getLevel());
         ItemStack fishingRod = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
         TreeMap<Integer, Integer> gradeResult = new TreeMap<>();
         TreeMap<Integer, Integer> levelResult = new TreeMap<>();
@@ -131,7 +131,7 @@ public class FishingClubTest {
         TreeMap<Float, Integer> weightResult = new TreeMap<>();
         TreeMap<Float, Integer> sizeResult = new TreeMap<>();
         for(int i = 0; i < N; i++) {
-            Fish fish = FishUtil.getFishOnHook(fisherInfo, fishingRod, 1, new FisherInfo.Chunk(0,0));
+            Fish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.fishLevel);
             countUp(typeResult,fish.getFishType());
@@ -163,9 +163,9 @@ public class FishingClubTest {
             }
             int avgGrade = 0;
             int maxCount = 0;
-            FisherInfo fisherInfo = new FisherInfo((int) Math.pow(2, i));
+            FishingCard fishingCard = new FishingCard((int) Math.pow(2, i));
             for(int j = 0 ; j < N; j++) {
-                int grade = Rewards.getGrade(fisherInfo);
+                int grade = Rewards.getGrade(fishingCard);
                 for(Integer key : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
                     if (grade == key) {
                         resultMap.put(key, resultMap.get(key) + 1);
@@ -178,7 +178,7 @@ public class FishingClubTest {
                 }
             }
             println("============================================================");
-            println("Result for Grade Test - Fisher Level:" + fisherInfo.getLevel());
+            println("Result for Grade Test - Fisher Level:" + fishingCard.getLevel());
             int scale = maxCount / 30;
             for(Integer grade : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
                 int count = resultMap.get(grade);
@@ -200,9 +200,9 @@ public class FishingClubTest {
             }
             int avgCost = 0;
             int maxCount = 0;
-            FisherInfo fisherInfo = new FisherInfo((int) Math.pow(2, i));
+            FishingCard fishingCard = new FishingCard((int) Math.pow(2, i));
             for(int j = 0 ; j < N; j++) {
-                int cost = Rewards.getCost(fisherInfo);
+                int cost = Rewards.getCost(fishingCard);
                 for(Integer key : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
                     if (cost < key) {
                         resultMap.put(key, resultMap.get(key) + 1);
@@ -215,7 +215,7 @@ public class FishingClubTest {
                 }
             }
             println("============================================================");
-            println("Result for Cost Test - Fisher Level:" + fisherInfo.getLevel());
+            println("Result for Cost Test - Fisher Level:" + fishingCard.getLevel());
             int scale = maxCount / 30;
             for(Integer cost : resultMap.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))) {
                 int count = resultMap.get(cost);
@@ -232,9 +232,9 @@ public class FishingClubTest {
     private static void treasureTestLoot(){
         for(int i = 0; i <= 5; i++) {
             HashMap<Item, Integer> resultMap = new HashMap<>();
-            FisherInfo fisherInfo = new FisherInfo(i * 50);
+            FishingCard fishingCard = new FishingCard(i * 50);
             for(int j = 0 ; j < N; j++) {
-                ArrayList<ItemStack> rewards = Rewards.roll(fisherInfo).getContent();
+                ArrayList<ItemStack> rewards = Rewards.roll(fishingCard).getContent();
                 for(ItemStack reward : rewards) {
                     Item asItem = reward.getItem();
                     if (resultMap.containsKey(asItem)) {
@@ -245,7 +245,7 @@ public class FishingClubTest {
                 }
             }
             println("============================================================");
-            println("Result for Loot Test - Fisher Level:" + fisherInfo.getLevel());
+            println("Result for Loot Test - Fisher Level:" + fishingCard.getLevel());
             for(Item item : resultMap.keySet().stream().sorted(Comparator.comparingInt(resultMap::get).reversed()).collect(Collectors.toCollection(LinkedHashSet::new))) {
                 println("Item: " + item.getName().getString() + " count: " + resultMap.get(item));
             }
@@ -272,7 +272,7 @@ public class FishingClubTest {
         println("+++++++++++++++++++++++++++++++++++++");
     }
     public static void runTest() {
-        runFishTest(new FisherInfo(1));
+        runFishTest(new FishingCard(1));
         runTreasureTest();
         throw new RuntimeException();
     }

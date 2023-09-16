@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
@@ -115,7 +115,7 @@ public class CustomFishingRod extends FishingRodItem {
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
             boolean boatFishing = user.getVehicle() instanceof BoatEntity;
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, FisherInfoManager.getFisher((ServerPlayerEntity) user), boatFishing));
+            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, FishingCardManager.getPlayerCard((ServerPlayerEntity) user), boatFishing));
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
@@ -129,8 +129,8 @@ public class CustomFishingRod extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        FisherInfo fisherInfo = world.isClient ? FishingClubClient.CLIENT_INFO : FisherInfoManager.getFisher((ServerPlayerEntity) user);
-        if (!fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
+        FishingCard fishingCard = world.isClient ? FishingClubClient.CLIENT_INFO : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
+        if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
             return TypedActionResult.success(user.getStackInHand(hand));
         }

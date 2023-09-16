@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fisher_info;
+package net.semperidem.fishingclub.client.screen.fishing_card;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -20,7 +20,7 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> implements ScreenHandlerProvider<FisherInfoScreenHandler> {
+public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> implements ScreenHandlerProvider<FishingCardScreenHandler> {
     private static final Identifier BACKGROUND_INV = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info_inv.png");
     private static final Identifier BACKGROUND_SKILL = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
     private static final Identifier SKILL_ICON = new Identifier(FishingClub.MOD_ID, "textures/gui/skill_icon_placeholder.png");
@@ -40,7 +40,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private static final int BUTTONS_WIDTH = 262;
     private static final int ICON_SIZE = 20;
 
-    private static final String sFisherInfo = "Fisher Info:";
+    private static final String sFishingCard = "Fishing Card:";
     private static final String sInfo = "Info";
     private static final String sUnlock = "Unlock";
     private static final String sSkillPoint = "Skill points:";
@@ -81,8 +81,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     ArrayList<PerkButtonWidget> perkButtonWidgets = new ArrayList<>();
 
-    public FisherInfoScreen(FisherInfoScreenHandler fisherInfoScreenHandler, PlayerInventory playerInventory, Text text) {
-        super(fisherInfoScreenHandler, playerInventory, text);
+    public FishingCardScreen(FishingCardScreenHandler fishingCardScreenHandler, PlayerInventory playerInventory, Text text) {
+        super(fishingCardScreenHandler, playerInventory, text);
         this.client = MinecraftClient.getInstance();
         updateData();
         addButtons();
@@ -100,7 +100,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
 
     public static void openScreen(PlayerEntity player){
         if(player.world != null && !player.world.isClient) {
-            player.openHandledScreen(new FisherInfoScreenFactory());
+            player.openHandledScreen(new FishingCardScreenFactory());
         }
     }
 
@@ -286,7 +286,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         int dividerWidth = textRenderer.getWidth(sDiv);
         int infoLineX = x + (BANNER_WIDTH - dividerWidth) / 2;
         int infoLineY = y + 8;
-        textRenderer.drawWithShadow(matrices,sFisherInfo, infoLineX, infoLineY, TEXT_COLOR);
+        textRenderer.drawWithShadow(matrices, sFishingCard, infoLineX, infoLineY, TEXT_COLOR);
         renderInfoLine(matrices, infoLineX, infoLineY + 11, "", name, dividerWidth);
         textRenderer.drawWithShadow(matrices,sDiv, infoLineX  , infoLineY + 14 , TEXT_COLOR);
         renderInfoLine(matrices, infoLineX, infoLineY + 26, sLevel, level, dividerWidth);
@@ -310,7 +310,7 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
     private void renderSlotDisabled(MatrixStack matrices){
         if (this.handler.rootPerk != null) return;
         for(Slot slot : this.handler.slots) {
-            if (!(slot instanceof FisherInfoScreenHandler.FisherSlot)) continue;
+            if (!(slot instanceof FishingCardScreenHandler.FisherSlot)) continue;
             if (slot.isEnabled()) continue;;
             fill(matrices, x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0x55000001);
         }
@@ -416,8 +416,8 @@ public class FisherInfoScreen extends HandledScreen<FisherInfoScreenHandler> imp
         }
 
         private void renderBackground(MatrixStack matrices){
-            boolean hasPerk = getScreenHandler().fisherInfo.hasPerk(fishingPerk);
-            boolean isAvailable = getScreenHandler().fisherInfo.availablePerk(fishingPerk);
+            boolean hasPerk = getScreenHandler().fishingCard.hasPerk(fishingPerk);
+            boolean isAvailable = getScreenHandler().fishingCard.availablePerk(fishingPerk);
             if (hasPerk) {
                 RenderSystem.setShaderColor(0.5f,1,0.5f,1);
             }

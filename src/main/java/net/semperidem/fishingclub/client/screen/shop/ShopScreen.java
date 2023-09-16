@@ -296,7 +296,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
                 drawTexture(matrixStack, x, y, 0, 0, width, height, 128, 128);
 
                 textRenderer.drawWithShadow(matrixStack,"Balance:", x + 6, y + 6, 0xcdcdf7);
-                String balanceString = "$" + getScreenHandler().fisherInfo.getCredit();
+                String balanceString = "$" + getScreenHandler().fishingCard.getCredit();
                 int balanceStringWidth = textRenderer.getWidth(balanceString);
                 textRenderer.drawWithShadow(matrixStack, balanceString, x + 74 - balanceStringWidth, y + 25, 0xcdcdf7);
                 matrixStack.pop();
@@ -438,7 +438,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             } else {
                 orderListWidget.removeFromBasket(this);
             }
-            checkoutButton.active = orderListWidget.getBasketTotal() <= getScreenHandler().fisherInfo.getCredit();
+            checkoutButton.active = orderListWidget.getBasketTotal() <= getScreenHandler().fishingCard.getCredit();
             return true;
         }
 
@@ -593,7 +593,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
 
         public boolean buyContainer(){
             int cost = getBasketTotal();
-            int currentCredit =  handler.fisherInfo.getCredit();
+            int currentCredit =  handler.fishingCard.getCredit();
             if (cost <= currentCredit) {
                 lastBalanceChange = cost * -1;
                 ClientPacketSender.buyShopContainer(cost, getBasket());

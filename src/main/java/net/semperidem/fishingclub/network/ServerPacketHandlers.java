@@ -9,11 +9,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreen;
-import net.semperidem.fishingclub.client.screen.fisher_info.FisherInfoScreenHandler;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
@@ -36,7 +36,7 @@ public class ServerPacketHandlers {
         server.execute(() -> ShopScreenUtil.openShopScreen(player));
     }
     public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> FisherInfoScreen.openScreen(player));
+        server.execute(() -> FishingCardScreen.openScreen(player));
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -65,7 +65,7 @@ public class ServerPacketHandlers {
         String perkName = buf.readString();
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             server.execute(() -> {
-                FisherInfoManager.addPerk(player, perkName);
+                FishingCardManager.addPerk(player, perkName);
             });
         });
     }
@@ -76,7 +76,7 @@ public class ServerPacketHandlers {
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             if (!Spells.perkHasSpell(perk)) return;
             server.execute(() -> {
-                FisherInfoManager.getFisher(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString)));
+                FishingCardManager.getPlayerCard(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString)));
             });
         });
     }
@@ -86,8 +86,8 @@ public class ServerPacketHandlers {
         int creditGained = buf.readInt();
         server.execute(() -> {
             Optional.ofNullable(player.currentScreenHandler)
-                            .filter(FisherInfoScreenHandler.class::isInstance)
-                            .map(FisherInfoScreenHandler.class::cast)
+                            .filter(FishingCardScreenHandler.class::isInstance)
+                            .map(FishingCardScreenHandler.class::cast)
                             .ifPresent(screenHandler -> screenHandler.soldSlot(player, creditGained));
             ServerPacketSender.sendFisherInfo(player);
         }

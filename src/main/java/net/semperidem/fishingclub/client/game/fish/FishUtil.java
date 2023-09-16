@@ -18,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -41,12 +41,12 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing, BlockPos rewardPos){
-        FisherInfoManager.fishCaught(player, fish);
+        FishingCardManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
-        FisherInfo fisherInfo = FisherInfoManager.getFisher(player);
-        fishReward.setCount(getRewardMultiplier(fisherInfo, boatFishing));
-        if (fish.grade >= 4 && fisherInfo.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.oneTimeBuffed) {
+        FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
+        fishReward.setCount(getRewardMultiplier(fishingCard, boatFishing));
+        if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.oneTimeBuffed) {
             Box box = new Box(player.getBlockPos());
             box.expand(3);
             for(Entity entity : player.getEntityWorld().getOtherEntities(null, box)) {
@@ -82,18 +82,18 @@ public class FishUtil {
         grantReward(player, fish, boatFishing, null);
     }
 
-    private static int getRewardMultiplier(FisherInfo fisherInfo, boolean boatFishing){
+    private static int getRewardMultiplier(FishingCard fishingCard, boolean boatFishing){
         int rewardMultiplier = 1;
         if (!boatFishing) {
             return rewardMultiplier;
         }
-        if (fisherInfo.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {
+        if (fishingCard.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {
             rewardMultiplier = 2;
         }
-        if (fisherInfo.hasPerk(FishingPerks.TRIPLE_FISH_BOAT) && (Math.random() < 0.06)) {
+        if (fishingCard.hasPerk(FishingPerks.TRIPLE_FISH_BOAT) && (Math.random() < 0.06)) {
             rewardMultiplier = 3;
         }
-        while (fisherInfo.hasPerk(FishingPerks.INFINITY_FISH) && Math.random() < 0.03) {
+        while (fishingCard.hasPerk(FishingPerks.INFINITY_FISH) && Math.random() < 0.03) {
                 rewardMultiplier++;
         }
 
@@ -214,10 +214,10 @@ public class FishUtil {
     }
 
 
-    public static Fish getFishOnHook(FisherInfo fisherInfo, ItemStack fishingRod, float fishTypeRarityMultiplier, FisherInfo.Chunk chunk){
+    public static Fish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fisherInfo);
+        ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
         for (FishType fishType : availableFish) {
             totalRarity += fishType.fishRarity;
             fishTypeToThreshold.put(fishType, totalRarity);
@@ -225,10 +225,10 @@ public class FishUtil {
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
         for (FishType fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fisherInfo, fishingRod, chunk);
+                return new Fish(fishType, fishingCard, fishingRod, chunk);
             }
         }
-        return new Fish(FishTypes.COD, fisherInfo, fishingRod, chunk);
+        return new Fish(FishTypes.COD, fishingCard, fishingRod, chunk);
     }
 
 

@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -55,7 +55,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private int power;
     private float throwDistance;
     private boolean boatFishing;
-    private FisherInfo fisherInfo;
+    private FishingCard fishingCard;
 
 
 
@@ -63,11 +63,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         super(entityEntityType, world);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FisherInfo fisherInfo, boolean boatFishing) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FishingCard fishingCard, boolean boatFishing) {
         this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
-        this.fisherInfo = fisherInfo;
+        this.fishingCard = fishingCard;
         this.power = power;
         this.boatFishing = boatFishing;
         setThrowDirection();
@@ -198,11 +198,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void handleFishOnHook(ServerWorld serverWorld){
         float fishTypeRarityMultiplier = 1;
-        if (fisherInfo.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
+        if (fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
         ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
-        caughtFish = FishUtil.getFishOnHook(fisherInfo, fishingRod, fishTypeRarityMultiplier, new FisherInfo.Chunk(worldChunkPos.x, worldChunkPos.z));
+        caughtFish = FishUtil.getFishOnHook(fishingCard, fishingRod, fishTypeRarityMultiplier, new FishingCard.Chunk(worldChunkPos.x, worldChunkPos.z));
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
@@ -285,10 +285,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
         if (world.isRaining()) {
             float rainBonus = 0.125f;
-            if (fisherInfo.hasPerk(FishingPerks.RAINY_FISH)) {
+            if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
                 rainBonus *= 2;
             }
-            if (fisherInfo.hasPerk(FishingPerks.RAINY_FISH_PLUS)) {
+            if (fishingCard.hasPerk(FishingPerks.RAINY_FISH_PLUS)) {
                 rainBonus *= 2;
             }
             catchRateReduction += rainBonus;

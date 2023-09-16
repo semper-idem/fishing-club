@@ -14,8 +14,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -89,10 +89,10 @@ public class LineArrowEntity extends PersistentProjectileEntity {
     private void pickupFish(){
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
-                FisherInfo fisherInfo = FisherInfoManager.getFisher(owner).getHarpoonFisherInfo();
-                FisherInfo.Chunk chunk = new FisherInfo.Chunk(getChunkPos().x, getChunkPos().z);
+                FishingCard fishingCard = FishingCardManager.getPlayerCard(owner).getHarpoonFisherInfo();
+                FishingCard.Chunk chunk = new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(fisherInfo, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
+                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .getHarpoonFish((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
                 FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity);
             }

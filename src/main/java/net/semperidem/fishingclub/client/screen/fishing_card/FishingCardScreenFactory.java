@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fisher_info;
+package net.semperidem.fishingclub.client.screen.fishing_card;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-public class FisherInfoScreenFactory implements ExtendedScreenHandlerFactory {
+public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory {
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         //buf.writeNbt(player.writeNbt(new NbtCompound())); Not needed since moving FisherInfo to DataTracker Nbt
@@ -20,6 +20,6 @@ public class FisherInfoScreenFactory implements ExtendedScreenHandlerFactory {
     }
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FisherInfoScreenHandler(syncId, inv);
+        return new FishingCardScreenHandler(syncId, inv);
     }
 }

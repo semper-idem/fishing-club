@@ -7,8 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.fisher.FisherInfo;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -39,11 +39,11 @@ public class Spells {
         for(Entity entity : playerEntity.getEntityWorld().getOtherEntities(null, box)) {
             if (!(entity instanceof PlayerEntity)) continue;
             playerEntity.addStatusEffect(new StatusEffectInstance(buff, duration));
-            FisherInfo fisherInfo = FisherInfoManager.getFisher(playerEntity);
-            if (!fisherInfo.hasPerk(FishingPerks.FISHERMAN_LINK)) continue;
+            FishingCard fishingCard = FishingCardManager.getPlayerCard(playerEntity);
+            if (!fishingCard.hasPerk(FishingPerks.FISHERMAN_LINK)) continue;
             if (linkedCount >= MAX_LINKED_FISHER_BUFFS) continue;
             linkedCount++;
-            for(UUID linkedFisher : FisherInfoManager.getFisher(playerEntity).getLinkedFishers()) {
+            for(UUID linkedFisher : FishingCardManager.getPlayerCard(playerEntity).getLinkedFishers()) {
                 if (buffedLinks.contains(linkedFisher)) continue;
                 for(ServerPlayerEntity linkedFisherPlayer : playerEntity.getWorld().getPlayers()) {
                     if (linkedFisherPlayer.getUuid().equals(linkedFisher)) continue;
@@ -90,14 +90,14 @@ public class Spells {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
                 if (!(target instanceof PlayerEntity playerTarget)) return;
-                FisherInfo fisherInfo = FisherInfoManager.getFisher(source);
+                FishingCard fishingCard = FishingCardManager.getPlayerCard(source);
                 UUID targetUUID = target.getUuid();
-                if (fisherInfo.isLinked(target.getUuid())) {
-                    fisherInfo.unlinkFisher(targetUUID);
+                if (fishingCard.isLinked(target.getUuid())) {
+                    fishingCard.unlinkFisher(targetUUID);
                     source.sendMessage(Text.of("[Fishing Club] Unlinked from: " + playerTarget.getDisplayName().getString()), true);
                     playerTarget.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has unlinked from you"), true);
                 } else {
-                    FisherInfoManager.getFisher(source).linkedFisher(target.getUuid());
+                    FishingCardManager.getPlayerCard(source).linkedFisher(target.getUuid());
                     source.sendMessage(Text.of("[Fishing Club] Linked to: " + playerTarget.getDisplayName().getString()), true);
                     playerTarget.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has linked to you"), true);
                 }

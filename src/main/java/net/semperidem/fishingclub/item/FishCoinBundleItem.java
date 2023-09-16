@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FisherInfoManager;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 public class FishCoinBundleItem extends Item {
@@ -32,7 +32,7 @@ public class FishCoinBundleItem extends Item {
             value = bundleStackTag.getInt("value");
         }
         if (!user.world.isClient) {
-            FisherInfoManager.addCredit((ServerPlayerEntity) user, value);
+            FishingCardManager.addCredit((ServerPlayerEntity) user, value);
         } else {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);
         }
