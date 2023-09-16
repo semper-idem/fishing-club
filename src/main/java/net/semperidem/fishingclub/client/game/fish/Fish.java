@@ -55,7 +55,7 @@ public class Fish {
         initEnergyLevels();
         initCurvePoints();
         this.value = FishUtil.getFishValue(this);
-        oneTimeBuffed = fisherInfo.getFisher().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        oneTimeBuffed = fisherInfo.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
     }
 
     public FishType getFishType(){

@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
@@ -44,7 +46,14 @@ public class FKeybindingRegistry {
         return client -> {
             while (CAST_SPELL_KB.wasPressed()) {
                 if (SpellListWidget.selectedSpell != null) {
-                    ClientPacketSender.castSpell(SpellListWidget.selectedSpell.getKey());
+                    String targetUUID = "";
+                    if (SpellListWidget.selectedSpell.needsTarget()){
+                        HitResult hitResult = client.player.raycast(5,0,false);
+                        if (hitResult.getType() == HitResult.Type.ENTITY) {
+                            targetUUID = ((EntityHitResult) hitResult).getEntity().getUuidAsString();
+                        }
+                    }
+                    ClientPacketSender.castSpell(SpellListWidget.selectedSpell.getKey(), targetUUID);
                 };
             }
         };

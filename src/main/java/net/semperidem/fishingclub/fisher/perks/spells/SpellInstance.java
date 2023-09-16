@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher.perks.spells;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 
 public class SpellInstance {
@@ -25,11 +26,19 @@ public class SpellInstance {
         this.cooldown--;
     }
 
-    public void use(PlayerEntity playerEntity){
+    public boolean needsTarget(){
+        return spell.needsTarget;
+    }
+
+    public void use(ServerPlayerEntity playerEntity, Entity target){
         if (cooldown > 0) return;
         this.cooldown = spell.cooldown;
         this.nextPossibleCastTime = playerEntity.world.getTime() + cooldown;
-        spell.effect.cast(playerEntity);
+        if (spell.needsTarget) {
+            spell.effect.targetedCast(playerEntity, target);
+        } else {
+            spell.effect.cast(playerEntity);
+        }
     }
 
     public String getKey(){

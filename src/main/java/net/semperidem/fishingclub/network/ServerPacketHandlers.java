@@ -19,6 +19,7 @@ import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ServerPacketHandlers {
 
@@ -71,10 +72,11 @@ public class ServerPacketHandlers {
 
     public static void handleSpellCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
+        String uuidString = buf.readString();
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             if (!Spells.perkHasSpell(perk)) return;
             server.execute(() -> {
-                FisherInfoManager.getFisher(player).useSpell(perk);
+                FisherInfoManager.getFisher(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString)));
             });
         });
     }

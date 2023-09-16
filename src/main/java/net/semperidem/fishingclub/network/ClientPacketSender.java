@@ -52,9 +52,10 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_BUY, buf);
     }
 
-    public static void castSpell(String perkName){
+    public static void castSpell(String perkName, String uuid){
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(perkName);
+        buf.writeString(uuid);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_CAST_SPELL, buf);
     }
 

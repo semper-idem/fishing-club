@@ -22,10 +22,7 @@ import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 public class FisherInfo {
     public static final String TAG = "fisher_info";
@@ -43,8 +40,9 @@ public class FisherInfo {
     private SimpleInventory fisherInventory = new SimpleInventory(FisherInfoScreenHandler.SLOT_COUNT);
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
     private ArrayList<Chunk> fishedChunks = new ArrayList<>();
+    private ArrayList<UUID> linkedFishers = new ArrayList<>();
 
-    private PlayerEntity fisher;
+    private PlayerEntity owner;
 
     public FisherInfo(){
         initPerks();
@@ -55,11 +53,11 @@ public class FisherInfo {
     }
 
     public FisherInfo(PlayerEntity playerEntity, NbtCompound fisherTag) {
-        this.fisher = playerEntity;
+        this.owner = playerEntity;
         fromNbt(fisherTag);
     }
     public FisherInfo(PlayerEntity playerEntity) {
-        this.fisher = playerEntity;
+        this.owner = playerEntity;
         NbtCompound playerCustomTag = new NbtCompound();
         playerEntity.writeCustomDataToNbt(playerCustomTag);
         if (!playerCustomTag.contains(TAG)) return;
@@ -70,8 +68,8 @@ public class FisherInfo {
         fromNbt(fisherTag);
     }
 
-    public PlayerEntity getFisher(){
-        return fisher;
+    public PlayerEntity getOwner(){
+        return owner;
     }
     public void tick(){
         for(SpellInstance spellInstance : spells.values()) {
@@ -89,6 +87,15 @@ public class FisherInfo {
         setPerks(fisherTag);
         setSpells(fisherTag);
         setChunks(fisherTag);
+        setLinked(fisherTag);
+    }
+
+    private void setLinked(NbtCompound fisherTag){
+        linkedFishers = new ArrayList<>();
+        NbtList uuidListTag = fisherTag.getList("linked", NbtElement.STRING_TYPE);
+        for(int i = 0; i < uuidListTag.size(); i++) {
+            linkedFishers.add(UUID.fromString(uuidListTag.getString(i)));
+        }
     }
 
     private void setChunks(NbtCompound fisherTag){
@@ -100,7 +107,7 @@ public class FisherInfo {
     }
 
     public void setClientEntity(MinecraftClient client){
-        this.fisher = client.player;
+        this.owner = client.player;
     }
 
     private void setPerks(NbtCompound fisherTag){
@@ -148,11 +155,31 @@ public class FisherInfo {
         fisherTag.putLong("last_fish_caught_time", this.lastFishCaughtTime);
         fisherTag.putLong("ffotd_caught_time", this.firstFishOfTheDayCaughtTime);
         fisherTag.put("inventory", InventoryUtil.writeInventory(this.fisherInventory));
-        NbtList perkListTag = new NbtList();
-        this.perks.forEach((fishingPerkName, fishingPerk) -> {
-            perkListTag.add(NbtString.of(fishingPerkName));
-        });
-        fisherTag.put("perks", perkListTag);
+        fisherTag.put("perks", getPerkListTag());
+        fisherTag.put("spells", getSpellListTag());
+        fisherTag.put("fished_chunks", getFishedChunksList());
+        fisherTag.put("linked", getLinkedList());
+
+        return fisherTag;
+    }
+
+    private NbtList getLinkedList(){
+        NbtList linkedListTag = new NbtList();
+        for(UUID linkedUUID : linkedFishers) {
+            linkedListTag.add(NbtString.of(linkedUUID.toString()));
+        }
+        return linkedListTag;
+    }
+
+    private NbtList getFishedChunksList(){
+        NbtList fishedChunksTag = new NbtList();
+        for(Chunk c : fishedChunks) {
+            fishedChunksTag.add(NbtString.of(c.toString()));
+        }
+        return fishedChunksTag;
+    }
+
+    private NbtList getSpellListTag(){
         NbtList spellListTag = new NbtList();
         for(SpellInstance spellInstance : spells.values()) {
             NbtCompound spellTag = new NbtCompound();
@@ -161,15 +188,15 @@ public class FisherInfo {
             spellTag.putLong("nextCast", spellInstance.getNextCast());
             spellListTag.add(spellTag);
         }
-        fisherTag.put("spells", spellListTag);
+        return spellListTag;
+    }
 
-        NbtList fishedChunksTag = new NbtList();
-        for(Chunk c : fishedChunks) {
-            fishedChunksTag.add(NbtString.of(c.toString()));
-        }
-        fisherTag.put("fished_chunks", fishedChunksTag);
-
-        return fisherTag;
+    private NbtList getPerkListTag(){
+        NbtList perkListTag = new NbtList();
+        this.perks.forEach((fishingPerkName, fishingPerk) -> {
+            perkListTag.add(NbtString.of(fishingPerkName));
+        });
+        return perkListTag;
     }
 
     public int getLevel() {
@@ -191,13 +218,13 @@ public class FisherInfo {
     }
 
     private void syncFisherInfo(){
-        if (this.fisher == null) return;
-        if (!(this.fisher instanceof ServerPlayerEntity)) return;
+        if (this.owner == null) return;
+        if (!(this.owner instanceof ServerPlayerEntity serverFisher)) return;
         NbtCompound playerCustomTag = new NbtCompound();
-        this.fisher.writeCustomDataToNbt(playerCustomTag);
+        this.owner.writeCustomDataToNbt(playerCustomTag);
         playerCustomTag.put(TAG, toNbt());
-        this.fisher.readCustomDataFromNbt(playerCustomTag);
-        ServerPacketSender.sendFisherInfo((ServerPlayerEntity) this.fisher, this);
+        this.owner.readCustomDataFromNbt(playerCustomTag);
+        ServerPacketSender.sendFisherInfo(serverFisher, this);
     }
 
     private void addRootPerk(FishingPerk perk){
@@ -206,10 +233,10 @@ public class FisherInfo {
 
     void addPerk(FishingPerk perk){
         if (availablePerk(perk) && hasSkillPoints()) {
-            perk.onEarn(fisher);
+            perk.onEarn(owner);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, fisher.world.getTime()));
+                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, owner.world.getTime()));
             }
             skillPoints--;
             syncFisherInfo();
@@ -231,16 +258,16 @@ public class FisherInfo {
 
     public int getMinGrade(){
         int minGrade = 0;
-        long worldTime = this.fisher.world.getTime();
+        long worldTime = this.owner.world.getTime();
         if (this.firstFishOfTheDayCaughtTime + 24000 < worldTime) {
             if (hasPerk(FishingPerks.FIRST_CATCH)) {
                 minGrade++;
             }
             minGrade++;
         }
-        if (this.fisher.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
+        if (this.owner.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
             minGrade++;
-        } else if (this.fisher.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
+        } else if (this.owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
 
@@ -270,12 +297,18 @@ public class FisherInfo {
         syncFisherInfo();
     }
 
-    public void useSpell(FishingPerk fishingPerk){
+    public void useSpell(FishingPerk fishingPerk, Entity target){
         if (!perks.containsKey(fishingPerk.getName())) return;
         SpellInstance spellInstance = spells.get(fishingPerk);
-        spellInstance.use(fisher);
+        spellInstance.use((ServerPlayerEntity) owner, target);
         spells.put(fishingPerk, spellInstance);
         syncFisherInfo();
+    }
+
+
+    public SpellInstance getSpell(FishingPerk fishingPerk) {
+        if (!perks.containsKey(fishingPerk.getName())) return null;
+        return spells.get(fishingPerk);
     }
 
     void removePerk(String perkName){
@@ -298,7 +331,7 @@ public class FisherInfo {
     }
 
     void fishCaught(Fish fish, int boostedExp){
-        long worldTime = fisher.world.getTime();
+        long worldTime = owner.world.getTime();
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
         fishCaughtInChunk(fish);
@@ -312,11 +345,11 @@ public class FisherInfo {
             return;
         }
 
-        if (!this.fisher.hasVehicle()) {
+        if (!this.owner.hasVehicle()) {
             return;
         }
 
-        if (!(this.fisher.getVehicle() instanceof BoatEntity boatEntity)) {
+        if (!(this.owner.getVehicle() instanceof BoatEntity boatEntity)) {
             return;
         }
 
@@ -340,10 +373,10 @@ public class FisherInfo {
         }
         setFirstFishOfTheDayCaughtTime(worldTime);
         if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-            fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
+            owner.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
         }
         if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-            fisher.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
+            owner.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
         }
     }
 
@@ -357,17 +390,17 @@ public class FisherInfo {
         if (!fish.oneTimeBuffed) {
             return;
         }
-        if (!fisher.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+        if (!owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
         decreaseOneTimeBuff();
     }
 
     private void decreaseOneTimeBuff(){
-        StatusEffectInstance sei = fisher.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        StatusEffectInstance sei = owner.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
         if (effectPower == 0) {
-            fisher.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+            owner.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         } else {
             sei.upgrade(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF,sei.getDuration(), effectPower - 1));
         }
@@ -388,7 +421,7 @@ public class FisherInfo {
 
     private void onLevelUpBehaviour(){
         addSkillPoint();
-        if (fisher == null){
+        if (owner == null){
             return;
         }
         //fisher.spawnParticles(ParticleTypes.FIREWORK, fisher.getX(), fisher.getY(),  fisher.getZ(), 1,1,1,1,1);
@@ -430,10 +463,36 @@ public class FisherInfo {
 
     public FisherInfo getHarpoonFisherInfo(){
         FisherInfo hFisherInfo = new FisherInfo();
-        hFisherInfo.fisher = this.fisher;
+        hFisherInfo.owner = this.owner;
         hFisherInfo.perks = this.perks;
         hFisherInfo.fishedChunks = this.fishedChunks;
         return hFisherInfo;
+    }
+
+
+    public ArrayList<UUID> getLinkedFishers(){
+        return linkedFishers;
+    }
+
+    public boolean isLinked(UUID uuid){
+        return linkedFishers.contains(uuid);
+    }
+
+    public void unlinkFisher(UUID uuid){
+        if (!linkedFishers.contains(uuid)) return;
+        linkedFishers.remove(uuid);
+    }
+    public void linkedFisher(UUID linkUUID){
+        int allowedSize = hasPerk(FishingPerks.FISHERMAN_LINK) ? hasPerk(FishingPerks.DOUBLE_LINK) ? 2 : 1 : 0;
+        if (allowedSize == 0) {
+            return;
+        }
+        if (linkedFishers.size() < allowedSize) {
+            linkedFishers.add(linkUUID);
+        } else {
+            linkedFishers.remove(0);
+            linkedFishers.add(linkUUID);
+        }
     }
 
     @Override
