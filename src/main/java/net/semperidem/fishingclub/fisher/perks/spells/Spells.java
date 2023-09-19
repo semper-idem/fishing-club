@@ -4,14 +4,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.ArrayList;
@@ -127,7 +131,16 @@ public class Spells {
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-
+                ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
+                ItemStack rodStack = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
+                if (mainHand.getItem().equals(FItemRegistry.CUSTOM_FISHING_ROD)) {
+                    rodStack = source.getStackInHand(Hand.MAIN_HAND);
+                }
+                ItemStack clonedStack = FItemRegistry.CLONED_ROD.getDefaultStack();
+                NbtCompound clonedNbt = rodStack.getNbt();
+                clonedNbt.putLong("creation_tick", source.getWorld().getTime());
+                clonedStack.setNbt(clonedNbt);
+                source.giveItemStack(clonedStack);
             }
         });
         FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 600,   new Spell.Effect() {

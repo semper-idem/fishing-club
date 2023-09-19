@@ -450,9 +450,9 @@ public class FishingPerks {
 
     public static FishingPerk MAGIC_ROD_SUMMON = FishingPerk
             .createPerk("magic_rod_summon", BIG_BOAT)
-            .withLabel("Magic Rod Summon")
-            .withDescription("Summon a magic rod that lasts for 15 minutes")
-            .withDetailedDesc("Summon a magic rod that lasts for 15 minutes\n" +
+            .withLabel("Shadow Rod Cloning")
+            .withDescription("Create clone of your rod that lasts for 5 minutes")
+            .withDetailedDesc("Create clone of your that lasts for 5 minutes\n" +
                     "(Can be dropped)")
             .withIcon("magic_rod.png");
 

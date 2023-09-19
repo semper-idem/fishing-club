@@ -22,6 +22,7 @@ public class FItemRegistry {
     public static final Item FISHER_VEST = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.CHEST, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item HARPOON_ROD = new HarpoonRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item LINE_ARROW = new LineArrowItem(new Item.Settings().group(FISHING_CLUB_GROUP));
+    public static final Item CLONED_ROD = new ClonedFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
 
     public static void register(){
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_workbench"), FISHER_WORKBENCH);
