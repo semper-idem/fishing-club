@@ -11,6 +11,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ public class Spells {
     static Spell EXPERIENCE_BOOST;
     static Spell LUCKY_FISHING;
     static Spell FISHERMAN_LINK;
-    static Spell FISHERMAN_SUMMON;
+    static Spell FISHERMAN_SUMMON_REQUEST;
+    static Spell FISHERMAN_SUMMON_ACCEPT;
     static Spell SHARED_BAIT;
     static Spell MAGIC_ROD_SUMMON;
     static Spell FREE_SHOP_SUMMON;
@@ -116,9 +118,10 @@ public class Spells {
                 castAOEBuff(source, FStatusEffectRegistry.SHARED_BAIT_BUFF, 0, 12000);
             }
         });
-        FISHERMAN_SUMMON = new Spell(FishingPerks.FISHERMAN_SUMMON.getName(), FishingPerks.FISHERMAN_SUMMON, 600,   new Spell.Effect() {
+        FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
+                ClientPacketSender.sendSummonRequest();
             }
         });
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {

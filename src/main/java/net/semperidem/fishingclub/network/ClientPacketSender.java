@@ -59,4 +59,12 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_CAST_SPELL, buf);
     }
 
+    public static void sendSummonRequest(){
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_SUMMON_REQUEST, PacketByteBufs.create());
+    }
+
+    public static void sendSummonAccept(){
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_SUMMON_ACCEPT, PacketByteBufs.create());
+    }
+
 }

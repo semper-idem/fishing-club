@@ -11,9 +11,11 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_DATA_SEND;
-import static net.semperidem.fishingclub.network.PacketIdentifiers.S2C_F_GAME_START;
+import java.util.UUID;
+
+import static net.semperidem.fishingclub.network.PacketIdentifiers.*;
 
 public class ServerPacketSender {
 
@@ -53,5 +55,17 @@ public class ServerPacketSender {
         if (!playerCustomNbt.contains(FishingCard.TAG)) return;
         packet.writeNbt(playerCustomNbt.getCompound(FishingCard.TAG));
         sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
+    }
+
+    public static void sendSummonRequest(ServerPlayerEntity summoner){
+        for(UUID linkedFisherUUID : FishingCardManager.getPlayerCard(summoner).getLinkedFishers()) {
+            for(ServerPlayerEntity linkedFisherPlayer : summoner.getWorld().getPlayers()) {
+                if (!linkedFisherPlayer.getUuid().equals(linkedFisherUUID)) continue;
+                FishingCardManager.getPlayerCard(linkedFisherPlayer).setTeleportRequest(summoner.getUuid(), summoner.getWorld().getTime());
+                PacketByteBuf packet = PacketByteBufs.create();
+                packet.writeString(summoner.getDisplayName().getString());
+                sendPacket(summoner, S2C_SUMMON_REQUEST, packet);
+            }
+        }
     }
 }

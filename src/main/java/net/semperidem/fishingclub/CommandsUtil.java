@@ -8,6 +8,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 public class CommandsUtil {
 
@@ -15,6 +16,11 @@ public class CommandsUtil {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             // Root command
             LiteralArgumentBuilder<ServerCommandSource> rootCommand = CommandManager.literal(FishingClub.MOD_ID);
+
+            rootCommand.then(CommandManager.literal("summon_accept").executes(context -> {
+                ClientPacketSender.sendSummonAccept();
+                return 1;
+            }));
 
             rootCommand.then(CommandManager.literal("info").executes(context -> {
                 context.getSource().sendMessage(Text.literal(FishingCardManager.getPlayerCard(context.getSource().getPlayer()).toString()));

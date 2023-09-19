@@ -47,6 +47,7 @@ public class FishingCard {
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
     private FishingRodPartItem lastUsedBait = FishingRodPartItems.BAIT_WORM;
     private FishingRodPartItem sharedBait = FishingRodPartItems.BAIT_WORM;
+    private TeleportRequest lastTeleportRequest;
 
     private PlayerEntity owner;
 
@@ -95,6 +96,13 @@ public class FishingCard {
         setChunks(fisherTag);
         setLinked(fisherTag);
         this.lastUsedBait = FishingRodPartItems.KEY_TO_PART_MAP.get(fisherTag.getString("last_used_bait"));
+        setLastTeleportRequest(fisherTag);
+    }
+
+    private void setLastTeleportRequest(NbtCompound fisherTag){
+        if (!fisherTag.contains("last_teleport_request")) return;
+        NbtCompound lastTeleportRequestTag = fisherTag.getCompound("last_teleport_request");
+        this.lastTeleportRequest = TeleportRequest.fromNbt(lastTeleportRequestTag);
     }
 
     private void setLinked(NbtCompound fisherTag){
@@ -167,7 +175,7 @@ public class FishingCard {
         fisherTag.put("fished_chunks", getFishedChunksList());
         fisherTag.put("linked", getLinkedList());
         fisherTag.putString("last_used_bait", lastUsedBait.getKey());
-
+        fisherTag.put("last_teleport_request", TeleportRequest.toNbt(lastTeleportRequest));
         return fisherTag;
     }
 
@@ -235,6 +243,18 @@ public class FishingCard {
         addRootPerk(FishingPerks.ROOT_HOBBYIST);
         addRootPerk(FishingPerks.ROOT_OPPORTUNIST);
         addRootPerk(FishingPerks.ROOT_SOCIALIST);
+    }
+
+    public void setTeleportRequest(UUID summonerUUID, long worldTime){
+        lastTeleportRequest = new TeleportRequest(summonerUUID.toString(), worldTime);
+    }
+
+    public TeleportRequest getLastTeleportRequest(){
+        return lastTeleportRequest;
+    }
+
+    public boolean canAcceptTeleport(long currentWorldTime){
+        return currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
     }
 
     private void syncFisherInfo(){
@@ -543,6 +563,28 @@ public class FishingCard {
 
         public String toString(){
             return x + ";" + z;
+        }
+    }
+
+    public static class TeleportRequest{
+        public final String summonerUUID;
+        public final long requestTick;
+
+
+        TeleportRequest(String summonerUUID, long worldTime){
+            this.summonerUUID = summonerUUID;
+            this.requestTick = worldTime;
+        }
+
+        public static TeleportRequest fromNbt(NbtCompound teleportRequestTag){
+            return new TeleportRequest(teleportRequestTag.getString("summonerUUID"), teleportRequestTag.getLong("request_tick"));
+        }
+
+        public static NbtCompound toNbt(TeleportRequest teleportRequest){
+            NbtCompound self = new NbtCompound();
+            self.putString("summonerUUID", teleportRequest.summonerUUID);
+            self.putLong("request_tick", teleportRequest.requestTick);
+            return self;
         }
     }
 }

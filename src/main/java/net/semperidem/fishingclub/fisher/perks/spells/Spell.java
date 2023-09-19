@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.fisher.perks.spells;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import org.jetbrains.annotations.Nullable;
 
 public class Spell {
     final String name;
@@ -12,7 +13,7 @@ public class Spell {
     Effect effect;
 
 
-    public Spell(String name, FishingPerk fishingPerk, int cooldown, Effect effect){
+    public Spell(String name, @Nullable FishingPerk fishingPerk, int cooldown, Effect effect){
         this.name = name;
         this.requiredPerk = fishingPerk;
         this.cooldown = cooldown;

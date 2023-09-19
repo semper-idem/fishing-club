@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
@@ -85,13 +86,38 @@ public class ServerPacketHandlers {
     public static void handleSlotSold(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         int creditGained = buf.readInt();
         server.execute(() -> {
-            Optional.ofNullable(player.currentScreenHandler)
+                    Optional.ofNullable(player.currentScreenHandler)
                             .filter(FishingCardScreenHandler.class::isInstance)
                             .map(FishingCardScreenHandler.class::cast)
                             .ifPresent(screenHandler -> screenHandler.soldSlot(player, creditGained));
-            ServerPacketSender.sendFisherInfo(player);
-        }
+                    ServerPacketSender.sendFisherInfo(player);
+                }
         );
+    }
+
+    public static void handleSummonRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+                    ServerPacketSender.sendSummonRequest(player);
+                }
+        );
+    }
+
+    public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
+            if (!fishingCard.canAcceptTeleport(player.getWorld().getTime())) return;
+            FishingCard.TeleportRequest teleportRequest = fishingCard.getLastTeleportRequest();
+            if (teleportRequest == null) return;
+            ServerPlayerEntity target = null;
+            for(ServerPlayerEntity possibleTarget : player.getWorld().getPlayers()) {
+                if  (possibleTarget.getUuidAsString().equalsIgnoreCase(teleportRequest.summonerUUID)) {
+                    target = possibleTarget;
+                    break;
+                }
+            }
+            if (target == null) return;
+            player.teleport(target.getWorld(), target.getX(), target.getY(), target.getZ(), target.getYaw(), target.getPitch());
+        });
     }
 
 
