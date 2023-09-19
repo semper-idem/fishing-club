@@ -15,6 +15,7 @@ import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class Spells {
@@ -25,30 +26,36 @@ public class Spells {
     static Spell LUCKY_FISHING;
     static Spell FISHERMAN_LINK;
     static Spell FISHERMAN_SUMMON;
+    static Spell SHARED_BAIT;
     static Spell MAGIC_ROD_SUMMON;
     static Spell FREE_SHOP_SUMMON;
     static HashMap<FishingPerk, Spell> perkToSpell = new HashMap<>();
 
     private static final int MAX_LINKED_FISHER_BUFFS = 8;
 
-    private static void castAOEBuff(ServerPlayerEntity playerEntity, StatusEffect buff,int range, int duration){
-        Box box = new Box(playerEntity.getBlockPos());
+    private static void castAOEBuff(ServerPlayerEntity caster, StatusEffect buff,int range, int duration){
+        Box box = new Box(caster.getBlockPos());
+        FishingCard casterCard = FishingCardManager.getPlayerCard(caster);
         box.expand(range);
         ArrayList<UUID> buffedLinks = new ArrayList<>();
         int linkedCount = 0;
-        for(Entity entity : playerEntity.getEntityWorld().getOtherEntities(null, box)) {
-            if (!(entity instanceof PlayerEntity)) continue;
+        List<Entity> iterableEntities = caster.getEntityWorld().getOtherEntities(null, box);
+        iterableEntities.add(caster);
+        for(Entity entity : iterableEntities) {
+            if (!(entity instanceof ServerPlayerEntity playerEntity)) continue;
             playerEntity.addStatusEffect(new StatusEffectInstance(buff, duration));
-            FishingCard fishingCard = FishingCardManager.getPlayerCard(playerEntity);
-            if (!fishingCard.hasPerk(FishingPerks.FISHERMAN_LINK)) continue;
+            FishingCard playerCard = FishingCardManager.getPlayerCard(playerEntity);
+            if (!playerCard.hasPerk(FishingPerks.FISHERMAN_LINK)) continue;
             if (linkedCount >= MAX_LINKED_FISHER_BUFFS) continue;
             linkedCount++;
-            for(UUID linkedFisher : FishingCardManager.getPlayerCard(playerEntity).getLinkedFishers()) {
+            for(UUID linkedFisher : FishingCardManager.getPlayerCard(caster).getLinkedFishers()) {
                 if (buffedLinks.contains(linkedFisher)) continue;
-                for(ServerPlayerEntity linkedFisherPlayer : playerEntity.getWorld().getPlayers()) {
+                for(ServerPlayerEntity linkedFisherPlayer : caster.getWorld().getPlayers()) {
                     if (linkedFisherPlayer.getUuid().equals(linkedFisher)) continue;
                     linkedFisherPlayer.addStatusEffect(new StatusEffectInstance(buff, duration));
                     buffedLinks.add(linkedFisher);
+                    if (buff != FStatusEffectRegistry.SHARED_BAIT_BUFF) continue;
+                    FishingCardManager.getPlayerCard(linkedFisherPlayer).setSharedBait(casterCard.getLastUsedBait());
                     //MAYBE REFACTOR HERE IDK :P n^3 big bad
                 }
             }
@@ -86,7 +93,7 @@ public class Spells {
                 castAOEBuff(source, FStatusEffectRegistry.QUALITY_BUFF, 4, 6000);
             }
         });
-        FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 600, new Spell.Effect() {
+        FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
                 if (!(target instanceof PlayerEntity playerTarget)) return;
@@ -101,6 +108,12 @@ public class Spells {
                     source.sendMessage(Text.of("[Fishing Club] Linked to: " + playerTarget.getDisplayName().getString()), true);
                     playerTarget.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has linked to you"), true);
                 }
+            }
+        });
+        SHARED_BAIT = new Spell(FishingPerks.SHARED_BAIT.getName(), FishingPerks.SHARED_BAIT, 6000,   new Spell.Effect() {
+            @Override
+            public void cast(ServerPlayerEntity source) {
+                castAOEBuff(source, FStatusEffectRegistry.SHARED_BAIT_BUFF, 0, 12000);
             }
         });
         FISHERMAN_SUMMON = new Spell(FishingPerks.FISHERMAN_SUMMON.getName(), FishingPerks.FISHERMAN_SUMMON, 600,   new Spell.Effect() {

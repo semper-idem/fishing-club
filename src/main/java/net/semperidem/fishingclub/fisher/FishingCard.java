@@ -18,11 +18,15 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.item.CustomFishingRod;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.*;
+
 
 public class FishingCard {
     public static final String TAG = "fishing_card";
@@ -41,6 +45,8 @@ public class FishingCard {
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
     private ArrayList<Chunk> fishedChunks = new ArrayList<>();
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
+    private FishingRodPartItem lastUsedBait = FishingRodPartItems.BAIT_WORM;
+    private FishingRodPartItem sharedBait = FishingRodPartItems.BAIT_WORM;
 
     private PlayerEntity owner;
 
@@ -88,6 +94,7 @@ public class FishingCard {
         setSpells(fisherTag);
         setChunks(fisherTag);
         setLinked(fisherTag);
+        this.lastUsedBait = FishingRodPartItems.KEY_TO_PART_MAP.get(fisherTag.getString("last_used_bait"));
     }
 
     private void setLinked(NbtCompound fisherTag){
@@ -159,6 +166,7 @@ public class FishingCard {
         fisherTag.put("spells", getSpellListTag());
         fisherTag.put("fished_chunks", getFishedChunksList());
         fisherTag.put("linked", getLinkedList());
+        fisherTag.putString("last_used_bait", lastUsedBait.getKey());
 
         return fisherTag;
     }
@@ -209,6 +217,18 @@ public class FishingCard {
 
     public int getCredit(){
         return credit;
+    }
+
+
+    public void setSharedBait(FishingRodPartItem bait){
+        this.sharedBait = bait;
+    }
+
+    public FishingRodPartItem getSharedBait(){
+        return sharedBait;
+    }
+    public FishingRodPartItem getLastUsedBait(){
+        return lastUsedBait;
     }
 
     private void initPerks(){
@@ -338,6 +358,7 @@ public class FishingCard {
         processOneTimeBuff(fish);
         prolongStatusEffects();
         grantExperience(boostedExp);
+        lastUsedBait = CustomFishingRod.getBait(fish.caughtUsing);
     }
 
     private void prolongStatusEffects(){

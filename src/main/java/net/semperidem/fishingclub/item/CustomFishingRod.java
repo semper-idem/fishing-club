@@ -37,6 +37,20 @@ public class CustomFishingRod extends FishingRodItem {
         return defaultStack;
     }
 
+    public static FishingRodPartItem getBait(ItemStack rodStack){
+        NbtCompound rodNbt = rodStack.getNbt();
+        if (rodNbt.contains("parts")) {
+            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            if (partsNbt.contains(FishingRodPartItem.PartType.BAIT.name())) {
+                NbtCompound partNbt = partsNbt.getCompound(FishingRodPartItem.PartType.BAIT.name());
+                if (partNbt.contains("key")) {
+                    return  FishingRodPartItems.KEY_TO_PART_MAP.get(partNbt.getString("key"));
+                }
+            }
+        }
+        return null;
+    }
+
     public ItemStack getPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {

@@ -202,7 +202,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
         ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
-        caughtFish = FishUtil.getFishOnHook(fishingCard, fishingRod, fishTypeRarityMultiplier, new FishingCard.Chunk(worldChunkPos.x, worldChunkPos.z));
+        ItemStack fishingRodCopy = fishingRod.copy();
+        if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.SHARED_BAIT_BUFF)) {
+            FItemRegistry.CUSTOM_FISHING_ROD.addPart(fishingRodCopy, fishingCard.getSharedBait().getDefaultStack(), FishingRodPartItem.PartType.BAIT);
+        }
+        caughtFish = FishUtil.getFishOnHook(fishingCard, fishingRodCopy, fishTypeRarityMultiplier, new FishingCard.Chunk(worldChunkPos.x, worldChunkPos.z));
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;

@@ -417,7 +417,7 @@ public class FishingPerks {
                     "Gain buff that will share your bait with linked\n" +
                     "fisherman in case they run out of theirs\n" +
                     "Duration: 10min\n" +
-                    "Cooldown: 10min")
+                    "Cooldown: 5min")
             .withIcon("bait_shared.png");
 
     public static FishingPerk FISHERMAN_SUMMON = FishingPerk
