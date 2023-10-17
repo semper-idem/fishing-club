@@ -5,10 +5,19 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -19,6 +28,9 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     private static final int SLOT_COUNT = 6;
     private final Inventory benchInventory;
     private final ScreenHandlerContext context;
+    private FisherWorkbenchScreen screen;
+    private FishingCard fishingCard;
+    private List<Slot> nonRodSlots = new ArrayList<>();
 
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, ScreenHandlerContext.create(inventory.player.world, inventory.player.getBlockPos()));
@@ -27,20 +39,96 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(6);
-        addRodPartSlots();
+        this.fishingCard = FishingCardManager.getPlayerCard((ServerPlayerEntity) playerInventory.player);
+        initSlots();
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
     }
 
-    private void addRodPartSlots(){
-        addSlot(new FishingRodSlot(this.benchInventory, 0, 16, 17));
+    public void setRepairMode(boolean repairRequired){
+        screen.changeRepairMode(repairRequired);
+        if (repairRequired) {
+            initRepairSlots();
+        } else {
+            initDefaultSlots();
+        }
+    }
 
+    public void  repairRod(){
+       Slot repairMatSlot = this.slots.get(4);
+       ItemStack repairMatStack = repairMatSlot.getStack();
+       if (repairMatStack.getCount() <= 0) return;
+       ItemStack rodStack = this.slots.get(0).getStack();
+       float damagePercent = rodStack.getDamage() / (rodStack.getMaxDamage() * 1f);
+       int matToConsume = 1 + (int) (damagePercent / 0.2f);
+       int matAvailable = repairMatStack.getCount();
+       int matConsumed = Math.min(matAvailable, matToConsume);
+       int damageFixed = (int) (0.2f * matConsumed * rodStack.getMaxDamage());
+       int resultDamage = Math.max(0, rodStack.getDamage() - damageFixed);
+       rodStack.setDamage(resultDamage);
+       repairMatStack.setCount(matAvailable - matConsumed);
+        if (this.fishingCard.hasPerk(FishingPerks.DURABLE_RODS)) {
+            NbtCompound rodNbt = rodStack.getOrCreateNbt();
+            rodNbt.putInt("handmade", damageFixed);
+            rodStack.setNbt(rodNbt);
+        }
+    }
+
+    @Override
+    protected Slot addSlot(Slot slot) {
+        if (!(slot instanceof FishingRodSlot)) {
+            nonRodSlots.add(slot);
+        }
+        return super.addSlot(slot);
+    }
+
+    public void setScreenCallback(FisherWorkbenchScreen screen){
+        this.screen = screen;
+    }
+    private void addRodPartSlots(){
         addSlot(new RodPartSlot(this.benchInventory, 1, 145, 17, CORE));
         addSlot(new RodPartSlot(this.benchInventory, 2, 145, 17 + 26,  BOBBER));
         addSlot(new RodPartSlot(this.benchInventory, 3, 145, 17 + 26 * 2, LINE));
         addSlot(new RodPartSlot(this.benchInventory, 4, 145, 17 + 26 * 3, HOOK));
         addSlot(new RodPartSlot(this.benchInventory, 5, 54, 17 + 26 * 3, BAIT));
     }
+
+    private void initSlots(){
+        addRodSlot();
+        if (screen.repairMode) {
+            initRepairSlots();
+        } else {
+            initDefaultSlots();
+        }
+    }
+    private void initDefaultSlots(){
+        clearNoneRodSlots();
+        addRodPartSlots();
+    }
+
+    private void initRepairSlots(){
+        clearNoneRodSlots();
+        addRepairMaterialSlot();
+    }
+
+    private void clearNoneRodSlots(){
+        this.slots.removeAll(nonRodSlots);
+        nonRodSlots.clear();
+    }
+    private void addRodSlot(){
+        addSlot(new FishingRodSlot(this.benchInventory, 0, 16, 17, this));
+    }
+
+    private void addRepairMaterialSlot(){
+        addSlot(new Slot(this.benchInventory, 4, 145, 17 + 26 * 3){
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return stack.getItem() == Items.STRING && super.canInsert(stack);
+            }
+        });
+
+    }
+
 
     private void addPlayerInventory(PlayerInventory playerInventory){
         for(int y = 0; y < 3; ++y) {

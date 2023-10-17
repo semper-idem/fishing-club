@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client.screen.workbench;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,30 +15,64 @@ import java.awt.*;
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
 public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHandler> implements ScreenHandlerProvider<FisherWorkbenchScreenHandler> {
-    private static final Identifier BACKGROUND = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
+    private static final Identifier BACKGROUND_DEFAULT = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
+    private static final Identifier BACKGROUND_REPAIR = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui_repair.png");
+    private static Identifier BACKGROUND = BACKGROUND_DEFAULT;
+
+    ButtonWidget repairButton;
+
+    boolean repairMode = false;
     public FisherWorkbenchScreen(FisherWorkbenchScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, Text.empty());
         this.backgroundHeight = 222;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
+        handler.setScreenCallback(this);
     }
 
+
+    public void changeRepairMode(boolean repairMode){
+        this.repairMode = repairMode;
+        BACKGROUND = repairMode ? BACKGROUND_REPAIR : BACKGROUND_DEFAULT;
+        this.repairButton.visible = repairMode;
+    }
     @Override
     protected void init() {
         super.init();
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
+        repairButton = new ButtonWidget(x + ((width - 40 )/2),y+height - 50,40,20, Text.of("Repair"), repairClick -> {
+            handler.repairRod();
+        });
+        repairButton.visible = repairMode;
     }
 
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
         renderBackground(matrixStack);
         super.render(matrixStack, i, j, f);
+        renderSlotLabels(matrixStack);
+        drawMouseoverTooltip(matrixStack, i, j);
+    }
+
+    private void renderSlotLabels(MatrixStack matrixStack){
+        if (repairMode) {
+            renderRepairModeLabels(matrixStack);
+        } else {
+            renderDefaultLabels(matrixStack);
+        }
+    }
+
+    private void renderRepairModeLabels(MatrixStack matrixStack){
+        renderTextRightSide(matrixStack, "Repair Material:", this.x + 143, this.y + 20 + 26 * 3);
+    }
+
+    private void renderDefaultLabels(MatrixStack matrixStack){
         renderTextRightSide(matrixStack, "Core:", this.x + 143, this.y + 20);
         renderTextRightSide(matrixStack, "Bobber:", this.x + 143, this.y + 20 + 26);
         renderTextRightSide(matrixStack, "Line:", this.x + 143, this.y + 20 + 26 * 2);
         renderTextRightSide(matrixStack, "Hook:", this.x + 143, this.y + 20 + 26 * 3);
         renderTextRightSide(matrixStack, "Bait:", this.x + 52, this.y + 20 + 26 * 3);
-        drawMouseoverTooltip(matrixStack, i, j);
+
     }
 
     private void renderTextRightSide(MatrixStack matrixStack, String text, int x, int y){

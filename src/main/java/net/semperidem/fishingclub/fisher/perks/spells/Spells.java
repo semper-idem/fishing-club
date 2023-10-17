@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
@@ -143,10 +144,10 @@ public class Spells {
                 source.giveItemStack(clonedStack);
             }
         });
-        FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 600,   new Spell.Effect() {
+        FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 144000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-
+                source.getWorld().spawnEntity(new FishermanEntity(source.getWorld()));
             }
         });
     }

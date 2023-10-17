@@ -4,7 +4,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -49,6 +51,20 @@ public class CustomFishingRod extends FishingRodItem {
             }
         }
         return null;
+    }
+
+    public Item getPartItem(ItemStack rodStack, FishingRodPartItem.PartType partType){
+        NbtCompound rodNbt = rodStack.getNbt();
+        if (rodNbt.contains("parts")) {
+            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            if (partsNbt.contains(partType.name())) {
+                NbtCompound partNbt = partsNbt.getCompound(partType.name());
+                if (partNbt.contains("key")) {
+                    return FishingRodPartItems.KEY_TO_PART_MAP.get(partNbt.getString("key"));
+                }
+            }
+        }
+        return Items.AIR;
     }
 
     public ItemStack getPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
@@ -135,9 +151,30 @@ public class CustomFishingRod extends FishingRodItem {
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
     }
 
+    private float getDamageChance(ItemStack fishingRod) {
+        NbtCompound rodNbt = fishingRod.getOrCreateNbt();
+        int handmadeUsages;
+        if (rodNbt.contains("handmade")) {
+            handmadeUsages = rodNbt.getInt("handmade");
+            if (handmadeUsages > 0) {
+                rodNbt.putInt("handmade", handmadeUsages - 1);
+                fishingRod.setNbt(rodNbt);
+                return 0;
+            }
+        }
+        float damageChance = 1f;
+        Item coreItem = getPartItem(fishingRod, FishingRodPartItem.PartType.CORE);
+        if (coreItem.equals(FishingRodPartItems.CORE_BAMBOO)) damageChance = 0.85f;
+        else if (coreItem.equals(FishingRodPartItems.CORE_COMPOSITE)) damageChance = 0.2f;
+        else if (coreItem.equals(FishingRodPartItems.CORE_GOLDEN)) damageChance = 1.8f;
+        else if (coreItem.equals(FishingRodPartItems.CORE_NETHERITE)) damageChance = 0.3f;
+        return damageChance * 1;
+    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fishingRod = user.getStackInHand(hand);
+
         if (isCasting(user)) {
             reelRod(world,user,hand, fishingRod);
             return TypedActionResult.success(user.getStackInHand(hand));
@@ -146,6 +183,10 @@ public class CustomFishingRod extends FishingRodItem {
         FishingCard fishingCard = world.isClient ? FishingClubClient.CLIENT_INFO : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
+            float damageChance = getDamageChance(fishingRod);
+            if (Math.random() < damageChance) {
+                fishingRod.setDamage((int) (fishingRod.getDamage() + damageChance));
+            }
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

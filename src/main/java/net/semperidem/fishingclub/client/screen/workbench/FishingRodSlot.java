@@ -11,21 +11,30 @@ import net.semperidem.fishingclub.item.FishingRodPartItem;
 import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
-    public FishingRodSlot(Inventory inventory, int index, int x, int y) {
+    FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler;
+    public FishingRodSlot(Inventory inventory, int index, int x, int y, FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler) {
         super(inventory, index, x, y);
+        this.fisherWorkbenchScreenHandler = fisherWorkbenchScreenHandler;
     }
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.isOf(CUSTOM_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);//TODO Add vanilla fishing rod transformmation
+        return stack.isOf(CUSTOM_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);
     }
 
     @Override
     public void setStack(ItemStack stack) {
         if (stack.isOf(Items.FISHING_ROD)) {
+            double dmgPercent = stack.getDamage() / (stack.getMaxDamage() * 1f);
             stack = CUSTOM_FISHING_ROD.getDefaultStack();
+            stack.setDamage((int) (stack.getMaxDamage() * dmgPercent));
         }
-        unPackFishingRod(stack);
+        boolean repairRequired = stack.getDamage() > 0;
+        if (repairRequired) {
+            fisherWorkbenchScreenHandler.setRepairMode(true);
+        } else {
+            unPackFishingRod(stack);
+        }
         super.setStack(stack);
     }
 
