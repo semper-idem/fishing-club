@@ -34,6 +34,7 @@ public class FItemRegistry {
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_vest"), FISHER_VEST);
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("harpoon_rod"), HARPOON_ROD);
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("line_arrow"), LINE_ARROW);
+        Registry.register(Registry.ITEM, FishingClub.getIdentifier("cloned_rod"), CLONED_ROD);
         FishingRodPartItems.registerParts();
 
     }
