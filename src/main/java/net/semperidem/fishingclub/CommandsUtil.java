@@ -22,6 +22,11 @@ public class CommandsUtil {
                 return 1;
             }));
 
+            rootCommand.then(CommandManager.literal("reset_cooldown").executes(context -> {
+                FishingCardManager.getPlayerCard(context.getSource().getPlayer()).resetCooldown();
+                return 1;
+            }));
+
             rootCommand.then(CommandManager.literal("info").executes(context -> {
                 context.getSource().sendMessage(Text.literal(FishingCardManager.getPlayerCard(context.getSource().getPlayer()).toString()));
                 return 1;

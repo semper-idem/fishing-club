@@ -92,9 +92,9 @@ public class LineArrowEntity extends PersistentProjectileEntity {
                 FishingCard fishingCard = FishingCardManager.getPlayerCard(owner).getHarpoonFisherInfo();
                 FishingCard.Chunk chunk = new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
-                        .getHarpoonFish((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
-                FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity);
+                Fish harpoonedFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
+                        .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
+                FishUtil.grantReward(owner, harpoonedFish, owner.getVehicle() instanceof BoatEntity);
             }
         }
     }

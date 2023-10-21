@@ -52,6 +52,8 @@ public class FKeybindingRegistry {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             targetUUID = ((EntityHitResult) hitResult).getEntity().getUuidAsString();
                         }
+                    } else {
+                        targetUUID = client.player.getUuid().toString();
                     }
                     ClientPacketSender.castSpell(SpellListWidget.selectedSpell.getKey(), targetUUID);
                 };

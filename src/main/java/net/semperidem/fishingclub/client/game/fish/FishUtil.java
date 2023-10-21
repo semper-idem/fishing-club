@@ -213,7 +213,6 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-
     public static Fish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
@@ -347,6 +346,8 @@ public class FishUtil {
         fishNbt.putInt("value", fish.value);
         fishNbt.putFloat("weight", fish.weight);
         fishNbt.putFloat("length", fish.length);
+        fishNbt.put("caughtUsing", fish.caughtUsing.getOrCreateNbt());
+        fishNbt.putString("caughtIn", fish.caughtIn.toString());
         fishNbt.putString("curvePoints", curveToString(fish.curvePoints));
         fishNbt.putString("curveControlPoints", curveToString(fish.curveControlPoints));
         return fishNbt;
@@ -362,6 +363,8 @@ public class FishUtil {
         fish.value = nbtCompound.getInt("value");
         fish.weight = nbtCompound.getFloat("weight");
         fish.length = nbtCompound.getFloat("length");
+        fish.caughtUsing = ItemStack.fromNbt(nbtCompound.getCompound("caughtUsing"));
+        fish.caughtIn = new FishingCard.Chunk(nbtCompound.getString("caughtIn"));
         fish.curvePoints = FishUtil.curveFromString(nbtCompound.getString("curvePoints"));
         fish.curveControlPoints = FishUtil.curveFromString(nbtCompound.getString("curveControlPoints"));
         return fish;

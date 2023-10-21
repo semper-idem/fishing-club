@@ -125,13 +125,12 @@ public class Fish {
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public Fish getHarpoonFish(float multiplier){
-        Fish hFish = FishUtil.fromNbt(FishUtil.toNbt(this));
-        hFish.experience = (int) (this.experience * multiplier);
-        hFish.weight = Math.max(this.fishType.fishMinWeight, (this.weight * multiplier));
-        hFish.length = Math.max(this.fishType.fishMinLength, (this.length * multiplier));
-        hFish.grade = Math.max(1, (int) (this.grade * multiplier));
-        hFish.value = Math.max(1, (int) (this.value * multiplier));
-        return hFish;
+    public Fish applyHarpoonMultiplier(float multiplier){
+        this.experience = (int) (this.experience * multiplier);
+        this.weight = Math.max(this.fishType.fishMinWeight, (this.weight * multiplier));
+        this.length = Math.max(this.fishType.fishMinLength, (this.length * multiplier));
+        this.grade = Math.max(1, (int) (this.grade * multiplier));
+        this.value = Math.max(1, (int) (this.value * multiplier));
+        return this;
     }
 }

@@ -67,8 +67,7 @@ public abstract class ServerWorldMixin extends World {
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
                 FishingCard fishingCard = FishingCardManager.getPlayerCard(igniter).getHarpoonFisherInfo();
                 FishingCard.Chunk chunk = new FishingCard.Chunk(chunkPos.x, chunkPos.z);
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
-                        .getHarpoonFish(0.35f);
+                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk).applyHarpoonMultiplier(0.35f);
                 FishUtil.grantReward(igniter, hFish, igniter.getVehicle() instanceof BoatEntity, explosionPos);
     }
 }

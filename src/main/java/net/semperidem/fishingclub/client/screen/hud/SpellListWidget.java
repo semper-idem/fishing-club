@@ -35,7 +35,10 @@ public class SpellListWidget{
     }
 
     public void render(MatrixStack matrices, float tickDelta){
-        if(selectedSpell == null) return;
+        if(selectedSpell == null){
+            if (pressed) pressed = false;
+            return;
+        }
         if (!FKeybindingRegistry.SPELL_SELECT_KB.isPressed()){
             pressed = false;
             return;
@@ -54,6 +57,9 @@ public class SpellListWidget{
 
     private void renderSpell(MatrixStack matrixStack, SpellInstance spell, int x, int y, int color, int bgColor){
         String spellName = spell.getLabel();
+        if (selectedSpell == spell) {
+            spellName = "> " + spellName + " <";
+        }
         String spellCd = getCooldownString(spell);
         int spellCdLen = MinecraftClient.getInstance().textRenderer.getWidth(spellCd);
         DrawableHelper.fill(matrixStack, x - 4, y - 4, x + entryWidth, y + 12, bgColor);

@@ -26,6 +26,11 @@ public class SpellInstance {
         this.cooldown--;
     }
 
+    public void resetCooldown(){
+        this.cooldown = 0;
+        this.nextPossibleCastTime = 0;
+    }
+
     public boolean needsTarget(){
         return spell.needsTarget;
     }

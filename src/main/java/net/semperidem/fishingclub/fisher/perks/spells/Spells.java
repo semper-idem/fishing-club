@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher.perks.spells;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,12 +11,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
@@ -147,7 +148,10 @@ public class Spells {
         FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 144000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                source.getWorld().spawnEntity(new FishermanEntity(source.getWorld()));
+                //TODO Make only on Derek per world
+                //TODO Add condition to spawn only in water or near water
+                //ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+                FEntityRegistry.FISHERMAN.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
             }
         });
     }

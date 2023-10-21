@@ -7,6 +7,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -47,7 +48,7 @@ public class FishingCard {
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
     private FishingRodPartItem lastUsedBait = FishingRodPartItems.BAIT_WORM;
     private FishingRodPartItem sharedBait = FishingRodPartItems.BAIT_WORM;
-    private TeleportRequest lastTeleportRequest;
+    private TeleportRequest lastTeleportRequest = new TeleportRequest("Jeb", 0);
 
     private PlayerEntity owner;
 
@@ -189,6 +190,7 @@ public class FishingCard {
 
     private NbtList getFishedChunksList(){
         NbtList fishedChunksTag = new NbtList();
+        if (fishedChunks.size() == 0) return fishedChunksTag;
         for(Chunk c : fishedChunks) {
             fishedChunksTag.add(NbtString.of(c.toString()));
         }
@@ -213,6 +215,13 @@ public class FishingCard {
             perkListTag.add(NbtString.of(fishingPerkName));
         });
         return perkListTag;
+    }
+
+    public void resetCooldown(){
+        for(SpellInstance spellInstance : spells.values()) {
+            spellInstance.resetCooldown();
+        }
+        syncFisherInfo();
     }
 
     public int getLevel() {
@@ -378,6 +387,7 @@ public class FishingCard {
         processOneTimeBuff(fish);
         prolongStatusEffects();
         grantExperience(boostedExp);
+        if (fish.caughtUsing == null || fish.caughtUsing == Items.AIR.getDefaultStack()) return;
         lastUsedBait = CustomFishingRod.getBait(fish.caughtUsing);
     }
 
@@ -555,7 +565,7 @@ public class FishingCard {
             this.z = z;
         }
 
-        Chunk(String chunkString){
+        public Chunk(String chunkString){
             String[] chunkData = chunkString.split(";");
             x = Integer.parseInt(chunkData[0]);
             z = Integer.parseInt(chunkData[1]);
