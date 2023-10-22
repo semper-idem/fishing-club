@@ -304,6 +304,10 @@ public class FishingCard {
         this.skillPoints++;
         syncFisherInfo();
     }
+    public void addSkillPoints(int amount){
+        this.skillPoints+= amount;
+        syncFisherInfo();
+    }
 
     public int getMinGrade(){
         int minGrade = 0;
@@ -488,6 +492,11 @@ public class FishingCard {
         this.credit += credit;
         syncFisherInfo();
         return true;
+    }
+
+    public void setCredit(int credit) {
+        this.credit = credit;
+        syncFisherInfo();
     }
 
     public HashMap<String, FishingPerk> getPerks(){

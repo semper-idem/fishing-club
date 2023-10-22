@@ -48,8 +48,15 @@ public class FishingCardManager {
         return getPlayerCard(playerEntity).addCredit(credit);
     }
 
+    public static void setCredit(ServerPlayerEntity playerEntity, int credit){
+        getPlayerCard(playerEntity).setCredit(credit);
+    }
+
     public static void setSkillPoint(ServerPlayerEntity playerEntity, int count){
         getPlayerCard(playerEntity).setSkillPoints(count);
+    }
+    public static void addSkillPoint(ServerPlayerEntity playerEntity, int count){
+        getPlayerCard(playerEntity).addSkillPoints(count);
     }
 
     public static void removePerk(ServerPlayerEntity playerEntity, String perkName){
