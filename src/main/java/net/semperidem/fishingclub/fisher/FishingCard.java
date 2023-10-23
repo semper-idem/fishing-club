@@ -12,9 +12,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
+import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -461,7 +467,8 @@ public class FishingCard {
         }
     }
 
-    void grantExperience(double gainedXP){
+    public void grantExperience(double gainedXP){
+        if (gainedXP == 0) return;
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
         while (this.exp >= nextLevelXP) {
@@ -475,13 +482,21 @@ public class FishingCard {
 
 
     private void onLevelUpBehaviour(){
-        addSkillPoint();
-        if (owner == null){
-            return;
+        if (owner == null) return;
+        for(LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)){
+            reward.grant(this);
         }
-        //fisher.spawnParticles(ParticleTypes.FIREWORK, fisher.getX(), fisher.getY(),  fisher.getZ(), 1,1,1,1,1);
-        //serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-
+        boolean bigBoom = this.level % 5 == 0;
+        if (bigBoom) {
+            ((ServerWorld) owner.getWorld()).spawnParticles(ParticleTypes.DRAGON_BREATH, owner.getX(), owner.getY() + 2, owner.getZ(), 100,0,0,0,0.1);
+        }
+        ((ServerWorld) owner.getWorld()).spawnParticles(ParticleTypes.FIREWORK, owner.getX(), owner.getY() + 2, owner.getZ(), bigBoom ? 100 : 25,0,0,0,0.1);
+        ((ServerWorld) owner.getWorld()).spawnParticles(ParticleTypes.SCRAPE, owner.getX(), owner.getY() + 2, owner.getZ(), bigBoom ? 100 : 25,0.5,0.5,0.5,0.1);
+        ((ServerWorld)owner.getWorld()).playSound(null, owner.getX(), owner.getY(), owner.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.25f, 0.7f, 0L);
+        ((ServerWorld)owner.getWorld()).playSound(null, owner.getX(), owner.getY(), owner.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST, SoundCategory.PLAYERS, 0.25f, 0.2f, 0L);
+       if (Math.random() < 0.01) { //FUNNY :DDD
+            ((ServerWorld)owner.getWorld()).playSound(owner, owner.getX(), owner.getY(), owner.getZ(), SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1f, 0.4f, 0L);
+       }
     }
 
     public boolean addCredit(int credit) {

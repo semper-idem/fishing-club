@@ -1,5 +1,7 @@
 package net.semperidem.fishingclub.registry;
 
+import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
+
 public class FRegistry {
 
     public static void register(){
@@ -9,6 +11,8 @@ public class FRegistry {
         FNetworkRegistry.register();
         FScreenHandlerRegistry.register();
         FStatusEffectRegistry.register();
+
+        LevelRewardRule.initDefaultRewards();
     }
 
     public static void registerClient(){

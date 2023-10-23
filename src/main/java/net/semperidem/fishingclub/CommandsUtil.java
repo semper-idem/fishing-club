@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
@@ -20,7 +21,16 @@ public class CommandsUtil {
     public static LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal(FishingClub.MOD_ID);
     public static void registerSummonAccept(){
         rootCommand.then(literal("summon_accept").executes(context -> {
-            ClientPacketSender.sendSummonAccept();
+                    ClientPacketSender.sendSummonAccept();
+            return 1;
+        }));
+    }
+
+    public static void registerLevelUp(){
+        rootCommand.then(literal("level_up").executes(context -> {
+            FishingCard fishingCard = FishingCardManager.getPlayerCard(context.getSource().getPlayer());
+            int xpForLevel = fishingCard.nextLevelXP() - fishingCard.getExp();
+            fishingCard.grantExperience(xpForLevel + 1);
             return 1;
         }));
     }
@@ -140,6 +150,7 @@ public class CommandsUtil {
             registerAdd();
             registerSet();
             registerRemovePerk();
+            registerLevelUp();
             dispatcher.register(rootCommand);
         });
     }
