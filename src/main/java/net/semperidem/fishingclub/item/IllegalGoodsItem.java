@@ -11,6 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.Util;
@@ -36,7 +39,7 @@ public class IllegalGoodsItem extends Item {
     static {
         tierOne.addAll(List.of(Items.LEATHER_CHESTPLATE,Items.LEATHER_BOOTS,Items.LEATHER_HELMET,Items.LEATHER_LEGGINGS, Items.STONE_PICKAXE, Items.STONE_SWORD, Items.STONE_SHOVEL, Items.STONE_AXE, Items.STONE_HOE));
         tierTwo.addAll(List.of(Items.GOLDEN_CHESTPLATE,Items.GOLDEN_BOOTS,Items.GOLDEN_HELMET,Items.GOLDEN_LEGGINGS, Items.GOLDEN_PICKAXE, Items.GOLDEN_SWORD, Items.GOLDEN_SHOVEL, Items.GOLDEN_AXE, Items.GOLDEN_HOE));
-        tierThree.addAll(List.of(Items.CHAINMAIL_CHESTPLATE,Items.CHAINMAIL_BOOTS,Items.CHAINMAIL_HELMET,Items.CHAINMAIL_LEGGINGS, Items.BOW, Items.CROSSBOW, Items.SHIELD, Items.FISHING_ROD, Items.SHEARS));
+        tierThree.addAll(List.of(Items.CHAINMAIL_CHESTPLATE,Items.CHAINMAIL_BOOTS,Items.CHAINMAIL_HELMET,Items.CHAINMAIL_LEGGINGS, Items.BOW, Items.CROSSBOW, Items.SHIELD, Items.FISHING_ROD));
         tierFour.addAll(List.of(Items.IRON_CHESTPLATE,Items.IRON_BOOTS,Items.IRON_HELMET,Items.IRON_LEGGINGS, Items.IRON_PICKAXE, Items.IRON_SWORD, Items.IRON_SHOVEL, Items.IRON_AXE, Items.IRON_HOE));
         tierFive.addAll(List.of(Items.DIAMOND_CHESTPLATE,Items.DIAMOND_BOOTS,Items.DIAMOND_HELMET,Items.DIAMOND_LEGGINGS, Items.DIAMOND_PICKAXE, Items.DIAMOND_SWORD, Items.DIAMOND_SHOVEL, Items.DIAMOND_AXE, Items.DIAMOND_HOE));
 
@@ -48,7 +51,6 @@ public class IllegalGoodsItem extends Item {
         tieredLootItems.put(5, tierFive);
     }
 
-    int tier = 1;
     public IllegalGoodsItem(Settings settings) {
         super(settings);
     }
@@ -68,7 +70,6 @@ public class IllegalGoodsItem extends Item {
     }
 
     public void setTier(ItemStack illegalGood, int tier){
-        this.tier = tier;
         NbtCompound nbt = illegalGood.getOrCreateNbt();
         nbt.putInt("tier", tier);
     }
@@ -76,21 +77,25 @@ public class IllegalGoodsItem extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        int emptySlot = user.getInventory().getEmptySlot();
-        if (emptySlot == -1) return TypedActionResult.fail(itemStack);
-        if (world.isClient) return TypedActionResult.success(itemStack);
-        ItemStack lootStack = generateLoot();
-        forbiddenEnchant(world.random, lootStack, (int) (Math.random() * 10 * tier), true);
-        if (EnchantmentHelper.getLevel(Enchantments.MENDING, lootStack) > 0) {
-            removeMending(lootStack);
+        int tier = itemStack.getOrCreateNbt().getInt("tier");
+        if (!world.isClient){
+            ItemStack lootStack = generateLoot(tier);
+            forbiddenEnchant(world.random, lootStack, (int) ((0.5f + Math.random()) * 8 * tier), true);
+            if (EnchantmentHelper.getLevel(Enchantments.MENDING, lootStack) > 0) {
+                removeMending(lootStack);
+            }
+            if (EnchantmentHelper.getLevel(EnchantmentRegistry.CURSE_OF_MORTALITY, lootStack) == 0) {
+                lootStack.addEnchantment(EnchantmentRegistry.CURSE_OF_MORTALITY, 1);
+            }
+            if (!user.getAbilities().creativeMode){
+                itemStack.decrement(1);
+            }
+            user.giveItemStack(lootStack);
+            ((ServerWorld) world).spawnParticles(ParticleTypes.SOUL, user.getX(), user.getY(), user.getZ(), (int)(10 * Math.pow(tier, 2)), 0.5, 0.5, 0.5, 0.1);
+        } else {
+            user.swingHand(hand);
         }
-        if (EnchantmentHelper.getLevel(EnchantmentRegistry.CURSE_OF_MORTALITY, lootStack) == 0) {
-            lootStack.addEnchantment(EnchantmentRegistry.CURSE_OF_MORTALITY, 1);
-        }
-        if (!user.getAbilities().creativeMode){
-            itemStack.decrement(1);
-        }
-        user.getInventory().setStack(emptySlot, lootStack);
+        world.playSound(user, user.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, user.getSoundCategory(), 0.5f + 0.1f * tier, 0.1f);
         return super.use(world, user, hand);
     }
 
@@ -106,7 +111,7 @@ public class IllegalGoodsItem extends Item {
         }
     }
 
-    private ItemStack generateLoot() {
+    private ItemStack generateLoot(int tier) {
         float lootTier = (tier - 1) * 0.5f + 1;
         java.util.Random r = new java.util.Random();
         lootTier += (Math.abs(r.nextGaussian() * 1.5));

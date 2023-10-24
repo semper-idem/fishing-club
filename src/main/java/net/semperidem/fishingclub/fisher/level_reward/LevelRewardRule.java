@@ -56,13 +56,13 @@ public class LevelRewardRule {
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
         addRule(create(5, 0, 0).withRewards(itemReward(FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
-        addRule(create(30, 0, 0).withRewards(itemReward(FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
+        addRule(create(50, 0, 0).withRewards(itemReward(FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
 
         //Trophy //TODO ADD TROPHY, CHANGE PER PRESTIGE
         addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));
 
-        //Lootbox //TODO ADD LOOT BOX
-        addRule(create(0, MAX_LEVEL, 5).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));
+        //Lootbox
+        addRule(create(0, MAX_LEVEL, 5).withRewards(illegalGoodsReward()));
     }
 
     private static boolean isAtLevel(LevelRewardRule rule, int level) {

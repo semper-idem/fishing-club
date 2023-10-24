@@ -474,7 +474,7 @@ public class FishingCard {
         while (this.exp >= nextLevelXP) {
             this.exp -= nextLevelXP;
             this.level++;
-            //onLevelUpBehaviour();
+            onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
         }
         syncFisherInfo();

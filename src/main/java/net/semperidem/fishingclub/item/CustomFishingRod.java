@@ -22,11 +22,30 @@ import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
 public class CustomFishingRod extends FishingRodItem {
     public CustomFishingRod(Settings settings) {
         super(settings);
+    }
+
+    public static ItemStack getStarterRod(){
+        ItemStack starterStack = new ItemStack(FItemRegistry.CUSTOM_FISHING_ROD);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.BAIT_WORM.getDefaultStack(), FishingRodPartItem.PartType.BAIT);
+        return starterStack;
+    }
+
+    public static ItemStack getAdvancedRod(){
+        ItemStack advancedStack = new ItemStack(FItemRegistry.CUSTOM_FISHING_ROD);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.CORE_COMPOSITE.getDefaultStack(), FishingRodPartItem.PartType.CORE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.HOOK_IRON.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.LINE_SPIDER_SILK.getDefaultStack(), FishingRodPartItem.PartType.LINE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BAIT_CRAFTED.getDefaultStack(), FishingRodPartItem.PartType.BAIT);
+        return advancedStack;
     }
 
     @Override
@@ -171,6 +190,10 @@ public class CustomFishingRod extends FishingRodItem {
         return damageChance * 1;
     }
 
+
+    private void damageParts(ItemStack fishingRod){
+
+    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fishingRod = user.getStackInHand(hand);
@@ -184,8 +207,9 @@ public class CustomFishingRod extends FishingRodItem {
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
             float damageChance = getDamageChance(fishingRod);
-            if (Math.random() < damageChance) {
-                fishingRod.setDamage((int) (fishingRod.getDamage() + damageChance));
+            if (Math.random() < damageChance) {//TODO DAMAGE PARTS
+                fishingRod.setDamage(fishingRod.getDamage() + 1);
+                damageParts(fishingRod);
             }
             return TypedActionResult.success(user.getStackInHand(hand));
         }

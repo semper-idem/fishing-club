@@ -3,7 +3,10 @@ package net.semperidem.fishingclub.fisher.level_reward;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 public class LevelReward {
     Amount amount;
@@ -21,6 +24,13 @@ public class LevelReward {
         this.rewardType = rewardType;
     }
 
+    private void grantBoxReward(ServerPlayerEntity serverPlayerEntity, int level){
+        Random r = new Random();
+        float levelBuff = 0.5f + Math.min(2, level / 50f);
+        int boxTier = (int) Math.max(1, Math.min(5, Math.abs(r.nextGaussian()) * levelBuff));
+        serverPlayerEntity.giveItemStack(IllegalGoodsItem.getStackWithTier(boxTier));
+    }
+
     private void grantItemReward(ServerPlayerEntity serverPlayerEntity, int level){
         if (itemReward == null) throw new IllegalStateException("Item reward is null");
         ItemStack rewardStack = itemReward.copy();
@@ -36,6 +46,7 @@ public class LevelReward {
             case ITEM -> grantItemReward((ServerPlayerEntity) fishingCard.getOwner(), fisherLevel);
             case CREDIT -> fishingCard.addCredit(resultAmount);
             case SKILL_POINT -> fishingCard.addSkillPoints(resultAmount);
+            case BOX -> grantBoxReward((ServerPlayerEntity) fishingCard.getOwner(), fisherLevel);
             default -> throw new IllegalStateException("Unexpected value: " + rewardType);
         }
     }
@@ -46,6 +57,10 @@ public class LevelReward {
 
     static LevelReward itemReward(ItemStack itemStack, int amount){
         return new LevelReward(itemStack, Amount.of(amount), RewardType.ITEM);
+    }
+
+    static LevelReward illegalGoodsReward(){
+        return new LevelReward(IllegalGoodsItem.getStackWithTier(1), Amount.of(1), RewardType.BOX);
     }
 
     static LevelReward itemReward(ItemStack itemStack){
@@ -99,5 +114,6 @@ public class LevelReward {
 enum RewardType{
     CREDIT,
     ITEM,
-    SKILL_POINT
+    SKILL_POINT,
+    BOX
 }
