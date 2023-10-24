@@ -1,8 +1,11 @@
 package net.semperidem.fishingclub.mixin;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
@@ -10,6 +13,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.registry.EnchantmentRegistry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -46,6 +51,15 @@ public class PlayerEntityMixin extends Entity {
         fishingCard.tick();
     }
 
+    @Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;vanishCursedItems()V"))
+    protected void afterVanishCursed(CallbackInfo ci) {
+        for (int i = 0; i < this.inventory.size(); ++i) {
+            ItemStack itemStack = this.inventory.getStack(i);
+            if (itemStack.isEmpty() || !(EnchantmentHelper.getLevel(EnchantmentRegistry.CURSE_OF_MORTALITY, itemStack) > 0))  continue;
+            this.inventory.removeStack(i);
+        }
+    }
+
 
     public PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -65,6 +79,8 @@ public class PlayerEntityMixin extends Entity {
     protected void writeCustomDataToNbt(NbtCompound nbt) {
 
     }
+
+    @Shadow @Final private PlayerInventory inventory;
 
     @Override
     public Packet<?> createSpawnPacket() {

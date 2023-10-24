@@ -11,7 +11,7 @@ public class FRegistry {
         FNetworkRegistry.register();
         FScreenHandlerRegistry.register();
         FStatusEffectRegistry.register();
-
+        EnchantmentRegistry.register();
         LevelRewardRule.initDefaultRewards();
     }
 

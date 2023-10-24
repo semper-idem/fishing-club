@@ -8,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -33,6 +34,15 @@ public class CommandsUtil {
             fishingCard.grantExperience(xpForLevel + 1);
             return 1;
         }));
+    }
+
+    public static void registerIllegalGoods(){
+        rootCommand.then(literal("illegal_goods").then(argument("tier", integer()).executes(context -> {
+            int tier = getInteger(context, "tier");
+            context.getSource().getPlayer().giveItemStack(IllegalGoodsItem.getStackWithTier(tier));
+            return 1;
+        })));
+
     }
 
     public static void registerInfo(){
@@ -151,6 +161,7 @@ public class CommandsUtil {
             registerSet();
             registerRemovePerk();
             registerLevelUp();
+            registerIllegalGoods();
             dispatcher.register(rootCommand);
         });
     }
