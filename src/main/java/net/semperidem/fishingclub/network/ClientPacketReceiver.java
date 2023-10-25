@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.*;
+import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
@@ -16,7 +17,8 @@ public class ClientPacketReceiver {
             Fish fish = FishUtil.fishFromPacketBuf(buf);
             ItemStack fishingRod = buf.readItemStack();
             boolean boatFishing = buf.readBoolean();
-            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), fishingRod, fish, boatFishing)));
+            BlockPos bobberPos = buf.readBlockPos();
+            client.execute(() -> client.setScreen(new FishGameScreen(Text.empty(), fishingRod, fish, boatFishing, bobberPos)));
         });
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_DATA_SEND, (client, handler, buf, responseSender) -> {

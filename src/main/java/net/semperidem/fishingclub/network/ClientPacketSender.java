@@ -4,16 +4,22 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameGrantReward(Fish fish, boolean boatFishing) {
+    public static void sendFishGameGrantReward(Fish fish, boolean boatFishing, BlockPos blockPos) {
         PacketByteBuf buf = FishUtil.fishToPacketBuf(fish);
         buf.writeBoolean(boatFishing);
+        buf.writeBlockPos(blockPos);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
+    }
+
+    public static void sendFishGameLost(){
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_LOST, PacketByteBufs.empty());
     }
 
     public static void sendOpenSellShopRequest() {

@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.registry;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
@@ -23,7 +24,7 @@ public class FItemRegistry {
     public static final Item HARPOON_ROD = new HarpoonRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item LINE_ARROW = new LineArrowItem(new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item CLONED_ROD = new ClonedFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
-    public static final Item ILLEGAL_GOODS = new IllegalGoodsItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
+    public static final Item ILLEGAL_GOODS = new IllegalGoodsItem(new Item.Settings().group(FISHING_CLUB_GROUP).rarity(Rarity.RARE).maxCount(1));
 
     public static void register(){
         Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_workbench"), FISHER_WORKBENCH);

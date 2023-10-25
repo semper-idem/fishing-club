@@ -26,6 +26,7 @@ import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
@@ -184,6 +185,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             this.waitCountdown = 0;
             this.fishTravelCountdown = 0;
             this.caughtFish = null;
+            if (Math.random() < 0.1) {
+                //TODO Message on parts broken
+                FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartItem.PartType.HOOK);
+            }
         }
     }
 
@@ -216,6 +221,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         //(From 20 To 45) * Multiplier
         this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
+
+        if (CustomFishingRod.getBait(fishingRod) != null) {
+            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartItem.PartType.BAIT);
+        }
     }
 
     private void tickFishReeling(ServerWorld serverWorld){

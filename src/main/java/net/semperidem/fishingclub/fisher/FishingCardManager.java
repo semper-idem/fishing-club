@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.client.game.fish.Fish;
@@ -9,6 +10,9 @@ import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class FishingCardManager {
     public static FishingCard getPlayerCard(ServerPlayerEntity user){
+        return new FishingCard(user);
+    }
+    public static FishingCard getPlayerCard(PlayerEntity user){
         return new FishingCard(user);
     }
 

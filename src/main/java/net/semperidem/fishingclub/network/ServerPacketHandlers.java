@@ -17,6 +17,8 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -30,6 +32,14 @@ public class ServerPacketHandlers {
         BlockPos caughtPos = buf.readBlockPos();
         server.execute(() -> {
             FishUtil.grantReward(player, fish, boatFishing, caughtPos);
+        });
+    }
+
+    public static void handleFishingGameLost(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            ItemStack fishingRod = player.getStackInHand(player.getActiveHand());
+            if (!(fishingRod.getItem() instanceof FishingRodPartItem)) return;
+            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartItem.PartType.LINE);
         });
     }
 

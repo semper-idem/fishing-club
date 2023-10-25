@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -39,7 +38,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(6);
-        this.fishingCard = FishingCardManager.getPlayerCard((ServerPlayerEntity) playerInventory.player);
+        this.fishingCard = FishingCardManager.getPlayerCard(playerInventory.player);
         initSlots();
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -85,6 +84,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     public void setScreenCallback(FisherWorkbenchScreen screen){
         this.screen = screen;
     }
+
     private void addRodPartSlots(){
         addSlot(new RodPartSlot(this.benchInventory, 1, 145, 17, CORE));
         addSlot(new RodPartSlot(this.benchInventory, 2, 145, 17 + 26,  BOBBER));
@@ -95,7 +95,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
     private void initSlots(){
         addRodSlot();
-        if (screen.repairMode) {
+        if (screen != null && screen.repairMode) {
             initRepairSlots();
         } else {
             initDefaultSlots();

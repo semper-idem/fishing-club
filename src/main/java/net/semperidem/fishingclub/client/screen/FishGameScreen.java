@@ -7,6 +7,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.game.FishGameLogic;
 import net.semperidem.fishingclub.client.game.fish.Fish;
@@ -57,9 +58,9 @@ public class FishGameScreen extends Screen {
     FishGameLogic fishGameLogic;
     boolean lightTick = false;
 
-    public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish, boolean boatFishing) {
+    public FishGameScreen(Text text, ItemStack caughtUsing, Fish fish, boolean boatFishing, BlockPos bobberPos) {
         super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing);
+        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing, bobberPos);
     }
 
     @Override

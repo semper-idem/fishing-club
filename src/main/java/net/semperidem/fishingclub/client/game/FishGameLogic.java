@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
@@ -79,7 +80,9 @@ public class FishGameLogic {
     public int jumpCount = 0;
     public int [] jumpTimestamps;
 
-    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing){
+    private BlockPos bobberBlockPos;
+
+    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing, BlockPos bobberBlockPos){
         this.player = player;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.fish = fish;
@@ -103,6 +106,7 @@ public class FishGameLogic {
         }
 
         this.slowedFish = player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF);
+        this.bobberBlockPos = bobberBlockPos;
     }
 
     private void applyFisherVestEffect(){
@@ -236,7 +240,8 @@ public class FishGameLogic {
             lineHealth -= (fishDamage);
         }
         if (lineHealth <= 0){
-           // isFinished = true;
+            isFinished = true;
+            ClientPacketSender.sendFishGameLost();
         }
     }
 
@@ -349,7 +354,7 @@ public class FishGameLogic {
 
 
     private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing);
+        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, bobberBlockPos);
     }
 
 

@@ -12,7 +12,7 @@ public class FishingRodPartItem extends Item {
     private PartType partType;
     private String key;
     public FishingRodPartItem(Settings settings, PartType partType, String key) {
-        super(settings.maxDamage(1).group(FItemRegistry.FISHING_CLUB_GROUP));
+        super(settings.maxDamageIfAbsent(1).group(FItemRegistry.FISHING_CLUB_GROUP));
         this.partType = partType;
         this.stats = new HashMap<>();
         FishingRodPartItems.KEY_TO_PART_MAP.put(key, this);

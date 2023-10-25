@@ -191,9 +191,6 @@ public class CustomFishingRod extends FishingRodItem {
     }
 
 
-    private void damageParts(ItemStack fishingRod){
-
-    }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fishingRod = user.getStackInHand(hand);
@@ -207,9 +204,8 @@ public class CustomFishingRod extends FishingRodItem {
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
             float damageChance = getDamageChance(fishingRod);
-            if (Math.random() < damageChance) {//TODO DAMAGE PARTS
+            if (Math.random() < damageChance) {
                 fishingRod.setDamage(fishingRod.getDamage() + 1);
-                damageParts(fishingRod);
             }
             return TypedActionResult.success(user.getStackInHand(hand));
         }
@@ -226,6 +222,15 @@ public class CustomFishingRod extends FishingRodItem {
         if (!world.isClient) {
             int i = user.fishHook.use(itemStack);
             itemStack.damage(i, user, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+        }
+    }
+
+    public void damageRodPart(ItemStack rod,  FishingRodPartItem.PartType partType){
+        ItemStack partToDamage = this.getPart(rod, partType);
+        int damage = partToDamage.getDamage();
+        partToDamage.setDamage(damage + 1);
+        if (partToDamage.getDamage() >= partToDamage.getMaxDamage()) {
+            this.removePart(rod, partType);
         }
     }
 
