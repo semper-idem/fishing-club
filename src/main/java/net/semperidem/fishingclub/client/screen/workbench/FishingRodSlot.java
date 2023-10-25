@@ -29,7 +29,7 @@ public class FishingRodSlot extends Slot {
             stack = CUSTOM_FISHING_ROD.getDefaultStack();
             stack.setDamage((int) (stack.getMaxDamage() * dmgPercent));
         }
-        boolean repairRequired = stack.getDamage() > 0;
+        boolean repairRequired = stack.getMaxDamage() - stack.getDamage() ==  1;
         if (repairRequired) {
             fisherWorkbenchScreenHandler.setRepairMode(true);
         } else {

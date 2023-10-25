@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -161,6 +162,7 @@ public class CustomFishingRod extends FishingRodItem {
     }
 
     private void castHook(World world, PlayerEntity user, int power, ItemStack fishingRod){
+        if (fishingRod.getMaxDamage() - fishingRod.getDamage() == 1) return;
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
             boolean boatFishing = user.getVehicle() instanceof BoatEntity;
@@ -204,8 +206,10 @@ public class CustomFishingRod extends FishingRodItem {
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
             float damageChance = getDamageChance(fishingRod);
-            if (Math.random() < damageChance) {
-                fishingRod.setDamage(fishingRod.getDamage() + 1);
+            if (Math.random() < damageChance && fishingRod.getDamage() < fishingRod.getMaxDamage() - 1) {
+                fishingRod.damage(1, user, (e) -> {
+                    e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
+                });
             }
             return TypedActionResult.success(user.getStackInHand(hand));
         }
