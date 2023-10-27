@@ -5,33 +5,27 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.item.FishingRodPartItem;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
+import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.*;
 import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType.*;
 import static net.semperidem.fishingclub.registry.FBlockRegistry.FISHER_WORKBENCH_BLOCK;
 
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
-    private static final int SLOT_COUNT = 7;
-    private final Inventory benchInventory;
+    private static final int SLOT_COUNT = 6;
+
+    static final int ROD_SLOT_X = 16;
+    static final int ROD_SLOT_Y = 17;
+    static final int PART_SLOT_X = 145;
+    static final int PART_SLOT_OFFSET = 26; //Space between slots
+    static final int BAIT_SLOT_X = 54;
+
+    private final Inventory benchInventory = new SimpleInventory(SLOT_COUNT);
     private final ScreenHandlerContext context;
-    private FisherWorkbenchScreen screen;
-    private FishingCard fishingCard;
-    List<Slot> enabledSlots = new ArrayList<>();
-    List<Slot> repairSlots = new ArrayList<>();
-    List<Slot> rodPartSlots = new ArrayList<>();
 
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, ScreenHandlerContext.create(inventory.player.world, inventory.player.getBlockPos()));
@@ -39,108 +33,29 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
-        this.benchInventory = new SimpleInventory(SLOT_COUNT);
-        this.fishingCard = FishingCardManager.getPlayerCard(playerInventory.player);
-        initSlots();
+
+        addWorkbenchSlots();
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
     }
 
-    public void setWrenchVisible(boolean wrenchVisible) {
-        if (screen == null) return;
-        screen.setWrenchVisible(wrenchVisible);
+
+    private void addWorkbenchSlots(){
+        addSlot(new FishingRodSlot(this.benchInventory, 0, ROD_SLOT_X, ROD_SLOT_Y));
+        addPartSlot(PART_SLOT_X, ROD_SLOT_Y, CORE);
+        addPartSlot(PART_SLOT_X, ROD_SLOT_Y + PART_SLOT_OFFSET, BOBBER);
+        addPartSlot(PART_SLOT_X, ROD_SLOT_Y + PART_SLOT_OFFSET * 2, LINE);
+        addPartSlot(PART_SLOT_X, ROD_SLOT_Y + PART_SLOT_OFFSET * 3, HOOK);
+        addPartSlot(BAIT_SLOT_X,  ROD_SLOT_Y + PART_SLOT_OFFSET * 3, BAIT);
     }
 
-    public FisherWorkbenchScreen getScreen(){
-        return screen;
-    }
-
-    public void setRepairMode(boolean repairRequired){
-        if (screen == null) return;
-        screen.changeRepairMode(repairRequired);
-        if (repairRequired) {
-            ((FishingRodSlot)slots.get(0)).packFishingRod(benchInventory.getStack(0));
-        } else {
-            ((FishingRodSlot)slots.get(0)).unPackFishingRod(benchInventory.getStack(0));
-        }
-        updateSlots(repairRequired);
-    }
-
-    public void  repairRod(){
-       Slot repairMatSlot = this.slots.get(6);
-       ItemStack repairMatStack = repairMatSlot.getStack();
-       if (repairMatStack.getCount() <= 0) return;
-       ItemStack rodStack = this.slots.get(0).getStack();
-       float damagePercent = rodStack.getDamage() / (rodStack.getMaxDamage() * 1f);
-       int matToConsume = 1 + (int) (damagePercent / 0.2f);
-       int matAvailable = repairMatStack.getCount();
-       int matConsumed = Math.min(matAvailable, matToConsume);
-       int damageFixed = (int) (0.2f * matConsumed * rodStack.getMaxDamage());
-       int resultDamage = Math.max(0, rodStack.getDamage() - damageFixed);
-       rodStack.setDamage(resultDamage);
-       FItemRegistry.CUSTOM_FISHING_ROD.getPart(rodStack, CORE).setDamage(resultDamage);
-       repairMatStack.setCount(matAvailable - matConsumed);
-        if (this.fishingCard.hasPerk(FishingPerks.DURABLE_RODS)) {
-            NbtCompound rodNbt = rodStack.getOrCreateNbt();
-            rodNbt.putInt("handmade", damageFixed);
-            rodStack.setNbt(rodNbt);
-        }
-        if (resultDamage == 0 && screen != null) {
-            screen.repairButton.active = false;
-        }
-    }
-
-    public void setScreenCallback(FisherWorkbenchScreen screen){
-        this.screen = screen;
-    }
-
-    private void initRodPartsSlots(){
-        RodPartSlot coreSlot = new RodPartSlot(this.benchInventory, 1, 145, 17, CORE, this);
-        addSlot(coreSlot);
-        rodPartSlots.add(coreSlot);
-        RodPartSlot bobberSlot = new RodPartSlot(this.benchInventory, 2, 145, 17 + 26,  BOBBER, this);
-        addSlot(bobberSlot);
-        rodPartSlots.add(bobberSlot);
-        RodPartSlot lineSlot = new RodPartSlot(this.benchInventory, 3, 145, 17 + 26 * 2, LINE, this);
-        addSlot(lineSlot);
-        rodPartSlots.add(lineSlot);
-        RodPartSlot hookSlot = new RodPartSlot(this.benchInventory, 4, 145, 17 + 26 * 3, HOOK, this);
-        addSlot(hookSlot);
-        rodPartSlots.add(hookSlot);
-        RodPartSlot baitSlot = new RodPartSlot(this.benchInventory, 5, 54, 17 + 26 * 3, BAIT, this);
-        addSlot(baitSlot);
-        rodPartSlots.add(baitSlot);
-        enabledSlots.addAll(rodPartSlots);
-    }
-
-    private void initSlots(){
-        addRodSlot();
-        initRodPartsSlots();
-        initRepairSlots();
-    }
-
-    private void initRepairSlots(){
-        RepairMaterialSlot repairMaterialSlot = new RepairMaterialSlot(this.benchInventory, 6, 147, 17 + 26 * 3, this);
-        addSlot(repairMaterialSlot);
-        repairSlots.add(repairMaterialSlot);
-    }
-
-    private void updateSlots(boolean repairMode){
-        enabledSlots.clear();
-        if (repairMode) {
-            enabledSlots.addAll(repairSlots);
-        } else {
-            enabledSlots.addAll(rodPartSlots);
-        }
-    }
-
-    private void addRodSlot(){
-        addSlot(new FishingRodSlot(this.benchInventory, 0, 16, 17, this));
+    protected Slot addPartSlot(int x, int y, FishingRodPartItem.PartType partType) {
+        return super.addSlot(new RodPartSlot(this.benchInventory, partType.slotIndex, x, y, partType));
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory){
-        for(int y = 0; y < 3; ++y) {
-            for(int x = 0; x < 9; ++x) {
+        for(int y = 0; y < PLAYER_INVENTORY_ROWS; ++y) {
+            for(int x = 0; x < SLOTS_PER_ROW; ++x) {
                 addSlot(new Slot(playerInventory, x + y * SLOTS_PER_ROW + 9, 8 + x * SLOT_SIZE, 140 + y * SLOT_SIZE));
             }
         }
@@ -152,23 +67,21 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         }
     }
 
-
-
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStackCopy = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasStack()) {
             ItemStack itemStackInSlot = slot.getStack();
             itemStackCopy = itemStackInSlot.copy();
-            if (index < enabledSlots.size()) {
+            if (index < SLOT_COUNT) {
                 if (index == 0) {
                     ((FishingRodSlot) slot).packFishingRod(itemStackInSlot);
                 }
-                if (!this.insertItem(itemStackInSlot, enabledSlots.size(), this.slots.size(), false)) {
+                if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.insertItem(itemStackInSlot, 0, enabledSlots.size(), false)) {
+                if (!this.insertItem(itemStackInSlot, 0, SLOT_COUNT, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -193,7 +106,6 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     public void close(PlayerEntity player) {
         super.close(player);
         ((FishingRodSlot)this.slots.get(0)).packFishingRod(benchInventory.getStack(0));
-        setRepairMode(false);
         this.context.run((world, pos) -> this.dropInventory(player, this.benchInventory));
     }
 }

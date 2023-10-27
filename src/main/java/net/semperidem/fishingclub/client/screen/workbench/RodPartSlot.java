@@ -14,20 +14,12 @@ import java.util.Objects;
 
 public class RodPartSlot extends Slot {
     FishingRodPartItem.PartType partType;
-    FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler;
     int index;
 
-    public RodPartSlot(Inventory inventory, int index, int x, int y, FishingRodPartItem.PartType partType, FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler) {
+    public RodPartSlot(Inventory inventory, int index, int x, int y, FishingRodPartItem.PartType partType) {
         super(inventory, index, x, y);
         this.partType = partType;
         this.index = index;
-        this.fisherWorkbenchScreenHandler = fisherWorkbenchScreenHandler;
-    }
-
-
-    @Override
-    public boolean isEnabled() {
-        return fisherWorkbenchScreenHandler.enabledSlots.contains(this);
     }
 
 

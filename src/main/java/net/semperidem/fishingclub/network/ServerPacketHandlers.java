@@ -39,7 +39,7 @@ public class ServerPacketHandlers {
     public static void handleRepairRod(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
             if (player.currentScreenHandler instanceof FisherWorkbenchScreenHandler screenHandler) {
-                screenHandler.repairRod();
+                //screenHandler.repairRod();
             }
         });
     }

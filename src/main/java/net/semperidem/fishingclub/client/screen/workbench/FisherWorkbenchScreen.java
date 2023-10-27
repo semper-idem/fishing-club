@@ -9,41 +9,27 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
 public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHandler> implements ScreenHandlerProvider<FisherWorkbenchScreenHandler> {
-    private static final Identifier BACKGROUND_DEFAULT = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
-    private static final Identifier BACKGROUND_REPAIR = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui_repair.png");
     private static final Identifier WRENCH_ICON = new Identifier(MOD_ID,"textures/gui/wrench.png");
-    private static Identifier BACKGROUND = BACKGROUND_DEFAULT;
+    private static final Identifier BACKGROUND = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
 
-    ButtonWidget repairButton;
-    ButtonWidget wrenchButton;
+    private static final int PART_LABEL_X = FisherWorkbenchScreenHandler.PART_SLOT_X - 3;
+    private static final int PART_BAIT_LABEL_X = FisherWorkbenchScreenHandler.PART_SLOT_X - 2;
+    private static final int PART_LABEL_Y = FisherWorkbenchScreenHandler.ROD_SLOT_Y + 3;
+    private static final int PART_LABEL_OFFSET = FisherWorkbenchScreenHandler.PART_SLOT_OFFSET;
+
+    private WrenchButtonWidget wrenchButton;
 
 
-    boolean wrenchVisible = false;
-    boolean repairMode = false;
     public FisherWorkbenchScreen(FisherWorkbenchScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, Text.empty());
+        super(handler, inventory, title);
         this.backgroundHeight = 222;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
-        handler.setScreenCallback(this);
-    }
-
-
-    public void changeRepairMode(boolean repairMode){
-        this.repairMode = repairMode;
-        BACKGROUND = repairMode ? BACKGROUND_REPAIR : BACKGROUND_DEFAULT;
-        this.repairButton.visible = repairMode;
-    }
-
-    public void setWrenchVisible(boolean wrenchVisible){
-        this.wrenchVisible = wrenchVisible;
-        this.wrenchButton.visible = wrenchVisible;
     }
 
     @Override
@@ -51,66 +37,28 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
         super.init();
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
-        repairButton = new ButtonWidget(x + 12,y + 16 + 26 * 3,40,20, Text.of("Repair"), repairClick -> {
-            handler.repairRod();
-            ClientPacketSender.sendFishingRodRepairRequest();
-        });
-        repairButton.visible = repairMode;
-        repairButton.active = false;
-        addDrawableChild(repairButton);
-
-        wrenchButton = new ButtonWidget(x + 34,y + 16,8,8, Text.of(""), wrenchClick -> {
-            handler.setRepairMode(!repairMode);
-        }) {
-
-            @Override
-            public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.setShaderTexture(0, WRENCH_ICON);
-                drawTexture(matrices, x, y, 0, 0, 8, 8, 8, 8);
-            }
-        };
-        wrenchButton.visible = wrenchVisible;
-        addDrawableChild(wrenchButton);
+        wrenchButton = new WrenchButtonWidget(x + 34,y + 16,8,8, Text.of(""));
     }
 
 
     public void render(MatrixStack matrixStack, int i, int j, float f) {
         renderBackground(matrixStack);
-        super.render(matrixStack, i, j, f);
-        renderSlotLabels(matrixStack);
+        super.render(matrixStack, i, j, f); //Slots
+        renderLabels(matrixStack);
         drawMouseoverTooltip(matrixStack, i, j);
     }
 
-    private void renderWrenchButton(){
 
+    private void renderLabels(MatrixStack matrixStack){
+        renderLabelFromRight(matrixStack, "Core:", x + PART_LABEL_X, y + PART_LABEL_Y);
+        renderLabelFromRight(matrixStack, "Bobber:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET);
+        renderLabelFromRight(matrixStack, "Line:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 2);
+        renderLabelFromRight(matrixStack, "Hook:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 3);
+        renderLabelFromRight(matrixStack, "Bait:", x + PART_BAIT_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 3);
     }
 
-    private void renderSlotLabels(MatrixStack matrixStack){
-        if (repairMode) {
-            renderRepairModeLabels(matrixStack);
-        } else {
-            renderDefaultLabels(matrixStack);
-        }
-    }
-
-    private void renderRepairModeLabels(MatrixStack matrixStack){
-        renderTextRightSide(matrixStack, "Material:", this.x + 143, this.y + 20 + 26 * 3);
-    }
-
-    private void renderDefaultLabels(MatrixStack matrixStack){
-        renderTextRightSide(matrixStack, "Core:", this.x + 143, this.y + 20);
-        renderTextRightSide(matrixStack, "Bobber:", this.x + 143, this.y + 20 + 26);
-        renderTextRightSide(matrixStack, "Line:", this.x + 143, this.y + 20 + 26 * 2);
-        renderTextRightSide(matrixStack, "Hook:", this.x + 143, this.y + 20 + 26 * 3);
-        renderTextRightSide(matrixStack, "Bait:", this.x + 52, this.y + 20 + 26 * 3);
-
-    }
-
-    private void renderTextRightSide(MatrixStack matrixStack, String text, int x, int y){
-        int textLength = textRenderer.getWidth(text);
-        this.textRenderer.drawWithShadow(matrixStack, text,x - textLength,y, Color.WHITE.getRGB());
+    private void renderLabelFromRight(MatrixStack matrixStack, String text, int x, int y){
+        this.textRenderer.drawWithShadow(matrixStack, text,x - textRenderer.getWidth(text),y, Color.WHITE.getRGB());
     }
 
 
@@ -122,8 +70,27 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
         this.drawTexture(matrices, this.x, this.y, 0, 0, 256, 256);
     }
 
+    //Cancel title render?
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         this.textRenderer.draw(matrices, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
+    }
+
+    class WrenchButtonWidget extends ButtonWidget{
+        public WrenchButtonWidget(int x, int y, int width, int height, Text message) {
+            super(x, y, width, height, message,  buttonClick -> {
+                //C2S_OPEN_FISHER_WORKBENCH_REPAIR_SCREEN
+            });
+            this.visible = false;
+            addDrawableChild(this);
+        }
+
+        @Override
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, WRENCH_ICON);
+            drawTexture(matrices, x, y, 0, 0, 8, 8, 8, 8);
+        }
     }
 }

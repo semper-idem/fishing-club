@@ -11,10 +11,8 @@ import net.semperidem.fishingclub.item.FishingRodPartItem;
 import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
-    FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler;
-    public FishingRodSlot(Inventory inventory, int index, int x, int y, FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler) {
+    public FishingRodSlot(Inventory inventory, int index, int x, int y) {
         super(inventory, index, x, y);
-        this.fisherWorkbenchScreenHandler = fisherWorkbenchScreenHandler;
     }
 
     @Override
@@ -24,30 +22,20 @@ public class FishingRodSlot extends Slot {
 
     @Override
     public void setStack(ItemStack stack) {
+        //Transform vanilla fishing rod into custom fishing rod TODO update so its nice
         if (stack.isOf(Items.FISHING_ROD)) {
             double dmgPercent = stack.getDamage() / (stack.getMaxDamage() * 1f);
             stack = CUSTOM_FISHING_ROD.getDefaultStack();
             stack.setDamage((int) (stack.getMaxDamage() * dmgPercent));
         }
 
-        boolean canRepair = stack.getDamage() > 0;
-        if (canRepair) {
-            fisherWorkbenchScreenHandler.setWrenchVisible(true);
-        }
-        boolean repairMandatory = stack.getMaxDamage() - stack.getDamage() ==  1;
-        if (repairMandatory) {
-            fisherWorkbenchScreenHandler.setRepairMode(true);
-        } else {
-            unPackFishingRod(stack);
-        }
+        unPackFishingRod(stack);
         super.setStack(stack);
     }
 
     @Override
     public void onTakeItem(PlayerEntity player, ItemStack stack) {
         packFishingRod(stack);
-        fisherWorkbenchScreenHandler.setRepairMode(false);
-        fisherWorkbenchScreenHandler.setWrenchVisible(false);
         super.onTakeItem(player, stack);
     }
 
