@@ -36,7 +36,6 @@ public class CustomFishingRod extends FishingRodItem {
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.BAIT_WORM.getDefaultStack(), FishingRodPartItem.PartType.BAIT);
         return starterStack;
     }
 
@@ -46,6 +45,7 @@ public class CustomFishingRod extends FishingRodItem {
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.HOOK_IRON.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.LINE_SPIDER_SILK.getDefaultStack(), FishingRodPartItem.PartType.LINE);
         FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BAIT_CRAFTED.getDefaultStack(), FishingRodPartItem.PartType.BAIT);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BOBBER_PLANT.getDefaultStack(), FishingRodPartItem.PartType.BOBBER);
         return advancedStack;
     }
 

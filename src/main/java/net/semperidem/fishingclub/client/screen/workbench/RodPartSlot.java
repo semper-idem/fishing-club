@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.workbench;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,12 +14,32 @@ import java.util.Objects;
 
 public class RodPartSlot extends Slot {
     FishingRodPartItem.PartType partType;
+    FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler;
     int index;
 
-    public RodPartSlot(Inventory inventory, int index, int x, int y, FishingRodPartItem.PartType partType) {
+    public RodPartSlot(Inventory inventory, int index, int x, int y, FishingRodPartItem.PartType partType, FisherWorkbenchScreenHandler fisherWorkbenchScreenHandler) {
         super(inventory, index, x, y);
         this.partType = partType;
         this.index = index;
+        this.fisherWorkbenchScreenHandler = fisherWorkbenchScreenHandler;
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return fisherWorkbenchScreenHandler.enabledSlots.contains(this);
+    }
+
+
+    @Override
+    public boolean canTakeItems(PlayerEntity playerEntity) {
+        if (inventory.getStack(getIndex()).getItem() instanceof FishingRodPartItem rodPart) {
+            boolean isRodPartCore = rodPart.getPartType() == FishingRodPartItem.PartType.CORE;
+            if (isRodPartCore) {
+                return !inventory.getStack(0).isDamaged();
+            }
+        }
+        return true;
     }
 
 

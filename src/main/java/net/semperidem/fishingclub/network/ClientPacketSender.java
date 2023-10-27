@@ -21,6 +21,9 @@ public class ClientPacketSender {
     public static void sendFishGameLost(){
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_LOST, PacketByteBufs.empty());
     }
+    public static void sendFishingRodRepairRequest(){
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_REPAIR_ROD, PacketByteBufs.empty());
+    }
 
     public static void sendOpenSellShopRequest() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_OPEN, PacketByteBufs.empty());

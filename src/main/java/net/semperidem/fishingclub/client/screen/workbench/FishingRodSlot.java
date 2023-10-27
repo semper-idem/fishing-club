@@ -29,8 +29,13 @@ public class FishingRodSlot extends Slot {
             stack = CUSTOM_FISHING_ROD.getDefaultStack();
             stack.setDamage((int) (stack.getMaxDamage() * dmgPercent));
         }
-        boolean repairRequired = stack.getMaxDamage() - stack.getDamage() ==  1;
-        if (repairRequired) {
+
+        boolean canRepair = stack.getDamage() > 0;
+        if (canRepair) {
+            fisherWorkbenchScreenHandler.setWrenchVisible(true);
+        }
+        boolean repairMandatory = stack.getMaxDamage() - stack.getDamage() ==  1;
+        if (repairMandatory) {
             fisherWorkbenchScreenHandler.setRepairMode(true);
         } else {
             unPackFishingRod(stack);
@@ -41,10 +46,12 @@ public class FishingRodSlot extends Slot {
     @Override
     public void onTakeItem(PlayerEntity player, ItemStack stack) {
         packFishingRod(stack);
+        fisherWorkbenchScreenHandler.setRepairMode(false);
+        fisherWorkbenchScreenHandler.setWrenchVisible(false);
         super.onTakeItem(player, stack);
     }
 
-    private void unPackFishingRod(ItemStack stack){
+    public void unPackFishingRod(ItemStack stack){
         if (stack.isOf(CUSTOM_FISHING_ROD)) {
             for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
                 this.inventory.setStack(partType.slotIndex, CUSTOM_FISHING_ROD.getPart(stack, partType));

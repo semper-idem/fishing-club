@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
+import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -32,6 +33,14 @@ public class ServerPacketHandlers {
         BlockPos caughtPos = buf.readBlockPos();
         server.execute(() -> {
             FishUtil.grantReward(player, fish, boatFishing, caughtPos);
+        });
+    }
+
+    public static void handleRepairRod(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            if (player.currentScreenHandler instanceof FisherWorkbenchScreenHandler screenHandler) {
+                screenHandler.repairRod();
+            }
         });
     }
 

@@ -8,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.item.CustomFishingRod;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
@@ -42,7 +43,19 @@ public class CommandsUtil {
             context.getSource().getPlayer().giveItemStack(IllegalGoodsItem.getStackWithTier(tier));
             return 1;
         })));
-
+    }
+    public static void registerGiveStarterRod(){
+        rootCommand.then(literal("starter_rod").executes(context -> {
+            context.getSource().getPlayer().giveItemStack(CustomFishingRod.getStarterRod());
+            return 1;
+        }));
+    }
+    public static void registerGiveAdvancedRod(){
+        rootCommand.then(literal("advanced_rod").executes(context -> {
+            int tier = getInteger(context, "tier");
+            context.getSource().getPlayer().giveItemStack(CustomFishingRod.getAdvancedRod());
+            return 1;
+        }));
     }
 
     public static void registerInfo(){
@@ -162,6 +175,8 @@ public class CommandsUtil {
             registerRemovePerk();
             registerLevelUp();
             registerIllegalGoods();
+            registerGiveStarterRod();
+            registerGiveAdvancedRod();
             dispatcher.register(rootCommand);
         });
     }
