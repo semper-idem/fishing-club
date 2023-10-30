@@ -12,7 +12,8 @@ import net.semperidem.fishingclub.client.game.treasure.Reward;
 import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStat;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
@@ -150,8 +151,8 @@ public class FishGameLogic {
         float partsBonusLengthMultiplier = 1;
         for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
-            if (part.getStatBonuses().containsKey(Stat.BOBBER_WIDTH)) {
-                partsBonusLengthMultiplier += part.getStatBonuses().get(Stat.BOBBER_WIDTH);
+            if (part.getStatBonuses().containsKey(FishingRodStat.BOBBER_WIDTH)) {
+                partsBonusLengthMultiplier += part.getStatBonuses().get(FishingRodStat.BOBBER_WIDTH);
             }
         }
 
@@ -168,8 +169,8 @@ public class FishGameLogic {
         float damageReduction = 0;
         for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
-            if (part.getStatBonuses().containsKey(Stat.DAMAGE_REDUCTION)) {
-                damageReduction += part.getStatBonuses().get(Stat.DAMAGE_REDUCTION);
+            if (part.getStatBonuses().containsKey(FishingRodStat.DAMAGE_REDUCTION)) {
+                damageReduction += part.getStatBonuses().get(FishingRodStat.DAMAGE_REDUCTION);
             }
         }
         if (boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT)) {
@@ -183,8 +184,8 @@ public class FishGameLogic {
         float calculatedHealth = 0;
         for(ItemStack partStack : FishingRodUtil.getRodParts(caughtUsing)) {
             FishingRodPartItem part = ((FishingRodPartItem) partStack.getItem());
-            if (part.getStatBonuses().containsKey(Stat.LINE_HEALTH)) {
-                calculatedHealth += part.getStatBonuses().get(Stat.LINE_HEALTH);
+            if (part.getStatBonuses().containsKey(FishingRodStat.LINE_HEALTH)) {
+                calculatedHealth += part.getStatBonuses().get(FishingRodStat.LINE_HEALTH);
             }
         }
         this.lineHealth = calculatedHealth;
@@ -262,7 +263,7 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += (PROGRESS_GAIN * Math.max(1, FishingRodUtil.getStat(caughtUsing, Stat.PROGRESS_MULTIPLIER)));
+            progress += (PROGRESS_GAIN * Math.max(1, FishingRodUtil.getStat(caughtUsing, FishingRodStat.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
             this.isFinished = true;
@@ -463,15 +464,4 @@ public class FishGameLogic {
         return lineHealth;
     }
 
-    public enum Stat{
-        BOBBER_WIDTH, //Percentage increase of bobber width DONE
-        DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm DONE
-        LINE_HEALTH, // Additional health point DONE
-        CATCH_RATE,//Percentage reduction of time until bite DONE
-        PROGRESS_MULTIPLIER,//Self-explanatory DONE
-        FISH_MAX_WEIGHT_MULTIPLIER,//Moves upper barrier of max fish weight (on average heavier fish) DONE
-        FISH_MAX_LENGTH_MULTIPLIER,//Moves upper barrier of max fish length (on average longer fish) DONE
-        FISH_RARITY_BONUS,//Percentage chance to gain fish on higher grade DONE
-        BITE_WINDOW_MULTIPLIER//Extends ticks in which fish can be hooked DONE
-    }
 }

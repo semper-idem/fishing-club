@@ -6,7 +6,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ClonedFishingRod extends CustomFishingRod{
+public class ClonedFishingRod extends MemberFishingRodItem {
     private static final int DURATION = 6000;
     public ClonedFishingRod(Settings settings) {
         super(settings);

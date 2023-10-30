@@ -25,9 +25,9 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.item.CustomFishingRod;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
-import net.semperidem.fishingclub.item.FishingRodPartItems;
+import net.semperidem.fishingclub.item.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
@@ -398,7 +398,7 @@ public class FishingCard {
         prolongStatusEffects();
         grantExperience(boostedExp);
         if (fish.caughtUsing == null || fish.caughtUsing == Items.AIR.getDefaultStack()) return;
-        lastUsedBait = CustomFishingRod.getBait(fish.caughtUsing);
+        lastUsedBait = MemberFishingRodItem.getBait(fish.caughtUsing);
     }
 
     private void prolongStatusEffects(){

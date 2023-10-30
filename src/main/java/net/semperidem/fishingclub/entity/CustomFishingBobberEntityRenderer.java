@@ -15,7 +15,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {

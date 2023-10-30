@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

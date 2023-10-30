@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.client.game.fish;
 
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.client.game.FishGameLogic;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStat;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -90,7 +90,7 @@ public class Fish {
 
 
     private float calculateFishWeight(){
-        float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_WEIGHT_MULTIPLIER));
+        float weightMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER));
         float minGradeBuff = fishingCard.getMinGrade() / 5f;
         float minWeight = fishType.fishMinWeight + fishType.fishRandomWeight * minGradeBuff;
         float weightRange = fishType.fishRandomWeight * weightMultiplier * (1 - minGradeBuff);
@@ -98,7 +98,7 @@ public class Fish {
     }
 
     private float calculateFishLength(){
-        float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_MAX_LENGTH_MULTIPLIER));
+        float lengthMultiplier = Math.max(1, FishingRodUtil.getStat(caughtUsing, FishingRodStat.FISH_MAX_LENGTH_MULTIPLIER));
         float minGradeBuff = fishingCard.getMinGrade() / 5f;
         float minLength = fishType.fishMinLength + fishType.fishRandomLength * minGradeBuff;
         float lengthRange = fishType.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
@@ -116,7 +116,7 @@ public class Fish {
     private int calculateGrade(){
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
-        float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishGameLogic.Stat.FISH_RARITY_BONUS));
+        float oneUpChance = Math.max(0, FishingRodUtil.getStat(caughtUsing, FishingRodStat.FISH_RARITY_BONUS));
         if (fishingCard.hasPerk(FishingPerks.CHUNK_QUALITY_INCREASE)) {
             if (fishingCard.caughtInChunk(caughtIn)) {
                 oneUpChance = 1;

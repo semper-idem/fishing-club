@@ -8,13 +8,14 @@ import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
 import net.semperidem.fishingclub.item.armor.FisherMaterial;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
 
 public class FItemRegistry {
 
     public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build( FishingClub.getIdentifier("fishing_club_group"), () -> new ItemStack(Items.COD));
 
     public static final Item DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final CustomFishingRod CUSTOM_FISHING_ROD = new CustomFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
+    public static final MemberFishingRodItem CUSTOM_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
     public static final Item FISHER_WORKBENCH = new BlockItem(FBlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item FISH_COIN_BUNDLE = new FishCoinBundleItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));

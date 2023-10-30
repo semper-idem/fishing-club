@@ -21,13 +21,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.game.FishGameLogic;
+import net.semperidem.fishingclub.item.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStat;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.CustomFishingRod;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -187,7 +188,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             this.caughtFish = null;
             if (Math.random() < 0.1) {
                 //TODO Message on parts broken
-                FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartItem.PartType.HOOK);
+                FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.HOOK);
             }
         }
     }
@@ -209,7 +210,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
         ItemStack fishingRodCopy = fishingRod.copy();
         if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.SHARED_BAIT_BUFF)) {
-            FItemRegistry.CUSTOM_FISHING_ROD.addPart(fishingRodCopy, fishingCard.getSharedBait().getDefaultStack(), FishingRodPartItem.PartType.BAIT);
+            FItemRegistry.CUSTOM_FISHING_ROD.addPart(fishingRodCopy, fishingCard.getSharedBait().getDefaultStack(), FishingRodPartType.BAIT);
         }
         caughtFish = FishUtil.getFishOnHook(fishingCard, fishingRodCopy, fishTypeRarityMultiplier, new FishingCard.Chunk(worldChunkPos.x, worldChunkPos.z));
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
@@ -219,11 +220,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.BITE_WINDOW_MULTIPLIER)));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodUtil.getStat(fishingRod, FishingRodStat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
-        if (CustomFishingRod.getBait(fishingRod) != null) {
-            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartItem.PartType.BAIT);
+        if (MemberFishingRodItem.getBait(fishingRod) != null) {
+            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
         }
     }
 
@@ -295,7 +296,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void setWaitCountdown() {
         float catchRate;
-        float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishGameLogic.Stat.CATCH_RATE);
+        float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishingRodStat.CATCH_RATE);
         if (world.isRaining()) {
             float rainBonus = 0.125f;
             if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
@@ -415,7 +416,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     FishingRodPartItem getBobber(){
-        return (FishingRodPartItem) FishingRodUtil.getRodPart(fishingRod, FishingRodPartItem.PartType.BOBBER).getItem().asItem();
+        return (FishingRodPartItem) FishingRodUtil.getRodPart(fishingRod, FishingRodPartType.BOBBER).getItem().asItem();
     }
 
     enum State {

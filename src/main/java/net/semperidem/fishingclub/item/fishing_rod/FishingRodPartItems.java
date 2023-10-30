@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.item;
+package net.semperidem.fishingclub.item.fishing_rod;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,8 +10,6 @@ import net.minecraft.util.registry.Registry;
 import java.util.HashMap;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
-import static net.semperidem.fishingclub.client.game.FishGameLogic.Stat;
-import static net.semperidem.fishingclub.item.FishingRodPartItem.PartType;
 
 public class FishingRodPartItems {
     public static HashMap<String, FishingRodPartItem> KEY_TO_PART_MAP = new HashMap<>();
@@ -42,113 +40,113 @@ public class FishingRodPartItems {
     static {
         CORE_BAMBOO = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON),
-                PartType.CORE,
+                FishingRodPartType.CORE,
                 "CORE_BAMBOO"
         );
         CORE_COMPOSITE = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.UNCOMMON),
-                PartType.CORE,
+                FishingRodPartType.CORE,
                 "CORE_COMPOSITE"
         );
         CORE_GOLDEN = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.UNCOMMON),
-                PartType.CORE,
+                FishingRodPartType.CORE,
                 "CORE_GOLDEN"
         );
         CORE_NETHERITE = new FishingRodPartItem(
                 new Item.Settings().fireproof().rarity(Rarity.RARE),
-                PartType.CORE,
+                FishingRodPartType.CORE,
                 "CORE_NETHERITE"
         );
 
 
         BOBBER_WOODEN = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON),
-                PartType.BOBBER,
+                FishingRodPartType.BOBBER,
                 "BOBBER_WOODEN")
-                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 5f)
-                .withStat(Stat.BOBBER_WIDTH, 0.05f);
+                .withStat(FishingRodStat.BITE_WINDOW_MULTIPLIER, 5f)
+                .withStat(FishingRodStat.BOBBER_WIDTH, 0.05f);
         BOBBER_PLANT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.COMMON),
-                PartType.BOBBER,
+                FishingRodPartType.BOBBER,
                 "BOBBER_PLANT")
-                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 10f)
-                .withStat(Stat.BOBBER_WIDTH, 0.1f);
+                .withStat(FishingRodStat.BITE_WINDOW_MULTIPLIER, 10f)
+                .withStat(FishingRodStat.BOBBER_WIDTH, 0.1f);
         BOBBER_ANCIENT = new FishingRodPartItem(new Item.Settings().rarity(Rarity.RARE),
-                PartType.BOBBER,
+                FishingRodPartType.BOBBER,
                 "BOBBER_ANCIENT")
-                .withStat(Stat.BITE_WINDOW_MULTIPLIER, 20f)
-                .withStat(Stat.BOBBER_WIDTH, 0.2f);
+                .withStat(FishingRodStat.BITE_WINDOW_MULTIPLIER, 20f)
+                .withStat(FishingRodStat.BOBBER_WIDTH, 0.2f);
 
         LINE_WOOL_THREAD = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(4),
-                PartType.LINE,
+                FishingRodPartType.LINE,
                 "LINE_WOOL_THREAD")
-                .withStat(Stat.LINE_HEALTH, 10f);
+                .withStat(FishingRodStat.LINE_HEALTH, 10f);
         LINE_SPIDER_SILK = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(4),
-                PartType.LINE,
+                FishingRodPartType.LINE,
                 "LINE_SPIDER_SILK")
-                .withStat(Stat.PROGRESS_MULTIPLIER, 1.1f)
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(Stat.LINE_HEALTH, 25f);
+                .withStat(FishingRodStat.PROGRESS_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.LINE_HEALTH, 25f);
         LINE_FIBER_THREAD = new FishingRodPartItem(new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(8),
-                PartType.LINE,
+                FishingRodPartType.LINE,
                 "LINE_FIBER_THREAD")
-                .withStat(Stat.PROGRESS_MULTIPLIER, 1.1f)
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.5f)
-                .withStat(Stat.LINE_HEALTH, 50f);
+                .withStat(FishingRodStat.PROGRESS_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 1.5f)
+                .withStat(FishingRodStat.LINE_HEALTH, 50f);
         LINE_STRIDER_THREAD = new FishingRodPartItem(
                 new Item.Settings().fireproof().rarity(Rarity.UNCOMMON).maxDamage(32),
-                PartType.LINE,
+                FishingRodPartType.LINE,
                 "LINE_STRIDER_THREAD")
-                .withStat(Stat.PROGRESS_MULTIPLIER, 1.5f)
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(Stat.LINE_HEALTH, 100f);
+                .withStat(FishingRodStat.PROGRESS_MULTIPLIER, 1.5f)
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.LINE_HEALTH, 100f);
 
         HOOK_COPPER = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON),
-                PartType.HOOK,
+                FishingRodPartType.HOOK,
                 "HOOK_COPPER")
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
-                .withStat(Stat.FISH_MAX_LENGTH_MULTIPLIER, 0.75f);
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
+                .withStat(FishingRodStat.FISH_MAX_LENGTH_MULTIPLIER, 0.75f);
         HOOK_IRON = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(4),
-                PartType.HOOK,
+                FishingRodPartType.HOOK,
                 "HOOK_IRON")
-                .withStat(Stat.DAMAGE_REDUCTION, 0.1f);
+                .withStat(FishingRodStat.DAMAGE_REDUCTION, 0.1f);
         HOOK_GOLD = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.UNCOMMON).maxDamage(2),
-                PartType.HOOK,
+                FishingRodPartType.HOOK,
                 "HOOK_GOLD")
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
-                .withStat(Stat.FISH_MAX_LENGTH_MULTIPLIER, 0.75f)
-                .withStat(Stat.CATCH_RATE, 0.20f)
-                .withStat(Stat.FISH_RARITY_BONUS, 1.25f);
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
+                .withStat(FishingRodStat.FISH_MAX_LENGTH_MULTIPLIER, 0.75f)
+                .withStat(FishingRodStat.CATCH_RATE, 0.20f)
+                .withStat(FishingRodStat.FISH_RARITY_BONUS, 1.25f);
         HOOK_NETHERITE = new FishingRodPartItem(
                 new Item.Settings().fireproof().rarity(Rarity.RARE).maxDamage(8),
-                PartType.HOOK,
+                FishingRodPartType.HOOK,
                 "HOOK_NETHERITE")
-                .withStat(Stat.DAMAGE_REDUCTION, 0.3f)
-                .withStat(Stat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(Stat.FISH_MAX_LENGTH_MULTIPLIER, 1.1f)
-                .withStat(Stat.CATCH_RATE, 0.1f)
-                .withStat(Stat.FISH_RARITY_BONUS, 1.1f);
+                .withStat(FishingRodStat.DAMAGE_REDUCTION, 0.3f)
+                .withStat(FishingRodStat.FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.FISH_MAX_LENGTH_MULTIPLIER, 1.1f)
+                .withStat(FishingRodStat.CATCH_RATE, 0.1f)
+                .withStat(FishingRodStat.FISH_RARITY_BONUS, 1.1f);
 
         BAIT_WORM = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(16),
-                PartType.BAIT,
+                FishingRodPartType.BAIT,
                 "BAIT_WORM");
         BAIT_FEATHER = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(8),
-                PartType.BAIT,
+                FishingRodPartType.BAIT,
                 "BAIT_FEATHER");
         BAIT_CRAFTED = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(32),
-                PartType.BAIT,
+                FishingRodPartType.BAIT,
                 "BAIT_CRAFTED");
         BAIT_MAGNET = new FishingRodPartItem(
                 new Item.Settings().rarity(Rarity.COMMON).maxDamage(64),
-                PartType.BAIT,
+                FishingRodPartType.BAIT,
                 "BAIT_MAGNET");
     }
 

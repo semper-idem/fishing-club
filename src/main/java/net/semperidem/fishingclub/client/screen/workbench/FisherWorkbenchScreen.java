@@ -9,23 +9,32 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
+import static net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler.*;
 
 public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHandler> implements ScreenHandlerProvider<FisherWorkbenchScreenHandler> {
+    private static final int TEXT_TO_SLOT_OFFSET = (SLOT_SIZE - 9) / 2; // 9 is text height
+    private static final Identifier BACKGROUND_DEFAULT = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
+    private static final Identifier BACKGROUND_REPAIR = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui_repair.png");
     private static final Identifier WRENCH_ICON = new Identifier(MOD_ID,"textures/gui/wrench.png");
-    private static final Identifier BACKGROUND = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
-
-    private static final int PART_LABEL_X = FisherWorkbenchScreenHandler.PART_SLOT_X - 3;
-    private static final int PART_BAIT_LABEL_X = FisherWorkbenchScreenHandler.PART_SLOT_X - 2;
-    private static final int PART_LABEL_Y = FisherWorkbenchScreenHandler.ROD_SLOT_Y + 3;
-    private static final int PART_LABEL_OFFSET = FisherWorkbenchScreenHandler.PART_SLOT_OFFSET;
-
-    private WrenchButtonWidget wrenchButton;
+    private static final int TEXT_COLOR = Color.WHITE.getRGB();
 
 
+    private ButtonWidget repairButton;
+
+    private Identifier background = BACKGROUND_DEFAULT;
+    private boolean repairMode = false;
+
+    private ArrayList<SlotLabel> repairLabels = new ArrayList<>();
+    private ArrayList<SlotLabel> standardLabels = new ArrayList<>();
+    private ArrayList<SlotLabel> labels = standardLabels;
+
+    //INIT
     public FisherWorkbenchScreen(FisherWorkbenchScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.backgroundHeight = 222;
@@ -35,62 +44,138 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
     @Override
     protected void init() {
         super.init();
-        this.x = (this.width - this.backgroundWidth) / 2;
-        this.y = (this.height - this.backgroundHeight) / 2;
-        wrenchButton = new WrenchButtonWidget(x + 34,y + 16,8,8, Text.of(""));
+        x = (width - backgroundWidth) / 2;
+        y = (height - backgroundHeight) / 2;
+
+        initLabels();
+        initRepairButton();
+        initToggleModeButton();
     }
 
 
+    private void initLabels(){
+        repairLabels = initRepairLabels();
+        standardLabels = initStandardLabels();
+        labels = standardLabels;
+    }
+
+    private ArrayList<SlotLabel> initStandardLabels(){
+        ArrayList<SlotLabel> labels = new ArrayList<>();
+        labels.add(new SlotLabel("Core: ", x + SLOTS_X, y + SLOTS_Y));
+        labels.add(new SlotLabel("Bobber: ", x + SLOTS_X, y + SLOTS_Y + SLOT_OFFSET + TEXT_TO_SLOT_OFFSET));
+        labels.add(new SlotLabel("Line: ", x + SLOTS_X, y + SLOTS_Y + SLOT_OFFSET * 2 + TEXT_TO_SLOT_OFFSET));
+        labels.add(new SlotLabel("Hook: ", x + SLOTS_X, y + SLOTS_Y + SLOT_OFFSET * 3 + TEXT_TO_SLOT_OFFSET));
+        labels.add(new SlotLabel("Bait: ", x + SLOTS_X_BAIT, y + SLOTS_Y + SLOT_OFFSET * 3 + TEXT_TO_SLOT_OFFSET));
+        return labels;
+    }
+    private ArrayList<SlotLabel> initRepairLabels(){
+        ArrayList<SlotLabel> slotLabels = new ArrayList<>();
+        slotLabels.add(new SlotLabel("Material: ", x + SLOTS_X, y + SLOTS_Y + SLOT_OFFSET * 3 + TEXT_TO_SLOT_OFFSET));
+        return slotLabels;
+    }
+
+    private void initRepairButton(){
+        repairButton = new ButtonWidget(x + ROD_X,y + SLOTS_Y + SLOT_OFFSET * 3 - 1,40,20, Text.of("Repair"), repairClick -> ClientPacketSender.sendFishingRodRepairRequest());
+        repairButton.visible = false;
+        repairButton.active = false;
+        addDrawableChild(repairButton);
+    }
+
+    private void initToggleModeButton(){
+        addDrawableChild(new ButtonWidget(x + ROD_X + SLOT_SIZE, y + ROD_Y, 8, 8, Text.of(""), wrenchClick -> toggleMode()){
+            @Override
+            public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+                setTexture(WRENCH_ICON);
+                drawTexture(matrices, x, y, 0, 0, 8, 8, 8, 8);
+            }
+        });
+    }
+
+    private void toggleMode(){
+        repairMode = !repairMode;
+        if (repairMode) {
+            setRepairMode();
+        } else {
+            setStandardMode();
+        }
+    }
+
+    private void setStandardMode() {
+        handler.activateStandardSlots();
+        background = BACKGROUND_DEFAULT;
+        repairButton.visible = false;
+        repairButton.active = false;
+        labels = standardLabels;
+    }
+
+    private void setRepairMode(){
+        handler.activateRepairSlots();
+        background = BACKGROUND_REPAIR;
+        repairButton.visible = true;
+        repairButton.active = true;
+        labels = repairLabels;
+    }
+
+
+    //RENDERING
     public void render(MatrixStack matrixStack, int i, int j, float f) {
         renderBackground(matrixStack);
-        super.render(matrixStack, i, j, f); //Slots
+        super.render(matrixStack, i, j, f);
         renderLabels(matrixStack);
         drawMouseoverTooltip(matrixStack, i, j);
     }
 
-
     private void renderLabels(MatrixStack matrixStack){
-        renderLabelFromRight(matrixStack, "Core:", x + PART_LABEL_X, y + PART_LABEL_Y);
-        renderLabelFromRight(matrixStack, "Bobber:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET);
-        renderLabelFromRight(matrixStack, "Line:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 2);
-        renderLabelFromRight(matrixStack, "Hook:", x + PART_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 3);
-        renderLabelFromRight(matrixStack, "Bait:", x + PART_BAIT_LABEL_X, y + PART_LABEL_Y + PART_LABEL_OFFSET * 3);
+        for(SlotLabel label : labels) {
+            renderTextRightSide(matrixStack, label.text, label.x, label.y);
+        }
     }
 
-    private void renderLabelFromRight(MatrixStack matrixStack, String text, int x, int y){
-        this.textRenderer.drawWithShadow(matrixStack, text,x - textRenderer.getWidth(text),y, Color.WHITE.getRGB());
+    private void renderTextRightSide(MatrixStack matrixStack, String text, int x, int y){
+        this.textRenderer.drawWithShadow(matrixStack, text,x - textRenderer.getWidth(text),y, TEXT_COLOR);
     }
 
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        setTexture(background);
+        this.drawTexture(matrices, x, y, 0, 0, 256, 256);
+    }
+
+    private void setTexture(Identifier texture){
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BACKGROUND);
-        this.drawTexture(matrices, this.x, this.y, 0, 0, 256, 256);
+        RenderSystem.setShaderTexture(0, texture);
+
     }
 
-    //Cancel title render?
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.draw(matrices, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
+        textRenderer.draw(matrices, playerInventoryTitle, (float)playerInventoryTitleX, (float)playerInventoryTitleY, 0x404040);
     }
 
-    class WrenchButtonWidget extends ButtonWidget{
-        public WrenchButtonWidget(int x, int y, int width, int height, Text message) {
-            super(x, y, width, height, message,  buttonClick -> {
-                //C2S_OPEN_FISHER_WORKBENCH_REPAIR_SCREEN
-            });
-            this.visible = false;
-            addDrawableChild(this);
-        }
 
-        @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShaderTexture(0, WRENCH_ICON);
-            drawTexture(matrices, x, y, 0, 0, 8, 8, 8, 8);
+
+    //PER TICK UPDATES
+    @Override
+    protected void handledScreenTick() {
+        if (repairMode) {
+            repairButton.active = handler.isRepairPossible();
+        }
+        super.handledScreenTick();
+    }
+
+
+
+    private static class SlotLabel{
+        String text;
+        int x;
+        int y;
+
+        SlotLabel(String text, int x, int y){
+            this.text = text;
+            this.x = x;
+            this.y = y;
         }
     }
 }

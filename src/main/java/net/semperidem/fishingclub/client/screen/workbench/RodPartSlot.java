@@ -1,32 +1,38 @@
 package net.semperidem.fishingclub.client.screen.workbench;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.item.CustomFishingRod;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.Objects;
 
 public class RodPartSlot extends Slot {
-    FishingRodPartItem.PartType partType;
-    int index;
+    FishingRodPartType partType;
+    FisherWorkbenchScreenHandler parent;
 
-    public RodPartSlot(Inventory inventory, int index, int x, int y, FishingRodPartItem.PartType partType) {
-        super(inventory, index, x, y);
+    public RodPartSlot(FisherWorkbenchScreenHandler parent, FishingRodPartType partType, int x, int y){
+        super(parent.getInventory(), parent.getNextIndex(), x, y);
         this.partType = partType;
-        this.index = index;
+        this.parent = parent;
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return parent.isSlotEnabled(this);
     }
 
 
     @Override
     public boolean canTakeItems(PlayerEntity playerEntity) {
         if (inventory.getStack(getIndex()).getItem() instanceof FishingRodPartItem rodPart) {
-            boolean isRodPartCore = rodPart.getPartType() == FishingRodPartItem.PartType.CORE;
+            boolean isRodPartCore = rodPart.getPartType() == FishingRodPartType.CORE;
             if (isRodPartCore) {
                 return !inventory.getStack(0).isDamaged();
             }
@@ -47,7 +53,7 @@ public class RodPartSlot extends Slot {
         ItemStack rodStack = this.inventory.getStack(0);
         if (!stack.isOf(Items.AIR)){
             NbtCompound rodNbt = rodStack.getNbt();
-            NbtCompound partsNbt = rodNbt.getCompound("parts");
+            NbtCompound partsNbt = rodNbt.getCompound("parts");//TODO CONVERT NBT TO OBJECTS FOR CLEAR CODE
             if (partsNbt.contains(partType.name())) {
                 NbtCompound partNbt = partsNbt.getCompound(partType.name());
                 if (partNbt.contains("key")) {
@@ -63,14 +69,14 @@ public class RodPartSlot extends Slot {
                     }
                 }
             } else {
-                CustomFishingRod rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
+                MemberFishingRodItem rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
                 rodItem.addPart(rodStack, stack, partType);
             }
         } else {
-            CustomFishingRod rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
+            MemberFishingRodItem rodItem = FItemRegistry.CUSTOM_FISHING_ROD;
             rodItem.removePart(rodStack, partType);
         }
-        this.inventory.setStack(this.index, stack);
+        this.inventory.setStack(getIndex(), stack);
         this.markDirty();
     }
 

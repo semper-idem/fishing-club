@@ -1,18 +1,19 @@
 package net.semperidem.fishingclub.client.screen.workbench;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 
 import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
-    public FishingRodSlot(Inventory inventory, int index, int x, int y) {
-        super(inventory, index, x, y);
+    FisherWorkbenchScreenHandler parent;
+    public FishingRodSlot(FisherWorkbenchScreenHandler parent, int x, int y) {
+        super(parent.getInventory(), parent.getNextIndex(), x, y);
+        this.parent = parent;
     }
 
     @Override
@@ -22,8 +23,7 @@ public class FishingRodSlot extends Slot {
 
     @Override
     public void setStack(ItemStack stack) {
-        //Transform vanilla fishing rod into custom fishing rod TODO update so its nice
-        if (stack.isOf(Items.FISHING_ROD)) {
+        if (stack.isOf(Items.FISHING_ROD)) {//TODO Maybe add prompt to convert to custom rod
             double dmgPercent = stack.getDamage() / (stack.getMaxDamage() * 1f);
             stack = CUSTOM_FISHING_ROD.getDefaultStack();
             stack.setDamage((int) (stack.getMaxDamage() * dmgPercent));
@@ -40,29 +40,26 @@ public class FishingRodSlot extends Slot {
     }
 
     public void unPackFishingRod(ItemStack stack){
-        if (stack.isOf(CUSTOM_FISHING_ROD)) {
-            for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
-                this.inventory.setStack(partType.slotIndex, CUSTOM_FISHING_ROD.getPart(stack, partType));
-            }
-            clearRodNbt(stack);
-            markDirty();
+        if (!stack.isOf(CUSTOM_FISHING_ROD)) return;
+
+        for(FishingRodPartType partType : FishingRodPartType.values()) {
+            this.inventory.setStack(partType.slotIndex, CUSTOM_FISHING_ROD.getPart(stack, partType));
         }
+        clearRodNbt(stack);
+        markDirty();
     }
 
-    private void clearRodNbt(ItemStack rodStack) {
-        if (rodStack.isOf(CUSTOM_FISHING_ROD)) {
-            if (rodStack.hasNbt()) {
-                NbtCompound stackNbt = rodStack.getNbt();
-                if (stackNbt.contains("parts")) {
-                    rodStack.getNbt().remove("parts");
-                }
-            }
-        }
+    private void clearRodNbt(ItemStack stack) {
+        if (!stack.isOf(CUSTOM_FISHING_ROD)) return;
+        if (!stack.hasNbt()) return;
+        NbtCompound stackNbt = stack.getNbt();
+        if (!stackNbt.contains("parts")) return;
+        stack.getNbt().remove("parts");
     }
 
 
     public void packFishingRod(ItemStack rodStack){
-        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
+        for(FishingRodPartType partType : FishingRodPartType.values()) {
             ItemStack partStack = this.inventory.getStack(partType.slotIndex);
             if (!partStack.isEmpty()) {
                 CUSTOM_FISHING_ROD.addPart(rodStack,this.inventory.getStack(partType.slotIndex), partType);

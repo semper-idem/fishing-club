@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.client.game.treasure;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;

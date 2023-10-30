@@ -2,9 +2,10 @@ package net.semperidem.fishingclub.util;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.semperidem.fishingclub.client.game.FishGameLogic;
-import net.semperidem.fishingclub.item.FishingRodPartItem;
-import net.semperidem.fishingclub.item.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStat;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,7 @@ public class FishingRodUtil {
             return rodParts;
         }
         NbtCompound partsTag = rodTag.getCompound("parts");
-        for(FishingRodPartItem.PartType partType : FishingRodPartItem.PartType.values()) {
+        for(FishingRodPartType partType : FishingRodPartType.values()) {
             if (!partsTag.contains(partType.name())) {
                 continue;
             }
@@ -29,7 +30,7 @@ public class FishingRodUtil {
         return rodParts;
     }
 
-    public static ItemStack getRodPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
+    public static ItemStack getRodPart(ItemStack rodStack, FishingRodPartType partType){
         if (!rodStack.hasNbt()) {
             return ItemStack.EMPTY;
         }
@@ -46,7 +47,7 @@ public class FishingRodUtil {
     }
 
     //TODO MOVE TO UTIL
-    public static float getStat(ItemStack fishingRod, FishGameLogic.Stat stat){
+    public static float getStat(ItemStack fishingRod, FishingRodStat stat){
         float result = 0;
         for(ItemStack partStack : getRodParts(fishingRod)) {
             FishingRodPartItem partItem = (FishingRodPartItem) partStack.getItem();

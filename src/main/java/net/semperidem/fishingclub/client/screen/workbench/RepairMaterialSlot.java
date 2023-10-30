@@ -7,11 +7,17 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 
 public class RepairMaterialSlot extends Slot {
+    FisherWorkbenchScreenHandler parent;
 
-    public RepairMaterialSlot(Inventory inventory, int index, int x, int y) {
+    public RepairMaterialSlot(Inventory inventory, int index, int x, int y, FisherWorkbenchScreenHandler parent) {
         super(inventory, index, x, y);
+        this.parent = parent;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return parent.isSlotEnabled(this);
+    }
 
     @Override
     public boolean canInsert(ItemStack stack) {//TODO CHANGE REPAIR ITEM
@@ -25,7 +31,6 @@ public class RepairMaterialSlot extends Slot {
 
     @Override
     public void onTakeItem(PlayerEntity player, ItemStack stack) {
-        //TODO activate repair button
         super.onTakeItem(player, stack);
     }
 

@@ -23,29 +23,32 @@ import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.FishingRodUtil;
 
-public class CustomFishingRod extends FishingRodItem {
-    public CustomFishingRod(Settings settings) {
+public class MemberFishingRodItem extends FishingRodItem {
+    public MemberFishingRodItem(Settings settings) {
         super(settings);
     }
 
     public static ItemStack getStarterRod(){
         ItemStack starterStack = new ItemStack(FItemRegistry.CUSTOM_FISHING_ROD);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartType.CORE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack(), FishingRodPartType.HOOK);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack(), FishingRodPartType.LINE);
         return starterStack;
     }
 
     public static ItemStack getAdvancedRod(){
         ItemStack advancedStack = new ItemStack(FItemRegistry.CUSTOM_FISHING_ROD);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.CORE_COMPOSITE.getDefaultStack(), FishingRodPartItem.PartType.CORE);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.HOOK_IRON.getDefaultStack(), FishingRodPartItem.PartType.HOOK);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.LINE_SPIDER_SILK.getDefaultStack(), FishingRodPartItem.PartType.LINE);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BAIT_CRAFTED.getDefaultStack(), FishingRodPartItem.PartType.BAIT);
-        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BOBBER_PLANT.getDefaultStack(), FishingRodPartItem.PartType.BOBBER);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.CORE_COMPOSITE.getDefaultStack(), FishingRodPartType.CORE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.HOOK_IRON.getDefaultStack(), FishingRodPartType.HOOK);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.LINE_SPIDER_SILK.getDefaultStack(), FishingRodPartType.LINE);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BAIT_CRAFTED.getDefaultStack(), FishingRodPartType.BAIT);
+        FItemRegistry.CUSTOM_FISHING_ROD.addPart(advancedStack, FishingRodPartItems.BOBBER_PLANT.getDefaultStack(), FishingRodPartType.BOBBER);
         return advancedStack;
     }
 
@@ -54,8 +57,8 @@ public class CustomFishingRod extends FishingRodItem {
         ItemStack defaultStack = new ItemStack(this);
         NbtCompound partsNbt = new NbtCompound();
         defaultStack.setNbt(partsNbt);
-        addPart(defaultStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartItem.PartType.CORE);
-        addPart(defaultStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack(), FishingRodPartItem.PartType.LINE);
+        addPart(defaultStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack(), FishingRodPartType.CORE);
+        addPart(defaultStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack(), FishingRodPartType.LINE);
         return defaultStack;
     }
 
@@ -63,8 +66,8 @@ public class CustomFishingRod extends FishingRodItem {
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {
             NbtCompound partsNbt = rodNbt.getCompound("parts");
-            if (partsNbt.contains(FishingRodPartItem.PartType.BAIT.name())) {
-                NbtCompound partNbt = partsNbt.getCompound(FishingRodPartItem.PartType.BAIT.name());
+            if (partsNbt.contains(FishingRodPartType.BAIT.name())) {
+                NbtCompound partNbt = partsNbt.getCompound(FishingRodPartType.BAIT.name());
                 if (partNbt.contains("key")) {
                     return  FishingRodPartItems.KEY_TO_PART_MAP.get(partNbt.getString("key"));
                 }
@@ -73,7 +76,7 @@ public class CustomFishingRod extends FishingRodItem {
         return null;
     }
 
-    public Item getPartItem(ItemStack rodStack, FishingRodPartItem.PartType partType){
+    public Item getPartItem(ItemStack rodStack, FishingRodPartType partType){
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {
             NbtCompound partsNbt = rodNbt.getCompound("parts");
@@ -87,7 +90,7 @@ public class CustomFishingRod extends FishingRodItem {
         return Items.AIR;
     }
 
-    public ItemStack getPart(ItemStack rodStack, FishingRodPartItem.PartType partType){
+    public ItemStack getPart(ItemStack rodStack, FishingRodPartType partType){
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {
             NbtCompound partsNbt = rodNbt.getCompound("parts");
@@ -104,7 +107,7 @@ public class CustomFishingRod extends FishingRodItem {
         return ItemStack.EMPTY;
     }
 
-    public ItemStack addPart(ItemStack rodStack, ItemStack partStack, FishingRodPartItem.PartType partType) {
+    public ItemStack addPart(ItemStack rodStack, ItemStack partStack, FishingRodPartType partType) {
         NbtCompound rodNbt;
         if (!rodStack.hasNbt()) {
             rodNbt = new NbtCompound();
@@ -127,7 +130,7 @@ public class CustomFishingRod extends FishingRodItem {
         return replacedStack;
     }
 
-    public ItemStack removePart(ItemStack rodStack, FishingRodPartItem.PartType slot){
+    public ItemStack removePart(ItemStack rodStack, FishingRodPartType slot){
         NbtCompound rodNbt = rodStack.getNbt();
         if (rodNbt.contains("parts")) {
             NbtCompound partsNbt = rodNbt.getCompound("parts");
@@ -184,7 +187,7 @@ public class CustomFishingRod extends FishingRodItem {
             }
         }
         float damageChance = 1f;
-        Item coreItem = getPartItem(fishingRod, FishingRodPartItem.PartType.CORE);
+        Item coreItem = getPartItem(fishingRod, FishingRodPartType.CORE);
         if (coreItem.equals(FishingRodPartItems.CORE_BAMBOO)) damageChance = 0.85f;
         else if (coreItem.equals(FishingRodPartItems.CORE_COMPOSITE)) damageChance = 0.2f;
         else if (coreItem.equals(FishingRodPartItems.CORE_GOLDEN)) damageChance = 1.8f;
@@ -229,7 +232,7 @@ public class CustomFishingRod extends FishingRodItem {
         }
     }
 
-    public void damageRodPart(ItemStack rod,  FishingRodPartItem.PartType partType){
+    public void damageRodPart(ItemStack rod,  FishingRodPartType partType){
         ItemStack partToDamage = this.getPart(rod, partType);
         int damage = partToDamage.getDamage();
         partToDamage.setDamage(damage + 1);
