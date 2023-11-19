@@ -15,25 +15,22 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.item.MemberFishingRodItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodStat;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
+import net.semperidem.fishingclub.item.fishing_rod.*;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
-import net.semperidem.fishingclub.util.FishingRodUtil;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity {
@@ -58,11 +55,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private float throwDistance;
     private boolean boatFishing;
     private FishingCard fishingCard;
+    private Identifier texture = CustomFishingBobberEntityRenderer.DEFAULT;
 
 
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
+        setTexture();
     }
 
     public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FishingCard fishingCard, boolean boatFishing) {
@@ -73,6 +72,34 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         this.power = power;
         this.boatFishing = boatFishing;
         setThrowDirection();
+        setTexture();
+    }
+
+    private void setTexture() {
+        //TODO REFACTOR T HIS ABOMINATION D:D
+        ItemStack fishingRod = ItemStack.EMPTY;
+        PlayerEntity playerOwner = null;
+        if ((getOwner() instanceof PlayerEntity)){
+            playerOwner = getPlayerOwner();
+        } else if (world.isClient){
+            playerOwner = MinecraftClient.getInstance().player;
+        }
+        if (playerOwner == null) return;
+        if (playerOwner.getMainHandStack().getItem() instanceof MemberFishingRodItem) {
+            fishingRod = playerOwner.getMainHandStack();
+        } else if (playerOwner.getOffHandStack().getItem() instanceof MemberFishingRodItem) {
+            fishingRod = playerOwner.getOffHandStack();
+        }
+        String bobberName = String.valueOf(FishingRodPartController.getPart(fishingRod, FishingRodPartType.BOBBER).getItem().toString());
+        switch (bobberName) {
+            case "bobber_wooden" -> texture = CustomFishingBobberEntityRenderer.WOODEN;
+            case "bobber_plant_based" -> texture = CustomFishingBobberEntityRenderer.PLANT;
+            case "bobber_ancient" -> texture = CustomFishingBobberEntityRenderer.ANCIENT;
+        }
+    }
+
+    public Identifier getTexture(){
+        return texture;
     }
 
     private void setThrowDirection(){
@@ -210,7 +237,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
         ItemStack fishingRodCopy = fishingRod.copy();
         if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.SHARED_BAIT_BUFF)) {
-            FItemRegistry.CUSTOM_FISHING_ROD.addPart(fishingRodCopy, fishingCard.getSharedBait().getDefaultStack(), FishingRodPartType.BAIT);
+            FishingRodPartController.putPart(fishingRodCopy, fishingCard.getSharedBait().copy());
         }
         caughtFish = FishUtil.getFishOnHook(fishingCard, fishingRodCopy, fishTypeRarityMultiplier, new FishingCard.Chunk(worldChunkPos.x, worldChunkPos.z));
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
@@ -220,10 +247,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodUtil.getStat(fishingRod, FishingRodStat.BITE_WINDOW_MULTIPLIER)));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodStat.getStat(fishingRod, FishingRodStat.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
-        if (MemberFishingRodItem.getBait(fishingRod) != null) {
+        if (FishingRodPartController.hasBait(fishingRod)) {
             FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
         }
     }
@@ -296,7 +323,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void setWaitCountdown() {
         float catchRate;
-        float catchRateReduction = FishingRodUtil.getStat(fishingRod, FishingRodStat.CATCH_RATE);
+        float catchRateReduction = FishingRodStat.getStat(fishingRod, FishingRodStat.CATCH_RATE);
         if (world.isRaining()) {
             float rainBonus = 0.125f;
             if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
@@ -416,7 +443,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     }
 
     FishingRodPartItem getBobber(){
-        return (FishingRodPartItem) FishingRodUtil.getRodPart(fishingRod, FishingRodPartType.BOBBER).getItem().asItem();
+        return (FishingRodPartItem) FishingRodPartController.getPart(fishingRod, FishingRodPartType.BOBBER).getItem().asItem();
     }
 
     enum State {

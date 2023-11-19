@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
@@ -13,7 +12,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
 
 import java.util.ArrayList;
@@ -175,12 +174,9 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         int damageFixed = (int) (0.2f * matConsumed * rodStack.getMaxDamage());
         int resultDamage = Math.max(0, rodStack.getDamage() - damageFixed);
         rodStack.setDamage(resultDamage);
-        FItemRegistry.CUSTOM_FISHING_ROD.getPart(rodStack, CORE).setDamage(resultDamage);
         repairMatStack.setCount(matAvailable - matConsumed);
         if (this.fishingCard.hasPerk(FishingPerks.DURABLE_RODS)) {
-            NbtCompound rodNbt = rodStack.getOrCreateNbt();
-            rodNbt.putInt("handmade", damageFixed);//TODO MOVE ALL HANDMADE LOGIC INTO ONE PLACE
-            rodStack.setNbt(rodNbt);
+            FishingRodUtil.setHandmadeUsageCount(rodStack, damageFixed);
         }
     }
 

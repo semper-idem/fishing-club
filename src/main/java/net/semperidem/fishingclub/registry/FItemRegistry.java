@@ -9,6 +9,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
 import net.semperidem.fishingclub.item.armor.FisherMaterial;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
 public class FItemRegistry {
 
@@ -28,18 +29,21 @@ public class FItemRegistry {
     public static final Item ILLEGAL_GOODS = new IllegalGoodsItem(new Item.Settings().group(FISHING_CLUB_GROUP).rarity(Rarity.RARE).maxCount(1));
 
     public static void register(){
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_workbench"), FISHER_WORKBENCH);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("fishing_net"), FISHING_NET);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("double_fishing_net"), DOUBLE_FISHING_NET);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("custom_fishing_rod"), CUSTOM_FISHING_ROD);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("fish_coin_bundle"), FISH_COIN_BUNDLE);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_hat"), FISHER_HAT);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("fisher_vest"), FISHER_VEST);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("harpoon_rod"), HARPOON_ROD);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("line_arrow"), LINE_ARROW);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("cloned_rod"), CLONED_ROD);
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier("illegal_goods"), ILLEGAL_GOODS);
+        registerItem(("fisher_workbench"), FISHER_WORKBENCH);
+        registerItem(("fishing_net"), FISHING_NET);
+        registerItem(("double_fishing_net"), DOUBLE_FISHING_NET);
+        registerItem(("custom_fishing_rod"), CUSTOM_FISHING_ROD);
+        registerItem(("fish_coin_bundle"), FISH_COIN_BUNDLE);
+        registerItem(("fisher_hat"), FISHER_HAT);
+        registerItem(("fisher_vest"), FISHER_VEST);
+        registerItem(("harpoon_rod"), HARPOON_ROD);
+        registerItem(("line_arrow"), LINE_ARROW);
+        registerItem(("cloned_rod"), CLONED_ROD);
+        registerItem(("illegal_goods"), ILLEGAL_GOODS);
         FishingRodPartItems.registerParts();
+    }
 
+    public static void registerItem(String id, Item item){
+        Registry.register(Registry.ITEM, FishingClub.getIdentifier(id), item);
     }
 }

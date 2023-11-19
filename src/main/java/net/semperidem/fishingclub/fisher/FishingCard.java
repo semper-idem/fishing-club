@@ -7,6 +7,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -25,9 +26,8 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.item.MemberFishingRodItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.InventoryUtil;
@@ -52,8 +52,8 @@ public class FishingCard {
     private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
     private ArrayList<Chunk> fishedChunks = new ArrayList<>();
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
-    private FishingRodPartItem lastUsedBait = FishingRodPartItems.BAIT_WORM;
-    private FishingRodPartItem sharedBait = FishingRodPartItems.BAIT_WORM;
+    private ItemStack lastUsedBait = ItemStack.EMPTY;
+    private ItemStack sharedBait = ItemStack.EMPTY;
     private TeleportRequest lastTeleportRequest = new TeleportRequest("Jeb", 0);
 
     private PlayerEntity owner;
@@ -102,7 +102,7 @@ public class FishingCard {
         setSpells(fisherTag);
         setChunks(fisherTag);
         setLinked(fisherTag);
-        this.lastUsedBait = FishingRodPartItems.KEY_TO_PART_MAP.get(fisherTag.getString("last_used_bait"));
+        this.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound("last_used_bait"));
         setLastTeleportRequest(fisherTag);
     }
 
@@ -181,7 +181,7 @@ public class FishingCard {
         fisherTag.put("spells", getSpellListTag());
         fisherTag.put("fished_chunks", getFishedChunksList());
         fisherTag.put("linked", getLinkedList());
-        fisherTag.putString("last_used_bait", lastUsedBait.getKey());
+        fisherTag.put("last_used_bait", lastUsedBait.writeNbt(new NbtCompound()));
         fisherTag.put("last_teleport_request", TeleportRequest.toNbt(lastTeleportRequest));
         return fisherTag;
     }
@@ -243,14 +243,14 @@ public class FishingCard {
     }
 
 
-    public void setSharedBait(FishingRodPartItem bait){
-        this.sharedBait = bait;
+    public void setSharedBait(ItemStack baitToShare){
+        this.sharedBait = baitToShare;
     }
 
-    public FishingRodPartItem getSharedBait(){
+    public ItemStack getSharedBait(){
         return sharedBait;
     }
-    public FishingRodPartItem getLastUsedBait(){
+    public ItemStack getLastUsedBait(){
         return lastUsedBait;
     }
 
@@ -398,7 +398,7 @@ public class FishingCard {
         prolongStatusEffects();
         grantExperience(boostedExp);
         if (fish.caughtUsing == null || fish.caughtUsing == Items.AIR.getDefaultStack()) return;
-        lastUsedBait = MemberFishingRodItem.getBait(fish.caughtUsing);
+        lastUsedBait = FishingRodPartController.getPart(fish.caughtUsing, FishingRodPartType.BAIT);
     }
 
     private void prolongStatusEffects(){

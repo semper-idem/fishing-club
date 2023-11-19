@@ -15,15 +15,14 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {
-    private static final Identifier DEFAULT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
-    private static final Identifier ANCIENT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_ancient.png");
-    private static final Identifier PLANT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_plant.png");
-    private static final Identifier WOODEN = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_wooden.png");
-    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(DEFAULT);
+    public static final Identifier DEFAULT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
+    public static final Identifier ANCIENT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_ancient.png");
+    public static final Identifier PLANT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_plant.png");
+    public static final Identifier WOODEN = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_wooden.png");
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(ANCIENT);
 
     public CustomFishingBobberEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
@@ -47,7 +46,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getPositionMatrix();
         Matrix3f matrix3f = entry.getNormalMatrix();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(getTexture((CustomFishingBobberEntity) fishingBobberEntity)));
         vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
         vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
@@ -113,19 +112,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
     }
 
-    @Override
-    public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
-        if ( fishingBobberEntity instanceof CustomFishingBobberEntity) {
-            FishingRodPartItem bobber = ((CustomFishingBobberEntity) fishingBobberEntity).getBobber();
-            switch (bobber.getKey()) {
-                case "BOBBER_WOODEN":
-                    return WOODEN;
-                case "BOBBER_PLANT_BASED":
-                    return PLANT;
-                case "BOBBER_ANCIENT":
-                    return ANCIENT;
-            }
-        }
-        return DEFAULT;
+    public Identifier getTexture(CustomFishingBobberEntity fishingBobberEntity) {
+        return fishingBobberEntity.getTexture();
     }
 }

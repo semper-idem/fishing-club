@@ -76,8 +76,8 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
 
     private void initRepairButton(){
         repairButton = new ButtonWidget(x + ROD_X,y + SLOTS_Y + SLOT_OFFSET * 3 - 1,40,20, Text.of("Repair"), repairClick -> ClientPacketSender.sendFishingRodRepairRequest());
-        repairButton.visible = false;
         repairButton.active = false;
+        repairButton.visible = false;
         addDrawableChild(repairButton);
     }
 
@@ -103,16 +103,16 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
     private void setStandardMode() {
         handler.activateStandardSlots();
         background = BACKGROUND_DEFAULT;
-        repairButton.visible = false;
         repairButton.active = false;
+        repairButton.visible = false;
         labels = standardLabels;
     }
 
     private void setRepairMode(){
         handler.activateRepairSlots();
         background = BACKGROUND_REPAIR;
-        repairButton.visible = true;
         repairButton.active = true;
+        repairButton.visible = true;
         labels = repairLabels;
     }
 

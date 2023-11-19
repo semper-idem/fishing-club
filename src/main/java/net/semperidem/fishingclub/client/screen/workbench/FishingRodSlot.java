@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 
 import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
@@ -41,11 +42,9 @@ public class FishingRodSlot extends Slot {
 
     public void unPackFishingRod(ItemStack stack){
         if (!stack.isOf(CUSTOM_FISHING_ROD)) return;
-
         for(FishingRodPartType partType : FishingRodPartType.values()) {
-            this.inventory.setStack(partType.slotIndex, CUSTOM_FISHING_ROD.getPart(stack, partType));
+            this.inventory.setStack(partType.slotIndex, FishingRodPartController.removePart(stack, partType));
         }
-        clearRodNbt(stack);
         markDirty();
     }
 
@@ -61,9 +60,7 @@ public class FishingRodSlot extends Slot {
     public void packFishingRod(ItemStack rodStack){
         for(FishingRodPartType partType : FishingRodPartType.values()) {
             ItemStack partStack = this.inventory.getStack(partType.slotIndex);
-            if (!partStack.isEmpty()) {
-                CUSTOM_FISHING_ROD.addPart(rodStack,this.inventory.getStack(partType.slotIndex), partType);
-            }
+            FishingRodPartController.putPart(rodStack, partStack);
             this.inventory.setStack(partType.slotIndex, ItemStack.EMPTY);
         }
         markDirty();

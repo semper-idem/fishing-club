@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
 public class ClonedFishingRod extends MemberFishingRodItem {
     private static final int DURATION = 6000;
