@@ -61,7 +61,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
-        setTexture();
+        setTexture(MinecraftClient.getInstance().player);
     }
 
     public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FishingCard fishingCard, boolean boatFishing) {
@@ -72,24 +72,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         this.power = power;
         this.boatFishing = boatFishing;
         setThrowDirection();
-        setTexture();
+        setTexture(getPlayerOwner());
     }
 
-    private void setTexture() {
-        //TODO REFACTOR T HIS ABOMINATION D:D
-        ItemStack fishingRod = ItemStack.EMPTY;
-        PlayerEntity playerOwner = null;
-        if ((getOwner() instanceof PlayerEntity)){
-            playerOwner = getPlayerOwner();
-        } else if (world.isClient){
-            playerOwner = MinecraftClient.getInstance().player;
-        }
+    private void setTexture(PlayerEntity playerOwner) {
         if (playerOwner == null) return;
-        if (playerOwner.getMainHandStack().getItem() instanceof MemberFishingRodItem) {
-            fishingRod = playerOwner.getMainHandStack();
-        } else if (playerOwner.getOffHandStack().getItem() instanceof MemberFishingRodItem) {
-            fishingRod = playerOwner.getOffHandStack();
-        }
+        ItemStack fishingRod = playerOwner.getMainHandStack().getItem() instanceof MemberFishingRodItem ? playerOwner.getMainHandStack() : playerOwner.getOffHandStack();
         String bobberName = String.valueOf(FishingRodPartController.getPart(fishingRod, FishingRodPartType.BOBBER).getItem().toString());
         switch (bobberName) {
             case "bobber_wooden" -> texture = CustomFishingBobberEntityRenderer.WOODEN;
