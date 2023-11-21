@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.item.fishing_rod;
 import net.minecraft.item.Item;
 
 import static net.minecraft.util.Rarity.*;
-import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStat.*;
+import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType.*;
 import static net.semperidem.fishingclub.registry.FItemRegistry.registerItem;
 
 public class FishingRodPartItems {
@@ -32,57 +32,40 @@ public class FishingRodPartItems {
     public static FishingRodPartItem BAIT_MAGNET;
 
     static {
-        CORE_BAMBOO = createCorePart(new Item.Settings())
-                .withStat(ROD_DAMAGE_CHANCE, 0.85f);
-        CORE_COMPOSITE = createCorePart(new Item.Settings().rarity(UNCOMMON))
-                .withStat(ROD_DAMAGE_CHANCE, 0.2f);
-        CORE_GOLDEN = createCorePart(new Item.Settings().rarity(UNCOMMON))
-                .withStat(ROD_DAMAGE_CHANCE, 1.8f);
-        CORE_NETHERITE = createCorePart(new Item.Settings().fireproof().rarity(RARE))
-                .withStat(ROD_DAMAGE_CHANCE, 0.3f);
+        CORE_BAMBOO = createCorePart(new Item.Settings(),
+                ROD_DAMAGE_CHANCE.of(0.85f));
+        CORE_COMPOSITE = createCorePart(new Item.Settings().rarity(UNCOMMON),
+                ROD_DAMAGE_CHANCE.of(0.2f));
+        CORE_GOLDEN = createCorePart(new Item.Settings().rarity(UNCOMMON),
+                ROD_DAMAGE_CHANCE.of(1.8f));
+        CORE_NETHERITE = createCorePart(new Item.Settings().fireproof().rarity(RARE),
+                ROD_DAMAGE_CHANCE.of(0.3f));
 
 
-        BOBBER_WOODEN = createBobberPart(new Item.Settings())
-                .withStat(BITE_WINDOW_MULTIPLIER, 5f)
-                .withStat(BOBBER_WIDTH, 0.05f);
-        BOBBER_PLANT = createBobberPart(new Item.Settings())
-                .withStat(BITE_WINDOW_MULTIPLIER, 10f)
-                .withStat(BOBBER_WIDTH, 0.1f);
-        BOBBER_ANCIENT = createBobberPart(new Item.Settings().rarity(RARE))
-                .withStat(BITE_WINDOW_MULTIPLIER, 20f)
-                .withStat(BOBBER_WIDTH, 0.2f);
+        BOBBER_WOODEN = createBobberPart(new Item.Settings(),
+                BITE_WINDOW_MULTIPLIER.of(5f), BOBBER_WIDTH.of(0.05f));
+        BOBBER_PLANT = createBobberPart(new Item.Settings(),
+                BITE_WINDOW_MULTIPLIER.of(10f), BOBBER_WIDTH.of(0.1f));
+        BOBBER_ANCIENT = createBobberPart(new Item.Settings().rarity(RARE),
+                BITE_WINDOW_MULTIPLIER.of(20f), BOBBER_WIDTH.of(0.2f));
 
-        LINE_WOOL_THREAD = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4))
-                .withStat(LINE_HEALTH, 10f);
-        LINE_SPIDER_SILK = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4))
-                .withStat(PROGRESS_MULTIPLIER, 1.1f)
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(LINE_HEALTH, 25f);
-        LINE_FIBER_THREAD = createLinePart(new Item.Settings().rarity(UNCOMMON).maxDamage(8))
-                .withStat(PROGRESS_MULTIPLIER, 1.1f)
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 1.5f)
-                .withStat(LINE_HEALTH, 50f);
-        LINE_STRIDER_THREAD = createLinePart(new Item.Settings().fireproof().rarity(UNCOMMON).maxDamage(32))
-                .withStat(PROGRESS_MULTIPLIER, 1.5f)
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(LINE_HEALTH, 100f);
+        LINE_WOOL_THREAD = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4),
+                LINE_HEALTH.of(10f));
+        LINE_SPIDER_SILK = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4),
+                LINE_HEALTH.of(25f), PROGRESS_MULTIPLIER.of(1.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.1f));
+        LINE_FIBER_THREAD = createLinePart(new Item.Settings().rarity(UNCOMMON).maxDamage(8),
+                LINE_HEALTH.of(50f), PROGRESS_MULTIPLIER.of(1.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.5f));
+        LINE_STRIDER_THREAD = createLinePart(new Item.Settings().fireproof().rarity(UNCOMMON).maxDamage(32),
+                LINE_HEALTH.of(100f), PROGRESS_MULTIPLIER.of(1.5f), FISH_MAX_LENGTH_MULTIPLIER.of(1.1f));
 
-        HOOK_COPPER = createHookPart(new Item.Settings().maxDamage(1))
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
-                .withStat(FISH_MAX_LENGTH_MULTIPLIER, 0.75f);
-        HOOK_IRON = createHookPart(new Item.Settings().maxDamage(4))
-                .withStat(DAMAGE_REDUCTION, 0.1f);
-        HOOK_GOLD = createHookPart(new Item.Settings().rarity(UNCOMMON).maxDamage(2))
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 0.75f)
-                .withStat(FISH_MAX_LENGTH_MULTIPLIER, 0.75f)
-                .withStat(CATCH_RATE, 0.20f)
-                .withStat(FISH_RARITY_BONUS, 1.25f);
-        HOOK_NETHERITE = createHookPart(new Item.Settings().fireproof().rarity(RARE).maxDamage(8))
-                .withStat(DAMAGE_REDUCTION, 0.3f)
-                .withStat(FISH_MAX_WEIGHT_MULTIPLIER, 1.1f)
-                .withStat(FISH_MAX_LENGTH_MULTIPLIER, 1.1f)
-                .withStat(CATCH_RATE, 0.1f)
-                .withStat(FISH_RARITY_BONUS, 1.1f);
+        HOOK_COPPER = createHookPart(new Item.Settings().maxDamage(1),
+                FISH_MAX_WEIGHT_MULTIPLIER.of(0.75f), FISH_MAX_LENGTH_MULTIPLIER.of(0.75f));
+        HOOK_IRON = createHookPart(new Item.Settings().maxDamage(4),
+                DAMAGE_REDUCTION.of(0.1f));
+        HOOK_GOLD = createHookPart(new Item.Settings().rarity(UNCOMMON).maxDamage(2),
+                FISH_MAX_WEIGHT_MULTIPLIER.of(0.75f), FISH_MAX_LENGTH_MULTIPLIER.of(0.75f), CATCH_RATE.of(0.2f), FISH_RARITY_BONUS.of(1.25f));
+        HOOK_NETHERITE = createHookPart(new Item.Settings().fireproof().rarity(RARE).maxDamage(8),
+                DAMAGE_REDUCTION.of(0.3f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.1f), FISH_MAX_LENGTH_MULTIPLIER.of(1.1f), CATCH_RATE.of(0.1f), FISH_RARITY_BONUS.of(1.1f));
 
         BAIT_WORM = createBaitPart(new Item.Settings().maxDamage(16));
         BAIT_FEATHER = createBaitPart(new Item.Settings().maxDamage(8));
@@ -118,20 +101,20 @@ public class FishingRodPartItems {
     }
 
 
-    public static FishingRodPartItem createBaitPart(Item.Settings settings){
-        return new FishingRodPartItem(settings, FishingRodPartType.BAIT);
+    public static FishingRodPartItem createBaitPart(Item.Settings settings, FishingRodStat... stats){
+        return new FishingRodPartItem(settings, FishingRodPartType.BAIT, stats);
     }
-    public static FishingRodPartItem createHookPart(Item.Settings settings){
-        return new FishingRodPartItem(settings, FishingRodPartType.HOOK);
+    public static FishingRodPartItem createHookPart(Item.Settings settings, FishingRodStat... stats){
+        return new FishingRodPartItem(settings, FishingRodPartType.HOOK, stats);
     }
-    public static FishingRodPartItem createLinePart(Item.Settings settings){
-        return new FishingRodPartItem(settings, FishingRodPartType.LINE);
+    public static FishingRodPartItem createLinePart(Item.Settings settings, FishingRodStat... stats){
+        return new FishingRodPartItem(settings, FishingRodPartType.LINE, stats);
     }
-    public static FishingRodPartItem createCorePart(Item.Settings settings){
-        return new FishingRodPartItem(settings, FishingRodPartType.CORE);
+    public static FishingRodPartItem createCorePart(Item.Settings settings, FishingRodStat... stats){
+        return new FishingRodPartItem(settings, FishingRodPartType.CORE, stats);
     }
-    public static FishingRodPartItem createBobberPart(Item.Settings settings){
-        return new FishingRodPartItem(settings, FishingRodPartType.BOBBER);
+    public static FishingRodPartItem createBobberPart(Item.Settings settings, FishingRodStat... stats){
+        return new FishingRodPartItem(settings, FishingRodPartType.BOBBER, stats);
     }
 
 }

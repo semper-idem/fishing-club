@@ -3,34 +3,27 @@ package net.semperidem.fishingclub.item.fishing_rod;
 import net.minecraft.item.Item;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
 public class FishingRodPartItem extends Item {
-    private final HashMap<FishingRodStat, Float> stats = new HashMap<>();
+    private final List<FishingRodStat> stats;
     private final FishingRodPartType partType;
 
-    public FishingRodPartItem(Settings settings, FishingRodPartType partType) {
+    public FishingRodPartItem(Settings settings, FishingRodPartType partType, FishingRodStat...stats) {
         super(settings.maxDamageIfAbsent(1).group(FItemRegistry.FISHING_CLUB_GROUP));
         this.partType = partType;
-
+        this.stats = Arrays.asList(stats);
     }
 
     public FishingRodPartType getPartType() {
         return partType;
     }
 
-    public HashMap<FishingRodStat, Float> getStatBonuses(){
-        return stats;
+    public float getStat(FishingRodStatType stat){
+        return stats.stream().filter(o -> o.statType == stat).findFirst().map(fishingRodStat -> fishingRodStat.value).orElse(0F);
     }
 
-    public float getStat(FishingRodStat stat){
-        return stats.getOrDefault(stat, 0f);
-    }
-
-    public FishingRodPartItem withStat(FishingRodStat stat, Float value){
-        this.stats.put(stat, value);
-        return this;
-    }
 
 
 }

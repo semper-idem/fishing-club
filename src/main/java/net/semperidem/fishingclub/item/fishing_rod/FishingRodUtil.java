@@ -42,7 +42,7 @@ public class FishingRodUtil {
         if (rodPart == ItemStack.EMPTY) return 1;
         if (!(rodPart.getItem() instanceof FishingRodPartItem core)) return 1;
 
-        return core.getStat(FishingRodStat.ROD_DAMAGE_CHANCE);
+        return core.getStat(FishingRodStatType.ROD_DAMAGE_CHANCE);
     }
 
     public static ItemStack getBasicRod(){

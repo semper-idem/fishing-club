@@ -235,7 +235,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         //(From 20 To 45) * Multiplier
-        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodStat.getStat(fishingRod, FishingRodStat.BITE_WINDOW_MULTIPLIER)));
+        this.hookCountdown = (int) (( (25 - (caughtFish.fishLevel / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodStatType.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
         if (FishingRodPartController.hasBait(fishingRod)) {
@@ -311,7 +311,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private void setWaitCountdown() {
         float catchRate;
-        float catchRateReduction = FishingRodStat.getStat(fishingRod, FishingRodStat.CATCH_RATE);
+        float catchRateReduction = FishingRodStatType.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
         if (world.isRaining()) {
             float rainBonus = 0.125f;
             if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
