@@ -47,8 +47,6 @@ public class FishingRodPartController {
 
         replacingPart.setCount(0);
         rodNbt.put("parts", listOfParts);
-        fishingRod.setNbt(rodNbt);
-
         return replacedPart;
     }
 
@@ -66,7 +64,6 @@ public class FishingRodPartController {
             break;
         }
         rodNbt.put("parts", listOfParts);
-        fishingRod.setNbt(rodNbt);
 
         return removedPart;
     }

@@ -58,14 +58,6 @@ public class MemberFishingRodItem extends FishingRodItem {
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
     }
 
-    private float getDamageChance(ItemStack fishingRod) {
-        float coreDamageChance = FishingRodUtil.getRodDamageChance(fishingRod);
-
-        if (!FishingRodUtil.hasHandmadeUsage(fishingRod)) return coreDamageChance;
-        FishingRodUtil.consumeHandmadeUsage(fishingRod);
-
-        return coreDamageChance * 0.5f;
-    }
 
 
     @Override
@@ -80,7 +72,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         FishingCard fishingCard = world.isClient ? FishingClubClient.CLIENT_INFO : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
-            float damageChance = getDamageChance(fishingRod);
+            float damageChance = FishingRodUtil.getDamageChance(fishingRod);
             if (Math.random() < damageChance && fishingRod.getDamage() < fishingRod.getMaxDamage() - 1) {
                 fishingRod.damage(1, user, (e) -> {
                     e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);

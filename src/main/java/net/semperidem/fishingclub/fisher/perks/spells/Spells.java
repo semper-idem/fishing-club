@@ -141,7 +141,6 @@ public class Spells {
                 ItemStack clonedStack = FItemRegistry.CLONED_ROD.getDefaultStack();
                 NbtCompound clonedNbt = rodStack.getNbt();
                 clonedNbt.putLong("creation_tick", source.getWorld().getTime());
-                clonedStack.setNbt(clonedNbt);
                 source.giveItemStack(clonedStack);
             }
         });

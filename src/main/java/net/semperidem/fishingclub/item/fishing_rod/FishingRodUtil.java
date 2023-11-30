@@ -10,6 +10,16 @@ public class FishingRodUtil {
         return Math.max(1, Math.min(5, (usageTick + 40) / 40));
     }
 
+    public static float getDamageChance(ItemStack fishingRod) {
+        float coreDamageChance = FishingRodUtil.getRodDamageChance(fishingRod);
+
+        if (!hasHandmadeUsage(fishingRod)) return coreDamageChance;
+
+        consumeHandmadeUsage(fishingRod);
+        return coreDamageChance * 0.5f;
+    }
+
+
     public static boolean hasHandmadeUsage(ItemStack fishingRod){
         return hasHandmadeUsage(fishingRod.getOrCreateNbt());
     }
@@ -23,17 +33,11 @@ public class FishingRodUtil {
 
     public static void consumeHandmadeUsage(ItemStack fishingRod, int amountConsumed){
         NbtCompound fishingRodNbt = fishingRod.getOrCreateNbt();
-        if (!hasHandmadeUsage(fishingRodNbt)) return;
-        int currentCount = fishingRodNbt.getInt("handmade");
-        fishingRodNbt.putInt("handmade", currentCount - amountConsumed);
-
-        fishingRod.setNbt(fishingRodNbt); //TODO TEST IF  THIS LINE IS REQUIRED
+        fishingRodNbt.putInt("handmade", fishingRodNbt.getInt("handmade") - amountConsumed);
     }
 
     public static void setHandmadeUsageCount(ItemStack fishingRod, int amount){
-        NbtCompound fishingRodNbt = fishingRod.getOrCreateNbt();
-        fishingRodNbt.putInt("handmade", amount);
-        fishingRod.setNbt(fishingRodNbt); //TODO TEST IF  THIS LINE IS REQUIRED
+        fishingRod.getOrCreateNbt().putInt("handmade", amount);
     }
 
     public static float getRodDamageChance(ItemStack fishingRod) {

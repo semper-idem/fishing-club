@@ -102,10 +102,7 @@ public class FishUtil {
 
 
     private static void setFishDetails(ItemStack stack, Fish fish){
-        if (!stack.hasNbt()) {
-            stack.setNbt(new NbtCompound());
-        }
-
+        stack.getOrCreateNbt();
         setLore(stack, getDetailsAsLore(fish));
         setDetails(stack, fish);
     }
