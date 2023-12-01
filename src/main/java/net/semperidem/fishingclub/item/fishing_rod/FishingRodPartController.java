@@ -13,6 +13,16 @@ public class FishingRodPartController {
         return getPartsFromList(fishingRodStack.getOrCreateNbt().getList("parts", NbtElement.COMPOUND_TYPE));
     }
 
+    public static float getStat(ItemStack fishingRodStack, FishingRodStatType statType){
+        float combinedStat = 0;
+        for (ItemStack fishingRodPart : getParts(fishingRodStack)){
+            if (fishingRodPart.getItem() instanceof FishingRodPartItem fishingRodPartItem) {
+                combinedStat = fishingRodPartItem.getStat(statType);
+            }
+        }
+        return combinedStat;
+    }
+
     public static boolean hasBait(ItemStack fishingRod){
         return hasPart(fishingRod, FishingRodPartType.BAIT);
     }

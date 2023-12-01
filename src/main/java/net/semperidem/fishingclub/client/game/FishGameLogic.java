@@ -140,25 +140,13 @@ public class FishGameLogic {
     }
 
     private void calculateBobberLength(){
-        float perksBonusLengthMultiplier = 1;
+        float bobberLengthMultiplier = 0.9f;
 
-        if ((boatFishing && fishingCard.hasPerk(FishingPerks.BOAT_BOBBER_SIZE))) {
-            perksBonusLengthMultiplier += 0.1f;
-        }
+        bobberLengthMultiplier += boatFishing ? fishingCard.hasPerk(FishingPerks.BOAT_BOBBER_SIZE) ? 0.2f : 0.1f : 0;
+        bobberLengthMultiplier += FishingRodPartController.getStat(caughtUsing, FishingRodStatType.BOBBER_WIDTH);
+        bobberLengthMultiplier += player.hasStatusEffect(FStatusEffectRegistry.BOBBER_BUFF) ? 0.1f : 0;
 
-
-        //PARTS
-        float partsBonusLengthMultiplier = 1;
-        for(ItemStack partStack : FishingRodPartController.getParts(caughtUsing)) {
-            partsBonusLengthMultiplier += ((FishingRodPartItem) partStack.getItem()).getStat(FishingRodStatType.BOBBER_WIDTH);
-        }
-
-        float statusEffectLengthMultiplier = 1;
-        if (player.hasStatusEffect(FStatusEffectRegistry.BOBBER_BUFF)) {
-            statusEffectLengthMultiplier += 0.1f;
-        }
-
-        this.bobberLength = STARTING_BOBBER_LENGTH * partsBonusLengthMultiplier * perksBonusLengthMultiplier * statusEffectLengthMultiplier;
+        this.bobberLength = STARTING_BOBBER_LENGTH * bobberLengthMultiplier;
     }
 
 
