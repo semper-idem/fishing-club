@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.status_effects.*;
 import java.awt.*;
 
 public class FStatusEffectRegistry {
-
+    //TODO TREASURE CHANCE BUFF
     public static final StatusEffect QUALITY_BUFF = new FishQualityBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
     public static final StatusEffect FREQUENCY_BUFF = new FishFrequencyBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
     public static final StatusEffect EXP_BUFF = new FishExpBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());

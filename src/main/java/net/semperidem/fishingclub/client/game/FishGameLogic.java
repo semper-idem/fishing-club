@@ -5,6 +5,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.game.fish.Fish;
 import net.semperidem.fishingclub.client.game.fish.FishUtil;
@@ -13,7 +14,6 @@ import net.semperidem.fishingclub.client.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -95,8 +95,7 @@ public class FishGameLogic {
         this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
         this.bobberPos = 0.5f - bobberLength / 2;
         this.fishPos = 0.5f - FISH_LENGTH / 2;
-        this.treasureAvailable = rollForTreasure();
-        treasureRoll(player, caughtUsing, boatFishing);
+        treasureRoll();
         applyFisherVestEffect();
 
         jumpCount = fish.fishLevel < 10 ? 0 : (int) Math.max(1, fish.fishLevel / 25f * Math.random());
@@ -122,15 +121,17 @@ public class FishGameLogic {
         this.fish.experience = (int) (this.fish.experience * expRatio);
     }
 
-    private boolean rollForTreasure(){
+    private boolean isTreasureAvailable(){
         float treasureChance = TREASURE_MIN_CHANCE;
-        if (fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
-            treasureChance *= 2;
-        }
+
+        boolean boatBoosted = boatFishing && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT);
+        treasureChance *= boatBoosted ? 2 : 1;
+
         return Math.random() < treasureChance;
     }
 
-    private void treasureRoll(PlayerEntity player, ItemStack caughtUsing, boolean boatFishing){
+    private void treasureRoll(){//TODO IMPLEMENT GOLDEN ROD
+        this.treasureAvailable = isTreasureAvailable();
         if (this.treasureAvailable) {
             this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
             this.treasureReward = Rewards.roll(fishingCard);
@@ -152,27 +153,25 @@ public class FishGameLogic {
 
     private void calculateFishDamage(){
         float damageReduction = 0;
-        for(ItemStack partStack : FishingRodPartController.getParts(caughtUsing)) {
-            damageReduction += ((FishingRodPartItem) partStack.getItem()).getStat(FishingRodStatType.DAMAGE_REDUCTION);
-        }
-        if (boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT)) {
-            damageReduction += 0.2f;
-        }
-        float fishRawDamage = Math.max(0, (fish.fishLevel - 5 - (fishingCard.getLevel() / 4f)) / 20f);
-        this.fishDamage =  fishRawDamage * (1 - Math.max(0, Math.min(1, damageReduction)));
+
+        damageReduction += FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
+
+        boolean boatBoosted = boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
+        damageReduction += boatBoosted ? 0.2f : 0;
+        this.fishDamage =  getFishRawDamage() * (1 - MathHelper.clamp(damageReduction, 0f ,1f));
+    }
+
+    private float getFishRawDamage() {
+        return Math.max(0, (fish.fishLevel - 5 - (fishingCard.getLevel() * 0.25f)) * 0.05f);
     }
 
     private void calculateHealth(){
-        float calculatedHealth = 0;
-        for(ItemStack partStack : FishingRodPartController.getParts(caughtUsing)) {
-            calculatedHealth += ((FishingRodPartItem) partStack.getItem()).getStat(FishingRodStatType.LINE_HEALTH);
-        }
-        this.lineHealth = calculatedHealth;
+        this.lineHealth = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH);
     }
 
 
     public void tick() {
-        if(!keyPressed(GLFW.GLFW_KEY_C)) return;
+        if(!keyPressed(GLFW.GLFW_KEY_C)) return; //TODO DEBUG FEATURE
         if (reelingTreasure) {
             tickHookedTreasure();
         } else {
@@ -242,7 +241,7 @@ public class FishGameLogic {
 
     private void grantProgress(){
         if (progress < 1) {
-            progress += (PROGRESS_GAIN * Math.max(1, FishingRodStatType.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER)));
+            progress += (PROGRESS_GAIN * Math.max(1, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER)));
             fish.fishEnergy--;
         } else {
             this.isFinished = true;

@@ -16,9 +16,8 @@ public class FishingRodPartController {
     public static float getStat(ItemStack fishingRodStack, FishingRodStatType statType){
         float combinedStat = 0;
         for (ItemStack fishingRodPart : getParts(fishingRodStack)){
-            if (fishingRodPart.getItem() instanceof FishingRodPartItem fishingRodPartItem) {
-                combinedStat = fishingRodPartItem.getStat(statType);
-            }
+            if (!(fishingRodPart.getItem() instanceof FishingRodPartItem fishingRodPartItem)) continue;
+            combinedStat = fishingRodPartItem.getStat(statType);
         }
         return combinedStat;
     }
@@ -40,7 +39,6 @@ public class FishingRodPartController {
         if (!(replacingPart.getItem() instanceof FishingRodPartItem partItem)) return replacedPart;
         NbtCompound rodNbt = fishingRod.getOrCreateNbt();
         NbtList listOfParts = rodNbt.contains("parts") ? rodNbt.getList("parts", NbtElement.COMPOUND_TYPE) : new NbtList();
-
         FishingRodPartType replacingPartType = partItem.getPartType();
         for(int i = 0; i < listOfParts.size(); i++) {
             ItemStack currentPart = ItemStack.fromNbt(listOfParts.getCompound(i));
@@ -88,7 +86,6 @@ public class FishingRodPartController {
 
     public static ItemStack getPart(ItemStack fishingRodStack, FishingRodPartType partType){
         if (fishingRodStack == null) return ItemStack.EMPTY;
-        if (!hasParts(fishingRodStack)) return ItemStack.EMPTY;
         for(ItemStack partStack : getParts(fishingRodStack)) {
             if (!(partStack.getItem() instanceof FishingRodPartItem partItem)) continue;
             if (!partItem.getPartType().equals(partType)) continue;

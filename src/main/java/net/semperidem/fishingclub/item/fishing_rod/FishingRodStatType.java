@@ -1,7 +1,5 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
-import net.minecraft.item.ItemStack;
-
 public enum FishingRodStatType {
     BOBBER_WIDTH, //Percentage increase of bobber width DONE
     DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm DONE
@@ -13,15 +11,6 @@ public enum FishingRodStatType {
     FISH_RARITY_BONUS,//Percentage chance to gain fish on higher grade DONE
     BITE_WINDOW_MULTIPLIER,//Extends ticks in which fish can be hooked DONE
     ROD_DAMAGE_CHANCE;
-
-    public static float getStat(ItemStack fishingRod, FishingRodStatType stat){
-        float result = 0;
-        for(ItemStack partStack : FishingRodPartController.getParts(fishingRod)) {
-            if (!(partStack.getItem() instanceof FishingRodPartItem partItem)) continue;
-            result += partItem.getStat(stat);
-        }
-        return result;
-    }
 
     public FishingRodStat of(float value) {
         return new FishingRodStat(this, value);
