@@ -28,15 +28,18 @@ public class FisherWorkbenchBlock extends Block {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
+        } else {
+            player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+            return ActionResult.CONSUME;
         }
-        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-        return ActionResult.CONSUME;
     }
 
 
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new FisherWorkbenchScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), Text.of("Fisher Workbench"));
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> {
+            return new FisherWorkbenchScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos));
+        }, Text.empty());
     }
 
     @Override
