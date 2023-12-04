@@ -68,11 +68,11 @@ public class FishGameScreen extends Screen {
         float saveZone = 0.02f;
 
         if (mouseX > width / 2f - width * saveZone && mouseX < width / 2f + width *saveZone) {
-            fishGameLogic.dragForce = 0;
+            fishGameLogic.setReelForce(0);
         } else if (mouseX < width / 2f - width * saveZone){
-            fishGameLogic.dragForce = (((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f;
+            fishGameLogic.setReelForce((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
         } else if (mouseX > width / 2f + width * saveZone) {
-            fishGameLogic.dragForce = (((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f;
+            fishGameLogic.setReelForce((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
         }
         super.mouseMoved(mouseX, mouseY);
     }
@@ -116,12 +116,12 @@ public class FishGameScreen extends Screen {
         this.fishGameLogic.tick();
         if (this.fishGameLogic.isFinished()) {
             this.close();
-            if (this.fishGameLogic.isFishWon()) {
+            if (this.fishGameLogic.isFishCaptured()) {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Caught Lvl." + this.fishGameLogic.getLevel() + " " + this.fishGameLogic.getName() + "! Nice"));
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
             } else {
                 MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
-                    if (this.fishGameLogic.isTreasureWon()) {
+                    if (this.fishGameLogic.isTreasureCaptured()) {
                     MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
                 }
             }

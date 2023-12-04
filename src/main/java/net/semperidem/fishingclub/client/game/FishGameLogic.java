@@ -25,10 +25,10 @@ public class FishGameLogic {
     private static final float SINE_PERIOD = (float) (Math.PI * 2);
     private static final float STARTING_BOBBER_LENGTH = 0.25f;
     private static final float FISH_LENGTH = 0.0625f;
-    private static final float REELING_ACCELERATION = 0.005f;
-    private static final float REELING_DECELERATION = 0.0035f;
+
     private static final float WAVE_SPEED = 5;
     private static final float WAVE_STRENGTH = 0.05f;
+
     private static final float PROGRESS_GAIN = 0.0075f;
 
     private static final float TREASURE_MIN_CHANCE = 0.05f;
@@ -44,46 +44,46 @@ public class FishGameLogic {
     private final PlayerEntity player;
     private final Fish fish;
     private final FishingCard fishingCard;
-    private final float totalDuration;
+    private final float fishPatternDuration;
     private final ItemStack caughtUsing;
     private final boolean boatFishing;
+    private boolean slowedFish;
+    private float fishDamage;
+    private float bobberLength;
 
     private boolean isFinished;
-    private boolean isFishWon;
-    private boolean isTreasureWon;
+    private boolean isFishCaptured;
+    private boolean isTreasureCaptured;
     private boolean reelingTreasure;
+    private float arrowSpeed;
+    private float treasureSpotSize;
+    private float treasureTriggerTime;
+    private Reward treasureReward;
 
     private int ticks;
 
     private float lineHealth;
     private float progress;
 
-    private float fishDamage;
     private float fishPos;
-    private float fishPosCenter;
-    private boolean slowedFish;
 
     private float bobberPos;
-    private float bobberLength;
     private float bobberSpeed;
 
-    private boolean treasureAvailable;
     private int treasureAvailableTicks;
-    private float treasureTriggerTime;
     private int treasureHookedTicks;
-    private float treasureSpotSize;
-    private float arrowSpeed;
     private float arrowPos;
-    private Reward treasureReward;
 
-    public float dragForce = 0;
+    float reelForce = 0;
+
+    //TODO MOVE TO FISH PATTERN CLASS
     public int jumpTicks = 0;
     public int jumpCount = 0;
     public int [] jumpTimestamps;
 
-    private BlockPos bobberBlockPos;
+    private BlockPos fishingSpotBlockPos;
 
-    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing, BlockPos bobberBlockPos){
+    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing, BlockPos fishingSpotBlockPos){
         this.player = player;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.fish = fish;
@@ -92,21 +92,21 @@ public class FishGameLogic {
         calculateBobberLength();
         calculateHealth();
         calculateFishDamage();
-        this.totalDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
+        this.fishPatternDuration = fish.curvePoints[fish.curvePoints.length - 1].x;
         this.bobberPos = 0.5f - bobberLength / 2;
         this.fishPos = 0.5f - FISH_LENGTH / 2;
-        treasureRoll();
+        setTreasure();
         applyFisherVestEffect();
 
         jumpCount = fish.fishLevel < 10 ? 0 : (int) Math.max(1, fish.fishLevel / 25f * Math.random());
         jumpTimestamps = new int[jumpCount];
-        int segmentTime = (int) (totalDuration / jumpCount);
+        int segmentTime = (int) (fishPatternDuration / jumpCount);
         for(int i = 0; i < jumpCount; i++){
             jumpTimestamps[i] = (int) (segmentTime * Math.random() + segmentTime * i);
         }
 
         this.slowedFish = player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF);
-        this.bobberBlockPos = bobberBlockPos;
+        this.fishingSpotBlockPos = fishingSpotBlockPos;
     }
 
     private void applyFisherVestEffect(){
@@ -130,14 +130,14 @@ public class FishGameLogic {
         return Math.random() < treasureChance;
     }
 
-    private void treasureRoll(){//TODO IMPLEMENT GOLDEN ROD
-        this.treasureAvailable = isTreasureAvailable();
-        if (this.treasureAvailable) {
-            this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
-            this.treasureReward = Rewards.roll(fishingCard);
-            this.arrowSpeed = 1 + treasureReward.getGrade();
-            this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
-        }
+    //TODO MOVE TO FISHED TREASURE CLASS
+    private void setTreasure(){//TODO IMPLEMENT GOLDEN ROD
+        if (!isTreasureAvailable()) return;
+
+        this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
+        this.treasureReward = Rewards.roll(fishingCard);
+        this.arrowSpeed = 1 + treasureReward.getGrade();
+        this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
     }
 
     private void calculateBobberLength(){
@@ -182,7 +182,7 @@ public class FishGameLogic {
 
     public void tickJump(){
         if (jumpCount == 0) return;
-        if ((int)(ticks % totalDuration) == jumpTimestamps[jumpTimestamps.length - jumpCount]) {
+        if ((int)(ticks % fishPatternDuration) == jumpTimestamps[jumpTimestamps.length - jumpCount]) {
             jumpTicks = 20;
         }
         if (jumpTicks == 0) return;
@@ -204,7 +204,6 @@ public class FishGameLogic {
 
     private void tickFishMovement(){
         fishPos = nextFishPosition();
-        fishPosCenter = fishPos + (FISH_LENGTH / 2);
     }
 
     private void tickBobberMovement(){
@@ -245,14 +244,22 @@ public class FishGameLogic {
             fish.fishEnergy--;
         } else {
             this.isFinished = true;
-            this.isFishWon = true;
+            this.isFishCaptured = true;
             grantReward();
         }
-        if (!treasureAvailable) return;
-        if (progress > treasureTriggerTime) {
-            treasureAvailable = false;
-            treasureAvailableTicks = 50;
-        }
+        tickTreasure();
+    }
+
+    private void tickTreasure(){
+        if (progress <= treasureTriggerTime) return;
+        treasureTriggered();
+
+    }
+
+    private void treasureTriggered(){
+        treasureTriggerTime = -1;
+        treasureAvailableTicks = 50;
+
     }
 
     private void revokeProgress(){
@@ -268,7 +275,7 @@ public class FishGameLogic {
         treasureHookedTicks--;
         if (treasureHookedTicks == 0) this.isFinished = true;
         if (isReeling() && !isYanking()){
-            this.isTreasureWon = isTreasureReeled();
+            this.isTreasureCaptured = isTreasureReeled();
             this.isFinished = true;
         }
     }
@@ -288,18 +295,18 @@ public class FishGameLogic {
             fishSpeed *= 0.75;
         }
         float fishSpeedScaledToLevel = fishSpeed * 0.75f + (fish.fishLevel / 200f);
-        float elapsedTime = (fishSpeedScaledToLevel * ticks) % totalDuration;
+        float elapsedTime = (fishSpeedScaledToLevel * ticks) % fishPatternDuration;
         float nextFishPosUnbound = nextFishPosOnCurve(elapsedTime) + nextFishPosOnWave(elapsedTime);
         return Math.max(Math.min(nextFishPosUnbound, 1 - FISH_LENGTH), 0);
     }
 
     private float nextFishPosOnWave(float elapsedTime){
-        float percentElapsedTime = elapsedTime / totalDuration;
+        float percentElapsedTime = elapsedTime / fishPatternDuration;
         return  (float) (Math.sin(SINE_PERIOD * percentElapsedTime * WAVE_SPEED) * WAVE_STRENGTH);
     }
 
     private float nextFishPosOnCurve(float elapsedTime) {
-        elapsedTime %= this.totalDuration;
+        elapsedTime %= this.fishPatternDuration;
 
         int pointCount = fish.curvePoints.length;
 
@@ -333,7 +340,7 @@ public class FishGameLogic {
 
 
     private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, bobberBlockPos);
+        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, fishingSpotBlockPos);
     }
 
 
@@ -342,7 +349,11 @@ public class FishGameLogic {
         return getFishForce() + getReelForce();
     }
     private float getReelForce(){
-        return dragForce;
+        return reelForce;
+    }
+
+    public void setReelForce(float reelForce){
+        this.reelForce = reelForce;
     }
 
     private float getFishForce() {
@@ -413,12 +424,12 @@ public class FishGameLogic {
         return isFinished;
     }
 
-    public boolean isFishWon() {
-        return isFishWon;
+    public boolean isFishCaptured() {
+        return isFishCaptured;
     }
 
-    public boolean isTreasureWon(){
-        return isTreasureWon;
+    public boolean isTreasureCaptured(){
+        return isTreasureCaptured;
     }
 
     public float getArrowPos(){
