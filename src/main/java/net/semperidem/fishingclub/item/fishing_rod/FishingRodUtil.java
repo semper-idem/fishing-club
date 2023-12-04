@@ -52,8 +52,7 @@ public class FishingRodUtil {
     public static ItemStack getBasicRod(){
         ItemStack starterStack = new ItemStack(FItemRegistry.CUSTOM_FISHING_ROD);
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack());
-        FishingRodPartController.putPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack());
-        FishingRodPartController.putPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack());
+        FishingRodPartController.putPart(starterStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack());
         return starterStack;
     }
 
