@@ -9,8 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.game.FishGameLogic;
-import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.game.FishGameLogic;
+import net.semperidem.fishingclub.game.fish.Fish;
 
 public class FishGameScreen extends Screen {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";

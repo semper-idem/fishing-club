@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.game;
+package net.semperidem.fishingclub.game;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
@@ -7,10 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.client.game.fish.FishUtil;
-import net.semperidem.fishingclub.client.game.treasure.Reward;
-import net.semperidem.fishingclub.client.game.treasure.Rewards;
+import net.semperidem.fishingclub.game.fish.Fish;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.treasure.Reward;
+import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;

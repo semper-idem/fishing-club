@@ -18,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.game.fish.Fish;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;

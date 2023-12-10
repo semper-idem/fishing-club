@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.client.game.fish.Fish;
+import net.semperidem.fishingclub.game.fish.Fish;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 

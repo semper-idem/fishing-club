@@ -6,8 +6,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.*;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.Fish;
+import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.FishGameScreen;
 
 public class ClientPacketReceiver {

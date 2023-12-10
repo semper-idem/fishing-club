@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.game.treasure;
+package net.semperidem.fishingclub.game.treasure;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;

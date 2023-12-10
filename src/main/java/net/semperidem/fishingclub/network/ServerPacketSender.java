@@ -8,8 +8,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.client.game.fish.Fish;
-import net.semperidem.fishingclub.client.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.Fish;
+import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 

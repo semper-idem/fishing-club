@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.game.fish;
+package net.semperidem.fishingclub.game.fish;
 
 import net.semperidem.fishingclub.util.Point;
 
