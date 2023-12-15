@@ -22,10 +22,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.item.fishing_rod.*;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
@@ -47,7 +47,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
     private boolean inOpenWater = true;
     private State state = State.FLYING;
     private ItemStack fishingRod;
-    private Fish caughtFish;
+    private HookedFish caughtFish;
     private int lastHookCountdown;
 
 

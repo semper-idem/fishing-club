@@ -4,30 +4,6 @@ import net.semperidem.fishingclub.util.Point;
 
 public class FishPatterns {
 
-    public static Point[] getRandomizedPoints(FishPattern fishPattern, int fishLevel){
-        return getRandomizedPoints(fishPattern.points, fishLevel);
-    }
-    public static Point[] getRandomizedControlPoints(FishPattern fishPattern, int fishLevel){
-        return getRandomizedPoints(fishPattern.controlPoints, fishLevel/2);
-    }
-
-    private static Point[] getRandomizedPoints(Point[] points, int fishLevel){
-        Point[] result = new Point[points.length];
-        for(int i = 0; i < points.length; i++) {
-            float x = points[i].x;
-            if (x != 0) {
-                float xMaxRandomness = fishLevel * 0.3f;
-                x = (float) (x - (xMaxRandomness / 2) + (xMaxRandomness * Math.random()));
-            }
-
-            float yMaxRandomness = fishLevel;
-            float y = points[i].y;
-            y = (float) (y - (yMaxRandomness / 2) + (yMaxRandomness * Math.random()));
-            float clampedY = Math.max(0, Math.min(1000, y));
-            result[i] = new Point(x, clampedY);
-        }
-        return result;
-    }
 
     /*
     *   X has to start from 0 but can finish w/e

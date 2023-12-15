@@ -13,10 +13,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
@@ -54,7 +54,7 @@ public class HarpoonEntity extends TridentEntity {
                 FishingCard fishingCard = FishingCardManager.getPlayerCard(owner).getHarpoonFisherInfo();
                 FishingCard.Chunk chunk = new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
+                HookedFish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
                 FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity, getBlockPos());
             }

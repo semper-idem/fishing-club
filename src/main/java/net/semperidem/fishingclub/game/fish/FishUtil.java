@@ -34,13 +34,13 @@ public class FishUtil {
     private static final Random RANDOM = new java.util.Random(42L);
 
 
-    public static ItemStack prepareFishItemStack(Fish fish){
+    public static ItemStack prepareFishItemStack(HookedFish fish){
         ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
         setFishDetails(fishReward, fish);
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing, BlockPos rewardPos){
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing, BlockPos rewardPos){
         FishingCardManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
@@ -78,7 +78,7 @@ public class FishUtil {
         return itemEntity;
     }
 
-    public static void grantReward(ServerPlayerEntity player, Fish fish, boolean boatFishing){
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing){
         grantReward(player, fish, boatFishing, null);
     }
 
@@ -101,12 +101,12 @@ public class FishUtil {
     }
 
 
-    private static void setFishDetails(ItemStack stack, Fish fish){
+    private static void setFishDetails(ItemStack stack, HookedFish fish){
         stack.getOrCreateNbt();
         setLore(stack, getDetailsAsLore(fish));
         setDetails(stack, fish);
     }
-    private static List<Text> getDetailsAsLore(Fish fish){
+    private static List<Text> getDetailsAsLore(HookedFish fish){
         int weightGrade = getWeightGrade(fish);
         int lengthGrade = getLengthGrade(fish);
         return Arrays.asList(
@@ -118,7 +118,7 @@ public class FishUtil {
         );
     }
 
-    private static void setDetails(ItemStack stack, Fish fish){
+    private static void setDetails(ItemStack stack, HookedFish fish){
         if (stack.getNbt() != null) {
             stack.getNbt().put("fish_details", FishUtil.toNbt(fish));
         }
@@ -151,12 +151,12 @@ public class FishUtil {
         };
     }
 
-    public static int getWeightGrade(Fish fish){
+    public static int getWeightGrade(HookedFish fish){
         FishType fishType = fish.getFishType();
         float percentile = (fish.weight) / (fishType.fishMinWeight + fishType.fishRandomWeight);
         return getGrade(percentile);
     }
-    public static int getLengthGrade(Fish fish){
+    public static int getLengthGrade(HookedFish fish){
         FishType fishType = fish.getFishType();
         float percentile = (fish.length) / (fishType.fishMinLength + fishType.fishRandomLength);
         return getGrade(percentile);
@@ -210,7 +210,7 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-    public static Fish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
+    public static HookedFish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
@@ -221,10 +221,10 @@ public class FishUtil {
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
         for (FishType fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fishingCard, fishingRod, chunk);
+                return new HookedFish(fishType, fishingCard, fishingRod, chunk);
             }
         }
-        return new Fish(FishTypes.COD, fishingCard, fishingRod, chunk);
+        return new HookedFish(FishTypes.COD, fishingCard, fishingRod, chunk);
     }
 
 
@@ -257,17 +257,17 @@ public class FishUtil {
         return Math.max(Math.min(to, value), from);
     }
 
-    public static PacketByteBuf fishToPacketBuf(Fish fish){
+    public static PacketByteBuf fishToPacketBuf(HookedFish fish){
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeNbt(toNbt(fish));
         return buf;
     }
 
 
-    public static Fish fishFromPacketBuf(PacketByteBuf fishBuf){
+    public static HookedFish fishFromPacketBuf(PacketByteBuf fishBuf){
         NbtCompound fishNbt = fishBuf.readNbt();
         if (fishNbt == null){
-            return new Fish();
+            return new HookedFish();
         }
         if (fishNbt.contains("fish_details")){
             return fromNbt(fishNbt.getCompound("fish_details"));
@@ -302,7 +302,7 @@ public class FishUtil {
         return treemap.get(l) + integerToRoman(number - l);
     }
 
-    public static int getFishValue(Fish fish){
+    public static int getFishValue(HookedFish fish){
         float gradeMultiplier;
         float levelMultiplier;
         float rarityBase;
@@ -334,7 +334,7 @@ public class FishUtil {
 
 
 
-    static NbtCompound toNbt(Fish fish){
+    static NbtCompound toNbt(HookedFish fish){
         NbtCompound fishNbt = new NbtCompound();
         fishNbt.putString("name", fish.name);
         fishNbt.putInt("grade", fish.grade);
@@ -350,8 +350,8 @@ public class FishUtil {
         return fishNbt;
     }
 
-    static Fish fromNbt(NbtCompound nbtCompound){
-        Fish fish = new Fish();
+    static HookedFish fromNbt(NbtCompound nbtCompound){
+        HookedFish fish = new HookedFish();
         fish.name = nbtCompound.getString("name");
         fish.setFishType(FishTypes.ALL_FISH_TYPES.get(fish.name));
         fish.grade = nbtCompound.getInt("grade");

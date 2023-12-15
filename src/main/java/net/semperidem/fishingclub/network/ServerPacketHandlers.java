@@ -7,8 +7,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
@@ -18,6 +16,8 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        Fish fish = FishUtil.fishFromPacketBuf(buf);
+        HookedFish fish = FishUtil.fishFromPacketBuf(buf);
         boolean boatFishing = buf.readBoolean();
         BlockPos caughtPos = buf.readBlockPos();
         server.execute(() -> {

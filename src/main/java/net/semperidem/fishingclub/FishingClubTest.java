@@ -2,12 +2,12 @@ package net.semperidem.fishingclub;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.game.fish.Fish;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.fish.FishType;
 import net.semperidem.fishingclub.game.fish.FishTypes;
 import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.game.treasure.Rewards;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.io.FileWriter;
@@ -131,7 +131,7 @@ public class FishingClubTest {
         TreeMap<Float, Integer> weightResult = new TreeMap<>();
         TreeMap<Float, Integer> sizeResult = new TreeMap<>();
         for(int i = 0; i < N; i++) {
-            Fish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
+            HookedFish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.fishLevel);
             countUp(typeResult,fish.getFishType());

@@ -4,8 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.game.fish.Fish;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class FishingCardManager {
@@ -20,7 +20,7 @@ public class FishingCardManager {
         getPlayerCard(playerEntity).grantExperience(expGained);
     }
 
-    public static void fishCaught(ServerPlayerEntity playerEntity, Fish fish){
+    public static void fishCaught(ServerPlayerEntity playerEntity, HookedFish fish){
         int expGained = fish.experience;
         FishingCard fishingCard = getPlayerCard(playerEntity);
         if (playerEntity.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {

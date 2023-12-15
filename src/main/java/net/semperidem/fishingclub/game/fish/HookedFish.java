@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.Point;
 
-public class Fish {
+public class HookedFish {
     FishingCard fishingCard;
 
     private FishType fishType;
@@ -35,13 +35,13 @@ public class Fish {
     public FishingCard.Chunk caughtIn;
 
     public boolean oneTimeBuffed;
-    public Fish(){
+    public HookedFish(){
     }
 
-    public Fish(FishType fishType, FishingCard fishingCard) {
+    public HookedFish(FishType fishType, FishingCard fishingCard) {
         this(fishType, fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FishingCard.Chunk(0,0));
     }
-    public Fish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk) {
+    public HookedFish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk) {
         this.caughtIn = chunk;
         this.caughtUsing = fishingRod;
         this.fishType = fishType;
@@ -68,12 +68,12 @@ public class Fish {
     }
 
     private void initCurvePoints(){
-        this.curvePoints = FishPatterns.getRandomizedPoints(fishType.fishPattern, fishLevel);
-        this.curveControlPoints = FishPatterns.getRandomizedControlPoints(fishType.fishPattern, fishLevel);
+      //  this.curvePoints = FishPatterns.getRandomizedPoints(fishType.fishPattern, fishLevel);
+     //   this.curveControlPoints = FishPatterns.getRandomizedControlPoints(fishType.fishPattern, fishLevel);
     }
 
     private void initEnergyLevels(){
-        this.fishEnergy = 200 + fishType.fishEnergyLevel * 250;
+        this.fishEnergy = 200 + fishType.staminaLevel * 250;
         this.fishMinEnergyLevel = this.fishEnergy / 2;
         this.fishMaxEnergyLevel = this.fishEnergy;
     }
@@ -125,7 +125,7 @@ public class Fish {
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public Fish applyHarpoonMultiplier(float multiplier){
+    public HookedFish applyHarpoonMultiplier(float multiplier){
         this.experience = (int) (this.experience * multiplier);
         this.weight = Math.max(this.fishType.fishMinWeight, (this.weight * multiplier));
         this.length = Math.max(this.fishType.fishMinLength, (this.length * multiplier));

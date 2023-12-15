@@ -7,12 +7,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
-import net.semperidem.fishingclub.game.treasure.Reward;
-import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.game.treasure.Reward;
+import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -42,7 +42,7 @@ public class FishGameLogic {
 
 
     private final PlayerEntity player;
-    private final Fish fish;
+    private final HookedFish fish;
     private final FishingCard fishingCard;
     private final float fishPatternDuration;
     private final ItemStack caughtUsing;
@@ -83,7 +83,7 @@ public class FishGameLogic {
 
     private BlockPos fishingSpotBlockPos;
 
-    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, Fish fish, boolean boatFishing, BlockPos fishingSpotBlockPos){
+    public FishGameLogic(PlayerEntity player, ItemStack caughtUsing, HookedFish fish, boolean boatFishing, BlockPos fishingSpotBlockPos){
         this.player = player;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.fish = fish;

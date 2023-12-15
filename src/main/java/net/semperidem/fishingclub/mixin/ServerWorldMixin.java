@@ -16,11 +16,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -67,7 +67,7 @@ public abstract class ServerWorldMixin extends World {
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
                 FishingCard fishingCard = FishingCardManager.getPlayerCard(igniter).getHarpoonFisherInfo();
                 FishingCard.Chunk chunk = new FishingCard.Chunk(chunkPos.x, chunkPos.z);
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk).applyHarpoonMultiplier(0.35f);
+                HookedFish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk).applyHarpoonMultiplier(0.35f);
                 FishUtil.grantReward(igniter, hFish, igniter.getVehicle() instanceof BoatEntity, explosionPos);
     }
 }

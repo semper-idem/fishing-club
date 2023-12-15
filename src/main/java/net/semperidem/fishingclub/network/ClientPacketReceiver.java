@@ -6,15 +6,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.*;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.game.fish.Fish;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.client.screen.FishGameScreen;
+import net.semperidem.fishingclub.game.fish.FishUtil;
+import net.semperidem.fishingclub.game.fish.HookedFish;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
-            Fish fish = FishUtil.fishFromPacketBuf(buf);
+            HookedFish fish = FishUtil.fishFromPacketBuf(buf);
             ItemStack fishingRod = buf.readItemStack();
             boolean boatFishing = buf.readBoolean();
             BlockPos bobberPos = buf.readBlockPos();
