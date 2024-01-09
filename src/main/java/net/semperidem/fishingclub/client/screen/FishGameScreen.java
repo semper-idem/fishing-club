@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.game.FishGameLogic;
+import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.game.fish.HookedFish;
 
 public class FishGameScreen extends Screen {
@@ -55,12 +55,12 @@ public class FishGameScreen extends Screen {
     private int treasureSpotX, treasureSpotY;
     private int treasureMarkX, treasureMarkY;
 
-    FishGameLogic fishGameLogic;
+    FishGameController fishGameLogic;
     boolean lightTick = false;
 
     public FishGameScreen(Text text, ItemStack caughtUsing, HookedFish fish, boolean boatFishing, BlockPos bobberPos) {
         super(text);
-        this.fishGameLogic = new FishGameLogic(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing, bobberPos);
+        this.fishGameLogic = new FishGameController(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing, bobberPos);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class FishGameScreen extends Screen {
 
     private void renderBobber(MatrixStack matrices, float delta){
         matrices.push();
-        float bobberScale = barWidth * fishGameLogic.getBobberLength() / barWidth;
+        float bobberScale = barWidth * fishGameLogic.getBobberSize() / barWidth;
         matrices.scale(bobberScale,1f,1f);
         bobberX = (int) ( (barX + barWidth * getBobberPos(delta)) * (1f / bobberScale));
         BOBBER.render(matrices, bobberX, bobberY);
@@ -199,7 +199,7 @@ public class FishGameScreen extends Screen {
 
     private void renderFishIcon(MatrixStack matrices, float delta){
         fishX = (int) (barX + barWidth * getFishPos(delta));
-        fishY = barY - (int)((Math.sqrt((10 - Math.abs(fishGameLogic.jumpTicks - 10))) * 4)) ;
+        fishY = barY - (int)((Math.sqrt((5 - Math.abs(fishGameLogic.jumpTicks - 15))) * 4)) ;
         FISH.render(matrices, fishX, fishY);
     }
 

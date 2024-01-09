@@ -36,4 +36,12 @@ public class FishType {
         this.fishRarity = fishRarity;
         FishTypes.ALL_FISH_TYPES.put(name, this);
     }
+
+    public FishPattern getFishPattern() {
+        return fishPattern;
+    }
+
+    public int getStaminaLevel() {
+        return staminaLevel;
+    }
 }
