@@ -9,27 +9,20 @@ import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.game.components.BobberComponent;
-import net.semperidem.fishingclub.game.components.FishComponent;
-import net.semperidem.fishingclub.game.components.ProgressComponent;
+import net.semperidem.fishingclub.game.components.*;
 import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.game.fish.HookedFish;
-import net.semperidem.fishingclub.game.treasure.Reward;
-import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+
 public class FishGameController {
+    private static final boolean IS_DEBUG = false;
 
-
-    private static final float TREASURE_MIN_CHANCE = 0.05f;
-    private static final float TREASURE_MIN_TRIGGER_TIME = 0.5f;
-    private static final float TREASURE_MAX_TRIGGER_TIME = 0.25f;
-    private static final float TREASURE_MAX_SPOT_SIZE = 0.225f;
-    private static final float TREASURE_GRADE_TO_SPOT_SIZE_RATIO = 0.025f;
 
     private static final float FISHER_VEST_SLOW_BONUS = -0.15f;
     private static final float FISHER_VEST_EXP_BONUS = 0.1f;
@@ -40,32 +33,18 @@ public class FishGameController {
     private final FishingCard fishingCard;
     private final ItemStack caughtUsing;
     private final boolean boatFishing;
-    private float fishDamage;
+    private final BlockPos fishingSpotBlockPos;
+    private ArrayList<ItemStack> treasureReward = new ArrayList<>();
 
-    private boolean isFinished;
-    private boolean isFishCaptured;
-    private boolean isTreasureCaptured;
-    private boolean reelingTreasure;
-    private float arrowSpeed;
-    private float treasureSpotSize;
-    private float treasureTriggerTime;
-    private Reward treasureReward;
+    private float reelForce = 0;
 
-    private int ticks;
-
-    private float lineHealth;
-    private float progress;
-
-    private int treasureAvailableTicks;
-    private int treasureHookedTicks;
-    private float arrowPos;
-
-    float reelForce = 0;
-
-    private BlockPos fishingSpotBlockPos;
     private final FishComponent fishComponent;
     private final BobberComponent bobberComponent;
     private final ProgressComponent progressComponent;
+    private final HealthComponent healthComponent;
+    private final TreasureComponent treasureComponent;
+
+    private TreasureGameController treasureGameController;
 
     public FishGameController(PlayerEntity player, ItemStack caughtUsing, HookedFish fish, boolean boatFishing, BlockPos fishingSpotBlockPos){
         this.player = player;
@@ -73,14 +52,15 @@ public class FishGameController {
         this.fish = fish;
         this.caughtUsing = caughtUsing;
         this.boatFishing = boatFishing;
-        calculateHealth();
-        calculateFishDamage();
-        setTreasure();
+        this.fishingSpotBlockPos = fishingSpotBlockPos;
+
+        float fishDamage = getFishDamage();
         applyFisherVestEffect();
-        progressComponent = new ProgressComponent();
+        progressComponent = new ProgressComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS), fishDamage);
         fishComponent = new FishComponent(fish.getFishType(), fish.fishLevel);
         bobberComponent = new BobberComponent(fish.fishLevel, player, fishingCard, caughtUsing, boatFishing);
-        this.fishingSpotBlockPos = fishingSpotBlockPos;
+        healthComponent = new HealthComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH), fishDamage);
+        treasureComponent = new TreasureComponent(this, boatFishing && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT));
     }
 
     private void applyFisherVestEffect(){
@@ -95,77 +75,42 @@ public class FishGameController {
         this.fish.experience = (int) (this.fish.experience * expRatio);
     }
 
-    private boolean isTreasureAvailable(){
-        float treasureChance = TREASURE_MIN_CHANCE;
-
-        boolean boatBoosted = boatFishing && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT);
-        treasureChance *= boatBoosted ? 2 : 1;
-
-        return Math.random() < treasureChance;
-    }
-
-    //TODO MOVE TO FISHED TREASURE CLASS
-    private void setTreasure(){//TODO IMPLEMENT GOLDEN ROD
-        if (!isTreasureAvailable()) return;
-
-        this.treasureTriggerTime = (float) (Math.random() * TREASURE_MAX_TRIGGER_TIME + TREASURE_MIN_TRIGGER_TIME);
-        this.treasureReward = Rewards.roll(fishingCard);
-        this.arrowSpeed = 1 + treasureReward.getGrade();
-        this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
-    }
-
-    private void calculateFishDamage(){
-        float damageReduction = 0;
-
-        damageReduction += FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
-
+    private float getFishDamage(){
+        float damageReduction = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
         boolean boatBoosted = boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
         damageReduction += boatBoosted ? 0.2f : 0;
-        this.fishDamage =  getFishRawDamage() * (1 - MathHelper.clamp(damageReduction, 0f ,1f));
+        float percentDamageReduction = (1 - MathHelper.clamp(damageReduction, 0f ,1f));
+        return getFishRawDamage() * percentDamageReduction;
     }
 
     private float getFishRawDamage() {
         return Math.max(0, (fish.fishLevel - 5 - (fishingCard.getLevel() * 0.25f)) * 0.05f);
     }
 
-    private void calculateHealth(){
-        this.lineHealth = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH);
-    }
-
-
     public void tick() {
-        if(!keyPressed(GLFW.GLFW_KEY_C)) return; //TODO DEBUG FEATURE
-        if (reelingTreasure) {
-            tickHookedTreasure();
-        } else {
-            tickFishGame();
+        if(!keyPressed(GLFW.GLFW_KEY_C) && IS_DEBUG) return;
+        if (isReelingTreasure()) {
+            treasureGameController.tick(isReeling());
         }
-        ticks++;
+        tickInner();
     }
 
-    private void tickFishGame(){
-        if (!isReeling() && isYanking() && treasureAvailableTicks == 0) this.isFinished = true;
-        fishComponent.tick(player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF));
+    private void tickInner(){
+        boolean isReeling = isReeling();
+        boolean isPulling = isPulling();
+
+        boolean hasSlowFishBuff = player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF);
+        fishComponent.tick(hasSlowFishBuff);
+
         bobberComponent.tick(reelForce, fishComponent.getPositionX());
-        progressComponent.tick(
-                isReeling(),
-                fishComponent.bobberHasFish(bobberComponent.getBobberPos(), bobberComponent.getBobberSize()),
-                fishComponent.getPositionY() != 0,
-                treasureAvailableTicks > 0
-        );
-        tickUnhookedTreasure();
+
+        boolean bobberHasFish = fishComponent.bobberHasFish(bobberComponent.getBobberPos(), bobberComponent.getBobberSize());
+        boolean isFishJumping = fishComponent.getPositionY() != 0;
+        progressComponent.tick(isReeling, isPulling, bobberHasFish, isFishJumping);
+        healthComponent.tick(progressComponent.isWinning());
+        treasureComponent.tick(progressComponent.getProgress(), isPulling);
     }
 
-
-    private void tickHealth(){
-        if (fishDamage != 0) {
-            lineHealth -= (fishDamage);
-        }
-        if (lineHealth <= 0){
-            isFinished = true;
-            ClientPacketSender.sendFishGameLost();
-        }
-    }
 
 
     public float getReelForce() {
@@ -176,52 +121,24 @@ public class FishGameController {
         this.reelForce = reelForce;
     }
 
-    private void tickTreasure(){
-        if (progress <= treasureTriggerTime) return;
-        treasureTriggered();
-
+    public void startTreasureGame(){
+        this.treasureGameController = new TreasureGameController(this, fishingCard);
     }
 
-    private void treasureTriggered(){
-        treasureTriggerTime = -1;
-        treasureAvailableTicks = 50;
-
-    }
-
-    private void tickHookedTreasure(){
-        if (!reelingTreasure) return;
-        arrowPos = getNextArrowPos();
-        treasureHookedTicks--;
-        if (treasureHookedTicks == 0) this.isFinished = true;
-        if (isReeling() && !isYanking()){
-            this.isTreasureCaptured = isTreasureReeled();
-            this.isFinished = true;
+    public void endTreasureGame(boolean successful) {
+        if (successful) {
+            treasureReward = this.treasureGameController.getRewards();
         }
-    }
-
-    private void tickUnhookedTreasure(){
-        if (treasureAvailableTicks == 0 && !reelingTreasure) return;
-        treasureAvailableTicks--;
-        if (!isReeling() && isYanking()) {
-            reelingTreasure = true;
-            treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
-        };
+        this.treasureGameController = null;
     }
 
 
     private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, fishingSpotBlockPos);
+        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, fishingSpotBlockPos, treasureReward);
     }
 
 
-    public float getNextArrowPos(){
-        return ((float) Math.sin(ticks / (12f - arrowSpeed)) + 1) / 2;
-    }
 
-
-    private boolean isTreasureReeled(){
-        return (arrowPos >= (0.5f - treasureSpotSize / 2)) && (arrowPos <= (0.5f + treasureSpotSize));
-    }
 
     private boolean keyPressed(int keyCode){
         return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
@@ -231,7 +148,7 @@ public class FishGameController {
         return keyPressed(GLFW.GLFW_KEY_SPACE);
     }
 
-    private boolean isYanking(){
+    private boolean isPulling(){
         return keyPressed(GLFW.GLFW_KEY_ENTER);
     }
 
@@ -252,53 +169,51 @@ public class FishGameController {
     }
 
     public float getTreasureSpotSize(){
-        return this.treasureSpotSize;
+        return isReelingTreasure() ? 0 : treasureGameController.getTreasureSpotSize();
     }
 
     public int getTimeLeft(){
-        return treasureHookedTicks / 20;
+        return isReelingTreasure() ? 0 : treasureGameController.getTimeLeft();
     }
 
-    public boolean isTreasureOnHook(){
-        return treasureAvailableTicks > 0;
+    public boolean isTreasureAvailable(){
+        return treasureComponent.canPullTreasure();
     }
 
     public boolean isReelingTreasure(){
-        return reelingTreasure;
+        return treasureGameController != null;
     }
 
-
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public boolean isFishCaptured() {
-        return isFishCaptured;
-    }
-
-    public boolean isTreasureCaptured(){
-        return isTreasureCaptured;
-    }
 
     public float getArrowPos(){
-        return arrowPos;
+        return isReelingTreasure() ? 0 : treasureGameController.getArrowPos();
+    }
+    public float getNextArrowPos(){
+        return isReelingTreasure() ? 0 : treasureGameController.getNextArrowPos();
     }
 
-    public float getFishPos() {
+    public float getFishPosX() {
         return fishComponent.getPositionX();
+    }
+    public float getNextFishPosX() {
+        return fishComponent.getNextPositionX();
+    }
+    public float getFishPosY() {
+        return fishComponent.getPositionY();
     }
 
     public float getBobberPos() {
         return bobberComponent.getBobberPos();
     }
-
-    public float getProgress() {
-        return progress;
+    public float getNextBobberPos() {
+        return bobberComponent.getNextBobberPos();
     }
 
-
     public float getLineHealth() {
-        return lineHealth;
+        return healthComponent.getLineHealth();
+    }
+    public float getProgress() {
+        return progressComponent.getProgress();
     }
 
 }

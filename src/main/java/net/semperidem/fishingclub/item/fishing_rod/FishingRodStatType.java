@@ -5,7 +5,7 @@ public enum FishingRodStatType {
     DAMAGE_REDUCTION, // Percentage damage reduction uncapped atm DONE
     LINE_HEALTH, // Additional health point DONE
     CATCH_RATE,//Percentage reduction of time until bite DONE
-    PROGRESS_MULTIPLIER,//Self-explanatory DONE
+    PROGRESS_MULTIPLIER_BONUS,//Self-explanatory DONE
     FISH_MAX_WEIGHT_MULTIPLIER,//Moves upper barrier of max fish weight (on average heavier fish) DONE
     FISH_MAX_LENGTH_MULTIPLIER,//Moves upper barrier of max fish length (on average longer fish) DONE
     FISH_RARITY_BONUS,//Percentage chance to gain fish on higher grade DONE

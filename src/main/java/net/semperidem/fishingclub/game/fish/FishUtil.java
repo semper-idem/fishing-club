@@ -40,7 +40,7 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing, BlockPos rewardPos){
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing, BlockPos rewardPos, ArrayList<ItemStack> treasureReward){
         FishingCardManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
@@ -56,10 +56,13 @@ public class FishUtil {
             }
         }
         if (rewardPos == null) {
-            if (player.getInventory().getEmptySlot() == -1) {
-                player.dropItem(fishReward, false);
-            } else {
-                player.giveItemStack(fishReward);
+            treasureReward.add(fishReward);
+            for(ItemStack reward : treasureReward) {
+                if (player.getInventory().getEmptySlot() == -1) {
+                    player.dropItem(reward, false);
+                } else {
+                    player.giveItemStack(reward);
+                }
             }
         } else {
             player.world.spawnEntity(throwRandomly(player.world, rewardPos, fishReward));

@@ -52,11 +52,11 @@ public class FishingRodPartItems {
         LINE_WOOL_THREAD = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4),
                 LINE_HEALTH.of(10f));
         LINE_SPIDER_SILK = createLinePart(new Item.Settings().rarity(COMMON).maxDamage(4),
-                LINE_HEALTH.of(25f), PROGRESS_MULTIPLIER.of(1.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.1f));
+                LINE_HEALTH.of(25f), PROGRESS_MULTIPLIER_BONUS.of(0.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.1f));
         LINE_FIBER_THREAD = createLinePart(new Item.Settings().rarity(UNCOMMON).maxDamage(8),
-                LINE_HEALTH.of(50f), PROGRESS_MULTIPLIER.of(1.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.5f));
+                LINE_HEALTH.of(50f), PROGRESS_MULTIPLIER_BONUS.of(0.1f), FISH_MAX_WEIGHT_MULTIPLIER.of(1.5f));
         LINE_STRIDER_THREAD = createLinePart(new Item.Settings().fireproof().rarity(UNCOMMON).maxDamage(32),
-                LINE_HEALTH.of(100f), PROGRESS_MULTIPLIER.of(1.5f), FISH_MAX_LENGTH_MULTIPLIER.of(1.1f));
+                LINE_HEALTH.of(100f), PROGRESS_MULTIPLIER_BONUS.of(0.5f), FISH_MAX_LENGTH_MULTIPLIER.of(1.1f));
 
         HOOK_COPPER = createHookPart(new Item.Settings().maxDamage(1),
                 FISH_MAX_WEIGHT_MULTIPLIER.of(0.75f), FISH_MAX_LENGTH_MULTIPLIER.of(0.75f));

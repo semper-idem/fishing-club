@@ -32,8 +32,13 @@ public class ServerPacketHandlers {
         HookedFish fish = FishUtil.fishFromPacketBuf(buf);
         boolean boatFishing = buf.readBoolean();
         BlockPos caughtPos = buf.readBlockPos();
+        int rewardCount = buf.readInt();
+        ArrayList<ItemStack> treasureRewards = new ArrayList<>();
+        for(int i = 0; i < rewardCount; i++) {
+            treasureRewards.add(buf.readItemStack());
+        }
         server.execute(() -> {
-            FishUtil.grantReward(player, fish, boatFishing, caughtPos);
+            FishUtil.grantReward(player, fish, boatFishing, caughtPos ,treasureRewards);
         });
     }
 

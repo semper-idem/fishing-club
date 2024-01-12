@@ -11,10 +11,15 @@ import net.semperidem.fishingclub.game.fish.HookedFish;
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameGrantReward(HookedFish fish, boolean boatFishing, BlockPos blockPos) {
+    public static void sendFishGameGrantReward(HookedFish fish, boolean boatFishing, BlockPos blockPos, ArrayList<ItemStack> rewards) {
         PacketByteBuf buf = FishUtil.fishToPacketBuf(fish);
         buf.writeBoolean(boatFishing);
         buf.writeBlockPos(blockPos);
+        buf.writeInt(rewards.size());
+        for(ItemStack reward : rewards) {
+            buf.writeItemStack(reward);
+
+        }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
     }
 

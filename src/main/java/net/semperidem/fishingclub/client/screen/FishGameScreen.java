@@ -114,18 +114,20 @@ public class FishGameScreen extends Screen {
     public void tick() {
         lightTick = !lightTick;
         this.fishGameLogic.tick();
-        if (this.fishGameLogic.isFinished()) {
-            this.close();
-            if (this.fishGameLogic.isFishCaptured()) {
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Caught Lvl." + this.fishGameLogic.getLevel() + " " + this.fishGameLogic.getName() + "! Nice"));
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
-            } else {
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
-                    if (this.fishGameLogic.isTreasureCaptured()) {
-                    MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
-                }
-            }
-        }
+
+        //TODO ADD PACKET TO FINISH GAME
+//        if (this.fishGameLogic.isFinished()) {
+//            this.close();
+//            if (this.fishGameLogic.isFishCaptured()) {
+//                MinecraftClient.getInstance().player.sendMessage(Text.of("Caught Lvl." + this.fishGameLogic.getLevel() + " " + this.fishGameLogic.getName() + "! Nice"));
+//                MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
+//            } else {
+//                MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
+//                    if (this.fishGameLogic.isTreasureCaptured()) {
+//                    MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -199,7 +201,7 @@ public class FishGameScreen extends Screen {
 
     private void renderFishIcon(MatrixStack matrices, float delta){
         fishX = (int) (barX + barWidth * getFishPos(delta));
-        fishY = barY - (int)((Math.sqrt((5 - Math.abs(fishGameLogic.jumpTicks - 15))) * 4)) ;
+        fishY = barY - (int)((fishGameLogic.getFishPosY() * 4)) ;
         FISH.render(matrices, fishX, fishY);
     }
 
@@ -230,7 +232,7 @@ public class FishGameScreen extends Screen {
     }
 
     private boolean isTreasureOnHook(){
-        return fishGameLogic.isTreasureOnHook();
+        return fishGameLogic.isTreasureAvailable();
     }
 
     private boolean isTreasureHooked(){
@@ -239,11 +241,11 @@ public class FishGameScreen extends Screen {
 
 
     private float getFishPos(float delta) {
-        return getDeltaPosition(fishGameLogic.getFishPos(),fishGameLogic.nextFishPosition(), delta);
+        return getDeltaPosition(fishGameLogic.getFishPosX(),fishGameLogic.getNextFishPosX(), delta);
     }
 
     private float getBobberPos(float delta){
-        return getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.nextBobberPos(), delta);
+        return getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.getNextBobberPos(), delta);
     }
 
     private float getArrowPos(float delta){

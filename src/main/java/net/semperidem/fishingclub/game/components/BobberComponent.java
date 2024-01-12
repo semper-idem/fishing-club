@@ -30,7 +30,7 @@ public class BobberComponent {
 
     }
 
-    private float getNextBobberPos(){
+    public float getNextBobberPos(){
         return Math.max(Math.min(bobberPos + bobberSpeed, 1 - bobberSize), 0);
     }
 

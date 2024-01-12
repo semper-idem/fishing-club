@@ -18,13 +18,13 @@ public class FishComponent {
     private final float maxStamina;
     private final FishPatternInstance pattern;
     private float positionX;
+    private float nextPositionX;
     private float positionY;
 
     private float levelBasedSpeed;
     private int tick;
     private int lastSegmentIndex;
     private FishPatternInstance.Segment lastSegment;
-    private float distanceTraveled;
     private float fishSpeed;
     private int jumpTicks;
 
@@ -33,12 +33,12 @@ public class FishComponent {
         minStamina = stamina * 0.5f;
         maxStamina = stamina;
         pattern = new FishPatternInstance(fishType.getFishPattern(), fishLevel);
-        positionX = 0.5f - FISH_LENGTH * 0.5f;
+        nextPositionX = 0.5f - FISH_LENGTH * 0.5f;
+        positionX = nextPositionX;
         positionY = 0;
         levelBasedSpeed = fishLevel / 200f;
         lastSegmentIndex = 0;
         lastSegment = pattern.getSegmentList().get(0);
-        distanceTraveled = 0;
     }
 
     public void updateSpeed(boolean hasFishSlowingEffectApplied) {
@@ -51,14 +51,14 @@ public class FishComponent {
 
 
     public void tick(boolean hasFishSlowingEffectApplied) {
+        tick++;
         tickMovement();
         tickStamina(hasFishSlowingEffectApplied);
-        tick++;
     }
 
     private void tickMovement() {
-        distanceTraveled = (fishSpeed * tick) % pattern.getLength();
-        positionX = MathHelper.clamp(getFishPos(), 0, 1 - FISH_LENGTH);
+        positionX = nextPositionX;
+        nextPositionX = getFishPos();
         tickJump();
     }
 
@@ -80,17 +80,20 @@ public class FishComponent {
 
     }
 
-    private float getFishPos() {
-        return getFishPosOnCurve(getCurrentSegment()) + getFishPosOnWave();
+    private float getDistanceTraveled(int tick) {
+        return (fishSpeed * tick) % pattern.getLength();
     }
 
+    private float getFishPos() {
+        float distanceTraveled = getDistanceTraveled(tick);
+        return MathHelper.clamp(getFishPosOnCurve(distanceTraveled, getCurrentSegment(distanceTraveled)) + getFishPosOnWave(distanceTraveled), 0 , 1 - FISH_LENGTH) ;
+    }
 
-
-    private float getFishPosOnWave() {
+    private float getFishPosOnWave(float distanceTraveled) {
         return  (float) (Math.sin(SINE_PERIOD * WAVE_SPEED * (distanceTraveled / pattern.getLength())) * WAVE_STRENGTH);
     }
 
-    private float getFishPosOnCurve(FishPatternInstance.Segment segment) {
+    private float getFishPosOnCurve(float distanceTraveled, FishPatternInstance.Segment segment) {
         float segmentDistance = segment.nextPoint.x - segment.currentPoint.x;
         float segmentElapsedDistance = distanceTraveled - segment.currentPoint.x;
         return quadraticBezier(
@@ -101,7 +104,7 @@ public class FishComponent {
         ) / 1000;
     }
 
-    private FishPatternInstance.Segment getCurrentSegment() {
+    private FishPatternInstance.Segment getCurrentSegment(float distanceTraveled) {
         if (distanceTraveled > lastSegment.currentPoint.x) {
             lastSegmentIndex++;
             if (lastSegmentIndex >= pattern.getSegmentList().size()) {
@@ -127,6 +130,10 @@ public class FishComponent {
 
     public float getPositionX() {
         return positionX;
+    }
+
+    public float getNextPositionX(){
+        return nextPositionX;
     }
 
     public float getPositionY() {

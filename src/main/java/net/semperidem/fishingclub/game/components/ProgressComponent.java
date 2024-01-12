@@ -14,23 +14,20 @@ public class ProgressComponent {
         progressLoss = 0.005f + (fishDamage / 100);
     }
 
-    public void tick(boolean isReeling, boolean bobberHasFish, boolean isFishJumping, boolean isTreasurePopupActive) {
-        if (isTreasurePopupActive) {
-            return;
-        }
-
-        if (isReeling) {
-            if (bobberHasFish) {
-                grantProgress();
-            } else {
-                revokeProgress();
-            }
-        }
-
+    public void tick(boolean isReeling, boolean isPulling, boolean bobberHasFish, boolean isFishJumping) {
         if (!bobberHasFish && !isFishJumping) {
             revokeProgress();
         }
 
+        if (!isReeling) {
+            return;
+        }
+
+        if (bobberHasFish && !isPulling) {
+            grantProgress();
+        } else {
+            revokeProgress();
+        }
     }
 
     private void grantProgress(){
@@ -38,11 +35,9 @@ public class ProgressComponent {
         if (progress < 1) {
             progress += progressGain;
         } else {
-            isFinished = true;
-            isSuccessful = true;
+            //SEND WIN PACKET
         }
     }
-
 
     private void revokeProgress(){
         isWinning = false;
@@ -55,11 +50,7 @@ public class ProgressComponent {
         return isWinning;
     }
 
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public boolean isSuccessful() {
-        return isSuccessful;
+    public float getProgress(){
+        return progress;
     }
 }
