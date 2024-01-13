@@ -58,9 +58,9 @@ public class FishGameScreen extends Screen {
     FishGameController fishGameLogic;
     boolean lightTick = false;
 
-    public FishGameScreen(Text text, ItemStack caughtUsing, HookedFish fish, boolean boatFishing, BlockPos bobberPos) {
+    public FishGameScreen(Text text, ItemStack caughtUsing, HookedFish fish, BlockPos bobberPos) {
         super(text);
-        this.fishGameLogic = new FishGameController(MinecraftClient.getInstance().player, caughtUsing,fish, boatFishing, bobberPos);
+        this.fishGameLogic = new FishGameController(MinecraftClient.getInstance().player, caughtUsing,fish, bobberPos);
     }
 
     @Override

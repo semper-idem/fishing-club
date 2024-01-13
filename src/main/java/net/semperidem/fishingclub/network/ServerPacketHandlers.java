@@ -30,7 +30,6 @@ public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         HookedFish fish = FishUtil.fishFromPacketBuf(buf);
-        boolean boatFishing = buf.readBoolean();
         BlockPos caughtPos = buf.readBlockPos();
         int rewardCount = buf.readInt();
         ArrayList<ItemStack> treasureRewards = new ArrayList<>();
@@ -38,7 +37,7 @@ public class ServerPacketHandlers {
             treasureRewards.add(buf.readItemStack());
         }
         server.execute(() -> {
-            FishUtil.grantReward(player, fish, boatFishing, caughtPos ,treasureRewards);
+            FishUtil.grantReward(player, fish, caughtPos ,treasureRewards);
         });
     }
 

@@ -36,10 +36,9 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, HookedFish fish, boolean boatFishing){
+    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, HookedFish fish){
         PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         fishGameStartPacket.writeItemStack(fishingRod);
-        fishGameStartPacket.writeBoolean(boatFishing);
         fishGameStartPacket.writeBlockPos(player.fishHook.getBlockPos());
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
     }

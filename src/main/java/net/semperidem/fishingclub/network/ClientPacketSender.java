@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.game.fish.HookedFish;
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameGrantReward(HookedFish fish, boolean boatFishing, BlockPos blockPos, ArrayList<ItemStack> rewards) {
+    public static void sendFishGameWon(HookedFish fish, boolean boatFishing, BlockPos blockPos, ArrayList<ItemStack> rewards) {
         PacketByteBuf buf = FishUtil.fishToPacketBuf(fish);
         buf.writeBoolean(boatFishing);
         buf.writeBlockPos(blockPos);

@@ -53,7 +53,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
 
     private int power;
     private float throwDistance;
-    private boolean boatFishing;
     private FishingCard fishingCard;
     private Identifier texture = CustomFishingBobberEntityRenderer.DEFAULT;
 
@@ -64,13 +63,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
         setTexture(MinecraftClient.getInstance().player);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FishingCard fishingCard, boolean boatFishing) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power, FishingCard fishingCard) {
         this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
         this.fishingCard = fishingCard;
         this.power = power;
-        this.boatFishing = boatFishing;
         setThrowDirection();
         setTexture(getPlayerOwner());
     }
@@ -408,7 +406,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity {
             caughtFish.experience += reactionBonus;
             if (reactionBonus > 0) this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
 
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish, boatFishing);
+            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, fishingRod, caughtFish);
         }
         if (this.onGround) {
             i = 2;

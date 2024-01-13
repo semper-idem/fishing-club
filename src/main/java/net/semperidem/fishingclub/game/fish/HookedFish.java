@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.game.fish;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -71,7 +70,7 @@ public class HookedFish {
 
     private float calculateDamage(){
         float damageReduction = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
-        boolean boatBoosted = fishingCard.getOwner().getVehicle() instanceof BoatEntity && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
+        boolean boatBoosted = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
         damageReduction += boatBoosted ? 0.2f : 0;
         float percentDamageReduction = (1 - MathHelper.clamp(damageReduction, 0f ,1f));
         return getFishRawDamage() * percentDamageReduction;

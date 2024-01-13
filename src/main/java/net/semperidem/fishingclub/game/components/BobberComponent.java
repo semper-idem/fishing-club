@@ -17,8 +17,8 @@ public class BobberComponent {
     float lastFishPos;
     float fishBaseForce;
 
-    public BobberComponent(int fishLevel, PlayerEntity player, FishingCard fishingCard, ItemStack caughtUsing, boolean boatFishing) {
-        bobberSize = getBobberLength(player, fishingCard, caughtUsing, boatFishing);
+    public BobberComponent(int fishLevel, PlayerEntity player, FishingCard fishingCard, ItemStack caughtUsing) {
+        bobberSize = getBobberLength(player, fishingCard, caughtUsing, fishingCard.isFishingFromBoat());
         bobberPos = 0.5f - bobberSize / 2;
         fishBaseForce = ((fishLevel + 50f) / 50);
     }

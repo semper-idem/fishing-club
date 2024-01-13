@@ -40,12 +40,12 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing, BlockPos rewardPos, ArrayList<ItemStack> treasureReward){
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish, BlockPos rewardPos, ArrayList<ItemStack> treasureReward){
         FishingCardManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
         FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
-        fishReward.setCount(getRewardMultiplier(fishingCard, boatFishing));
+        fishReward.setCount(getRewardMultiplier(fishingCard));
         if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.oneTimeBuffed) {
             Box box = new Box(player.getBlockPos());
             box.expand(3);
@@ -81,13 +81,13 @@ public class FishUtil {
         return itemEntity;
     }
 
-    public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing){
-        grantReward(player, fish, boatFishing, null, new ArrayList<>());
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish){
+        grantReward(player, fish, null, new ArrayList<>());
     }
 
-    private static int getRewardMultiplier(FishingCard fishingCard, boolean boatFishing){
+    private static int getRewardMultiplier(FishingCard fishingCard){
         int rewardMultiplier = 1;
-        if (!boatFishing) {
+        if (!fishingCard.isFishingFromBoat()) {
             return rewardMultiplier;
         }
         if (fishingCard.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {

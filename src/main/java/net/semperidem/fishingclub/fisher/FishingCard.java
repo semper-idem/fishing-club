@@ -315,6 +315,9 @@ public class FishingCard {
         syncFisherInfo();
     }
 
+    public boolean isFishingFromBoat(){
+        return owner.getVehicle() instanceof BoatEntity;
+    }
     public int getMinGrade(){
         int minGrade = 0;
         long worldTime = this.owner.world.getTime();

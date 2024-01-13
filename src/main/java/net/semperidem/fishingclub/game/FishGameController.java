@@ -27,7 +27,6 @@ public class FishGameController {
     private final HookedFish fish;
     private final FishingCard fishingCard;
     private final ItemStack caughtUsing;
-    private final boolean boatFishing;
     private final BlockPos fishingSpotBlockPos;
     private ArrayList<ItemStack> treasureReward = new ArrayList<>();
 
@@ -41,18 +40,17 @@ public class FishGameController {
 
     private TreasureGameController treasureGameController;
 
-    public FishGameController(PlayerEntity player, ItemStack caughtUsing, HookedFish fish, boolean boatFishing, BlockPos fishingSpotBlockPos){
+    public FishGameController(PlayerEntity player, ItemStack caughtUsing, HookedFish fish, BlockPos fishingSpotBlockPos){
         this.player = player;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.fish = fish;
         this.caughtUsing = caughtUsing;
-        this.boatFishing = boatFishing;
         this.fishingSpotBlockPos = fishingSpotBlockPos;
         progressComponent = new ProgressComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS), fish.damage);
         fishComponent = new FishComponent(fish.getFishType(), fish.fishLevel);
-        bobberComponent = new BobberComponent(fish.fishLevel, player, fishingCard, caughtUsing, boatFishing);
+        bobberComponent = new BobberComponent(fish.fishLevel, player, fishingCard, caughtUsing);
         healthComponent = new HealthComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH), fish.damage);
-        treasureComponent = new TreasureComponent(this, boatFishing && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT));
+        treasureComponent = new TreasureComponent(this, fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT));
     }
 
     public void tick() {
