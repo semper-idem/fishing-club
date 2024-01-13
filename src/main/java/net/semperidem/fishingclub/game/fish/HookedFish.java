@@ -1,6 +1,9 @@
 package net.semperidem.fishingclub.game.fish;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
@@ -10,6 +13,9 @@ import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.Point;
 
 public class HookedFish {
+    private static final float FISHER_VEST_SLOW_BONUS = -0.15f;
+    private static final float FISHER_VEST_EXP_BONUS = 0.1f;
+
     FishingCard fishingCard;
 
     private FishType fishType;
@@ -26,6 +32,8 @@ public class HookedFish {
     public int fishEnergy;
     public int fishMinEnergyLevel;
     public int fishMaxEnergyLevel = 1;
+
+    public float damage;
 
     public Point[] curvePoints;
     public Point[] curveControlPoints;
@@ -52,10 +60,38 @@ public class HookedFish {
         this.length = calculateFishLength();
         this.grade = calculateGrade();
         this.experience = calculateFishExp();
+        this.damage = calculateDamage();
         initEnergyLevels();
         initCurvePoints();
         this.value = FishUtil.getFishValue(this);
         oneTimeBuffed = fishingCard.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        applyFisherVestEffect();
+    }
+
+
+    private float calculateDamage(){
+        float damageReduction = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
+        boolean boatBoosted = fishingCard.getOwner().getVehicle() instanceof BoatEntity && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
+        damageReduction += boatBoosted ? 0.2f : 0;
+        float percentDamageReduction = (1 - MathHelper.clamp(damageReduction, 0f ,1f));
+        return getFishRawDamage() * percentDamageReduction;
+    }
+
+    private float getFishRawDamage() {
+        return Math.max(0, (fishLevel - 5 - (fishingCard.getLevel() * 0.25f)) * 0.05f);
+    }
+
+    private void applyFisherVestEffect(){
+        PlayerEntity player = this.fishingCard.getOwner();
+        if (!FishUtil.hasFishingVest(player)) return;
+        float slowRatio = 1 + FISHER_VEST_SLOW_BONUS;
+        float expRatio = 1 + FISHER_VEST_EXP_BONUS;
+        if (!FishUtil.hasNonFishingEquipment(player)) {
+            slowRatio += FISHER_VEST_SLOW_BONUS;
+            expRatio += FISHER_VEST_EXP_BONUS;
+        }
+        this.fishEnergy = (int) (this.fishEnergy * slowRatio);
+        this.experience = (int) (this.experience * expRatio);
     }
 
     public FishType getFishType(){

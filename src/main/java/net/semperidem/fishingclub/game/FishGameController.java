@@ -5,16 +5,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.game.components.*;
-import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import org.lwjgl.glfw.GLFW;
 
@@ -24,8 +21,6 @@ public class FishGameController {
     private static final boolean IS_DEBUG = false;
 
 
-    private static final float FISHER_VEST_SLOW_BONUS = -0.15f;
-    private static final float FISHER_VEST_EXP_BONUS = 0.1f;
 
 
     private final PlayerEntity player;
@@ -53,38 +48,11 @@ public class FishGameController {
         this.caughtUsing = caughtUsing;
         this.boatFishing = boatFishing;
         this.fishingSpotBlockPos = fishingSpotBlockPos;
-
-        float fishDamage = getFishDamage();
-        applyFisherVestEffect();
-        progressComponent = new ProgressComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS), fishDamage);
+        progressComponent = new ProgressComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS), fish.damage);
         fishComponent = new FishComponent(fish.getFishType(), fish.fishLevel);
         bobberComponent = new BobberComponent(fish.fishLevel, player, fishingCard, caughtUsing, boatFishing);
-        healthComponent = new HealthComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH), fishDamage);
+        healthComponent = new HealthComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH), fish.damage);
         treasureComponent = new TreasureComponent(this, boatFishing && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT));
-    }
-
-    private void applyFisherVestEffect(){
-        if (!FishUtil.hasFishingVest(player)) return;
-        float slowRatio = 1 + FISHER_VEST_SLOW_BONUS;
-        float expRatio = 1 + FISHER_VEST_EXP_BONUS;
-        if (!FishUtil.hasNonFishingEquipment(player)) {
-            slowRatio += FISHER_VEST_SLOW_BONUS;
-            expRatio += FISHER_VEST_EXP_BONUS;
-        }
-        this.fish.fishEnergy = (int) (this.fish.fishEnergy * slowRatio);
-        this.fish.experience = (int) (this.fish.experience * expRatio);
-    }
-
-    private float getFishDamage(){
-        float damageReduction = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
-        boolean boatBoosted = boatFishing && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
-        damageReduction += boatBoosted ? 0.2f : 0;
-        float percentDamageReduction = (1 - MathHelper.clamp(damageReduction, 0f ,1f));
-        return getFishRawDamage() * percentDamageReduction;
-    }
-
-    private float getFishRawDamage() {
-        return Math.max(0, (fish.fishLevel - 5 - (fishingCard.getLevel() * 0.25f)) * 0.05f);
     }
 
     public void tick() {
@@ -132,14 +100,6 @@ public class FishGameController {
         this.treasureGameController = null;
     }
 
-
-    private void grantReward(){
-        ClientPacketSender.sendFishGameGrantReward(fish, boatFishing, fishingSpotBlockPos, treasureReward);
-    }
-
-
-
-
     private boolean keyPressed(int keyCode){
         return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
     }
@@ -162,10 +122,6 @@ public class FishGameController {
 
     public String getName() {
         return fish.getFishType().name;
-    }
-
-    public int getExperience() {
-        return fish.experience;
     }
 
     public float getTreasureSpotSize(){
