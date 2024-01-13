@@ -82,7 +82,7 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, HookedFish fish, boolean boatFishing){
-        grantReward(player, fish, boatFishing, null);
+        grantReward(player, fish, boatFishing, null, new ArrayList<>());
     }
 
     private static int getRewardMultiplier(FishingCard fishingCard, boolean boatFishing){
