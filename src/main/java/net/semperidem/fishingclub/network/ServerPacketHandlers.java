@@ -6,7 +6,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
@@ -30,15 +29,12 @@ public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         HookedFish fish = FishUtil.fishFromPacketBuf(buf);
-        BlockPos caughtPos = buf.readBlockPos();
         int rewardCount = buf.readInt();
         ArrayList<ItemStack> treasureRewards = new ArrayList<>();
         for(int i = 0; i < rewardCount; i++) {
             treasureRewards.add(buf.readItemStack());
         }
-        server.execute(() -> {
-            FishUtil.grantReward(player, fish, caughtPos ,treasureRewards);
-        });
+        server.execute(() -> FishUtil.grantReward(player, fish ,treasureRewards));
     }
 
     public static void handleRepairRod(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {

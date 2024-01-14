@@ -40,7 +40,7 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, HookedFish fish, BlockPos rewardPos, ArrayList<ItemStack> treasureReward){
+    public static void grantReward(ServerPlayerEntity player, HookedFish fish, ArrayList<ItemStack> treasureReward){
         FishingCardManager.fishCaught(player, fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
@@ -55,7 +55,7 @@ public class FishUtil {
                 }
             }
         }
-        if (rewardPos == null) {
+        if (fish.caughtAt == null) {
             treasureReward.add(fishReward);
             for(ItemStack reward : treasureReward) {
                 if (player.getInventory().getEmptySlot() == -1) {
@@ -65,7 +65,7 @@ public class FishUtil {
                 }
             }
         } else {
-            player.world.spawnEntity(throwRandomly(player.world, rewardPos, fishReward));
+            player.world.spawnEntity(throwRandomly(player.world, fish.caughtAt, fishReward));
         }
     }
 
@@ -82,7 +82,7 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, HookedFish fish){
-        grantReward(player, fish, null, new ArrayList<>());
+        grantReward(player, fish, new ArrayList<>());
     }
 
     private static int getRewardMultiplier(FishingCard fishingCard){
@@ -214,6 +214,10 @@ public class FishUtil {
     }
 
     public static HookedFish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
+        return getFishOnHook(fishingCard, fishingRod, fishTypeRarityMultiplier, chunk, null);
+    }
+
+    public static HookedFish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk, BlockPos caughtAt) {
         int totalRarity = 0;
         HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
         ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
@@ -224,15 +228,13 @@ public class FishUtil {
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
         for (FishType fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new HookedFish(fishType, fishingCard, fishingRod, chunk);
+                return new HookedFish(fishType, fishingCard, fishingRod, chunk, caughtAt);
             }
         }
-        return new HookedFish(FishTypes.COD, fishingCard, fishingRod, chunk);
+        return new HookedFish(FishTypes.COD, fishingCard, fishingRod, chunk, caughtAt);
     }
 
-
-
-    public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
+        public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
         float skewPercentage = 0.5f;
         skew = (float) Math.sqrt(skew) * 0.7f; //This deliberately lefts top 15% of randomAdjustments "unused" so we leave space for future bonuses
         double skewPart = randomAdjustment * skew * skewPercentage;

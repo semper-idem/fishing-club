@@ -5,7 +5,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
@@ -19,6 +18,8 @@ import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public class LineArrowEntity extends PersistentProjectileEntity {
     boolean isReturning = false;
@@ -94,7 +95,7 @@ public class LineArrowEntity extends PersistentProjectileEntity {
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
                 HookedFish harpoonedFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
-                FishUtil.grantReward(owner, harpoonedFish, owner.getVehicle() instanceof BoatEntity);
+                FishUtil.grantReward(owner, harpoonedFish, new ArrayList<>());
             }
         }
     }

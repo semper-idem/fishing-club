@@ -1,15 +1,19 @@
 package net.semperidem.fishingclub.game.components;
 
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.game.FishGameController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 
 public class HealthComponent {
     private static final float BASE_HEALTH = 0;
     private float lineHealth;
     private final float fishDamage;
+    private final FishGameController parent;
 
-    public HealthComponent(float bonusHealth, float fishDamage) {
-        this.lineHealth = BASE_HEALTH + bonusHealth;
-        this.fishDamage = fishDamage;
+    public HealthComponent(FishGameController parent) {
+        this.parent = parent;
+        this.lineHealth = BASE_HEALTH + FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.LINE_HEALTH);
+        this.fishDamage = parent.fish.damage;
     }
 
 
@@ -23,7 +27,7 @@ public class HealthComponent {
         }
 
         if (lineHealth <= 0){
-            ClientPacketSender.sendFishGameLost();//TODO MOVE TO PARENT SO ITS CLEAR HOW WIN/LOSE IS CALLED
+            parent.loseGame();
         }
     }
 

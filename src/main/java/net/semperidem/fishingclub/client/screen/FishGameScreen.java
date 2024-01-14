@@ -1,13 +1,10 @@
 package net.semperidem.fishingclub.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.game.fish.HookedFish;
@@ -58,9 +55,9 @@ public class FishGameScreen extends Screen {
     FishGameController fishGameLogic;
     boolean lightTick = false;
 
-    public FishGameScreen(Text text, ItemStack caughtUsing, HookedFish fish, BlockPos bobberPos) {
-        super(text);
-        this.fishGameLogic = new FishGameController(MinecraftClient.getInstance().player, caughtUsing,fish, bobberPos);
+    public FishGameScreen(HookedFish fish) {
+        super(Text.empty());
+        this.fishGameLogic = new FishGameController(fish);
     }
 
     @Override
@@ -68,11 +65,11 @@ public class FishGameScreen extends Screen {
         float saveZone = 0.02f;
 
         if (mouseX > width / 2f - width * saveZone && mouseX < width / 2f + width *saveZone) {
-            fishGameLogic.setReelForce(0);
+            fishGameLogic.reelForce = 0;
         } else if (mouseX < width / 2f - width * saveZone){
-            fishGameLogic.setReelForce((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
+            fishGameLogic.reelForce = ((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
         } else if (mouseX > width / 2f + width * saveZone) {
-            fishGameLogic.setReelForce((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
+            fishGameLogic.reelForce = ((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
         }
         super.mouseMoved(mouseX, mouseY);
     }
@@ -177,7 +174,7 @@ public class FishGameScreen extends Screen {
     }
 
     private void renderTreasureMark(MatrixStack matrices){
-        if (!isTreasureOnHook()) return;
+        if (!canPullTreasure()) return;
         int shakeOffset = lightTick ? 1 : 0;
         TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
     }
@@ -211,9 +208,9 @@ public class FishGameScreen extends Screen {
     }
 
     private void renderInfo(MatrixStack matrices) {
-        String infoLabel = (isTreasureHooked() || isTreasureOnHook())? TREASURE_LABEL : HEALTH_LABEL;
-        String infoValue = isTreasureHooked() ? getTimeLeft() : isTreasureOnHook() ? TREASURE_REEL_LABEL : getLineHealth();
-        int labelColor = isTreasureOnHook() && ! isTreasureHooked() ? (
+        String infoLabel = (isTreasureHooked() || canPullTreasure())? TREASURE_LABEL : HEALTH_LABEL;
+        String infoValue = isTreasureHooked() ? getTimeLeft() : canPullTreasure() ? TREASURE_REEL_LABEL : getLineHealth();
+        int labelColor = canPullTreasure() && ! isTreasureHooked() ? (
                 lightTick ?
                         DEFAULT_COLOR :
                         TREASURE_COLOR)
@@ -231,12 +228,12 @@ public class FishGameScreen extends Screen {
         return String.format("%.1f" ,fishGameLogic.getLineHealth());
     }
 
-    private boolean isTreasureOnHook(){
-        return fishGameLogic.isTreasureAvailable();
+    private boolean canPullTreasure(){
+        return fishGameLogic.canPullTreasure();
     }
 
     private boolean isTreasureHooked(){
-        return fishGameLogic.isReelingTreasure();
+        return fishGameLogic.isTreasureHuntActive();
     }
 
 

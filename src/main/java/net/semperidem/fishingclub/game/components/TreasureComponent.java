@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.game.components;
 
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.game.FishGameController;
 
 public class TreasureComponent {
@@ -11,20 +12,20 @@ public class TreasureComponent {
     private final boolean isActive;
     private int pullTreasureTicks = 0;
     private float treasureTriggerPoint;
-    private FishGameController parent;
+
+    private final FishGameController parent;
 
 
-    public TreasureComponent(FishGameController parent, boolean boatBoosted) {
+    public TreasureComponent(FishGameController parent) {
         float treasureChance = TREASURE_MIN_CHANCE;
 
-        if (boatBoosted) {
+        if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
             treasureChance = treasureChance * 2;
         }
 
         this.parent = parent;
         this.isActive = Math.random() < treasureChance;
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
-
     }
 
     public void tick(float progress, boolean isPulling) {
@@ -43,7 +44,7 @@ public class TreasureComponent {
 
         pullTreasureTicks--;
         if (isPulling) {
-            parent.startTreasureGame();
+            parent.startTreasureHunt();
         }
     }
 

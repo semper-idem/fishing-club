@@ -1,17 +1,21 @@
 package net.semperidem.fishingclub.game.components;
 
+import net.semperidem.fishingclub.game.FishGameController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
+
 public class ProgressComponent {
     private static final float PROGRESS_GAIN = 0.0075f;
-    private boolean isFinished;
-    private boolean isSuccessful;
     private boolean isWinning;
     private float progress;
     private final float progressGain;
     private final float progressLoss;
+    private final FishGameController parent;
 
-    public ProgressComponent(float progressGainMultiplier, float fishDamage) {
-        progressGain = PROGRESS_GAIN * progressGainMultiplier;
-        progressLoss = 0.005f + (fishDamage / 100);
+    public ProgressComponent(FishGameController parent) {
+        this.parent = parent;
+        progressGain = PROGRESS_GAIN * FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
+        progressLoss = 0.005f + (parent.fish.damage / 100);
     }
 
     public void tick(boolean isReeling, boolean isPulling, boolean bobberHasFish, boolean isFishJumping) {
@@ -35,7 +39,7 @@ public class ProgressComponent {
         if (progress < 1) {
             progress += progressGain;
         } else {
-            //SEND WIN PACKET
+            parent.winGame();
         }
     }
 

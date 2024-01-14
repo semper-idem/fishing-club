@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.game.fish;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -38,19 +39,22 @@ public class HookedFish {
     public Point[] curveControlPoints;
 
     public ItemStack caughtUsing;
-
     public FishingCard.Chunk caughtIn;
+    public BlockPos caughtAt;
+    public PlayerEntity caughtBy;
 
     public boolean oneTimeBuffed;
     public HookedFish(){
     }
 
     public HookedFish(FishType fishType, FishingCard fishingCard) {
-        this(fishType, fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FishingCard.Chunk(0,0));
+        this(fishType, fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FishingCard.Chunk(0,0), null);
     }
-    public HookedFish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk) {
+    public HookedFish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk, BlockPos caughtAt) {
         this.caughtIn = chunk;
         this.caughtUsing = fishingRod;
+        this.caughtAt = caughtAt;
+        this.caughtBy = fishingCard.getOwner();
         this.fishType = fishType;
         this.name = fishType.name;
         this.fishingCard = fishingCard;

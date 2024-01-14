@@ -6,7 +6,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -19,6 +18,8 @@ import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.game.fish.HookedFish;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
+
+import java.util.ArrayList;
 
 public class HarpoonEntity extends TridentEntity {
     boolean dealtDamage;
@@ -56,7 +57,7 @@ public class HarpoonEntity extends TridentEntity {
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
                 HookedFish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
                         .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
-                FishUtil.grantReward(owner, hFish, owner.getVehicle() instanceof BoatEntity, getBlockPos());
+                FishUtil.grantReward(owner, hFish, new ArrayList<>());
             }
         }
     }

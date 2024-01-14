@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.game.components;
 
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.game.fish.FishPatternInstance;
 import net.semperidem.fishingclub.game.fish.FishType;
 
@@ -28,15 +29,16 @@ public class FishComponent {
     private float fishSpeed;
     private int jumpTicks;
 
-    public FishComponent(FishType fishType, int fishLevel){
+    public FishComponent(FishGameController parent){
+        FishType fishType = parent.fish.getFishType();
         stamina = STAMINA_BASE + fishType.getStaminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;
-        pattern = new FishPatternInstance(fishType.getFishPattern(), fishLevel);
+        pattern = new FishPatternInstance(fishType.getFishPattern(), parent.fish.fishLevel);
         nextPositionX = 0.5f - FISH_LENGTH * 0.5f;
         positionX = nextPositionX;
         positionY = 0;
-        levelBasedSpeed = fishLevel / 200f;
+        levelBasedSpeed = parent.fish.fishLevel / 200f;
         lastSegmentIndex = 0;
         lastSegment = pattern.getSegmentList().get(0);
     }
@@ -140,14 +142,9 @@ public class FishComponent {
         return positionY;
     }
 
-    public boolean bobberHasFish(float bobberPos, float bobberSize){
-        if (positionY > 0) {
-            return false;
-        }
-        return bobberPos <= positionX && bobberPos + bobberSize >= positionX + FISH_LENGTH;
-
+    public boolean isFishJumping() {
+        return positionY > 0;
     }
-
     public int getJumpTicks() {
         return jumpTicks;
     }

@@ -3,99 +3,56 @@ package net.semperidem.fishingclub.game;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.game.components.*;
 import net.semperidem.fishingclub.game.fish.HookedFish;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
+
 
 public class FishGameController {
     private static final boolean IS_DEBUG = false;
 
+    public final PlayerEntity player;
+    public final HookedFish fish;
+    public final FishingCard fishingCard;
 
+    public float reelForce = 0;
 
-
-    private final PlayerEntity player;
-    private final HookedFish fish;
-    private final FishingCard fishingCard;
-    private final ItemStack caughtUsing;
-    private final BlockPos fishingSpotBlockPos;
-    private ArrayList<ItemStack> treasureReward = new ArrayList<>();
-
-    private float reelForce = 0;
-
-    private final FishComponent fishComponent;
-    private final BobberComponent bobberComponent;
-    private final ProgressComponent progressComponent;
-    private final HealthComponent healthComponent;
-    private final TreasureComponent treasureComponent;
-
-    private TreasureGameController treasureGameController;
-
-    public FishGameController(PlayerEntity player, ItemStack caughtUsing, HookedFish fish, BlockPos fishingSpotBlockPos){
-        this.player = player;
-        this.fishingCard = FishingClubClient.CLIENT_INFO;
+    public FishGameController(HookedFish fish){
         this.fish = fish;
-        this.caughtUsing = caughtUsing;
-        this.fishingSpotBlockPos = fishingSpotBlockPos;
-        progressComponent = new ProgressComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS), fish.damage);
-        fishComponent = new FishComponent(fish.getFishType(), fish.fishLevel);
-        bobberComponent = new BobberComponent(fish.fishLevel, player, fishingCard, caughtUsing);
-        healthComponent = new HealthComponent(FishingRodPartController.getStat(caughtUsing, FishingRodStatType.LINE_HEALTH), fish.damage);
-        treasureComponent = new TreasureComponent(this, fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT));
+        this.fishingCard = FishingClubClient.CLIENT_INFO;
+        this.player = fish.caughtBy;
+
+        progressComponent = new ProgressComponent(this);
+        fishComponent = new FishComponent(this);
+        bobberComponent = new BobberComponent(this);
+        healthComponent = new HealthComponent(this);
+        treasureComponent = new TreasureComponent(this);
+        treasureGameController = new TreasureGameController();
     }
 
     public void tick() {
         if(!keyPressed(GLFW.GLFW_KEY_C) && IS_DEBUG) return;
-        if (isReelingTreasure()) {
+        if (isTreasureHuntActive()) {
             treasureGameController.tick(isReeling());
+        } else {
+            tickInner();
         }
-        tickInner();
     }
 
     private void tickInner(){
         boolean isReeling = isReeling();
         boolean isPulling = isPulling();
 
-        boolean hasSlowFishBuff = player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF);
-        fishComponent.tick(hasSlowFishBuff);
-
+        fishComponent.tick(player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF));
         bobberComponent.tick(reelForce, fishComponent.getPositionX());
-
-        boolean bobberHasFish = fishComponent.bobberHasFish(bobberComponent.getBobberPos(), bobberComponent.getBobberSize());
-        boolean isFishJumping = fishComponent.getPositionY() != 0;
-        progressComponent.tick(isReeling, isPulling, bobberHasFish, isFishJumping);
+        progressComponent.tick(isReeling, isPulling, bobberComponent.hasFish(fishComponent), fishComponent.isFishJumping());
         healthComponent.tick(progressComponent.isWinning());
         treasureComponent.tick(progressComponent.getProgress(), isPulling);
-    }
-
-
-
-    public float getReelForce() {
-        return reelForce;
-    }
-
-    public void setReelForce(float reelForce) {
-        this.reelForce = reelForce;
-    }
-
-    public void startTreasureGame(){
-        this.treasureGameController = new TreasureGameController(this, fishingCard);
-    }
-
-    public void endTreasureGame(boolean successful) {
-        if (successful) {
-            treasureReward = this.treasureGameController.getRewards();
-        }
-        this.treasureGameController = null;
     }
 
     private boolean keyPressed(int keyCode){
@@ -110,64 +67,77 @@ public class FishGameController {
         return keyPressed(GLFW.GLFW_KEY_ENTER);
     }
 
-    public float getBobberSize() {
-        return bobberComponent.getBobberSize();
-    }
-
-    public int getLevel() {
-        return fish.fishLevel;
-    }
-
-    public String getName() {
-        return fish.getFishType().name;
-    }
-
-    public float getTreasureSpotSize(){
-        return isReelingTreasure() ? 0 : treasureGameController.getTreasureSpotSize();
-    }
-
-    public int getTimeLeft(){
-        return isReelingTreasure() ? 0 : treasureGameController.getTimeLeft();
-    }
-
-    public boolean isTreasureAvailable(){
-        return treasureComponent.canPullTreasure();
-    }
-
-    public boolean isReelingTreasure(){
-        return treasureGameController != null;
-    }
-
-
-    public float getArrowPos(){
-        return isReelingTreasure() ? 0 : treasureGameController.getArrowPos();
-    }
-    public float getNextArrowPos(){
-        return isReelingTreasure() ? 0 : treasureGameController.getNextArrowPos();
-    }
-
     public float getFishPosX() {
         return fishComponent.getPositionX();
     }
+
     public float getNextFishPosX() {
         return fishComponent.getNextPositionX();
     }
+
     public float getFishPosY() {
         return fishComponent.getPositionY();
+    }
+
+    public float getBobberSize() {
+        return bobberComponent.getBobberSize();
     }
 
     public float getBobberPos() {
         return bobberComponent.getBobberPos();
     }
+
     public float getNextBobberPos() {
         return bobberComponent.getNextBobberPos();
+    }
+
+    public float getProgress() {
+        return progressComponent.getProgress();
     }
 
     public float getLineHealth() {
         return healthComponent.getLineHealth();
     }
-    public float getProgress() {
-        return progressComponent.getProgress();
+
+    public boolean canPullTreasure(){
+        return treasureComponent.canPullTreasure();
     }
 
+    public float getTreasureSpotSize(){
+        return treasureGameController.getTreasureSpotSize();
+    }
+
+    public int getTimeLeft(){
+        return treasureGameController.getTimeLeft();
+    }
+
+    public float getArrowPos(){
+        return treasureGameController.getArrowPos();
+    }
+
+    public float getNextArrowPos(){
+        return treasureGameController.getNextArrowPos();
+    }
+
+    public void startTreasureHunt() {
+        treasureGameController.start(fishingCard);
+    }
+    public boolean isTreasureHuntActive(){
+        return treasureGameController.isActive();
+    }
+    public void winGame() {
+        ClientPacketSender.sendFishGameWon(fish, treasureGameController.getRewards());
+    }
+
+    public void loseGame() {
+        ClientPacketSender.sendFishGameLost();
+    }
+
+    private final FishComponent fishComponent;
+    private final BobberComponent bobberComponent;
+    private final ProgressComponent progressComponent;
+    private final HealthComponent healthComponent;
+    private final TreasureComponent treasureComponent;
+
+    private final TreasureGameController treasureGameController;
 }

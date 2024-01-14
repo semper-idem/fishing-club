@@ -4,19 +4,16 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
 import net.semperidem.fishingclub.game.fish.FishUtil;
 import net.semperidem.fishingclub.game.fish.HookedFish;
 
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameWon(HookedFish fish, boolean boatFishing, BlockPos blockPos, ArrayList<ItemStack> rewards) {
+    public static void sendFishGameWon(HookedFish fish, ArrayList<ItemStack> treasureRewards) {
         PacketByteBuf buf = FishUtil.fishToPacketBuf(fish);
-        buf.writeBoolean(boatFishing);
-        buf.writeBlockPos(blockPos);
-        buf.writeInt(rewards.size());
-        for(ItemStack reward : rewards) {
+        buf.writeInt(treasureRewards.size());
+        for(ItemStack reward : treasureRewards) {
             buf.writeItemStack(reward);
 
         }

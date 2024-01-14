@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -16,11 +17,13 @@ public class BobberComponent {
     float bobberSpeed;
     float lastFishPos;
     float fishBaseForce;
+    FishGameController parent;
 
-    public BobberComponent(int fishLevel, PlayerEntity player, FishingCard fishingCard, ItemStack caughtUsing) {
-        bobberSize = getBobberLength(player, fishingCard, caughtUsing, fishingCard.isFishingFromBoat());
+    public BobberComponent(FishGameController parent) {
+        this.parent = parent;
+        bobberSize = getBobberLength(parent.player, parent.fishingCard, parent.fish.caughtUsing);
         bobberPos = 0.5f - bobberSize / 2;
-        fishBaseForce = ((fishLevel + 50f) / 50);
+        fishBaseForce = ((parent.fish.fishLevel + 50f) / 50);
     }
 
     public void tick(float reelForce, float fishPos) {
@@ -48,10 +51,10 @@ public class BobberComponent {
 
 
 
-    private float getBobberLength(PlayerEntity player, FishingCard fishingCard, ItemStack caughtUsing, boolean boatFishing){
+    private float getBobberLength(PlayerEntity player, FishingCard fishingCard, ItemStack caughtUsing){
         float bobberLengthMultiplier = 0.9f;
 
-        bobberLengthMultiplier += boatFishing ? fishingCard.hasPerk(FishingPerks.BOAT_BOBBER_SIZE) ? 0.2f : 0.1f : 0;
+        bobberLengthMultiplier += fishingCard.isFishingFromBoat() ? fishingCard.hasPerk(FishingPerks.BOAT_BOBBER_SIZE) ? 0.2f : 0.1f : 0;
         bobberLengthMultiplier += FishingRodPartController.getStat(caughtUsing, FishingRodStatType.BOBBER_WIDTH);
         bobberLengthMultiplier += player.hasStatusEffect(FStatusEffectRegistry.BOBBER_BUFF) ? 0.1f : 0;
 
@@ -60,5 +63,13 @@ public class BobberComponent {
 
     public float getBobberSize() {
         return bobberSize;
+    }
+
+    public boolean hasFish(FishComponent fishComponent) {
+        if (fishComponent.getPositionY() > 0) {
+            return false;
+        }
+        float positionX = fishComponent.getPositionX();
+        return bobberPos <= positionX && bobberPos + bobberSize >= positionX;
     }
 }

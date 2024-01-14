@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -28,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
@@ -67,7 +67,7 @@ public abstract class ServerWorldMixin extends World {
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
                 FishingCard fishingCard = FishingCardManager.getPlayerCard(igniter).getHarpoonFisherInfo();
                 FishingCard.Chunk chunk = new FishingCard.Chunk(chunkPos.x, chunkPos.z);
-                HookedFish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk).applyHarpoonMultiplier(0.35f);
-                FishUtil.grantReward(igniter, hFish, igniter.getVehicle() instanceof BoatEntity, explosionPos);
+                HookedFish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk, explosionPos).applyHarpoonMultiplier(0.35f);
+                FishUtil.grantReward(igniter, hFish, new ArrayList<>());
     }
 }
