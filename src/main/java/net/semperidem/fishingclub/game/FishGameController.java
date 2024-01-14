@@ -22,10 +22,10 @@ public class FishGameController {
 
     public float reelForce = 0;
 
-    public FishGameController(HookedFish fish){
-        this.fish = fish;
+    public FishGameController(HookedFish hookedFish){
+        this.fish = hookedFish;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
-        this.player = fish.caughtBy;
+        this.player = hookedFish.caughtBy;
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);
