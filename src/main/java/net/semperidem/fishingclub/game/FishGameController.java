@@ -80,15 +80,15 @@ public class FishGameController {
     }
 
     public float getBobberSize() {
-        return bobberComponent.getBobberSize();
+        return bobberComponent.getLength();
     }
 
     public float getBobberPos() {
-        return bobberComponent.getBobberPos();
+        return bobberComponent.getPositionX();
     }
 
     public float getNextBobberPos() {
-        return bobberComponent.getNextBobberPos();
+        return bobberComponent.getNextPositionX();
     }
 
     public float getProgress() {
