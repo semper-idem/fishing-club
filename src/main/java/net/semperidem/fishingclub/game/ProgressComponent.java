@@ -1,6 +1,5 @@
-package net.semperidem.fishingclub.game.components;
+package net.semperidem.fishingclub.game;
 
-import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 

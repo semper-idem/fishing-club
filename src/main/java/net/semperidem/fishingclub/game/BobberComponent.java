@@ -1,7 +1,6 @@
-package net.semperidem.fishingclub.game.components;
+package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.game.FishGameController;
 
 import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOAT_BOBBER_SIZE;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController.getStat;

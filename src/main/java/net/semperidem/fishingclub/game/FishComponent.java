@@ -1,7 +1,6 @@
-package net.semperidem.fishingclub.game.components;
+package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.fish.FishPatternInstance;
 import net.semperidem.fishingclub.fish.FishType;
 

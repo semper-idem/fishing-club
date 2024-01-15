@@ -1,7 +1,6 @@
-package net.semperidem.fishingclub.game.components;
+package net.semperidem.fishingclub.game;
 
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.game.FishGameController;
 
 public class TreasureComponent {
 
