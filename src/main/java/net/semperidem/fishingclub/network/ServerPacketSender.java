@@ -10,8 +10,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.game.fish.FishUtil;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.HookedFish;
 
 import java.util.UUID;
 

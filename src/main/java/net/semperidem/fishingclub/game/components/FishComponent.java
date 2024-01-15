@@ -2,8 +2,8 @@ package net.semperidem.fishingclub.game.components;
 
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.game.FishGameController;
-import net.semperidem.fishingclub.game.fish.FishPatternInstance;
-import net.semperidem.fishingclub.game.fish.FishType;
+import net.semperidem.fishingclub.fish.FishPatternInstance;
+import net.semperidem.fishingclub.fish.FishType;
 
 public class FishComponent {
     private static final float SINE_PERIOD = (float) (Math.PI * 2);

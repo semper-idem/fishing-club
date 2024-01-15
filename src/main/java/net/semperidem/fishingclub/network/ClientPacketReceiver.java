@@ -5,8 +5,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.FishGameScreen;
-import net.semperidem.fishingclub.game.fish.FishUtil;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.HookedFish;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {

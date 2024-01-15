@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.FishGameController;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.HookedFish;
 
 public class FishGameScreen extends Screen {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";

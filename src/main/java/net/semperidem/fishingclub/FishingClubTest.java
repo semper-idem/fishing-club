@@ -3,10 +3,10 @@ package net.semperidem.fishingclub;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.game.fish.FishType;
-import net.semperidem.fishingclub.game.fish.FishTypes;
-import net.semperidem.fishingclub.game.fish.FishUtil;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.FishType;
+import net.semperidem.fishingclub.fish.FishTypes;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 

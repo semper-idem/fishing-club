@@ -6,7 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.components.*;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import org.lwjgl.glfw.GLFW;

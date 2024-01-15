@@ -4,8 +4,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.game.fish.FishUtil;
-import net.semperidem.fishingclub.game.fish.HookedFish;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.HookedFish;
 
 import java.util.ArrayList;
 
