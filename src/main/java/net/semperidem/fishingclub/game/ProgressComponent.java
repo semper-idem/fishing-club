@@ -4,7 +4,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 
 public class ProgressComponent {
-    private final FishGameController parent;
+    private final FishingGameController parent;
 
     private static final float BASE_GAIN = 0.0075f;
     private static final float BASE_LOSS = 0.005f;
@@ -15,7 +15,7 @@ public class ProgressComponent {
     private float progress;
     private boolean isWinning;
 
-    public ProgressComponent(FishGameController parent) {
+    public ProgressComponent(FishingGameController parent) {
         this.parent = parent;
         gain = BASE_GAIN * getProgressMultiplierBonus();
         loss = BASE_LOSS + (parent.fish.damage * 0.01f);
@@ -25,15 +25,16 @@ public class ProgressComponent {
         return FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
     }
 
-    public void tick(boolean isReeling, boolean isPulling, boolean bobberHasFish, boolean isFishJumping) {
-        if (!bobberHasFish && !isFishJumping) {
+    public void tick() {
+        boolean bobberHasFish = parent.bobberComponent.hasFish(parent.fishComponent);
+        if (!bobberHasFish && !parent.fishComponent.isFishJumping()) {
             revokeProgress();
         }
 
-        if (!isReeling) {
+        if (!parent.isReeling()) {
             return;
         }
-        if (bobberHasFish && !isPulling) {
+        if (bobberHasFish && !parent.isPulling()) {
             grantProgress();
         } else {
             revokeProgress();

@@ -6,16 +6,16 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 public class HealthComponent {
     private static final float BASE_HEALTH = 0;
     private float health;
-    private final FishGameController parent;
+    private final FishingGameController parent;
 
-    public HealthComponent(FishGameController parent) {
+    public HealthComponent(FishingGameController parent) {
         this.parent = parent;
         this.health = BASE_HEALTH + FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.LINE_HEALTH);
     }
 
 
-    public void tick(boolean shouldDealDamage){
-        if (!shouldDealDamage) {
+    public void tick(){
+        if (!parent.progressComponent.isWinning()) {
             return;
         }
         if (parent.fish.damage != 0) {

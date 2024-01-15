@@ -12,10 +12,10 @@ public class TreasureComponent {
     private int pullTreasureTicks = 0;
     private float treasureTriggerPoint;
 
-    private final FishGameController parent;
+    private final FishingGameController parent;
 
 
-    public TreasureComponent(FishGameController parent) {
+    public TreasureComponent(FishingGameController parent) {
         float treasureChance = TREASURE_MIN_CHANCE;
 
         if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
@@ -27,12 +27,12 @@ public class TreasureComponent {
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
     }
 
-    public void tick(float progress, boolean isPulling) {
+    public void tick() {
         if (!isActive){
             return;
         }
 
-        if (progress > treasureTriggerPoint) {
+        if (parent.progressComponent.getProgress() > treasureTriggerPoint) {
             pullTreasureTicks = 50;
             treasureTriggerPoint = 2;
         }
@@ -42,7 +42,7 @@ public class TreasureComponent {
         }
 
         pullTreasureTicks--;
-        if (isPulling) {
+        if (parent.isPulling()) {
             parent.startTreasureHunt();
         }
     }

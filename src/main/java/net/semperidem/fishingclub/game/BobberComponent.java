@@ -21,18 +21,20 @@ public class BobberComponent {
     private final float topBound;
 
     private float positionX;
-    private float reelForce;
-    private float fishPositionX;
 
-    public BobberComponent(FishGameController parent) {
-        this.length = calculateLength(parent);
+    private final FishingGameController parent;
+
+    public BobberComponent(FishingGameController parent) {
+        this.parent = parent;
+        this.length = calculateLength();
         this.positionX = 0.5f - length * 0.5f;
         this.resistance = (parent.fish.fishLevel + 50) * 0.05f;
         this.topBound = 1 - length;
         this.bottomBound = 0;
     }
 
-    private float calculateLength(FishGameController parent){
+    private float calculateLength(){
+
         float lengthMultiplier = 0.9f + getStat(parent.fish.caughtUsing, BOBBER_WIDTH);
 
         boolean isFromBoat = parent.fishingCard.isFishingFromBoat();
@@ -55,21 +57,20 @@ public class BobberComponent {
         return BASE_LENGTH * lengthMultiplier;
     }
 
-    public void tick(float reelForce, float fishPositionX) {
-        this.fishPositionX = fishPositionX;
-        this.reelForce = reelForce;
+    public void tick() {
         this.positionX = getNextPositionX();
     }
 
     public float getNextPositionX(){
-        return MathHelper.clamp(positionX + getSpeed(reelForce), bottomBound, topBound);
+        return MathHelper.clamp(positionX + getSpeed(parent.reelForce), bottomBound, topBound);
     }
 
     private float getSpeed(float reelForce){
         return MathHelper.clamp(getResistance() + reelForce, -1f, 1f);
     }
+
     private float getResistance() {
-        return  -0.05f * (fishPositionX - 0.5f) * resistance;
+        return  -0.05f * (parent.fishComponent.getPositionX() - 0.5f) * resistance;
     }
 
     public float getPositionX() {

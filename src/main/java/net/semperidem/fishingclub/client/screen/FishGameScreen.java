@@ -6,8 +6,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.game.FishGameController;
 import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.game.FishingGameController;
 
 public class FishGameScreen extends Screen {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";
@@ -52,12 +52,12 @@ public class FishGameScreen extends Screen {
     private int treasureSpotX, treasureSpotY;
     private int treasureMarkX, treasureMarkY;
 
-    FishGameController fishGameLogic;
+    FishingGameController fishGameLogic;
     boolean lightTick = false;
 
     public FishGameScreen(HookedFish fish) {
         super(Text.empty());
-        this.fishGameLogic = new FishGameController(fish);
+        this.fishGameLogic = new FishingGameController(fish);
     }
 
     @Override

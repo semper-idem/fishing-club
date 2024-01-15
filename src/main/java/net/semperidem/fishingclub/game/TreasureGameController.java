@@ -20,7 +20,11 @@ public class TreasureGameController {
     private int treasureHookedTicks;
     private int ticks;
     private boolean isWon;
+    private final FishingGameController parent;
 
+    public TreasureGameController(FishingGameController parent) {
+        this.parent = parent;
+    }
     public void start(FishingCard fishingCard) {
         this.treasureReward = Rewards.roll(fishingCard);
         this.arrowSpeed = 1 + treasureReward.getGrade();
@@ -29,12 +33,12 @@ public class TreasureGameController {
     }
 
 
-    public void tick(boolean isReeling) {
+    public void tick() {
         if (treasureHookedTicks == 0) {
             isWon = false;
             return;
         }
-        if (isReeling && canReelTreasure()) {
+        if (parent.isReeling() && canReelTreasure()) {
             isWon = true;
             treasureHookedTicks = 0;
             return;

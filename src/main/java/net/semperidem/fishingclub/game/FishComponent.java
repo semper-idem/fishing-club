@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.game;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.FishPatternInstance;
 import net.semperidem.fishingclub.fish.FishType;
+import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class FishComponent {
     private static final float SINE_PERIOD = (float) (Math.PI * 2);
@@ -27,8 +28,9 @@ public class FishComponent {
     private FishPatternInstance.Segment lastSegment;
     private float fishSpeed;
     private int jumpTicks;
-
-    public FishComponent(FishGameController parent){
+    private final FishingGameController parent;
+    public FishComponent(FishingGameController parent){
+        this.parent = parent;
         FishType fishType = parent.fish.getFishType();
         stamina = STAMINA_BASE + fishType.getStaminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
@@ -42,19 +44,18 @@ public class FishComponent {
         lastSegment = pattern.getSegmentList().get(0);
     }
 
-    public void updateSpeed(boolean hasFishSlowingEffectApplied) {
+    public void updateSpeed() {
         float staminaPercent = stamina / maxStamina;
         fishSpeed = 0.75f * staminaPercent + levelBasedSpeed;
-        if (hasFishSlowingEffectApplied) {
+        if (parent.player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF)) {
             fishSpeed = fishSpeed * 0.75f;
         }
     }
 
-
-    public void tick(boolean hasFishSlowingEffectApplied) {
+    public void tick() {
         tick++;
         tickMovement();
-        tickStamina(hasFishSlowingEffectApplied);
+        tickStamina();
     }
 
     private void tickMovement() {
@@ -122,11 +123,11 @@ public class FishComponent {
     }
 
 
-    private void tickStamina(boolean hasFishSlowingEffectApplied) {
+    private void tickStamina() {
         if (stamina > minStamina) {
             stamina--;
         }
-        updateSpeed(hasFishSlowingEffectApplied);
+        updateSpeed();
     }
 
     public float getPositionX() {

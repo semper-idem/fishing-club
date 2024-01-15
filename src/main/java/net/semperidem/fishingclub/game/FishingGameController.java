@@ -7,12 +7,11 @@ import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import org.lwjgl.glfw.GLFW;
 
 
 
-public class FishGameController {
+public class FishingGameController {
     private static final boolean IS_DEBUG = false;
 
     public final PlayerEntity player;
@@ -21,7 +20,7 @@ public class FishGameController {
 
     public float reelForce = 0;
 
-    public FishGameController(HookedFish hookedFish){
+    public FishingGameController(HookedFish hookedFish){
         this.fish = hookedFish;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
         this.player = hookedFish.caughtBy;
@@ -31,38 +30,35 @@ public class FishGameController {
         bobberComponent = new BobberComponent(this);
         healthComponent = new HealthComponent(this);
         treasureComponent = new TreasureComponent(this);
-        treasureGameController = new TreasureGameController();
+        treasureGameController = new TreasureGameController(this);
     }
 
     public void tick() {
         if(!keyPressed(GLFW.GLFW_KEY_C) && IS_DEBUG) return;
         if (isTreasureHuntActive()) {
-            treasureGameController.tick(isReeling());
+            treasureGameController.tick();
         } else {
             tickInner();
         }
     }
 
     private void tickInner(){
-        boolean isReeling = isReeling();
-        boolean isPulling = isPulling();
-
-        fishComponent.tick(player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF));
-        bobberComponent.tick(reelForce, fishComponent.getPositionX());
-        progressComponent.tick(isReeling, isPulling, bobberComponent.hasFish(fishComponent), fishComponent.isFishJumping());
-        healthComponent.tick(progressComponent.isWinning());
-        treasureComponent.tick(progressComponent.getProgress(), isPulling);
+        fishComponent.tick();
+        bobberComponent.tick();
+        progressComponent.tick();
+        healthComponent.tick();
+        treasureComponent.tick();
     }
 
     private boolean keyPressed(int keyCode){
         return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
     }
 
-    private boolean isReeling(){
+    boolean isReeling(){
         return keyPressed(GLFW.GLFW_KEY_SPACE);
     }
 
-    private boolean isPulling(){
+    boolean isPulling(){
         return keyPressed(GLFW.GLFW_KEY_ENTER);
     }
 
@@ -132,11 +128,11 @@ public class FishGameController {
         ClientPacketSender.sendFishGameLost();
     }
 
-    private final FishComponent fishComponent;
-    private final BobberComponent bobberComponent;
-     final ProgressComponent progressComponent;
-    private final HealthComponent healthComponent;
-    private final TreasureComponent treasureComponent;
+    final FishComponent fishComponent;
+    final BobberComponent bobberComponent;
+    final ProgressComponent progressComponent;
+    final HealthComponent healthComponent;
+    final TreasureComponent treasureComponent;
 
     private final TreasureGameController treasureGameController;
 }
