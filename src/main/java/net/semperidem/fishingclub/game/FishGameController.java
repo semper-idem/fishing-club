@@ -96,7 +96,7 @@ public class FishGameController {
     }
 
     public float getLineHealth() {
-        return healthComponent.getLineHealth();
+        return healthComponent.getHealth();
     }
 
     public boolean canPullTreasure(){
@@ -135,7 +135,7 @@ public class FishGameController {
 
     private final FishComponent fishComponent;
     private final BobberComponent bobberComponent;
-    private final ProgressComponent progressComponent;
+     final ProgressComponent progressComponent;
     private final HealthComponent healthComponent;
     private final TreasureComponent treasureComponent;
 
