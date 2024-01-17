@@ -23,7 +23,7 @@ public class FishingGameController {
     public FishingGameController(HookedFish hookedFish){
         this.fish = hookedFish;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
-        this.player = hookedFish.caughtBy;
+        this.player = MinecraftClient.getInstance().player;//TODO GET PLAYER FROM PACKET
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);
@@ -114,25 +114,40 @@ public class FishingGameController {
         return treasureGameController.getNextArrowPos();
     }
 
+    public boolean bobberHasFish() {
+        return bobberComponent.hasFish(fishComponent);
+    }
+
     public void startTreasureHunt() {
         treasureGameController.start(fishingCard);
     }
+
     public boolean isTreasureHuntActive(){
         return treasureGameController.isActive();
     }
+
     public void winGame() {
         ClientPacketSender.sendFishGameWon(fish, treasureGameController.getRewards());
+        endGame();
     }
 
     public void loseGame() {
         ClientPacketSender.sendFishGameLost();
+        endGame();
     }
 
-    final FishComponent fishComponent;
-    final BobberComponent bobberComponent;
-    final ProgressComponent progressComponent;
-    final HealthComponent healthComponent;
-    final TreasureComponent treasureComponent;
+    public void endGame() {
+        if (MinecraftClient.getInstance().currentScreen == null) {
+            return;
+        }
+        MinecraftClient.getInstance().currentScreen.close();
+    }
+
+    FishComponent fishComponent;
+    BobberComponent bobberComponent;
+    ProgressComponent progressComponent;
+    HealthComponent healthComponent;
+    TreasureComponent treasureComponent;
 
     private final TreasureGameController treasureGameController;
 }

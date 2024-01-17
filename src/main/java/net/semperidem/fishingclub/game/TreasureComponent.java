@@ -43,6 +43,7 @@ public class TreasureComponent {
 
         pullTreasureTicks--;
         if (parent.isPulling()) {
+            pullTreasureTicks = 0;
             parent.startTreasureHunt();
         }
     }

@@ -52,6 +52,8 @@ public class FishGameScreen extends Screen {
     private int treasureSpotX, treasureSpotY;
     private int treasureMarkX, treasureMarkY;
 
+    private int halfBobber = 0;
+    private int halfFish = fishIconWidth / 2;
     FishingGameController fishGameLogic;
     boolean lightTick = false;
 
@@ -81,14 +83,15 @@ public class FishGameScreen extends Screen {
         super.init();
         x = (this.width - backgroundWidth) / 2;
         y = (this.height- backgroundHeight) / 2;
+        halfBobber = (int) (fishGameLogic.getBobberSize() * bobberWidth / 2);
 
         barX = x + 16;
         barY = y + backgroundHeight - barHeight - 16;
 
-        bobberX = barX;
+        bobberX = barX + barWidth / 2 - halfBobber;
         bobberY = barY;
 
-        fishX = barX;
+        fishX = barX + barWidth / 2 - fishIconWidth / 2;
         fishY = barY;
 
         progressBarX = barX;
@@ -105,6 +108,7 @@ public class FishGameScreen extends Screen {
 
         treasureMarkX = x + (backgroundWidth - treasureMarkWidth) / 2;
         treasureMarkY = y + backgroundHeight / 2 - 36;
+
     }
 
     @Override
@@ -191,13 +195,17 @@ public class FishGameScreen extends Screen {
         matrices.push();
         float bobberScale = barWidth * fishGameLogic.getBobberSize() / barWidth;
         matrices.scale(bobberScale,1f,1f);
-        bobberX = (int) ( (barX + barWidth * getBobberPos(delta)) * (1f / bobberScale));
+        if (fishGameLogic.bobberHasFish()) {
+            RenderSystem.setShaderColor(1f,1,0.5f,1);
+        }
+        bobberX = (int) ( (barX + barWidth * getBobberStartPos(delta) - halfBobber) * (1f / bobberScale));
         BOBBER.render(matrices, bobberX, bobberY);
+        RenderSystem.setShaderColor(1f,1,1,1);
         matrices.pop();
     }
 
     private void renderFishIcon(MatrixStack matrices, float delta){
-        fishX = (int) (barX + barWidth * getFishPos(delta));
+        fishX = (int) (barX + barWidth * getFishPos(delta)) - halfFish;
         fishY = barY - (int)((fishGameLogic.getFishPosY() * 4)) ;
         FISH.render(matrices, fishX, fishY);
     }
@@ -241,7 +249,7 @@ public class FishGameScreen extends Screen {
         return getDeltaPosition(fishGameLogic.getFishPosX(),fishGameLogic.getNextFishPosX(), delta);
     }
 
-    private float getBobberPos(float delta){
+    private float getBobberStartPos(float delta){
         return getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.getNextBobberPos(), delta);
     }
 

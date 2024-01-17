@@ -13,11 +13,11 @@ public class ProgressComponent {
     private final float loss;
 
     private float progress;
-    private boolean isWinning;
+    private boolean isWinning = false;
 
     public ProgressComponent(FishingGameController parent) {
         this.parent = parent;
-        gain = BASE_GAIN * getProgressMultiplierBonus();
+        gain = BASE_GAIN * (1 + getProgressMultiplierBonus());
         loss = BASE_LOSS + (parent.fish.damage * 0.01f);
     }
 

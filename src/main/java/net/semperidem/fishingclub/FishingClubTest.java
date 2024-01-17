@@ -2,11 +2,11 @@ package net.semperidem.fishingclub;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fish.FishType;
 import net.semperidem.fishingclub.fish.FishTypes;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Species;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
@@ -22,7 +22,7 @@ public class FishingClubTest {
     private static final ArrayList<String> RUNTIME_OUTPUT = new ArrayList<>();
 
 
-    private static HashMap<FishType, Integer> countUp(HashMap<FishType, Integer> map, FishType key){
+    private static HashMap<Species, Integer> countUp(HashMap<Species, Integer> map, Species key){
         if(map.containsKey(key)) {
             map.put(key, map.get(key) + 1);
         } else {
@@ -102,7 +102,7 @@ public class FishingClubTest {
         println("====================================");
     }
 
-    private static void printResultFishType(HashMap<FishType, Integer> resultMap, String resultCategory){
+    private static void printResultFishType(HashMap<Species, Integer> resultMap, String resultCategory){
         println("====================================");
         resultMap.keySet().stream().sorted().forEach(key -> {
             println(
@@ -127,15 +127,15 @@ public class FishingClubTest {
         ItemStack fishingRod = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
         TreeMap<Integer, Integer> gradeResult = new TreeMap<>();
         TreeMap<Integer, Integer> levelResult = new TreeMap<>();
-        HashMap<FishType, Integer> typeResult = new HashMap<>();
+        HashMap<Species, Integer> typeResult = new HashMap<>();
         TreeMap<Float, Integer> weightResult = new TreeMap<>();
         TreeMap<Float, Integer> sizeResult = new TreeMap<>();
         for(int i = 0; i < N; i++) {
             HookedFish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.fishLevel);
-            countUp(typeResult,fish.getFishType());
-            if (fish.getFishType() == FishTypes.COD) {
+            countUp(typeResult,fish.getSpecies());
+            if (fish.getSpecies() == FishTypes.COD) {
                 countUp(weightResult,Float.valueOf(String.format("%.0f", fish.weight)));
                 countUp(sizeResult,Float.valueOf(String.format("%.0f", fish.length)));
             }

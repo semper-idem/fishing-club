@@ -10,7 +10,6 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
-import net.semperidem.fishingclub.util.Point;
 
 public class HookedFish {
     private static final float FISHER_VEST_SLOW_BONUS = -0.15f;
@@ -18,7 +17,7 @@ public class HookedFish {
 
     FishingCard fishingCard;
 
-    private FishType fishType;
+    private Species fishType;
 
     public String name;
     public int fishLevel;
@@ -35,8 +34,6 @@ public class HookedFish {
 
     public float damage;
 
-    public Point[] curvePoints;
-    public Point[] curveControlPoints;
 
     public ItemStack caughtUsing;
     public FishingCard.Chunk caughtIn;
@@ -47,10 +44,10 @@ public class HookedFish {
     public HookedFish(){
     }
 
-    public HookedFish(FishType fishType, FishingCard fishingCard) {
+    public HookedFish(Species fishType, FishingCard fishingCard) {
         this(fishType, fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), new FishingCard.Chunk(0,0), null);
     }
-    public HookedFish(FishType fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk, BlockPos caughtAt) {
+    public HookedFish(Species fishType, FishingCard fishingCard, ItemStack fishingRod, FishingCard.Chunk chunk, BlockPos caughtAt) {
         this.caughtIn = chunk;
         this.caughtUsing = fishingRod;
         this.caughtAt = caughtAt;
@@ -65,7 +62,6 @@ public class HookedFish {
         this.experience = calculateFishExp();
         this.damage = calculateDamage();
         initEnergyLevels();
-        initCurvePoints();
         this.value = FishUtil.getFishValue(this);
         oneTimeBuffed = fishingCard.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         applyFisherVestEffect();
@@ -97,18 +93,13 @@ public class HookedFish {
         this.experience = (int) (this.experience * expRatio);
     }
 
-    public FishType getFishType(){
+    public Species getSpecies(){
         return this.fishType;
     }
 
-    public void setFishType(FishType fishType){
+    public void setFishType(Species fishType){
         this.fishType = fishType;
         initEnergyLevels();
-    }
-
-    private void initCurvePoints(){
-      //  this.curvePoints = FishPatterns.getRandomizedPoints(fishType.fishPattern, fishLevel);
-     //   this.curveControlPoints = FishPatterns.getRandomizedControlPoints(fishType.fishPattern, fishLevel);
     }
 
     private void initEnergyLevels(){

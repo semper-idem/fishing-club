@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
-public class FishType {
+public class Species {
 
     public String name;
 
@@ -14,7 +14,7 @@ public class FishType {
     final float fishRarity;
 
     //TODO refactor into factory
-    public FishType(
+    public Species(
             String name,
             FishPattern fishPattern,
             int fishMinLevel,

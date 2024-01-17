@@ -23,7 +23,6 @@ import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
-import net.semperidem.fishingclub.util.Point;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -155,12 +154,12 @@ public class FishUtil {
     }
 
     public static int getWeightGrade(HookedFish fish){
-        FishType fishType = fish.getFishType();
+        Species fishType = fish.getSpecies();
         float percentile = (fish.weight) / (fishType.fishMinWeight + fishType.fishRandomWeight);
         return getGrade(percentile);
     }
     public static int getLengthGrade(HookedFish fish){
-        FishType fishType = fish.getFishType();
+        Species fishType = fish.getSpecies();
         float percentile = (fish.length) / (fishType.fishMinLength + fishType.fishRandomLength);
         return getGrade(percentile);
     }
@@ -219,14 +218,14 @@ public class FishUtil {
 
     public static HookedFish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk, BlockPos caughtAt) {
         int totalRarity = 0;
-        HashMap<FishType, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<FishType> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
-        for (FishType fishType : availableFish) {
+        HashMap<Species, Integer> fishTypeToThreshold = new HashMap<>();
+        ArrayList<Species> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
+        for (Species fishType : availableFish) {
             totalRarity += fishType.fishRarity;
             fishTypeToThreshold.put(fishType, totalRarity);
         }
         int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
-        for (FishType fishType : availableFish) {
+        for (Species fishType : availableFish) {
             if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
                 return new HookedFish(fishType, fishingCard, fishingRod, chunk, caughtAt);
             }
@@ -319,7 +318,7 @@ public class FishUtil {
                 gradeMultiplier = (float) Math.pow(2, (fish.grade - 2));
             }
             levelMultiplier = 1 + (float) Math.pow(2, fish.fishLevel / 50f);
-            rarityBase = 1 + ((125 - fish.getFishType().fishRarity) / 100) * 0.5f;
+            rarityBase = 1 + ((125 - fish.getSpecies().fishRarity) / 100) * 0.5f;
             weightMultiplier = 1 + fish.weight / 100;
         } catch (NullPointerException nullPointerException) {
             nullPointerException.printStackTrace();
@@ -348,10 +347,8 @@ public class FishUtil {
         fishNbt.putInt("value", fish.value);
         fishNbt.putFloat("weight", fish.weight);
         fishNbt.putFloat("length", fish.length);
-        fishNbt.put("caughtUsing", fish.caughtUsing.getOrCreateNbt());
+        fishNbt.put("caughtUsing", fish.caughtUsing.writeNbt(new NbtCompound()));
         fishNbt.putString("caughtIn", fish.caughtIn.toString());
-        fishNbt.putString("curvePoints", curveToString(fish.curvePoints));
-        fishNbt.putString("curveControlPoints", curveToString(fish.curveControlPoints));
         return fishNbt;
     }
 
@@ -367,29 +364,8 @@ public class FishUtil {
         fish.length = nbtCompound.getFloat("length");
         fish.caughtUsing = ItemStack.fromNbt(nbtCompound.getCompound("caughtUsing"));
         fish.caughtIn = new FishingCard.Chunk(nbtCompound.getString("caughtIn"));
-        fish.curvePoints = FishUtil.curveFromString(nbtCompound.getString("curvePoints"));
-        fish.curveControlPoints = FishUtil.curveFromString(nbtCompound.getString("curveControlPoints"));
         return fish;
     }
-
-    static Point[] curveFromString(String curvePointString){
-        String[] input = curvePointString.split(";");
-        int pointCount = input.length;
-        Point[] curvePoints = new Point[pointCount];
-        for(int i = 0; i < pointCount; i++) {
-            curvePoints[i] = new Point(input[i]);
-        }
-        return curvePoints;
-    }
-
-    static String curveToString(Point[] curvePoints){
-        StringBuilder result = new StringBuilder();
-        for(Point point : curvePoints) {
-            result.append(point.toString()).append(";");
-        }
-        return result.toString();
-    }
-
 
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};

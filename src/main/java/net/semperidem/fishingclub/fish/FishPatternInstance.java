@@ -20,7 +20,7 @@ public class FishPatternInstance {
         jumpTicks = getJumpTicks(fishLevel);
         nextJumpTimestampIndex = jumpTicks.length == 0 ? -1 : 0;
         segmentList = new ArrayList<>();
-        for(int i = 0; i < points.length; i++) {
+        for(int i = 0; i < points.length - 1; i++) {
             segmentList.add(new Segment(
                points[i],
                i + 1 == points.length ? points[0] : points[i + 1],
@@ -32,6 +32,9 @@ public class FishPatternInstance {
     private float[] getJumpTicks(int fishLevel){
         int jumpCount = getJumpCount(fishLevel);
         float [] jumpTimestamps = new float[jumpCount];
+        if (jumpCount == 0) {
+            return jumpTimestamps;
+        }
         int segmentTime = (length / jumpCount);
         for(int i = 0; i < jumpCount; i++){
             jumpTimestamps[i] = (int) (segmentTime * Math.random() + segmentTime * i);
@@ -44,6 +47,7 @@ public class FishPatternInstance {
     }
 
     public boolean isJumpTick(int tick){
+        if (nextJumpTimestampIndex == -1) return false;
         if (nextJumpTimestampIndex >= jumpTicks.length) return false;
         if (tick != jumpTicks[nextJumpTimestampIndex]) return false;
         nextJumpTimestampIndex++;

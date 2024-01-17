@@ -7,26 +7,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FishTypes {
-    public static HashMap<String, FishType> ALL_FISH_TYPES = new HashMap<>();
+    public static HashMap<String, Species> ALL_FISH_TYPES = new HashMap<>();
 
 
-    public static FishType COD;
-    public static FishType L_BASS;
-    public static FishType S_BASS;
-    public static FishType SALMON;
-    public static FishType SARDINE;
-    public static FishType SHRIMP;
-    public static FishType EEL;
-    public static FishType PIKE;
-    public static FishType PUFFERFISH;
-    public static FishType RED_SNAPPER;
-    public static FishType BREAM;
-    public static FishType CARP;
-    public static FishType CATFISH;
-    public static FishType RAINBOW_TROUT;
-    public static FishType WALLEYE;
+    public static Species COD;
+    public static Species L_BASS;
+    public static Species S_BASS;
+    public static Species SALMON;
+    public static Species SARDINE;
+    public static Species SHRIMP;
+    public static Species EEL;
+    public static Species PIKE;
+    public static Species PUFFERFISH;
+    public static Species RED_SNAPPER;
+    public static Species BREAM;
+    public static Species CARP;
+    public static Species CATFISH;
+    public static Species RAINBOW_TROUT;
+    public static Species WALLEYE;
 
-    public static ArrayList<FishType> getFishTypesForFisher(FishingCard fishingCard){
+    public static ArrayList<Species> getFishTypesForFisher(FishingCard fishingCard){
         return  new ArrayList<>(
                 ALL_FISH_TYPES.values().stream().filter(
                         fishType -> fishingCard.getLevel() > fishType.fishMinLevel).toList()
@@ -34,7 +34,7 @@ public class FishTypes {
     }
 
     static {
-        COD = new FishType(
+        COD = new Species(
                 "Cod",
             FishPatterns.EASY5,
                 0,
@@ -46,7 +46,7 @@ public class FishTypes {
                 100
         );
 
-        L_BASS = new FishType(
+        L_BASS = new Species(
                 "Largemouth Bass",
                 FishPatterns.EASY1,
                 10,
@@ -58,7 +58,7 @@ public class FishTypes {
                 45
         );
 
-        S_BASS = new FishType(
+        S_BASS = new Species(
                 "Smallmouth Bass",
                 FishPatterns.EASY1,
                 5,
@@ -70,7 +70,7 @@ public class FishTypes {
                 60
         );
 
-        SALMON = new FishType(
+        SALMON = new Species(
                 "Salmon",
                 FishPatterns.EASY2,
                 0,
@@ -82,7 +82,7 @@ public class FishTypes {
                 55
         );
 
-        SARDINE = new FishType(
+        SARDINE = new Species(
                 "Sardine",
                 FishPatterns.EASY4,
                 0,
@@ -94,7 +94,7 @@ public class FishTypes {
                 50
         );
 
-        SHRIMP = new FishType(
+        SHRIMP = new Species(
                 "Shrimp",
                 FishPatterns.EASY3,
                 5,
@@ -106,7 +106,7 @@ public class FishTypes {
                 75
         );
 
-        EEL = new FishType(
+        EEL = new Species(
                 "Eel",
                 FishPatterns.HARD3,
                 40,
@@ -118,7 +118,7 @@ public class FishTypes {
                 25
         );
 
-        PIKE = new FishType(
+        PIKE = new Species(
                 "Pike",
                 FishPatterns.HARD2,
                 35,
@@ -130,7 +130,7 @@ public class FishTypes {
                 25
         );
 
-        PUFFERFISH = new FishType(
+        PUFFERFISH = new Species(
                 "Pufferfish",
                 FishPatterns.HARD1,
                 30,
@@ -142,7 +142,7 @@ public class FishTypes {
                 35
         );
 
-        RED_SNAPPER = new FishType(
+        RED_SNAPPER = new Species(
                 "Red Snapper",
                 FishPatterns.MID6,
                 25,
@@ -154,7 +154,7 @@ public class FishTypes {
                 45
         );
 
-        BREAM = new FishType(
+        BREAM = new Species(
                 "Bream",
                 FishPatterns.MID5,
                 20,
@@ -166,7 +166,7 @@ public class FishTypes {
                 45
         );
 
-        CARP = new FishType(
+        CARP = new Species(
                 "Carp",
                 FishPatterns.MID4,
                 15,
@@ -178,7 +178,7 @@ public class FishTypes {
                 55
         );
 
-        CATFISH = new FishType(
+        CATFISH = new Species(
                 "Catfish",
                 FishPatterns.MID3,
                 15,
@@ -190,7 +190,7 @@ public class FishTypes {
                 65
         );
 
-        RAINBOW_TROUT = new FishType(
+        RAINBOW_TROUT = new Species(
                 "Rainbow Trout",
                 FishPatterns.MID2,
                 10,
@@ -202,7 +202,7 @@ public class FishTypes {
                 65
         );
 
-        WALLEYE = new FishType(
+        WALLEYE = new Species(
                 "Walleye",
                 FishPatterns.MID1,
                 10,

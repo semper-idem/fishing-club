@@ -15,10 +15,10 @@ public class BobberComponent {
     private static final float BUFF_BONUS = 0.1f;
 
     private final float length;
-    private final float resistance;
+    private final float baseResistance;
 
-    private final float bottomBound;
-    private final float topBound;
+    private final float minPositionX;
+    private final float maxPositionX;
 
     private float positionX;
 
@@ -27,10 +27,10 @@ public class BobberComponent {
     public BobberComponent(FishingGameController parent) {
         this.parent = parent;
         this.length = calculateLength();
-        this.positionX = 0.5f - length * 0.5f;
-        this.resistance = (parent.fish.fishLevel + 50) * 0.05f;
-        this.topBound = 1 - length;
-        this.bottomBound = 0;
+        this.positionX = 0.5f;
+        this.baseResistance = getBaseResistance();
+        this.minPositionX = 0 + length / 2;
+        this.maxPositionX = 1 - length / 2;
     }
 
     private float calculateLength(){
@@ -62,15 +62,20 @@ public class BobberComponent {
     }
 
     public float getNextPositionX(){
-        return MathHelper.clamp(positionX + getSpeed(parent.reelForce), bottomBound, topBound);
+        return MathHelper.clamp(positionX + getSpeed(parent.reelForce), minPositionX, maxPositionX);
     }
 
     private float getSpeed(float reelForce){
-        return MathHelper.clamp(getResistance() + reelForce, -1f, 1f);
+        return MathHelper.clamp(getCurrentResistance() + reelForce, -1f, 1f);
     }
 
-    private float getResistance() {
-        return  -0.05f * (parent.fishComponent.getPositionX() - 0.5f) * resistance;
+    private float getBaseResistance() {
+        float levelDifference = MathHelper.clamp(parent.fishingCard.getLevel() - parent.fish.fishLevel, -50, 50);
+       return (parent.fish.fishLevel + 50) * 0.04f * (0.0375f + 50f / levelDifference * 0.0125f);
+    }
+
+    private float getCurrentResistance() {
+        return (parent.fishComponent.getPositionX() - 0.5f) * baseResistance * parent.fishComponent.getStaminaPercentage();
     }
 
     public float getPositionX() {
@@ -85,7 +90,7 @@ public class BobberComponent {
         if (fishComponent.isFishJumping()) {
             return false;
         }
-        float positionX = fishComponent.getPositionX();
-        return this.positionX <= positionX && this.positionX + length >= positionX;
+        float fishPositionX = fishComponent.getPositionX();
+        return Math.abs(positionX - fishPositionX) <= (length - FishComponent.FISH_LENGTH + 0.001) * 0.5f;
     }
 }
