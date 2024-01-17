@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.fish;
 
 import net.semperidem.fishingclub.util.Point;
 
-public class FishPatterns {
+public class MovementPatterns {
 
 
     /*
@@ -11,24 +11,24 @@ public class FishPatterns {
     *   Point count can be w/e
     *
     * */
-    public static final FishPattern DEFAULT;
-    public static final FishPattern EASY1;
-    public static final FishPattern EASY2;
-    public static final FishPattern EASY3;
-    public static final FishPattern EASY4;
-    public static final FishPattern EASY5;
-    public static final FishPattern MID1;
-    public static final FishPattern MID2;
-    public static final FishPattern MID3;
-    public static final FishPattern MID4;
-    public static final FishPattern MID5;
-    public static final FishPattern MID6;
-    public static final FishPattern HARD1;
-    public static final FishPattern HARD2;
-    public static final FishPattern HARD3;
+    public static final MovementPattern DEFAULT;
+    public static final MovementPattern EASY1;
+    public static final MovementPattern EASY2;
+    public static final MovementPattern EASY3;
+    public static final MovementPattern EASY4;
+    public static final MovementPattern EASY5;
+    public static final MovementPattern MID1;
+    public static final MovementPattern MID2;
+    public static final MovementPattern MID3;
+    public static final MovementPattern MID4;
+    public static final MovementPattern MID5;
+    public static final MovementPattern MID6;
+    public static final MovementPattern HARD1;
+    public static final MovementPattern HARD2;
+    public static final MovementPattern HARD3;
 
     static {
-        DEFAULT = new FishPattern(
+        DEFAULT = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 700),
@@ -38,7 +38,7 @@ public class FishPatterns {
                 }
         );
 
-        EASY1 = new FishPattern(
+        EASY1 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 400),
@@ -48,7 +48,7 @@ public class FishPatterns {
                 }
         );
 
-        EASY2 = new FishPattern(
+        EASY2 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 600),
@@ -57,7 +57,7 @@ public class FishPatterns {
                         new Point(200, 500)
                 }
         );
-        EASY3 = new FishPattern(
+        EASY3 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 600),
@@ -66,7 +66,7 @@ public class FishPatterns {
                         new Point(200, 500)
                 }
         );
-        EASY4 = new FishPattern(
+        EASY4 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 300),
@@ -75,7 +75,7 @@ public class FishPatterns {
                         new Point(200, 500)
                 }
         );
-        EASY5 = new FishPattern(
+        EASY5 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(50, 300),
@@ -85,7 +85,7 @@ public class FishPatterns {
                 }
         );
 
-        MID1 = new FishPattern(
+        MID1 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 700),
@@ -96,7 +96,7 @@ public class FishPatterns {
                 }
         );
 
-        MID2 = new FishPattern(
+        MID2 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 700),
@@ -107,7 +107,7 @@ public class FishPatterns {
                 }
         );
 
-        MID3 = new FishPattern(
+        MID3 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 600),
@@ -118,7 +118,7 @@ public class FishPatterns {
                 }
         );
 
-        MID4 = new FishPattern(
+        MID4 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 900),
@@ -128,7 +128,7 @@ public class FishPatterns {
                         new Point(200, 500)}
         );
 
-        MID5 = new FishPattern(
+        MID5 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 300),
@@ -138,7 +138,7 @@ public class FishPatterns {
                         new Point(200, 500)}
         );
 
-        MID6 = new FishPattern(
+        MID6 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(40, 900),
@@ -148,7 +148,7 @@ public class FishPatterns {
                         new Point(200, 500)}
         );
 
-        HARD1 = new FishPattern(
+        HARD1 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(35, 600),
@@ -160,7 +160,7 @@ public class FishPatterns {
                 }
         );
 
-        HARD2 = new FishPattern(
+        HARD2 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(35, 600),
@@ -172,7 +172,7 @@ public class FishPatterns {
                 }
         );
 
-        HARD3 = new FishPattern(
+        HARD3 = new MovementPattern(
                 new Point[]{
                         new Point(0, 500),
                         new Point(35, 100),

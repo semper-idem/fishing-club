@@ -6,7 +6,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FishTypes {
+public class SpeciesLibrary {
     public static HashMap<String, Species> ALL_FISH_TYPES = new HashMap<>();
 
 
@@ -18,7 +18,7 @@ public class FishTypes {
     public static Species SHRIMP;
     public static Species EEL;
     public static Species PIKE;
-    public static Species PUFFERFISH;
+    public static Species PUFFER_FISH;
     public static Species RED_SNAPPER;
     public static Species BREAM;
     public static Species CARP;
@@ -36,7 +36,7 @@ public class FishTypes {
     static {
         COD = new Species(
                 "Cod",
-            FishPatterns.EASY5,
+            MovementPatterns.EASY5,
                 0,
                 4,
                 45,
@@ -48,7 +48,7 @@ public class FishTypes {
 
         L_BASS = new Species(
                 "Largemouth Bass",
-                FishPatterns.EASY1,
+                MovementPatterns.EASY1,
                 10,
                 4,
                 30,
@@ -60,7 +60,7 @@ public class FishTypes {
 
         S_BASS = new Species(
                 "Smallmouth Bass",
-                FishPatterns.EASY1,
+                MovementPatterns.EASY1,
                 5,
                 2,
                 20,
@@ -72,7 +72,7 @@ public class FishTypes {
 
         SALMON = new Species(
                 "Salmon",
-                FishPatterns.EASY2,
+                MovementPatterns.EASY2,
                 0,
                 4,
                 50,
@@ -84,7 +84,7 @@ public class FishTypes {
 
         SARDINE = new Species(
                 "Sardine",
-                FishPatterns.EASY4,
+                MovementPatterns.EASY4,
                 0,
                 1,
                 13,
@@ -96,7 +96,7 @@ public class FishTypes {
 
         SHRIMP = new Species(
                 "Shrimp",
-                FishPatterns.EASY3,
+                MovementPatterns.EASY3,
                 5,
                 1,
                 3,
@@ -108,7 +108,7 @@ public class FishTypes {
 
         EEL = new Species(
                 "Eel",
-                FishPatterns.HARD3,
+                MovementPatterns.HARD3,
                 40,
                 4,
                 30,
@@ -120,7 +120,7 @@ public class FishTypes {
 
         PIKE = new Species(
                 "Pike",
-                FishPatterns.HARD2,
+                MovementPatterns.HARD2,
                 35,
                 4,
                 41,
@@ -130,9 +130,9 @@ public class FishTypes {
                 25
         );
 
-        PUFFERFISH = new Species(
+        PUFFER_FISH = new Species(
                 "Pufferfish",
-                FishPatterns.HARD1,
+                MovementPatterns.HARD1,
                 30,
                 3,
                 2.5f,
@@ -144,7 +144,7 @@ public class FishTypes {
 
         RED_SNAPPER = new Species(
                 "Red Snapper",
-                FishPatterns.MID6,
+                MovementPatterns.MID6,
                 25,
                 3,
                 30,
@@ -156,7 +156,7 @@ public class FishTypes {
 
         BREAM = new Species(
                 "Bream",
-                FishPatterns.MID5,
+                MovementPatterns.MID5,
                 20,
                 2,
                 20,
@@ -168,7 +168,7 @@ public class FishTypes {
 
         CARP = new Species(
                 "Carp",
-                FishPatterns.MID4,
+                MovementPatterns.MID4,
                 15,
                 3,
                 30,
@@ -180,7 +180,7 @@ public class FishTypes {
 
         CATFISH = new Species(
                 "Catfish",
-                FishPatterns.MID3,
+                MovementPatterns.MID3,
                 15,
                 4,
                 30,
@@ -192,7 +192,7 @@ public class FishTypes {
 
         RAINBOW_TROUT = new Species(
                 "Rainbow Trout",
-                FishPatterns.MID2,
+                MovementPatterns.MID2,
                 10,
                 3,
                 30,
@@ -204,7 +204,7 @@ public class FishTypes {
 
         WALLEYE = new Species(
                 "Walleye",
-                FishPatterns.MID1,
+                MovementPatterns.MID1,
                 10,
                 2,
                 30,

@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.fish.FishPatternInstance;
+import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
@@ -22,7 +22,7 @@ public class FishComponent {
     private final float baseSpeed;
 
     private float stamina;
-    private final FishPatternInstance patternInstance;
+    private final MovementPatternInstance patternInstance;
 
     private final float minPositionX;
     private final float maxPositionX;
@@ -35,7 +35,7 @@ public class FishComponent {
     private int jumpTicks;
     private float totalDistanceTraveled;
     private int lastSegmentIndex;
-    private FishPatternInstance.Segment currentSegment;
+    private MovementPatternInstance.Segment currentSegment;
 
     public FishComponent(FishingGameController parent){
         this.parent = parent;
@@ -48,11 +48,11 @@ public class FishComponent {
         nextPositionX = 0.5f;
         positionX = nextPositionX;
         positionY = 0;
-        baseSpeed = parent.fish.fishLevel * 0.005f;
+        baseSpeed = parent.fish.level * 0.005f;
         minPositionX = 0 + FISH_LENGTH / 2;
         maxPositionX = 1 - FISH_LENGTH / 2;
 
-        patternInstance = new FishPatternInstance(species.getFishPattern(), parent.fish.fishLevel);
+        patternInstance = new MovementPatternInstance(species.getFishPattern(), parent.fish.level);
         lastSegmentIndex = 0;
         currentSegment = patternInstance.getSegmentList().get(lastSegmentIndex);
     }
@@ -95,7 +95,7 @@ public class FishComponent {
         return (float) (Math.sin(SINE_PERIOD * WAVE_SPEED * percentageDistanceTraveled) * WAVE_STRENGTH);
     }
 
-    private float getCurve(float distanceTraveled, FishPatternInstance.Segment segment) {
+    private float getCurve(float distanceTraveled, MovementPatternInstance.Segment segment) {
         float segmentDistance = segment.nextPoint.x - segment.currentPoint.x;
         float segmentElapsedDistance = distanceTraveled - segment.currentPoint.x;
         return quadraticBezier(

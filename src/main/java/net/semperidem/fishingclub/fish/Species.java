@@ -4,7 +4,7 @@ public class Species {
 
     public String name;
 
-    final FishPattern fishPattern;
+    final MovementPattern fishPattern;
     final int fishMinLevel;
     final int staminaLevel;
     final float fishMinLength;
@@ -16,7 +16,7 @@ public class Species {
     //TODO refactor into factory
     public Species(
             String name,
-            FishPattern fishPattern,
+            MovementPattern fishPattern,
             int fishMinLevel,
             int fishEnergyLevel,
             float fishMinLength,
@@ -34,10 +34,10 @@ public class Species {
         this.fishMinWeight = fishMinWeight;
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
-        FishTypes.ALL_FISH_TYPES.put(name, this);
+        SpeciesLibrary.ALL_FISH_TYPES.put(name, this);
     }
 
-    public FishPattern getFishPattern() {
+    public MovementPattern getFishPattern() {
         return fishPattern;
     }
 

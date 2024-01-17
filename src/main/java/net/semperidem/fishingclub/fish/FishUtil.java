@@ -23,6 +23,7 @@ import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.util.MathUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +46,7 @@ public class FishUtil {
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
         FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
         fishReward.setCount(getRewardMultiplier(fishingCard));
-        if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.oneTimeBuffed) {
+        if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff) {
             Box box = new Box(player.getBlockPos());
             box.expand(3);
             for(Entity entity : player.getEntityWorld().getOtherEntities(null, box)) {
@@ -78,10 +79,6 @@ public class FishUtil {
         float g = world.random.nextFloat() * ((float)Math.PI * 2);
         itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.75f, MathHelper.cos(g) * f);
         return itemEntity;
-    }
-
-    public static void grantReward(ServerPlayerEntity player, HookedFish fish){
-        grantReward(player, fish, new ArrayList<>());
     }
 
     private static int getRewardMultiplier(FishingCard fishingCard){
@@ -122,7 +119,7 @@ public class FishUtil {
 
     private static void setDetails(ItemStack stack, HookedFish fish){
         if (stack.getNbt() != null) {
-            stack.getNbt().put("fish_details", FishUtil.toNbt(fish));
+            stack.getNbt().put("fish_details", fish.getNbt());
         }
     }
 
@@ -131,7 +128,7 @@ public class FishUtil {
     }
 
     private static Text getGradeText(int grade){
-        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + integerToRoman(grade));
+        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + MathUtil.integerToRoman(grade));
     }
 
     private static Text getWeightText(float weight, int grade){
@@ -167,28 +164,17 @@ public class FishUtil {
     private static int getGrade(float percentile){
         if (percentile < 0.25) {
             return 1;
-        }
-        if (percentile < 0.50) {
+        } else if (percentile < 0.5) {
             return 2;
-        }
-        if (percentile < 0.80) {
+        } else if (percentile < 0.8) {
             return 3;
-        }
-        if (percentile < 0.90) {
+        } else if (percentile < 0.9) {
             return 4;
+        } else {
+            return 5;
         }
-        return 5;
     }
 
-    public static float getPercentile(int grade){
-        switch (grade){
-            case 2: return 0.25f;
-            case 3: return 0.50f;
-            case 4: return 0.80f;
-            case 5: return 0.90f;
-            default: return 0;
-        }
-    }
     private static Text getCaughtText(){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE, dd LLL yyyy HH:mm");
         LocalDateTime now = LocalDateTime.now();
@@ -219,7 +205,7 @@ public class FishUtil {
     public static HookedFish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk, BlockPos caughtAt) {
         int totalRarity = 0;
         HashMap<Species, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<Species> availableFish = FishTypes.getFishTypesForFisher(fishingCard);
+        ArrayList<Species> availableFish = SpeciesLibrary.getFishTypesForFisher(fishingCard);
         for (Species fishType : availableFish) {
             totalRarity += fishType.fishRarity;
             fishTypeToThreshold.put(fishType, totalRarity);
@@ -230,7 +216,7 @@ public class FishUtil {
                 return new HookedFish(fishType, fishingCard, fishingRod, chunk, caughtAt);
             }
         }
-        return new HookedFish(FishTypes.COD, fishingCard, fishingRod, chunk, caughtAt);
+        return new HookedFish(SpeciesLibrary.COD, fishingCard, fishingRod, chunk, caughtAt);
     }
 
         public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
@@ -247,86 +233,19 @@ public class FishUtil {
     }
 
 
-    public static float getRandomValue(float base, float randomAdjustment){
-        return (float) ((base + randomAdjustment * Math.random()));
-    }
-    public static int getRandomValue(int base, int randomAdjustment){
-        return (int) ((base + randomAdjustment * Math.random()));
-    }
-
-    public static float clampValue(float from, float to, float value){
-            return Math.max(Math.min(to, value), from);
-    }
-    public static int clampValue(int from, int to, int value){
-        return Math.max(Math.min(to, value), from);
-    }
-
     public static PacketByteBuf fishToPacketBuf(HookedFish fish){
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(toNbt(fish));
+        buf.writeNbt(fish.getNbt());
         return buf;
     }
 
-
-    public static HookedFish fishFromPacketBuf(PacketByteBuf fishBuf){
-        NbtCompound fishNbt = fishBuf.readNbt();
-        if (fishNbt == null){
-            return new HookedFish();
+    public static HookedFish fishFromPacketBuf(PacketByteBuf fishBuf) throws Exception {
+        NbtCompound nbt = fishBuf.readNbt();
+        if (nbt == null || !nbt.contains("fish_details")){
+            throw new Exception("HANDLE_NO_FISH_NBT_EXCEPTION");
         }
-        if (fishNbt.contains("fish_details")){
-            return fromNbt(fishNbt.getCompound("fish_details"));
-        }
-        return fromNbt(fishNbt);
+        return new HookedFish(nbt.getCompound("fish_details"));
     }
-
-
-    private static final TreeMap<Integer, String> treemap = new TreeMap<Integer, String>();
-    static {
-        treemap.put(1000, "M");
-        treemap.put(900, "CM");
-        treemap.put(500, "D");
-        treemap.put(400, "CD");
-        treemap.put(100, "C");
-        treemap.put(90, "XC");
-        treemap.put(50, "L");
-        treemap.put(40, "XL");
-        treemap.put(10, "X");
-        treemap.put(9, "IX");
-        treemap.put(5, "V");
-        treemap.put(4, "IV");
-        treemap.put(1, "I");
-
-    }
-
-    public static String integerToRoman(int number) {
-        int l = treemap.floorKey(number);
-        if (number == l) {
-            return treemap.get(number);
-        }
-        return treemap.get(l) + integerToRoman(number - l);
-    }
-
-    public static int getFishValue(HookedFish fish){
-        float gradeMultiplier;
-        float levelMultiplier;
-        float rarityBase;
-        float weightMultiplier;
-        try {
-            if (fish.grade <= 3) {
-                gradeMultiplier = (float) (0.5 + (fish.grade / 3f));
-            } else {
-                gradeMultiplier = (float) Math.pow(2, (fish.grade - 2));
-            }
-            levelMultiplier = 1 + (float) Math.pow(2, fish.fishLevel / 50f);
-            rarityBase = 1 + ((125 - fish.getSpecies().fishRarity) / 100) * 0.5f;
-            weightMultiplier = 1 + fish.weight / 100;
-        } catch (NullPointerException nullPointerException) {
-            nullPointerException.printStackTrace();
-            return 1;
-        }
-        return (int) (rarityBase * gradeMultiplier * levelMultiplier * weightMultiplier);
-    }
-
 
     public static int getFishValue(ItemStack fishStack){
         NbtCompound fishNbt = fishStack.getNbt();
@@ -335,37 +254,6 @@ public class FishUtil {
         }
         return 1;
      }
-
-
-
-    static NbtCompound toNbt(HookedFish fish){
-        NbtCompound fishNbt = new NbtCompound();
-        fishNbt.putString("name", fish.name);
-        fishNbt.putInt("grade", fish.grade);
-        fishNbt.putInt("fishLevel", fish.fishLevel);
-        fishNbt.putInt("experience", fish.experience);
-        fishNbt.putInt("value", fish.value);
-        fishNbt.putFloat("weight", fish.weight);
-        fishNbt.putFloat("length", fish.length);
-        fishNbt.put("caughtUsing", fish.caughtUsing.writeNbt(new NbtCompound()));
-        fishNbt.putString("caughtIn", fish.caughtIn.toString());
-        return fishNbt;
-    }
-
-    static HookedFish fromNbt(NbtCompound nbtCompound){
-        HookedFish fish = new HookedFish();
-        fish.name = nbtCompound.getString("name");
-        fish.setFishType(FishTypes.ALL_FISH_TYPES.get(fish.name));
-        fish.grade = nbtCompound.getInt("grade");
-        fish.fishLevel = nbtCompound.getInt("fishLevel");
-        fish.experience = nbtCompound.getInt("experience");
-        fish.value = nbtCompound.getInt("value");
-        fish.weight = nbtCompound.getFloat("weight");
-        fish.length = nbtCompound.getFloat("length");
-        fish.caughtUsing = ItemStack.fromNbt(nbtCompound.getCompound("caughtUsing"));
-        fish.caughtIn = new FishingCard.Chunk(nbtCompound.getString("caughtIn"));
-        return fish;
-    }
 
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};
@@ -383,11 +271,11 @@ public class FishUtil {
         return result[0];
     }
 
-    public static boolean hasNonFishingEquipment(PlayerEntity owner){
+    public static boolean hasProperFishingEquipment(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
             if (!(armorStack.isOf(FItemRegistry.FISHER_VEST) || armorStack.isOf(FItemRegistry.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
         });
-        return result[0];
+        return !result[0];
     }
 }

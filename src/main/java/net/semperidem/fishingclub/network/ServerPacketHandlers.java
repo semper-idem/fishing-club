@@ -11,12 +11,12 @@ import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHa
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -28,13 +28,17 @@ import java.util.UUID;
 public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        HookedFish fish = FishUtil.fishFromPacketBuf(buf);
-        int rewardCount = buf.readInt();
-        ArrayList<ItemStack> treasureRewards = new ArrayList<>();
-        for(int i = 0; i < rewardCount; i++) {
-            treasureRewards.add(buf.readItemStack());
+        try {
+            HookedFish fish = FishUtil.fishFromPacketBuf(buf);
+            int rewardCount = buf.readInt();
+            ArrayList<ItemStack> treasureRewards = new ArrayList<>();
+            for(int i = 0; i < rewardCount; i++) {
+                treasureRewards.add(buf.readItemStack());
+            }
+            server.execute(() -> FishUtil.grantReward(player, fish,treasureRewards));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        server.execute(() -> FishUtil.grantReward(player, fish ,treasureRewards));
     }
 
     public static void handleRepairRod(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {

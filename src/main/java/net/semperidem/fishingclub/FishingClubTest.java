@@ -2,10 +2,10 @@ package net.semperidem.fishingclub;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.fish.FishTypes;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.fish.Species;
+import net.semperidem.fishingclub.fish.SpeciesLibrary;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -133,9 +133,9 @@ public class FishingClubTest {
         for(int i = 0; i < N; i++) {
             HookedFish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
             countUp(gradeResult,fish.grade);
-            countUp(levelResult,fish.fishLevel);
+            countUp(levelResult,fish.level);
             countUp(typeResult,fish.getSpecies());
-            if (fish.getSpecies() == FishTypes.COD) {
+            if (fish.getSpecies() == SpeciesLibrary.COD) {
                 countUp(weightResult,Float.valueOf(String.format("%.0f", fish.weight)));
                 countUp(sizeResult,Float.valueOf(String.format("%.0f", fish.length)));
             }

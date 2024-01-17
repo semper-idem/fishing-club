@@ -4,20 +4,20 @@ import net.semperidem.fishingclub.util.Point;
 
 import java.util.Random;
 
-public class FishPattern {
+public class MovementPattern {
     Point[] points;
     Point[] controlPoints;
 
-    FishPattern(Point[] points){
+    MovementPattern(Point[] points){
         this.points = points;
         this.controlPoints = generateControlPoints(points, 300);
     }
-    FishPattern(Point[] points, float randomOffset){
+    MovementPattern(Point[] points, float randomOffset){
         this.points = points;
         this.controlPoints = generateControlPoints(points, randomOffset);
     }
 
-    FishPattern(Point[] points, Point[] controlPoints){
+    MovementPattern(Point[] points, Point[] controlPoints){
         this.points = points;
         this.controlPoints = controlPoints;
     }

@@ -4,7 +4,7 @@ import net.semperidem.fishingclub.util.Point;
 
 import java.util.ArrayList;
 
-public class FishPatternInstance {
+public class MovementPatternInstance {
 
     private final Point[] points;
     private final Point[] controlPoints;
@@ -13,7 +13,7 @@ public class FishPatternInstance {
     private int nextJumpTimestampIndex;
     private ArrayList<Segment> segmentList;
 
-    public FishPatternInstance(FishPattern fishPattern, int fishLevel){
+    public MovementPatternInstance(MovementPattern fishPattern, int fishLevel){
         points = fishPattern.getRandomizedPoints(fishLevel);
         controlPoints = fishPattern.getRandomizedControlPoints(fishLevel);
         length = (int) points[points.length - 1].x;
