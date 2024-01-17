@@ -170,8 +170,7 @@ public class FishingPerks {
                     "Unlock Fisher Vest crafting")
             .withDetailedDesc(
                     "Unlock Fisher Vest crafting.\n" +
-                    "Fisher Vest slows fish movement \n" +
-                    "and each fish caught gives bonus 10% fisher xp\n" +
+                    "+25% bonus fisher xp when worn\n" +
                     "All fisher attire effects double if it's your\n" +
                     "only equipped armor")
             .withIcon("fisher_vest.png")

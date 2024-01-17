@@ -11,9 +11,10 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
+import java.util.UUID;
+
 public class HookedFish {
-    private static final float FISHER_VEST_LEVEL_BONUS = 0.05f;
-    private static final float FISHER_VEST_EXP_BONUS = 0.1f;
+    private static final float FISHER_VEST_EXP_BONUS = 0.3f;
 
     private static final int MIN_LEVEL = 1;
     private static final int MAX_LEVEL = 99;
@@ -21,60 +22,71 @@ public class HookedFish {
     private static final int MIN_EXP = 5;
     private static final int MAX_EXP = 99999;
 
-    FishingCard fishingCard;
+    private FishingCard fishingCard;
 
-    private Species species;
+    private final Species species;
 
     public String name;
+
     public int level;
-    public int grade;
     public int experience;
+    public float damage;
+
+    public int grade;
     public int value;
 
     public float weight;
     public float length;
 
-    public float damage;
 
 
     public ItemStack caughtUsing;
     public FishingCard.Chunk caughtIn;
     public BlockPos caughtAt;
     public PlayerEntity caughtBy;
+    public UUID caughtByUUID;
 
     public boolean consumeGradeBuff;
 
     public HookedFish(NbtCompound nbt){
-        //TODO fishingCard to nbt
-        //chynk to nbt
-        name = nbt.getString("name");
-        //setFishType(SpeciesLibrary.ALL_FISH_TYPES.get(fish.name));
-        grade = nbt.getInt("grade");
-        level = nbt.getInt("fishLevel");
-        experience = nbt.getInt("experience");
-        value = nbt.getInt("value");
-        weight = nbt.getFloat("weight");
-        length = nbt.getFloat("length");
-        caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
-        caughtIn = new FishingCard.Chunk(nbt.getString("caughtIn"));
+        this.name = nbt.getString("name");
+        this.species = SpeciesLibrary.ALL_FISH_TYPES.get(name);
+
+        //TODO FISHING CARD HERE
+
+        this.caughtIn = new FishingCard.Chunk(nbt.getString("caughtIn"));
+        this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
+
+        this.level = nbt.getInt("fishLevel");
+        this.experience = nbt.getInt("experience");
+        this.grade = nbt.getInt("grade");
+        this.value = nbt.getInt("value");
+        this.weight = nbt.getFloat("weight");
+        this.length = nbt.getFloat("length");
     }
 
     public HookedFish(Species species, FishingCard fishingCard, ItemStack caughtUsing, FishingCard.Chunk caughtIn, BlockPos caughtAt) {
+        this.species = species;
+        this.name = species.name;
+
+        this.fishingCard = fishingCard;
+
         this.caughtIn = caughtIn;
         this.caughtUsing = caughtUsing;
         this.caughtAt = caughtAt;
         this.caughtBy = fishingCard.getOwner();
-        this.species = species;
-        this.name = species.name;
-        this.fishingCard = fishingCard;
+        this.caughtByUUID = caughtBy.getUuid();
+
+        this.consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+
         this.level = calculateLevel();
         this.weight = calculateWeight();
         this.length = calculateLength();
         this.grade = calculateGrade();
         this.experience = calculateExperience();
         this.damage = calculateDamage();
-        calculateValue();
-        consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        this.value = calculateValue();
+
         applyFisherVestEffect();
     }
 
@@ -107,14 +119,11 @@ public class HookedFish {
     private void applyFisherVestEffect(){
         PlayerEntity player = this.fishingCard.getOwner();
         if (!FishUtil.hasFishingVest(player)) return;
-        float slowRatio = 1 + FISHER_VEST_LEVEL_BONUS;
         float expRatio = 1 + FISHER_VEST_EXP_BONUS;
         if (FishUtil.hasProperFishingEquipment(player)) {
-            slowRatio += FISHER_VEST_LEVEL_BONUS;
             expRatio += FISHER_VEST_EXP_BONUS;
         }
-        this.level = (int) (this.level * slowRatio);
-        this.experience = (int) (calculateExperience() * expRatio);
+        this.experience = (int) (this.experience * expRatio);
     }
 
     public Species getSpecies(){
@@ -177,7 +186,7 @@ public class HookedFish {
         return this;
     }
 
-    private void calculateValue() {
+    private int calculateValue() {
         float gradeMultiplier = (float) (grade <= 3 ? (0.5 + (grade / 3f)) : Math.pow(2, (grade - 2)));
         float levelMultiplier = 1 + (float) Math.pow(2, level / 50f);
         float weightMultiplier = 1 + weight / 100;
@@ -185,6 +194,6 @@ public class HookedFish {
         fValue *= gradeMultiplier;
         fValue *= levelMultiplier;
         fValue *= weightMultiplier;
-        value = (int) fValue;
+        return (int) fValue;
     }
 }
