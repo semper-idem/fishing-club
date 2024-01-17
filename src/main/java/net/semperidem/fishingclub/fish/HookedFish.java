@@ -12,7 +12,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 public class HookedFish {
-    private static final float FISHER_VEST_LEVEL_BONUS = -0.15f;
+    private static final float FISHER_VEST_LEVEL_BONUS = 0.05f;
     private static final float FISHER_VEST_EXP_BONUS = 0.1f;
 
     private static final int MIN_LEVEL = 1;
