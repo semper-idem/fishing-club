@@ -13,7 +13,7 @@ import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.UUID;
 
-public class HookedFish {
+public class Fish {
     private static final float FISHER_VEST_EXP_BONUS = 0.3f;
 
     private static final int MIN_LEVEL = 1;
@@ -43,12 +43,11 @@ public class HookedFish {
     public ItemStack caughtUsing;
     public FishingCard.Chunk caughtIn;
     public BlockPos caughtAt;
-    public PlayerEntity caughtBy;
     public UUID caughtByUUID;
 
     public boolean consumeGradeBuff;
 
-    public HookedFish(NbtCompound nbt){
+    public Fish(NbtCompound nbt){
         this.name = nbt.getString("name");
         this.species = SpeciesLibrary.ALL_FISH_TYPES.get(name);
 
@@ -65,7 +64,7 @@ public class HookedFish {
         this.length = nbt.getFloat("length");
     }
 
-    public HookedFish(Species species, FishingCard fishingCard, ItemStack caughtUsing, FishingCard.Chunk caughtIn, BlockPos caughtAt) {
+    public Fish(Species species, FishingCard fishingCard, ItemStack caughtUsing, FishingCard.Chunk caughtIn, BlockPos caughtAt) {
         this.species = species;
         this.name = species.name;
 
@@ -74,10 +73,9 @@ public class HookedFish {
         this.caughtIn = caughtIn;
         this.caughtUsing = caughtUsing;
         this.caughtAt = caughtAt;
-        this.caughtBy = fishingCard.getOwner();
-        this.caughtByUUID = caughtBy.getUuid();
+        this.caughtByUUID = fishingCard.getOwner().getUuid();
 
-        this.consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        this.consumeGradeBuff = fishingCard.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
 
         this.level = calculateLevel();
         this.weight = calculateWeight();
@@ -177,7 +175,7 @@ public class HookedFish {
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public HookedFish applyHarpoonMultiplier(float multiplier){
+    public Fish applyHarpoonMultiplier(float multiplier){
         this.experience = (int) (this.experience * multiplier);
         this.weight = Math.max(this.species.fishMinWeight, (this.weight * multiplier));
         this.length = Math.max(this.species.fishMinLength, (this.length * multiplier));

@@ -10,7 +10,7 @@ public class HealthComponent {
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        this.health = BASE_HEALTH + FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.LINE_HEALTH);
+        this.health = BASE_HEALTH + FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.LINE_HEALTH);
     }
 
 
@@ -18,8 +18,8 @@ public class HealthComponent {
         if (!parent.progressComponent.isWinning()) {
             return;
         }
-        if (parent.fish.damage != 0) {
-            health -= (parent.fish.damage);
+        if (parent.hookedFish.damage != 0) {
+            health -= (parent.hookedFish.damage);
         }
 
         if (health <= 0){

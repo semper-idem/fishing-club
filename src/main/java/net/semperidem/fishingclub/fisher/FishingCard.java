@@ -19,7 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
-import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
@@ -392,7 +392,7 @@ public class FishingCard {
         this.lastFishCaughtTime = time;
     }
 
-    void fishCaught(HookedFish fish, int boostedExp){
+    void fishCaught(Fish fish, int boostedExp){
         long worldTime = owner.world.getTime();
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
@@ -444,13 +444,13 @@ public class FishingCard {
         }
     }
 
-    private void fishCaughtInChunk(HookedFish fish){
+    private void fishCaughtInChunk(Fish fish){
         if (!caughtInChunk(fish.caughtIn)) {
             fishedChunks.add(fish.caughtIn);
         }
     }
 
-    private void processOneTimeBuff(HookedFish fish){
+    private void processOneTimeBuff(Fish fish){
         if (!fish.consumeGradeBuff) {
             return;
         }

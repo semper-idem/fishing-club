@@ -11,7 +11,8 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.game.FishingAtlas;
 
 import java.util.UUID;
 
@@ -36,7 +37,8 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, HookedFish fish){
+    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, Fish fish){
+        FishingAtlas.putCatch(player.getUuid(), fish);
         PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
         fishGameStartPacket.writeItemStack(fishingRod);
         sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);

@@ -6,8 +6,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.game.FishingGameController;
+import net.semperidem.fishingclub.game.HookedFish;
 
 public class FishGameScreen extends Screen {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";

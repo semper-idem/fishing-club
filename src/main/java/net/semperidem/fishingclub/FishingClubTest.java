@@ -3,7 +3,7 @@ package net.semperidem.fishingclub;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fish.SpeciesLibrary;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -131,7 +131,7 @@ public class FishingClubTest {
         TreeMap<Float, Integer> weightResult = new TreeMap<>();
         TreeMap<Float, Integer> sizeResult = new TreeMap<>();
         for(int i = 0; i < N; i++) {
-            HookedFish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
+            Fish fish = FishUtil.getFishOnHook(fishingCard, fishingRod, 1, new FishingCard.Chunk(0,0));
             countUp(gradeResult,fish.grade);
             countUp(levelResult,fish.level);
             countUp(typeResult,fish.getSpecies());

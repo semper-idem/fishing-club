@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.fish.HookedFish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
@@ -15,15 +14,15 @@ public class FishingGameController {
     private static final boolean IS_DEBUG = false;
 
     public final PlayerEntity player;
-    public final HookedFish fish;
+    public final HookedFish hookedFish;
     public final FishingCard fishingCard;
 
     public float reelForce = 0;
 
     public FishingGameController(HookedFish hookedFish){
-        this.fish = hookedFish;
+        this.hookedFish = hookedFish;
         this.fishingCard = FishingClubClient.CLIENT_INFO;
-        this.player = MinecraftClient.getInstance().player;//TODO GET PLAYER FROM PACKET
+        this.player = MinecraftClient.getInstance().player;
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);
@@ -127,7 +126,7 @@ public class FishingGameController {
     }
 
     public void winGame() {
-        ClientPacketSender.sendFishGameWon(fish, treasureGameController.getRewards());
+        ClientPacketSender.sendFishGameWon(treasureGameController.getRewards());
         endGame();
     }
 

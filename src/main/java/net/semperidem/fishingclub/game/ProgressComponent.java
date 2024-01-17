@@ -18,11 +18,11 @@ public class ProgressComponent {
     public ProgressComponent(FishingGameController parent) {
         this.parent = parent;
         gain = BASE_GAIN * (1 + getProgressMultiplierBonus());
-        loss = BASE_LOSS + (parent.fish.damage * 0.01f);
+        loss = BASE_LOSS + (parent.hookedFish.damage * 0.01f);
     }
 
     private float getProgressMultiplierBonus() {
-        return FishingRodPartController.getStat(parent.fish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
+        return FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
     }
 
     public void tick() {

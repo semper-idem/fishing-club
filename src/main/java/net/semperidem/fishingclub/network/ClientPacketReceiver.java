@@ -5,18 +5,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.FishGameScreen;
-import net.semperidem.fishingclub.fish.HookedFish;
+import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.game.HookedFish;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_GAME_START, (client, handler, buf, responseSender) -> {
-            NbtCompound nbt = buf.readNbt();
-            if (nbt == null) {
-                return;
-            }
-            HookedFish fish = new HookedFish(nbt);
-            client.execute(() -> client.setScreen(new FishGameScreen(fish)));
+            HookedFish hookedFish = HookedFish.fromPacket(buf);
+            client.execute(() -> client.setScreen(new FishGameScreen(hookedFish)));
         });
 
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_F_DATA_SEND, (client, handler, buf, responseSender) -> {
