@@ -62,20 +62,10 @@ public class FishingCard {
 
     private PlayerEntity owner;
 
-    public FishingCard(PlayerEntity playerEntity, NbtCompound fisherTag) {
-        this.owner = playerEntity;
-        fromNbt(fisherTag);
-    }
-    public FishingCard(PlayerEntity playerEntity) {
-        this.owner = playerEntity;
-        NbtCompound playerCustomTag = new NbtCompound();
-        playerEntity.writeCustomDataToNbt(playerCustomTag);
-        if (!playerCustomTag.contains(TAG)) return;
-        fromNbt(playerCustomTag.getCompound(TAG));
-    }
 
-    public FishingCard(NbtCompound fisherTag) {
-        fromNbt(fisherTag);
+    public FishingCard(PlayerEntity playerEntity, NbtCompound playerNbt) {
+        this.owner = playerEntity;
+        fromNbt(playerNbt.getCompound(TAG));
     }
 
     public PlayerEntity getOwner(){
@@ -86,21 +76,7 @@ public class FishingCard {
             spellInstance.tick();
         }
     }
-    public void fromNbt(NbtCompound fisherTag){
-        this.level = fisherTag.getInt("level");
-        this.exp = fisherTag.getInt("exp");
-        this.credit = fisherTag.getInt("credit");
-        this.skillPoints = fisherTag.getInt("skill_points");
-        this.lastFishCaughtTime = fisherTag.getLong("last_fish_caught_time");
-        this.firstFishOfTheDayCaughtTime = fisherTag.getLong("ffotd_caught_time");
-        this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
-        setPerks(fisherTag);
-        setSpells(fisherTag);
-        setChunks(fisherTag);
-        setLinked(fisherTag);
-        this.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound("last_used_bait"));
-        setLastTeleportRequest(fisherTag);
-    }
+
 
     private void setLastTeleportRequest(NbtCompound fisherTag){
         if (!fisherTag.contains("last_teleport_request")) return;
@@ -164,6 +140,21 @@ public class FishingCard {
         playerTag.put(TAG, toNbt());
     }
 
+    public void fromNbt(NbtCompound fisherTag){
+        this.level = fisherTag.getInt("level");
+        this.exp = fisherTag.getInt("exp");
+        this.credit = fisherTag.getInt("credit");
+        this.skillPoints = fisherTag.getInt("skill_points");
+        this.lastFishCaughtTime = fisherTag.getLong("last_fish_caught_time");
+        this.firstFishOfTheDayCaughtTime = fisherTag.getLong("ffotd_caught_time");
+        this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
+        setPerks(fisherTag);
+        setSpells(fisherTag);
+        setChunks(fisherTag);
+        setLinked(fisherTag);
+        this.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound("last_used_bait"));
+        setLastTeleportRequest(fisherTag);
+    }
     public NbtCompound toNbt(){
         NbtCompound fisherTag = new NbtCompound();
         fisherTag.putInt("level", this.level);
@@ -689,4 +680,9 @@ public class FishingCard {
             return self;
         }
     }
+
+
+    //CLIENT FISHING CARD INIT EMPTY
+    private FishingCard(){}
+    public static FishingCard getClientCard(){return new FishingCard();}
 }
