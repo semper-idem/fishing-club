@@ -18,13 +18,13 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.entity.IHookEntity;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -45,7 +45,7 @@ public abstract class ServerWorldMixin extends World {
         if (!(entity instanceof TntEntity tntEntity)) {
             return;
         }
-        if (!(tntEntity.getCausingEntity() instanceof ServerPlayerEntity igniter)) {
+        if (!(tntEntity.getCausingEntity() instanceof ServerPlayerEntity causingEntity)) {
             return;
         }
 
@@ -54,22 +54,25 @@ public abstract class ServerWorldMixin extends World {
             return;
         }
 
-        if (!FishingCardManager.getPlayerCard(igniter).hasPerk(FishingPerks.BOMB_FISHING)) {
+        if (!FishingCardManager.getPlayerCard(causingEntity).hasPerk(FishingPerks.BOMB_FISHING)) {
             return;
         }
         int fishCount = (int) (Math.random() * power);
         for(int i = 0; i < fishCount; i++) {
-            pickupFish(igniter, explosionPos);
+            catchFishWithTnt(causingEntity, explosionPos);
         }
     }
 
 
-    private void pickupFish(ServerPlayerEntity igniter, BlockPos explosionPos){
+    @Unique
+    private void catchFishWithTnt(ServerPlayerEntity causingEntity, BlockPos explosionPos){
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
-                Fish hFish = FishUtil.getFishOnHook(new IHookEntity() {
+        FishUtil.fishCaughtAt(
+                causingEntity,
+                FishUtil.getFishOnHook(new IHookEntity() {
                     @Override
                     public FishingCard getFishingCard() {
-                        return FishingCardManager.getPlayerCard(igniter);
+                        return FishingCardManager.getPlayerCard(causingEntity);
                     }
 
                     @Override
@@ -79,13 +82,14 @@ public abstract class ServerWorldMixin extends World {
 
                     @Override
                     public FishingCard.Chunk getFishedInChunk() {
-                        return new FishingCard.Chunk(chunkPos.x, chunkPos.z);
+                        return new FishingCard.Chunk(chunkPos);
                     }
                     @Override
                     public float getFishMultiplier() {
                         return 0.35f;
                     }
-                });
-                FishUtil.fishCaught(igniter, hFish);
+                }),
+                explosionPos
+        );
     }
 }

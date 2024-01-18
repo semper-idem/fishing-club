@@ -18,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -60,14 +61,6 @@ public class FishingCard {
     private Chunk lastFishedInChunk;
 
     private PlayerEntity owner;
-
-    public FishingCard(){
-        initPerks();
-    }
-    public FishingCard(int level){
-        this();
-        this.level = level;
-    }
 
     public FishingCard(PlayerEntity playerEntity, NbtCompound fisherTag) {
         this.owner = playerEntity;
@@ -138,7 +131,7 @@ public class FishingCard {
     private void setPerks(NbtCompound fisherTag){
         this.perks.clear();
         NbtList perkListTag = fisherTag.getList("perks", NbtElement.STRING_TYPE);
-        if (perkListTag.size() == 0) {
+        if (perkListTag.isEmpty()) {
             initPerks();
         } else {
             perkListTag.forEach(
@@ -658,6 +651,10 @@ public class FishingCard {
         public Chunk(int x, int z) {
             this.x = x;
             this.z = z;
+        }
+        public Chunk(ChunkPos chunkPos) {
+            this.x = chunkPos.x;
+            this.z = chunkPos.z;
         }
 
         public Chunk(String chunkString){

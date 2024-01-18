@@ -46,6 +46,12 @@ public class FishUtil {
         giveItemStack(player, getFishStack(fish, getRewardMultiplier(fishingCard)));
     }
 
+    public static void fishCaughtAt(ServerPlayerEntity player, Fish fish, BlockPos caughtAt) {
+        FishingCard fishingCard = FishingAtlas.getCard(player.getUuid());
+        fishingCard.fishCaught(fish);
+        throwRandomly(player.getWorld(), caughtAt, getFishStack(fish));
+    }
+
     public static void giveReward(ServerPlayerEntity player, ArrayList<ItemStack> treasureReward){
         for(ItemStack reward : treasureReward) {
             giveItemStack(player, reward);
@@ -60,16 +66,15 @@ public class FishUtil {
         }
     }
 
-    private static ItemEntity throwRandomly(World world, BlockPos pos, ItemStack stack){
+    private static void throwRandomly(World world, BlockPos pos, ItemStack stack){
         if (stack.isEmpty()) {
-            return null;
+            return;
         }
         ItemEntity itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, stack);
         itemEntity.setPickupDelay(40);
         float f = world.random.nextFloat() * 0.25f;
         float g = world.random.nextFloat() * ((float)Math.PI * 2);
         itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.75f, MathHelper.cos(g) * f);
-        return itemEntity;
     }
 
     private static int getRewardMultiplier(FishingCard fishingCard){
