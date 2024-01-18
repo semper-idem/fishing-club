@@ -11,9 +11,9 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -101,7 +101,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingAtlas.getCard(getOwner().getUuid());
+        return FishingDatabase.getCard(getOwner().getUuid());
     }
 
     @Override

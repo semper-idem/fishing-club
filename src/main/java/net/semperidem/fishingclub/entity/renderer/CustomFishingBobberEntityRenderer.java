@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.entity;
+package net.semperidem.fishingclub.entity.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -15,6 +15,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {

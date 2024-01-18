@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.entity;
+package net.semperidem.fishingclub.entity.renderer;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.WanderingTraderEntityRenderer;

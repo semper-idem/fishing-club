@@ -12,9 +12,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
@@ -90,7 +90,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingAtlas.getCard(getOwner().getUuid());
+        return FishingDatabase.getCard(getOwner().getUuid());
     }
 
     @Override

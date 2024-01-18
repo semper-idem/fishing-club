@@ -19,7 +19,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class CommandsUtil {
+public class Commands {
     public static LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal(FishingClub.MOD_ID);
     public static void registerSummonAccept(){
         rootCommand.then(literal("summon_accept").executes(context -> {

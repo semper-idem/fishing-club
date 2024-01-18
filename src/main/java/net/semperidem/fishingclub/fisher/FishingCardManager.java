@@ -2,11 +2,11 @@ package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.game.FishingAtlas;
+import net.semperidem.fishingclub.FishingDatabase;
 
 public class FishingCardManager {
     public static FishingCard getPlayerCard(PlayerEntity user){
-        return FishingAtlas.getCard(user.getUuid());
+        return FishingDatabase.getCard(user.getUuid());
     }
 
     public static void addExperience(ServerPlayerEntity playerEntity, int expGained){

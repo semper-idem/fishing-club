@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.entity;
+package net.semperidem.fishingclub.entity.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -13,6 +13,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.semperidem.fishingclub.entity.LineArrowEntity;
 
 public class LineArrowEntityRenderer extends ProjectileEntityRenderer<LineArrowEntity> {
     private static final RenderLayer LAYER = RenderLayer.getEntityCutout(ArrowEntityRenderer.TEXTURE);

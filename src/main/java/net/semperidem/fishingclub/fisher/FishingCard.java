@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -28,7 +29,6 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -397,7 +397,7 @@ public class FishingCard {
         float passivExpMultiplier = 1;
         for(Entity entity : owner.getEntityWorld().getOtherEntities(null, box)) {
             if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                if (FishingAtlas.getCard(entity.getUuid()).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                if (FishingDatabase.getCard(entity.getUuid()).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                     passivExpMultiplier += 0.1f;
                 }
                 if (qualitySharing && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
@@ -684,5 +684,6 @@ public class FishingCard {
 
     //CLIENT FISHING CARD INIT EMPTY
     private FishingCard(){}
-    public static FishingCard getClientCard(){return new FishingCard();}
+    public static FishingCard getEmptyCard(){return new FishingCard();}
+    public static FishingCard EMPTY = getEmptyCard();
 }

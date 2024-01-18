@@ -11,9 +11,8 @@ public class FishingClub implements ModInitializer {
     public static PlayerManager playerManager;//THIS BAD
     @Override
     public void onInitialize() {
-        CommandsUtil.register();
+        Commands.register();
         FRegistry.register();
-        //FishingClubTest.runTest();
         ServerTickEvents.END_SERVER_TICK.register(server ->{
             if (playerManager == null) {
                 playerManager = server.getPlayerManager();

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.entity;
+package net.semperidem.fishingclub.entity.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -16,6 +16,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.entity.HarpoonEntity;
+import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 
 public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {

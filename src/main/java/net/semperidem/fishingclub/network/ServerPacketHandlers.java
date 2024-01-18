@@ -6,6 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
@@ -17,7 +18,6 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -30,7 +30,7 @@ public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         try {
-            Fish fish = FishingAtlas.getLastCatch(player.getUuid());
+            Fish fish = FishingDatabase.getLastCatch(player.getUuid());
             int rewardCount = buf.readInt();
             ArrayList<ItemStack> rewards = new ArrayList<>();
             for(int i = 0; i < rewardCount; i++) {

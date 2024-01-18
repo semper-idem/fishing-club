@@ -5,7 +5,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FRegistry;
 
 public class FishingClubClient implements ClientModInitializer {
-    public static final FishingCard CLIENT_INFO = FishingCard.getClientCard();
+    public static final FishingCard CLIENT_INFO = FishingCard.getEmptyCard();
 
     @Override
     public void onInitializeClient() {

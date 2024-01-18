@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.entity;
+package net.semperidem.fishingclub.entity.renderer.model;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;

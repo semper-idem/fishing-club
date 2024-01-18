@@ -10,7 +10,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.entity.*;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.FishermanEntity;
+import net.semperidem.fishingclub.entity.HarpoonEntity;
+import net.semperidem.fishingclub.entity.LineArrowEntity;
+import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 
 public class FEntityRegistry {
 
