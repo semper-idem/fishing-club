@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.fish;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -22,8 +21,6 @@ public class Fish {
     private static final int MIN_EXP = 5;
     private static final int MAX_EXP = 99999;
 
-    private FishingCard fishingCard;
-
     private final Species species;
 
     public String name;
@@ -38,144 +35,140 @@ public class Fish {
     public float weight;
     public float length;
 
-
-
     public ItemStack caughtUsing;
-    public FishingCard.Chunk caughtIn;
-    public BlockPos caughtAt;
     public UUID caughtByUUID;
 
     public boolean consumeGradeBuff;
 
+    private NbtCompound nbt;
+    public Fish(Species species, ItemStack caughtUsing, FishingCard fishingCard) {
+        this.species = species;
+        this.name = species.name;
+
+        this.caughtUsing = caughtUsing;
+
+        int fisherLevel = fishingCard.getLevel();
+        boolean hasBoatBoostedHealth = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
+        int minGrade = fishingCard.getMinGrade();
+        boolean hasFreshChunkBuff = fishingCard.hasFreshChunkBuff();
+
+        this.level = calculateLevel(fisherLevel);
+        this.weight = calculateWeight(minGrade);
+        this.length = calculateLength(minGrade);
+        this.grade = calculateGrade(hasFreshChunkBuff);
+        this.damage = calculateDamage(fisherLevel, hasBoatBoostedHealth);
+        this.value = calculateValue();
+
+        PlayerEntity caughtBy = fishingCard.getOwner();
+        this.experience = calculateExperience(caughtBy);
+        this.caughtByUUID = caughtBy.getUuid();
+        this.consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+    }
+
     public Fish(NbtCompound nbt){
         this.name = nbt.getString("name");
         this.species = SpeciesLibrary.ALL_FISH_TYPES.get(name);
-
-        //TODO FISHING CARD HERE
-
-        this.caughtIn = new FishingCard.Chunk(nbt.getString("caughtIn"));
-        this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
-
-        this.level = nbt.getInt("fishLevel");
+        this.level = nbt.getInt("level");
         this.experience = nbt.getInt("experience");
         this.grade = nbt.getInt("grade");
         this.value = nbt.getInt("value");
         this.weight = nbt.getFloat("weight");
         this.length = nbt.getFloat("length");
-    }
-
-    public Fish(Species species, FishingCard fishingCard, ItemStack caughtUsing, FishingCard.Chunk caughtIn, BlockPos caughtAt) {
-        this.species = species;
-        this.name = species.name;
-
-        this.fishingCard = fishingCard;
-
-        this.caughtIn = caughtIn;
-        this.caughtUsing = caughtUsing;
-        this.caughtAt = caughtAt;
-        this.caughtByUUID = fishingCard.getOwner().getUuid();
-
-        this.consumeGradeBuff = fishingCard.getOwner().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
-
-        this.level = calculateLevel();
-        this.weight = calculateWeight();
-        this.length = calculateLength();
-        this.grade = calculateGrade();
-        this.experience = calculateExperience();
-        this.damage = calculateDamage();
-        this.value = calculateValue();
-
-        applyFisherVestEffect();
+        this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
     }
 
      public NbtCompound getNbt(){
-        NbtCompound fishNbt = new NbtCompound();
-        fishNbt.putString("name", name);
-        fishNbt.putInt("grade", grade);
-        fishNbt.putInt("fishLevel", level);
-        fishNbt.putInt("experience", experience);
-        fishNbt.putInt("value", value);
-        fishNbt.putFloat("weight", weight);
-        fishNbt.putFloat("length", length);
-        fishNbt.put("caughtUsing", caughtUsing.writeNbt(new NbtCompound()));
-        fishNbt.putString("caughtIn", caughtIn.toString());
-        return fishNbt;
+         if (nbt != null) {
+             return nbt;
+         }
+         nbt = new NbtCompound();
+         nbt.putString("name", name);
+         nbt.putInt("level", level);
+         nbt.putInt("experience", experience);
+         nbt.putInt("grade", grade);
+         nbt.putInt("value", value);
+         nbt.putFloat("weight", weight);
+         nbt.putFloat("length", length);
+         nbt.put("caughtUsing", caughtUsing.writeNbt(new NbtCompound()));
+         return nbt;
     }
 
-    private float calculateDamage(){
+    private float calculateDamage(int fisherLevel, boolean hasBoatBoostedHealth){
         float damageReduction = FishingRodPartController.getStat(caughtUsing, FishingRodStatType.DAMAGE_REDUCTION);
-        boolean boatBoosted = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
-        damageReduction += boatBoosted ? 0.2f : 0;
+        damageReduction += hasBoatBoostedHealth ? 0.2f : 0;
         float percentDamageReduction = (1 - MathHelper.clamp(damageReduction, 0f ,1f));
-        return getFishRawDamage() * percentDamageReduction;
+        return getFishRawDamage(fisherLevel) * percentDamageReduction;
     }
 
-    private float getFishRawDamage() {
-        return Math.max(0, (level - 5 - (fishingCard.getLevel() * 0.25f)) * 0.05f);
+    private float getFishRawDamage( int fisherLevel) {
+        return Math.max(0, (level - 5 - (fisherLevel * 0.25f)) * 0.05f);
     }
 
-    private void applyFisherVestEffect(){
-        PlayerEntity player = this.fishingCard.getOwner();
-        if (!FishUtil.hasFishingVest(player)) return;
-        float expRatio = 1 + FISHER_VEST_EXP_BONUS;
-        if (FishUtil.hasProperFishingEquipment(player)) {
-            expRatio += FISHER_VEST_EXP_BONUS;
+
+    private float getVestExpMultiplier(PlayerEntity caughtBy) {
+        if (!FishUtil.hasFishingVest(caughtBy)) {
+            return 1;
         }
-        this.experience = (int) (this.experience * expRatio);
+
+        float result = 1 + FISHER_VEST_EXP_BONUS;
+
+        if (FishUtil.hasProperFishingEquipment(caughtBy)) {
+            result += FISHER_VEST_EXP_BONUS;
+        }
+        return result;
     }
 
     public Species getSpecies(){
         return this.species;
     }
 
-    private int calculateLevel(){
+    private int calculateLevel(int fisherLevel){
         int adjustedFishLevel = FishUtil.getPseudoRandomValue(
-                species.fishMinLevel,
-                Math.min(99 - species.fishMinLevel, fishingCard.getLevel()),
-                Math.min(1, (float) (Math.min(0.5, (fishingCard.getLevel() / 200f)) +
-                                (Math.sqrt(fishingCard.getLevel()) / 50f)))
+                species.minLevel,
+                Math.min(99 - species.minLevel, fisherLevel),
+                Math.min(1, (float) (Math.min(0.5, (fisherLevel / 200f)) +
+                                (Math.sqrt(fisherLevel) / 50f)))
         );
         return MathHelper.clamp(adjustedFishLevel, MIN_LEVEL, MAX_LEVEL);
     }
 
 
-    private float calculateWeight(){
+    private float calculateWeight(int minGrade){
         float weightMultiplier = Math.max(1, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_MAX_WEIGHT_MULTIPLIER));
-        float minGradeBuff = fishingCard.getMinGrade() / 5f;
+        float minGradeBuff = minGrade / 5f;
         float minWeight = species.fishMinWeight + species.fishRandomWeight * minGradeBuff;
         float weightRange = species.fishRandomWeight * weightMultiplier * (1 - minGradeBuff);
         return FishUtil.getPseudoRandomValue(minWeight, weightRange, level / 100f);
     }
 
-    private float calculateLength(){
+    private float calculateLength(int minGrade){
         float lengthMultiplier = Math.max(1, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_MAX_LENGTH_MULTIPLIER));
-        float minGradeBuff = fishingCard.getMinGrade() / 5f;
+        float minGradeBuff = minGrade / 5f;
         float minLength = species.fishMinLength + species.fishRandomLength * minGradeBuff;
         float lengthRange = species.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
         return FishUtil.getPseudoRandomValue(minLength, lengthRange, level / 100f);
     }
 
-    private int calculateExperience(){
+    private int calculateExperience(PlayerEntity caughtBy){
         float fishRarityMultiplier = (200 - species.fishRarity) / 100;
         float fishExpValue = (float) Math.pow(level, 1.3);
         float fishGradeMultiplier = this.grade > 3 ? (float) Math.pow(2, this.grade - 3) : 1;
         int fishExp = (int) (fishGradeMultiplier * fishRarityMultiplier * (5 + fishExpValue));
+        fishExp = (int) (fishExp * getVestExpMultiplier(caughtBy));
         return MathHelper.clamp(fishExp, MIN_EXP, MAX_EXP);
     }
 
-    private int calculateGrade(){
+    private int calculateGrade(boolean hasFreshChunkBuff){
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
         float oneUpChance = Math.max(0, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_RARITY_BONUS));
-        if (fishingCard.hasPerk(FishingPerks.CHUNK_QUALITY_INCREASE)) {
-            if (fishingCard.caughtInChunk(caughtIn)) {
-                oneUpChance = 1;
-            }
+        if (hasFreshChunkBuff) {
+            oneUpChance = 1;
         }
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public Fish applyHarpoonMultiplier(float multiplier){
+    public Fish applyMultiplier(float multiplier){
         this.experience = (int) (this.experience * multiplier);
         this.weight = Math.max(this.species.fishMinWeight, (this.weight * multiplier));
         this.length = Math.max(this.species.fishMinLength, (this.length * multiplier));

@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class FishingRodPartController {
 
     public static ArrayList<ItemStack> getParts(ItemStack fishingRodStack){
+        if (fishingRodStack.getItem() != FItemRegistry.CUSTOM_FISHING_ROD) return new ArrayList<>();
         return (fishingRodStack
                 .getOrCreateNbt()
                 .getList("parts", NbtElement.COMPOUND_TYPE))

@@ -18,9 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.MathUtil;
@@ -31,7 +32,7 @@ import java.util.*;
 
 public class FishUtil {
     public static final Item FISH_ITEM = Items.TROPICAL_FISH;
-    private static final Random RANDOM = new java.util.Random(42L);
+    private static final Random RANDOM = new Random(42L);
 
 
     public static ItemStack prepareFishItemStack(Fish fish){
@@ -41,10 +42,10 @@ public class FishUtil {
     }
 
     public static void grantReward(ServerPlayerEntity player, Fish fish, ArrayList<ItemStack> treasureReward){
-        FishingCardManager.fishCaught(player, fish);
+        FishingCard fishingCard = FishingAtlas.getCard(player.getUuid());
+        fishingCard.fishCaught(fish);
         player.addExperience(Math.max(1, fish.experience / 10));
         ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
-        FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
         fishReward.setCount(getRewardMultiplier(fishingCard));
         if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff) {
             Box box = new Box(player.getBlockPos());
@@ -55,17 +56,13 @@ public class FishUtil {
                 }
             }
         }
-        if (fish.caughtAt == null) {
-            treasureReward.add(fishReward);
-            for(ItemStack reward : treasureReward) {
-                if (player.getInventory().getEmptySlot() == -1) {
-                    player.dropItem(reward, false);
-                } else {
-                    player.giveItemStack(reward);
-                }
+        treasureReward.add(fishReward);
+        for(ItemStack reward : treasureReward) {
+            if (player.getInventory().getEmptySlot() == -1) {
+                player.dropItem(reward, false);
+            } else {
+                player.giveItemStack(reward);
             }
-        } else {
-            player.world.spawnEntity(throwRandomly(player.world, fish.caughtAt, fishReward));
         }
     }
 
@@ -198,25 +195,31 @@ public class FishUtil {
         displayTag.put("Lore", loreTag);
     }
 
-    public static Fish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk){
-        return getFishOnHook(fishingCard, fishingRod, fishTypeRarityMultiplier, chunk, null);
-    }
-
-    public static Fish getFishOnHook(FishingCard fishingCard, ItemStack fishingRod, float fishTypeRarityMultiplier, FishingCard.Chunk chunk, BlockPos caughtAt) {
-        int totalRarity = 0;
-        HashMap<Species, Integer> fishTypeToThreshold = new HashMap<>();
-        ArrayList<Species> availableFish = SpeciesLibrary.getFishTypesForFisher(fishingCard);
-        for (Species fishType : availableFish) {
-            totalRarity += fishType.fishRarity;
-            fishTypeToThreshold.put(fishType, totalRarity);
+    private static Species getRandomSpecies(int level) {
+        int totalWeight = 0;
+        HashMap<Species, Integer> speciesToTotalWeight = new HashMap<>();
+        for (Species species : SpeciesLibrary.getSpeciesForLevel(level)) {
+            totalWeight += (int) species.fishRarity;
+            speciesToTotalWeight.put(species, totalWeight);
         }
-        int randomFishRarity = (int) (Math.random() * totalRarity * fishTypeRarityMultiplier);
-        for (Species fishType : availableFish) {
-            if (randomFishRarity < fishTypeToThreshold.get(fishType)) {
-                return new Fish(fishType, fishingCard, fishingRod, chunk, caughtAt);
+
+        int randomWeight = (int) (Math.random() * totalWeight);
+        Species randomSpecies = SpeciesLibrary.COD;
+        for(Species species : speciesToTotalWeight.keySet()) {
+            randomSpecies = species;
+            if (randomWeight < speciesToTotalWeight.get(randomSpecies)) {
+                break;
             }
         }
-        return new Fish(SpeciesLibrary.COD, fishingCard, fishingRod, chunk, caughtAt);
+        return randomSpecies;
+    }
+
+    public static Fish getFishOnHook(IHookEntity hookEntity) {
+        FishingCard fishingCard = hookEntity.getFishingCard();
+        Species species = getRandomSpecies(fishingCard.getLevel());
+        Fish fishOnHook = new Fish(species, hookEntity.getCaughtUsing(), fishingCard);
+        fishingCard.fishHooked(hookEntity);
+        return fishOnHook;
     }
 
         public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){

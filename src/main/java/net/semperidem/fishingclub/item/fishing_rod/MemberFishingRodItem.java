@@ -50,7 +50,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         if (fishingRod.getMaxDamage() - fishingRod.getDamage() == 1) return;
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power, FishingCardManager.getPlayerCard((ServerPlayerEntity) user)));
+            world.spawnEntity(new CustomFishingBobberEntity(user, world, fishingRod, power));
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);

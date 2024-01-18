@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -18,7 +17,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
@@ -55,6 +56,7 @@ public class FishingCard {
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private ItemStack sharedBait = ItemStack.EMPTY;
     private TeleportRequest lastTeleportRequest = new TeleportRequest("Jeb", 0);
+    private Chunk lastFishedInChunk;
 
     private PlayerEntity owner;
 
@@ -392,17 +394,39 @@ public class FishingCard {
         this.lastFishCaughtTime = time;
     }
 
-    void fishCaught(Fish fish, int boostedExp){
+    public void fishHooked(IHookEntity hookEntity){
+        lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
+        lastFishedInChunk = hookEntity.getFishedInChunk();
+    }
+
+    public void fishCaught(Fish fish){
+        int expGained = fish.experience;
+        if (owner.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
+            float multiplier = (float) (1 + 0.1 * (owner.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
+            expGained *= multiplier;
+        }
+
+        Box box = new Box(owner.getBlockPos());
+        box.expand(3);
+        float passivExpMultiplier = 1;
+        for(Entity entity : owner.getEntityWorld().getOtherEntities(null, box)) {
+            if (entity instanceof ServerPlayerEntity) {
+                if (hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                    passivExpMultiplier += 0.1f;
+                }
+            }
+        }
+        expGained = (int)(expGained * passivExpMultiplier);
+
         long worldTime = owner.world.getTime();
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
-        fishCaughtInChunk(fish);
+        fishCaughtInChunk();
         processOneTimeBuff(fish);
         prolongStatusEffects();
-        grantExperience(boostedExp);
-        if (fish.caughtUsing == null || fish.caughtUsing == Items.AIR.getDefaultStack()) return;
-        lastUsedBait = FishingRodPartController.getPart(fish.caughtUsing, FishingRodPartType.BAIT);
+        grantExperience(expGained);
     }
+
 
     private void prolongStatusEffects(){
         if (!hasPerk(FishingPerks.SHARED_BUFFS)) {
@@ -424,9 +448,14 @@ public class FishingCard {
         for(Entity passenger : passengers) {
             if(!(passenger instanceof PlayerEntity playerPassenger)) continue;
             playerPassenger.getStatusEffects().forEach(
-                    sei -> {
-                        sei.upgrade(new StatusEffectInstance(sei.getEffectType(), sei.getDuration() + 200, sei.getAmplifier()));
-                    });
+                    sei -> sei.upgrade(
+                            new StatusEffectInstance(
+                                    sei.getEffectType(),
+                                    sei.getDuration() + 200,
+                                    sei.getAmplifier()
+                            )
+                    )
+            );
         }
 
     }
@@ -444,10 +473,14 @@ public class FishingCard {
         }
     }
 
-    private void fishCaughtInChunk(Fish fish){
-        if (!caughtInChunk(fish.caughtIn)) {
-            fishedChunks.add(fish.caughtIn);
+    private void fishCaughtInChunk(){
+        if (!caughtInChunk(lastFishedInChunk)) {
+            fishedChunks.add(lastFishedInChunk);
         }
+    }
+
+    public boolean hasFreshChunkBuff() {
+        return caughtInChunk(lastFishedInChunk);
     }
 
     private void processOneTimeBuff(Fish fish){
@@ -572,15 +605,6 @@ public class FishingCard {
         }
         return false;
     }
-
-    public FishingCard getHarpoonFisherInfo(){
-        FishingCard hFishingCard = new FishingCard();
-        hFishingCard.owner = this.owner;
-        hFishingCard.perks = this.perks;
-        hFishingCard.fishedChunks = this.fishedChunks;
-        return hFishingCard;
-    }
-
 
     public ArrayList<UUID> getLinkedFishers(){
         return linkedFishers;

@@ -3,6 +3,8 @@ package net.semperidem.fishingclub.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -15,12 +17,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.semperidem.fishingclub.entity.IHookEntity;
+import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.Fish;
-import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -65,9 +67,22 @@ public abstract class ServerWorldMixin extends World {
 
     private void pickupFish(ServerPlayerEntity igniter, BlockPos explosionPos){
         ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
-                FishingCard fishingCard = FishingCardManager.getPlayerCard(igniter).getHarpoonFisherInfo();
-                FishingCard.Chunk chunk = new FishingCard.Chunk(chunkPos.x, chunkPos.z);
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk, explosionPos).applyHarpoonMultiplier(0.35f);
+                Fish hFish = FishUtil.getFishOnHook(new IHookEntity() {
+                    @Override
+                    public FishingCard getFishingCard() {
+                        return FishingCardManager.getPlayerCard(igniter);
+                    }
+
+                    @Override
+                    public ItemStack getCaughtUsing() {
+                        return Items.TNT.getDefaultStack();
+                    }
+
+                    @Override
+                    public FishingCard.Chunk getFishedInChunk() {
+                        return new FishingCard.Chunk(chunkPos.x, chunkPos.z);
+                    }
+                }).applyMultiplier(0.35f);
                 FishUtil.grantReward(igniter, hFish, new ArrayList<>());
     }
 }

@@ -5,7 +5,7 @@ public class Species {
     public String name;
 
     final MovementPattern fishPattern;
-    final int fishMinLevel;
+    final int minLevel;
     final int staminaLevel;
     final float fishMinLength;
     final float fishRandomLength;
@@ -17,7 +17,7 @@ public class Species {
     public Species(
             String name,
             MovementPattern fishPattern,
-            int fishMinLevel,
+            int minLevel,
             int fishEnergyLevel,
             float fishMinLength,
             float fishRandomLength,
@@ -27,7 +27,7 @@ public class Species {
     {
         this.name = name;
         this.fishPattern = fishPattern;
-        this.fishMinLevel = fishMinLevel;
+        this.minLevel = minLevel;
         this.staminaLevel = fishEnergyLevel;
         this.fishMinLength = fishMinLength;
         this.fishRandomLength = fishRandomLength;

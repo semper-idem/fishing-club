@@ -1,8 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
 
-import net.semperidem.fishingclub.fisher.FishingCard;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,10 +24,10 @@ public class SpeciesLibrary {
     public static Species RAINBOW_TROUT;
     public static Species WALLEYE;
 
-    public static ArrayList<Species> getFishTypesForFisher(FishingCard fishingCard){
+    public static ArrayList<Species> getSpeciesForLevel(int level){
         return  new ArrayList<>(
                 ALL_FISH_TYPES.values().stream().filter(
-                        fishType -> fishingCard.getLevel() > fishType.fishMinLevel).toList()
+                        species -> level > species.minLevel).toList()
         );
     }
 

@@ -11,17 +11,17 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class LineArrowEntity extends PersistentProjectileEntity {
+public class LineArrowEntity extends PersistentProjectileEntity implements IHookEntity{
     boolean isReturning = false;
     public LineArrowEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -90,11 +90,9 @@ public class LineArrowEntity extends PersistentProjectileEntity {
     private void pickupFish(){
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
-                FishingCard fishingCard = FishingCardManager.getPlayerCard(owner).getHarpoonFisherInfo();
-                FishingCard.Chunk chunk = new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish harpoonedFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
-                        .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
+                Fish harpoonedFish = FishUtil.getFishOnHook(this)
+                        .applyMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
                 FishUtil.grantReward(owner, harpoonedFish, new ArrayList<>());
             }
         }
@@ -103,5 +101,20 @@ public class LineArrowEntity extends PersistentProjectileEntity {
     @Override
     protected ItemStack asItemStack() {
         return FItemRegistry.LINE_ARROW.getDefaultStack();
+    }
+
+    @Override
+    public FishingCard getFishingCard() {
+        return FishingAtlas.getCard(getOwner().getUuid());
+    }
+
+    @Override
+    public ItemStack getCaughtUsing() {
+        return this.asItemStack();
+    }
+
+    @Override
+    public FishingCard.Chunk getFishedInChunk() {
+        return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
     }
 }

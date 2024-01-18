@@ -12,16 +12,15 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
-import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;
 
-public class HarpoonEntity extends TridentEntity {
+public class HarpoonEntity extends TridentEntity implements IHookEntity{
     boolean dealtDamage;
     ItemStack harpoonStack;
 
@@ -52,11 +51,9 @@ public class HarpoonEntity extends TridentEntity {
     private void pickupFish(){
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
-                FishingCard fishingCard = FishingCardManager.getPlayerCard(owner).getHarpoonFisherInfo();
-                FishingCard.Chunk chunk = new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
                 double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(fishingCard, FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1, chunk)
-                        .applyHarpoonMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
+                Fish hFish = FishUtil.getFishOnHook(this)
+                        .applyMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
                 FishUtil.grantReward(owner, hFish, new ArrayList<>());
             }
         }
@@ -92,5 +89,20 @@ public class HarpoonEntity extends TridentEntity {
             }
         }
         super.tick();
+    }
+
+    @Override
+    public FishingCard getFishingCard() {
+        return FishingAtlas.getCard(getOwner().getUuid());
+    }
+
+    @Override
+    public ItemStack getCaughtUsing() {
+        return harpoonStack;
+    }
+
+    @Override
+    public FishingCard.Chunk getFishedInChunk() {
+        return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
     }
 }
