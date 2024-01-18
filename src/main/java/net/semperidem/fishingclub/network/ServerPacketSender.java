@@ -2,17 +2,16 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.game.FishingAtlas;
+import net.semperidem.fishingclub.game.HookedFish;
 
 import java.util.UUID;
 
@@ -37,11 +36,9 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, ItemStack fishingRod, Fish fish){
+    public static void sendFishingStartPacket(ServerPlayerEntity player, Fish fish){
         FishingAtlas.putCatch(player.getUuid(), fish);
-        PacketByteBuf fishGameStartPacket =  FishUtil.fishToPacketBuf(fish);
-        fishGameStartPacket.writeItemStack(fishingRod);
-        sendPacket(player, S2C_F_GAME_START, fishGameStartPacket);
+        sendPacket(player, S2C_F_GAME_START, HookedFish.fromFish(fish));
     }
 
     public static void sendFisherInfo(ServerPlayerEntity playerEntity, FishingCard fishingCard){

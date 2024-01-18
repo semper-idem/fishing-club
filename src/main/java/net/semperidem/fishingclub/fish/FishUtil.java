@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.fish;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -11,7 +10,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -232,23 +230,9 @@ public class FishUtil {
         double randomPart = randomAdjustment * mappedG * (1 - skewPercentage);
         return (float) (base + skewPart + randomPart);
     }
+
     public static int getPseudoRandomValue(int base, int randomAdjustment, float skew){
         return (int) getPseudoRandomValue(Float.valueOf(base), Float.valueOf(randomAdjustment), skew);
-    }
-
-
-    public static PacketByteBuf fishToPacketBuf(Fish fish){
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(fish.getNbt());
-        return buf;
-    }
-
-    public static Fish fishFromPacketBuf(PacketByteBuf fishBuf) throws Exception {
-        NbtCompound nbt = fishBuf.readNbt();
-        if (nbt == null || !nbt.contains("fish_details")){
-            throw new Exception("HANDLE_NO_FISH_NBT_EXCEPTION");
-        }
-        return new Fish(nbt.getCompound("fish_details"));
     }
 
     public static int getFishValue(ItemStack fishStack){
