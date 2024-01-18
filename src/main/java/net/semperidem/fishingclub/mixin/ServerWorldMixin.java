@@ -82,7 +82,11 @@ public abstract class ServerWorldMixin extends World {
                     public FishingCard.Chunk getFishedInChunk() {
                         return new FishingCard.Chunk(chunkPos.x, chunkPos.z);
                     }
-                }).applyMultiplier(0.35f);
+                    @Override
+                    public float getFishMultiplier() {
+                        return 0.35f;
+                    }
+                });
                 FishUtil.grantReward(igniter, hFish, new ArrayList<>());
     }
 }

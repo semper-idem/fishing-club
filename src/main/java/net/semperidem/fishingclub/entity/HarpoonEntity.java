@@ -23,6 +23,8 @@ import java.util.ArrayList;
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
     boolean dealtDamage;
     ItemStack harpoonStack;
+    double range = 0;
+
 
     public HarpoonEntity(EntityType<? extends TridentEntity> entityType, World world) {
         super(FEntityRegistry.HARPOON_ENTITY, world);
@@ -51,9 +53,8 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
     private void pickupFish(){
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
-                double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(this)
-                        .applyMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
+                range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
+                Fish hFish = FishUtil.getFishOnHook(this);
                 FishUtil.grantReward(owner, hFish, new ArrayList<>());
             }
         }
@@ -104,5 +105,10 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
     @Override
     public FishingCard.Chunk getFishedInChunk() {
         return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
+    }
+
+    @Override
+    public float getFishMultiplier() {
+        return (float) (1 - MathHelper.clamp(range * 0.0078125f + 0.25, 0.25f, 0.75f)); //Between 0.25 and 0.75 based no range(Max at 64blocks)
     }
 }

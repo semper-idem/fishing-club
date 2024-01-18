@@ -168,13 +168,12 @@ public class Fish {
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public Fish applyMultiplier(float multiplier){
+    public void applyMultiplier(float multiplier){
         this.experience = (int) (this.experience * multiplier);
         this.weight = Math.max(this.species.fishMinWeight, (this.weight * multiplier));
         this.length = Math.max(this.species.fishMinLength, (this.length * multiplier));
         this.grade = Math.max(1, (int) (this.grade * multiplier));
         this.value = Math.max(1, (int) (this.value * multiplier));
-        return this;
     }
 
     private int calculateValue() {

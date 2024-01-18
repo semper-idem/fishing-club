@@ -9,4 +9,6 @@ public interface IHookEntity {
     ItemStack getCaughtUsing();
 
     FishingCard.Chunk getFishedInChunk();
+
+    float getFishMultiplier();
 }

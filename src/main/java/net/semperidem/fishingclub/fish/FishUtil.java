@@ -218,6 +218,7 @@ public class FishUtil {
         FishingCard fishingCard = hookEntity.getFishingCard();
         Species species = getRandomSpecies(fishingCard.getLevel());
         Fish fishOnHook = new Fish(species, hookEntity.getCaughtUsing(), fishingCard);
+        fishOnHook.applyMultiplier(hookEntity.getFishMultiplier());
         fishingCard.fishHooked(hookEntity);
         return fishOnHook;
     }

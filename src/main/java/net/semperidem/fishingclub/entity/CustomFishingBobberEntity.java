@@ -448,6 +448,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
     }
 
+    @Override
+    public float getFishMultiplier() {
+        return 1;
+    }
+
     enum State {
         FLYING,
         BOBBING;

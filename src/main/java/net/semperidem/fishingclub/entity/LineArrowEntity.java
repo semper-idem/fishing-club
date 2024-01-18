@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 public class LineArrowEntity extends PersistentProjectileEntity implements IHookEntity{
     boolean isReturning = false;
+    private double range = 0;
     public LineArrowEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -90,9 +91,8 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     private void pickupFish(){
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
-                double range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish harpoonedFish = FishUtil.getFishOnHook(this)
-                        .applyMultiplier((float)(1 -  Math.min(0.75, Math.max(0.25, range / 128f + 0.25))));
+                range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
+                Fish harpoonedFish = FishUtil.getFishOnHook(this);
                 FishUtil.grantReward(owner, harpoonedFish, new ArrayList<>());
             }
         }
@@ -116,5 +116,10 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     @Override
     public FishingCard.Chunk getFishedInChunk() {
         return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
+    }
+
+    @Override
+    public float getFishMultiplier() {
+        return (float) (1 - MathHelper.clamp(range * 0.0078125f + 0.25, 0.25f, 0.75f)); //Between 0.25 and 0.75 based no range(Max at 64blocks)
     }
 }
