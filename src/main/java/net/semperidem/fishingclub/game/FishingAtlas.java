@@ -23,7 +23,7 @@ public class FishingAtlas {
     }
 
     public static FishingCard getCard(UUID fisherUUID){
-        if (FISHER_TO_CARD_MAP.containsKey(fisherUUID)) {
+        if (!FISHER_TO_CARD_MAP.containsKey(fisherUUID)) {
             FishingCard fishingCard = new FishingCard(FishingClub.playerManager.getPlayer(fisherUUID));
             FISHER_TO_CARD_MAP.put(fisherUUID, fishingCard);
             return fishingCard;

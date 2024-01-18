@@ -11,8 +11,8 @@ import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHa
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -32,11 +32,14 @@ public class ServerPacketHandlers {
         try {
             Fish fish = FishingAtlas.getLastCatch(player.getUuid());
             int rewardCount = buf.readInt();
-            ArrayList<ItemStack> treasureRewards = new ArrayList<>();
+            ArrayList<ItemStack> rewards = new ArrayList<>();
             for(int i = 0; i < rewardCount; i++) {
-                treasureRewards.add(buf.readItemStack());
+                rewards.add(buf.readItemStack());
             }
-            server.execute(() -> FishUtil.grantReward(player, fish,treasureRewards));
+            server.execute(() -> {
+                FishUtil.fishCaught(player, fish);
+                FishUtil.giveReward(player, rewards);
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,7 +11,6 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
@@ -21,7 +18,6 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import java.time.LocalDateTime;
@@ -33,34 +29,34 @@ public class FishUtil {
     private static final Random RANDOM = new Random(42L);
 
 
-    public static ItemStack prepareFishItemStack(Fish fish){
+    public static ItemStack getFishStack(Fish fish){
+        return getFishStack(fish, 1);
+    }
+
+    public static ItemStack getFishStack(Fish fish, int count){
         ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
         setFishDetails(fishReward, fish);
+        fishReward.setCount(count);
         return fishReward;
     }
 
-    public static void grantReward(ServerPlayerEntity player, Fish fish, ArrayList<ItemStack> treasureReward){
+    public static void fishCaught(ServerPlayerEntity player, Fish fish){
         FishingCard fishingCard = FishingAtlas.getCard(player.getUuid());
         fishingCard.fishCaught(fish);
-        player.addExperience(Math.max(1, fish.experience / 10));
-        ItemStack fishReward = FishUtil.prepareFishItemStack(fish);
-        fishReward.setCount(getRewardMultiplier(fishingCard));
-        if (fish.grade >= 4 && fishingCard.hasPerk(FishingPerks.QUALITY_SHARING) && !player.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff) {
-            Box box = new Box(player.getBlockPos());
-            box.expand(3);
-            for(Entity entity : player.getEntityWorld().getOtherEntities(null, box)) {
-                if (entity instanceof ServerPlayerEntity serverPlayerEntity && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
-                    serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, 2400));
-                }
-            }
-        }
-        treasureReward.add(fishReward);
+        giveItemStack(player, getFishStack(fish, getRewardMultiplier(fishingCard)));
+    }
+
+    public static void giveReward(ServerPlayerEntity player, ArrayList<ItemStack> treasureReward){
         for(ItemStack reward : treasureReward) {
-            if (player.getInventory().getEmptySlot() == -1) {
-                player.dropItem(reward, false);
-            } else {
-                player.giveItemStack(reward);
-            }
+            giveItemStack(player, reward);
+        }
+    }
+
+    private static void giveItemStack(ServerPlayerEntity player, ItemStack itemStack){
+        if (player.getInventory().getEmptySlot() == -1) {
+            player.dropItem(itemStack, false);
+        } else {
+            player.giveItemStack(itemStack);
         }
     }
 

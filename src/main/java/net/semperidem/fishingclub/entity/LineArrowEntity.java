@@ -11,15 +11,12 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
 
 public class LineArrowEntity extends PersistentProjectileEntity implements IHookEntity{
     boolean isReturning = false;
@@ -92,8 +89,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
                 range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish harpoonedFish = FishUtil.getFishOnHook(this);
-                FishUtil.grantReward(owner, harpoonedFish, new ArrayList<>());
+                FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
             }
         }
     }

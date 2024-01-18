@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
@@ -87,6 +86,6 @@ public abstract class ServerWorldMixin extends World {
                         return 0.35f;
                     }
                 });
-                FishUtil.grantReward(igniter, hFish, new ArrayList<>());
+                FishUtil.fishCaught(igniter, hFish);
     }
 }

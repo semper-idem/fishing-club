@@ -27,6 +27,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -403,28 +404,32 @@ public class FishingCard {
         int expGained = fish.experience;
         if (owner.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
             float multiplier = (float) (1 + 0.1 * (owner.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
-            expGained *= multiplier;
+            expGained = (int) (expGained * multiplier);
         }
 
         Box box = new Box(owner.getBlockPos());
         box.expand(3);
+        boolean qualitySharing = fish.grade >= 4 && hasPerk(FishingPerks.QUALITY_SHARING) && !owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff;
         float passivExpMultiplier = 1;
         for(Entity entity : owner.getEntityWorld().getOtherEntities(null, box)) {
-            if (entity instanceof ServerPlayerEntity) {
-                if (hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+            if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+                if (FishingAtlas.getCard(entity.getUuid()).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                     passivExpMultiplier += 0.1f;
+                }
+                if (qualitySharing && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+                    serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, 2400));
                 }
             }
         }
         expGained = (int)(expGained * passivExpMultiplier);
 
         long worldTime = owner.world.getTime();
+        grantExperience(expGained);
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
         fishCaughtInChunk();
         processOneTimeBuff(fish);
         prolongStatusEffects();
-        grantExperience(expGained);
     }
 
 
@@ -504,7 +509,12 @@ public class FishingCard {
     }
 
     public void grantExperience(double gainedXP){
-        if (gainedXP == 0) return;
+        if (gainedXP == 0) {
+            return;
+        }
+
+        owner.addExperience((int) Math.max(1, gainedXP / 10));
+
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
         while (this.exp >= nextLevelXP) {

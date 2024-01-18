@@ -12,13 +12,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.FishingAtlas;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
-
-import java.util.ArrayList;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
     boolean dealtDamage;
@@ -54,8 +51,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
                 range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                Fish hFish = FishUtil.getFishOnHook(this);
-                FishUtil.grantReward(owner, hFish, new ArrayList<>());
+                FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
             }
         }
     }
