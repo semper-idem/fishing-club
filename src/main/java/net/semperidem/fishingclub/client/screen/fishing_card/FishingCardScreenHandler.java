@@ -18,6 +18,7 @@ import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
@@ -65,7 +66,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
             playerInventory.player.writeNbt(playerNbt);
             NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
             if (!fisherInventoryTag.equals(lastSavedNbt)) {
-                playerNbt.getCompound(FishingCard.TAG).put("inventory", fisherInventoryTag);
+                playerNbt.getCompound(FishingCardSerializer.TAG).put("inventory", fisherInventoryTag);
                 playerInventory.player.readNbt(playerNbt);
                 lastSavedNbt = fisherInventoryTag;
             }

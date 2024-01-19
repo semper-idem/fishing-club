@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.fisher;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,9 +8,6 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -33,39 +29,38 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
-import net.semperidem.fishingclub.util.InventoryUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
 
 
 public class FishingCard {
-    public static final String TAG = "fishing_card";
 
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
 
-    private int level = 1;
-    private int exp = 0;
-    private int credit = 0;
-    private int skillPoints = 0;
-    private long lastFishCaughtTime = 0;
-    private long firstFishOfTheDayCaughtTime = 0;
-    private HashMap<String, FishingPerk> perks = new HashMap<>();
-    private SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
-    private HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
-    private ArrayList<Chunk> fishedChunks = new ArrayList<>();
-    private ArrayList<UUID> linkedFishers = new ArrayList<>();
-    private ItemStack lastUsedBait = ItemStack.EMPTY;
-    private ItemStack sharedBait = ItemStack.EMPTY;
-    private TeleportRequest lastTeleportRequest = new TeleportRequest("Jeb", 0);
-    private Chunk lastFishedInChunk;
+    int level = 1;
+    int exp = 0;
+    int credit = 0;
+    int skillPoints = 0;
+    long lastFishCaughtTime = 0;
+    long firstFishOfTheDayCaughtTime = 0;
+    final HashMap<String, FishingPerk> perks = new HashMap<>();
+    SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
+    final HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
+    final ArrayList<Chunk> fishedChunks = new ArrayList<>();
+    ArrayList<UUID> linkedFishers = new ArrayList<>();
+    ItemStack lastUsedBait = ItemStack.EMPTY;
+    ItemStack sharedBait = ItemStack.EMPTY;
+    TeleportRequest lastTeleportRequest;//TODO HANDLE NULL
+    Chunk lastFishedInChunk;//TODO HANDLE NULL
 
     private PlayerEntity owner;
 
-
-    public FishingCard(PlayerEntity playerEntity, NbtCompound playerNbt) {
+    FishingCard(PlayerEntity playerEntity) {
         this.owner = playerEntity;
-        fromNbt(playerNbt.getCompound(TAG));
     }
 
     public PlayerEntity getOwner(){
@@ -77,144 +72,15 @@ public class FishingCard {
         }
     }
 
-
-    private void setLastTeleportRequest(NbtCompound fisherTag){
-        if (!fisherTag.contains("last_teleport_request")) return;
-        NbtCompound lastTeleportRequestTag = fisherTag.getCompound("last_teleport_request");
-        this.lastTeleportRequest = TeleportRequest.fromNbt(lastTeleportRequestTag);
-    }
-
-    private void setLinked(NbtCompound fisherTag){
-        linkedFishers = new ArrayList<>();
-        NbtList uuidListTag = fisherTag.getList("linked", NbtElement.STRING_TYPE);
-        for(int i = 0; i < uuidListTag.size(); i++) {
-            linkedFishers.add(UUID.fromString(uuidListTag.getString(i)));
-        }
-    }
-
-    private void setChunks(NbtCompound fisherTag){
-        fishedChunks.clear();
-        NbtList chunkListTag = fisherTag.getList("fishedC_chunks", NbtElement.STRING_TYPE);
-        for(int i = 0; i < chunkListTag.size(); i++) {
-            fishedChunks.add(new Chunk(chunkListTag.getString(i)));
-        }
-    }
-
-    public void setClientEntity(MinecraftClient client){
-        this.owner = client.player;
-    }
-
-    private void setPerks(NbtCompound fisherTag){
-        this.perks.clear();
-        NbtList perkListTag = fisherTag.getList("perks", NbtElement.STRING_TYPE);
-        if (perkListTag.isEmpty()) {
-            initPerks();
-        } else {
-            perkListTag.forEach(
-                    nbtElement -> FishingPerks.getPerkFromName(nbtElement.asString()).ifPresent(
-                            fishingPerk -> this.perks.put(fishingPerk.getName(), fishingPerk)));
-        }
-    }
-
-    private void setSpells(NbtCompound fisherTag){
-        this.spells.clear();
-        NbtList spellListTag = fisherTag.getList("spells", NbtElement.COMPOUND_TYPE);
-        for(int i = 0; i < spellListTag.size(); i++) {
-            NbtCompound spellTag = spellListTag.getCompound(i);
-            String perkName = spellTag.getString("key");
-            int cooldown = spellTag.getInt("cooldown");
-            long nextCast = spellTag.getLong("nextCast");
-            Optional<FishingPerk> optionalPerk = FishingPerks.getPerkFromName(perkName);
-            if (optionalPerk.isEmpty()) continue;
-            FishingPerk fishingPerk = optionalPerk.get();
-            SpellInstance spellInstance = SpellInstance.getSpellInstance(fishingPerk, cooldown, nextCast);
-            spells.put(fishingPerk, spellInstance);
-        }
-    }
-
     public Collection<SpellInstance> getSpells(){
         return this.spells.values();
-    }
-
-    public void writeNbt(NbtCompound playerTag){
-        playerTag.put(TAG, toNbt());
-    }
-
-    public void fromNbt(NbtCompound fisherTag){
-        this.level = fisherTag.getInt("level");
-        this.exp = fisherTag.getInt("exp");
-        this.credit = fisherTag.getInt("credit");
-        this.skillPoints = fisherTag.getInt("skill_points");
-        this.lastFishCaughtTime = fisherTag.getLong("last_fish_caught_time");
-        this.firstFishOfTheDayCaughtTime = fisherTag.getLong("ffotd_caught_time");
-        this.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound("inventory"));
-        setPerks(fisherTag);
-        setSpells(fisherTag);
-        setChunks(fisherTag);
-        setLinked(fisherTag);
-        this.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound("last_used_bait"));
-        setLastTeleportRequest(fisherTag);
-    }
-    public NbtCompound toNbt(){
-        NbtCompound fisherTag = new NbtCompound();
-        fisherTag.putInt("level", this.level);
-        fisherTag.putInt("exp", this.exp);
-        fisherTag.putInt("credit", this.credit);
-        fisherTag.putInt("skill_points", this.skillPoints);
-        fisherTag.putLong("last_fish_caught_time", this.lastFishCaughtTime);
-        fisherTag.putLong("ffotd_caught_time", this.firstFishOfTheDayCaughtTime);
-        fisherTag.put("inventory", InventoryUtil.writeInventory(this.fisherInventory));
-        fisherTag.put("perks", getPerkListTag());
-        fisherTag.put("spells", getSpellListTag());
-        fisherTag.put("fished_chunks", getFishedChunksList());
-        fisherTag.put("linked", getLinkedList());
-        fisherTag.put("last_used_bait", lastUsedBait.writeNbt(new NbtCompound()));
-        fisherTag.put("last_teleport_request", TeleportRequest.toNbt(lastTeleportRequest));
-        return fisherTag;
-    }
-
-    private NbtList getLinkedList(){
-        NbtList linkedListTag = new NbtList();
-        for(UUID linkedUUID : linkedFishers) {
-            linkedListTag.add(NbtString.of(linkedUUID.toString()));
-        }
-        return linkedListTag;
-    }
-
-    private NbtList getFishedChunksList(){
-        NbtList fishedChunksTag = new NbtList();
-        if (fishedChunks.size() == 0) return fishedChunksTag;
-        for(Chunk c : fishedChunks) {
-            fishedChunksTag.add(NbtString.of(c.toString()));
-        }
-        return fishedChunksTag;
-    }
-
-    private NbtList getSpellListTag(){
-        NbtList spellListTag = new NbtList();
-        for(SpellInstance spellInstance : spells.values()) {
-            NbtCompound spellTag = new NbtCompound();
-            spellTag.putString("key", spellInstance.getKey());
-            spellTag.putInt("cooldown", spellInstance.getCooldown());
-            spellTag.putLong("nextCast", spellInstance.getNextCast());
-            spellListTag.add(spellTag);
-        }
-        return spellListTag;
-    }
-
-    private NbtList getPerkListTag(){
-        NbtList perkListTag = new NbtList();
-        this.perks.forEach((fishingPerkName, fishingPerk) -> {
-            perkListTag.add(NbtString.of(fishingPerkName));
-        });
-        return perkListTag;
     }
 
     public void resetCooldown(){
         for(SpellInstance spellInstance : spells.values()) {
             spellInstance.resetCooldown();
         }
-        syncFisherInfo();
+        syncClientInfo();
     }
 
     public int getLevel() {
@@ -241,12 +107,6 @@ public class FishingCard {
         return lastUsedBait;
     }
 
-    private void initPerks(){
-        addRootPerk(FishingPerks.ROOT_HOBBYIST);
-        addRootPerk(FishingPerks.ROOT_OPPORTUNIST);
-        addRootPerk(FishingPerks.ROOT_SOCIALIST);
-    }
-
     public void setTeleportRequest(UUID summonerUUID, long worldTime){
         lastTeleportRequest = new TeleportRequest(summonerUUID.toString(), worldTime);
     }
@@ -259,19 +119,12 @@ public class FishingCard {
         return currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
     }
 
-    private void syncFisherInfo(){
+    private void syncClientInfo(){
         if (this.owner == null) return;
         if (!(this.owner instanceof ServerPlayerEntity serverFisher)) return;
-        NbtCompound playerCustomTag = new NbtCompound();
-        this.owner.writeCustomDataToNbt(playerCustomTag);
-        playerCustomTag.put(TAG, toNbt());
-        this.owner.readCustomDataFromNbt(playerCustomTag);
         ServerPacketSender.sendFisherInfo(serverFisher, this);
     }
 
-    private void addRootPerk(FishingPerk perk){
-        this.perks.put(perk.getName(), perk);
-    }
 
     void addPerk(FishingPerk perk){
         if (availablePerk(perk) && hasSkillPoints()) {
@@ -281,7 +134,7 @@ public class FishingCard {
                 this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, owner.world.getTime()));
             }
             skillPoints--;
-            syncFisherInfo();
+            syncClientInfo();
         }
     }
 
@@ -293,13 +146,9 @@ public class FishingCard {
         return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
     }
 
-    private void addSkillPoint(){
-        this.skillPoints++;
-        syncFisherInfo();
-    }
     public void addSkillPoints(int amount){
         this.skillPoints+= amount;
-        syncFisherInfo();
+        syncClientInfo();
     }
 
     public boolean isFishingFromBoat(){
@@ -343,7 +192,7 @@ public class FishingCard {
 
     void setSkillPoints(int skillPoints){
         this.skillPoints = skillPoints;
-        syncFisherInfo();
+        syncClientInfo();
     }
 
     public void useSpell(FishingPerk fishingPerk, Entity target){
@@ -351,7 +200,7 @@ public class FishingCard {
         SpellInstance spellInstance = spells.get(fishingPerk);
         spellInstance.use((ServerPlayerEntity) owner, target);
         spells.put(fishingPerk, spellInstance);
-        syncFisherInfo();
+        syncClientInfo();
     }
 
 
@@ -364,7 +213,7 @@ public class FishingCard {
         if (!this.perks.containsKey(perkName)) return;
         this.perks.remove(perkName);
         this.skillPoints++;
-        syncFisherInfo();
+        syncClientInfo();
     }
 
     public int nextLevelXP(){
@@ -507,7 +356,7 @@ public class FishingCard {
             onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
         }
-        syncFisherInfo();
+        syncClientInfo();
     }
 
 
@@ -569,13 +418,13 @@ public class FishingCard {
         }
 
         this.credit += credit;
-        syncFisherInfo();
+        syncClientInfo();
         return true;
     }
 
     public void setCredit(int credit) {
         this.credit = credit;
-        syncFisherInfo();
+        syncClientInfo();
     }
 
     public HashMap<String, FishingPerk> getPerks(){

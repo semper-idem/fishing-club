@@ -117,7 +117,6 @@ public class ServerPacketHandlers {
                             .filter(FishingCardScreenHandler.class::isInstance)
                             .map(FishingCardScreenHandler.class::cast)
                             .ifPresent(screenHandler -> screenHandler.soldSlot(player, creditGained));
-                    ServerPacketSender.sendFisherInfo(player);
                 }
         );
     }

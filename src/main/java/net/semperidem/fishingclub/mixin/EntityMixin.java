@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,18 +34,16 @@ public abstract class EntityMixin {
         if (!isPlayer() || world.isClient || fishingCard == null) {
             return;
         }
-
-        fishingCard.writeNbt(nbt);
+        nbt.put(FishingCardSerializer.TAG, FishingCardSerializer.toNbt(fishingCard));
     }
 
     //Called when loading entity
     @Inject(method = "readNbt", at = @At("TAIL"))
     private void onReadNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (!isPlayer() || world.isClient || !nbt.contains(FishingCard.TAG)) {
+        if (!isPlayer() || world.isClient || !nbt.contains(FishingCardSerializer.TAG)) {
             return;
         }
-
-        fishingCard = new FishingCard((PlayerEntity) (Object) this, nbt);
+        fishingCard = FishingCardSerializer.fromNbt((PlayerEntity) (Object) this, nbt.getCompound(FishingCardSerializer.TAG));
         FishingDatabase.putCard(uuid, fishingCard);
     }
 

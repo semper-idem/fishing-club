@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -11,6 +10,7 @@ import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.game.HookedFish;
 
 import java.util.UUID;
@@ -43,15 +43,7 @@ public class ServerPacketSender {
 
     public static void sendFisherInfo(ServerPlayerEntity playerEntity, FishingCard fishingCard){
         PacketByteBuf packet = PacketByteBufs.create();
-        packet.writeNbt(fishingCard.toNbt());
-        sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
-    }
-    public static void sendFisherInfo(ServerPlayerEntity playerEntity){
-        PacketByteBuf packet = PacketByteBufs.create();
-        NbtCompound playerCustomNbt = new NbtCompound();
-        playerEntity.writeCustomDataToNbt(playerCustomNbt);
-        if (!playerCustomNbt.contains(FishingCard.TAG)) return;
-        packet.writeNbt(playerCustomNbt.getCompound(FishingCard.TAG));
+        packet.writeNbt(FishingCardSerializer.toNbt(fishingCard));
         sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
     }
 
