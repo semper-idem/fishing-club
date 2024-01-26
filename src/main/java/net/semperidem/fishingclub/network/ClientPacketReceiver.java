@@ -20,7 +20,7 @@ public class ClientPacketReceiver {
             NbtCompound fisherTag = buf.readNbt();
             client.execute( () -> {
                 if (fisherTag == null) return;
-                FishingCardSerializer.updateFromNbt(FishingClubClient.CLIENT_INFO, fisherTag);
+                FishingCardSerializer.updateFromNbt(FishingClubClient.getClientCard(), fisherTag);
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SUMMON_REQUEST, (client, handler, buf, responseSender) -> {

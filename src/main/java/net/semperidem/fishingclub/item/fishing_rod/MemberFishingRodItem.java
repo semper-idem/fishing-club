@@ -67,7 +67,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        FishingCard fishingCard = world.isClient ? FishingClubClient.CLIENT_INFO : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
+        FishingCard fishingCard = world.isClient ? FishingClubClient.getClientCard() : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
         if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             castHook(world, user, 1, fishingRod);
             float damageChance = FishingRodUtil.getDamageChance(fishingRod);

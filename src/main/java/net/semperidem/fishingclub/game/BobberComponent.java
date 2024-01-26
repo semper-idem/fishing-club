@@ -71,7 +71,7 @@ public class BobberComponent {
 
     private float getBaseResistance() {
         float levelDifference = MathHelper.clamp(parent.fishingCard.getLevel() - parent.hookedFish.level, -50, 50);
-       return (parent.hookedFish.level + 50) * 0.04f * (0.0375f + 50f / levelDifference * 0.0125f);
+       return (parent.hookedFish.level + 50) * 0.04f * (0.0375f + levelDifference / 50f * 0.0125f);
     }
 
     private float getCurrentResistance() {

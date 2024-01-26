@@ -23,9 +23,6 @@ public class FishingDatabase {
     }
 
     public static FishingCard getCard(UUID fisherUUID){
-        if (!FISHER_TO_CARD_MAP.containsKey(fisherUUID)) {
-            return FishingCard.EMPTY;
-        }
         return FISHER_TO_CARD_MAP.get(fisherUUID);
     }
 }

@@ -21,8 +21,8 @@ public class FishingGameController {
 
     public FishingGameController(HookedFish hookedFish){
         this.hookedFish = hookedFish;
-        this.fishingCard = FishingClubClient.CLIENT_INFO;
-        this.player = MinecraftClient.getInstance().player;
+        this.fishingCard = FishingClubClient.getClientCard();
+        this.player = fishingCard.getOwner();
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);

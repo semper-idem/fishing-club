@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,17 +60,18 @@ public class FishingCard {
 
     private PlayerEntity owner;
 
-    FishingCard(PlayerEntity playerEntity) {
+    public FishingCard(PlayerEntity playerEntity) {
         this.owner = playerEntity;
+    }
+
+    public static FishingCard createCard(PlayerEntity playerEntity) {
+        FishingCard fishingCard = new FishingCard(playerEntity);
+        fishingCard.syncClientInfo();
+        return fishingCard;
     }
 
     public PlayerEntity getOwner(){
         return owner;
-    }
-    public void tick(){
-        for(SpellInstance spellInstance : spells.values()) {
-            spellInstance.tick();
-        }
     }
 
     public Collection<SpellInstance> getSpells(){
@@ -119,7 +121,7 @@ public class FishingCard {
         return currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
     }
 
-    private void syncClientInfo(){
+    void syncClientInfo(){
         if (this.owner == null) return;
         if (!(this.owner instanceof ServerPlayerEntity serverFisher)) return;
         ServerPacketSender.sendFisherInfo(serverFisher, this);
@@ -131,7 +133,7 @@ public class FishingCard {
             perk.onEarn(owner);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0, owner.world.getTime()));
+                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
             }
             skillPoints--;
             syncClientInfo();
@@ -152,7 +154,7 @@ public class FishingCard {
     }
 
     public boolean isFishingFromBoat(){
-        return owner.getVehicle() instanceof BoatEntity;
+        return owner.getVehicle() != null && owner.getVehicle() instanceof BoatEntity;
     }
     public int getMinGrade(){
         int minGrade = 0;
@@ -519,20 +521,29 @@ public class FishingCard {
         }
 
         public static TeleportRequest fromNbt(NbtCompound teleportRequestTag){
-            return new TeleportRequest(teleportRequestTag.getString("summonerUUID"), teleportRequestTag.getLong("request_tick"));
+            String summonerUUID = "";
+            if (teleportRequestTag.contains("summonerUUID")) {
+                teleportRequestTag.getString("summonerUUID");
+            }
+            long requestTick = 0;
+            if (teleportRequestTag.contains("request_tick")) {
+                teleportRequestTag.getLong("summonerUUID");
+            }
+            return new TeleportRequest(summonerUUID, requestTick);
         }
 
         public static NbtCompound toNbt(TeleportRequest teleportRequest){
             NbtCompound self = new NbtCompound();
-            self.putString("summonerUUID", teleportRequest.summonerUUID);
-            self.putLong("request_tick", teleportRequest.requestTick);
+            if (teleportRequest != null) {
+                self.putString("summonerUUID", teleportRequest.summonerUUID);
+                self.putLong("request_tick", teleportRequest.requestTick);
+            }
             return self;
         }
     }
 
 
     //CLIENT FISHING CARD INIT EMPTY
-    private FishingCard(){}
-    public static FishingCard getEmptyCard(){return new FishingCard();}
-    public static FishingCard EMPTY = getEmptyCard();
+    public static FishingCard getClientCard(){return new FishingCard(MinecraftClient.getInstance().player);}
+    public static FishingCard EMPTY = getClientCard();
 }

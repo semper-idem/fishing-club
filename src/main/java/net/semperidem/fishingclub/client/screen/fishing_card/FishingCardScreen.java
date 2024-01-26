@@ -91,11 +91,11 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     public void updateData(){
         this.name = this.client.player.getName().getString();
-        this.level = String.valueOf(FishingClubClient.CLIENT_INFO.getLevel());
-        this.exp = FishingClubClient.CLIENT_INFO.getExp() + "/" + FishingClubClient.CLIENT_INFO.nextLevelXP();
-        this.credit = String.valueOf(FishingClubClient.CLIENT_INFO.getCredit());
-        this.hasSkillPoints = FishingClubClient.CLIENT_INFO.hasSkillPoints();
-        this.skillPoints = String.valueOf(FishingClubClient.CLIENT_INFO.getSkillPoints());
+        this.level = String.valueOf(FishingClubClient.getClientCard().getLevel());
+        this.exp = FishingClubClient.getClientCard().getExp() + "/" + FishingClubClient.getClientCard().nextLevelXP();
+        this.credit = String.valueOf(FishingClubClient.getClientCard().getCredit());
+        this.hasSkillPoints = FishingClubClient.getClientCard().hasSkillPoints();
+        this.skillPoints = String.valueOf(FishingClubClient.getClientCard().getSkillPoints());
     }
 
     public static void openScreen(PlayerEntity player){
@@ -214,8 +214,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            if (!FishingClubClient.CLIENT_INFO.availablePerk(selectedPerk) || FishingClubClient.CLIENT_INFO.hasPerk(selectedPerk)) return;
-            FishingClubClient.CLIENT_INFO.addPerk(selectedPerk.getName());
+            if (!FishingClubClient.getClientCard().availablePerk(selectedPerk) || FishingClubClient.getClientCard().hasPerk(selectedPerk)) return;
+            FishingClubClient.getClientCard().addPerk(selectedPerk.getName());
             
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
@@ -238,7 +238,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             }
         };
 
-        if (!FishingClubClient.CLIENT_INFO.hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
+        if (!FishingClubClient.getClientCard().hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
             sellButton.visible = false;
             sellButton.active = false;
         }
@@ -292,8 +292,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         renderInfoLine(matrices, infoLineX, infoLineY + 26, sLevel, level, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 37, sExp, exp, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 48, sCredit, credit, dividerWidth);
-        if (FishingClubClient.CLIENT_INFO.hasSkillPoints()) {
-            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, String.valueOf(FishingClubClient.CLIENT_INFO.getSkillPoints()), dividerWidth);
+        if (FishingClubClient.getClientCard().hasSkillPoints()) {
+            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, String.valueOf(FishingClubClient.getClientCard().getSkillPoints()), dividerWidth);
         }
 
     }
@@ -388,7 +388,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             selectedPerk = fishingPerk;
             selectedPerkX = button.x;
             selectedPerkY = button.y;
-            unlockButton.visible = FishingClubClient.CLIENT_INFO.availablePerk(fishingPerk) && !FishingClubClient.CLIENT_INFO.hasPerk(fishingPerk) && FishingClubClient.CLIENT_INFO.hasSkillPoints();
+            unlockButton.visible = FishingClubClient.getClientCard().availablePerk(fishingPerk) && !FishingClubClient.getClientCard().hasPerk(fishingPerk) && FishingClubClient.getClientCard().hasSkillPoints();
             updateData();
         };
     }

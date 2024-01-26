@@ -34,7 +34,7 @@ public class ShopScreenHandler extends ScreenHandler {
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fishingCard = FishingClubClient.CLIENT_INFO;
+        this.fishingCard = FishingClubClient.getClientCard();
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();
         addPlayerInventory(player.getInventory());

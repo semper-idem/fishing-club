@@ -6,7 +6,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingDatabase;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,36 +28,26 @@ public abstract class EntityMixin {
     @Shadow protected UUID uuid;
 
     //Called when saving entity
-    @Inject(method = "writeNbt", at = @At("RETURN"))
+    @Inject(method = "writeNbt", at = @At("RETURN"), cancellable = true)
     private void onWriteNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
         if (!isPlayer() || world.isClient || fishingCard == null) {
             return;
         }
         nbt.put(FishingCardSerializer.TAG, FishingCardSerializer.toNbt(fishingCard));
+        cir.setReturnValue(nbt);
     }
 
     //Called when loading entity
     @Inject(method = "readNbt", at = @At("TAIL"))
     private void onReadNbt(NbtCompound nbt, CallbackInfo ci) {
-        if (!isPlayer() || world.isClient || !nbt.contains(FishingCardSerializer.TAG)) {
+        if (!isPlayer() || world.isClient) {
             return;
         }
-        fishingCard = FishingCardSerializer.fromNbt((PlayerEntity) (Object) this, nbt.getCompound(FishingCardSerializer.TAG));
+        if (nbt.contains(FishingCardSerializer.TAG)) {
+            fishingCard = FishingCardSerializer.fromNbt((PlayerEntity) (Object) this, nbt.getCompound(FishingCardSerializer.TAG));
+        } else {
+            fishingCard = FishingCard.createCard((PlayerEntity) (Object) this);
+        }
         FishingDatabase.putCard(uuid, fishingCard);
-    }
-
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void onTick(CallbackInfo ci){
-        if (!isPlayer()) {
-            return;
-        }
-
-        if (world.isClient) {
-            fishingCard = FishingClubClient.CLIENT_INFO;
-        }
-
-        if (fishingCard != null) {
-            fishingCard.tick();
-        }
     }
 }

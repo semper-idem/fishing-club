@@ -5,7 +5,14 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FRegistry;
 
 public class FishingClubClient implements ClientModInitializer {
-    public static final FishingCard CLIENT_INFO = FishingCard.getEmptyCard();
+    private static FishingCard clientInfoInstance;
+
+    public static FishingCard getClientCard() {
+        if (clientInfoInstance == null) {
+            clientInfoInstance = FishingCard.getClientCard();
+        }
+        return clientInfoInstance;
+    }
 
     @Override
     public void onInitializeClient() {

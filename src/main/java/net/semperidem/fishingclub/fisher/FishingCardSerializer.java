@@ -33,6 +33,7 @@ public class FishingCardSerializer {
     public static FishingCard fromNbt(PlayerEntity owner, NbtCompound fisherTag){
         FishingCard fishingCard = new FishingCard(owner);
         updateFromNbt(fishingCard, fisherTag);
+        fishingCard.syncClientInfo();
         return fishingCard;
     }
 

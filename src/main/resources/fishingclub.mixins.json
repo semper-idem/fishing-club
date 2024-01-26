@@ -7,7 +7,6 @@
     "CraftingResultInventoryMixin",
     "EnchantmentHelperMixin",
     "EntityMixin",
-    "PlayerManagerMixin",
     "ServerWorldMixin",
     "WanderingTraderEntityMixin"
   ],

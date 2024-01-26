@@ -52,7 +52,6 @@ public class Commands {
     }
     public static void registerGiveAdvancedRod(){
         rootCommand.then(literal("advanced_rod").executes(context -> {
-            int tier = getInteger(context, "tier");
             context.getSource().getPlayer().giveItemStack(FishingRodUtil.getAdvancedRod());
             return 1;
         }));

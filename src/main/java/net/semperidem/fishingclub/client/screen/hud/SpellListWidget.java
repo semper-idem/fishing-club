@@ -22,7 +22,7 @@ public class SpellListWidget{
 
     public static void updateFisherInfo(){
         availableSpells.clear();
-        availableSpells.addAll(FishingClubClient.CLIENT_INFO.getSpells());
+        availableSpells.addAll(FishingClubClient.getClientCard().getSpells());
         if (availableSpells.size() > 0 && selectedSpell == null) {
             selectedSpell = availableSpells.get(0);
         }
