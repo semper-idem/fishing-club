@@ -2,16 +2,14 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.FishingDatabase;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
-import net.semperidem.fishingclub.game.HookedFish;
 
 import java.util.UUID;
 
@@ -36,16 +34,22 @@ public class ServerPacketSender {
         );
     }
 
-    public static void sendFishingStartPacket(ServerPlayerEntity player, Fish fish){
-        FishingDatabase.putCatch(player.getUuid(), fish);
-        sendPacket(player, S2C_F_GAME_START, HookedFish.fromFish(fish));
+    public static void sendPerksUpdate(FishingCard fishingCard){
+        PacketByteBuf packet = PacketByteBufs.create();
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.put(FishingCardSerializer.PERKS_TAG, FishingCardSerializer.getPerkListTag(fishingCard));
+        packet.writeNbt(nbtCompound);
+        sendPacket((ServerPlayerEntity) fishingCard.getOwner(), S2C_PERKS_LIST, packet);
     }
 
-    public static void sendFisherInfo(ServerPlayerEntity playerEntity, FishingCard fishingCard){
+    public static void sendSpellsUpdate(FishingCard fishingCard){
         PacketByteBuf packet = PacketByteBufs.create();
-        packet.writeNbt(FishingCardSerializer.toNbt(fishingCard));
-        sendPacket(playerEntity, S2C_F_DATA_SEND, packet);
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.put(FishingCardSerializer.SPELLS_TAG, FishingCardSerializer.getSpellListTag(fishingCard));
+        packet.writeNbt(nbtCompound);
+        sendPacket((ServerPlayerEntity) fishingCard.getOwner(), S2C_SPELL_INSTANCES_LIST, packet);
     }
+
 
     public static void sendSummonRequest(ServerPlayerEntity summoner){
         for(UUID linkedFisherUUID : FishingCardManager.getPlayerCard(summoner).getLinkedFishers()) {

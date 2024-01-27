@@ -5,13 +5,14 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
@@ -31,10 +32,10 @@ public class ShopScreenHandler extends ScreenHandler {
     FishingCard fishingCard;
 
 
-    public ShopScreenHandler(int syncId, PlayerInventory playerInventory) {
+    public ShopScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fishingCard = FishingClubClient.getClientCard();
+        this.fishingCard = FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt());
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();
         addPlayerInventory(player.getInventory());

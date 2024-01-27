@@ -1,16 +1,16 @@
-package net.semperidem.fishingclub.client.screen;
+package net.semperidem.fishingclub.client.screen.game;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.game.FishingGameController;
-import net.semperidem.fishingclub.game.HookedFish;
 
-public class FishGameScreen extends Screen {
+public class FishGameScreen extends HandledScreen<FishGameScreenHandler> implements ScreenHandlerProvider<FishGameScreenHandler> {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";
 
     private static final int DEFAULT_COLOR = 0xFFFFFF;
@@ -58,9 +58,9 @@ public class FishGameScreen extends Screen {
     FishingGameController fishGameLogic;
     boolean lightTick = false;
 
-    public FishGameScreen(HookedFish fish) {
-        super(Text.empty());
-        this.fishGameLogic = new FishingGameController(fish);
+    public FishGameScreen(FishGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
+        super(fishGameScreenHandler, playerInventory, text);
+        this.fishGameLogic = new FishingGameController(this.getScreenHandler().fishingCard, this.getScreenHandler().hookedFish);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class FishGameScreen extends Screen {
     }
 
     @Override
-    public void tick() {
+    public void handledScreenTick() {
         lightTick = !lightTick;
         this.fishGameLogic.tick();
 
@@ -142,6 +142,11 @@ public class FishGameScreen extends Screen {
         }
         renderInfo(matrices);
         matrices.pop();
+    }
+
+    @Override
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+
     }
 
     private void renderFish(MatrixStack matrices, float delta){

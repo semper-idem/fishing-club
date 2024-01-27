@@ -22,12 +22,11 @@ import java.util.UUID;
 public abstract class EntityMixin {
 
     @Unique private FishingCard fishingCard;
-    @Shadow public abstract boolean isPlayer();
+
     @Shadow public World world;
-
     @Shadow protected UUID uuid;
+    @Shadow public abstract boolean isPlayer();
 
-    //Called when saving entity
     @Inject(method = "writeNbt", at = @At("RETURN"), cancellable = true)
     private void onWriteNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
         if (!isPlayer() || world.isClient || fishingCard == null) {
@@ -37,17 +36,13 @@ public abstract class EntityMixin {
         cir.setReturnValue(nbt);
     }
 
-    //Called when loading entity
+    @SuppressWarnings("ClassCastException")
     @Inject(method = "readNbt", at = @At("TAIL"))
     private void onReadNbt(NbtCompound nbt, CallbackInfo ci) {
         if (!isPlayer() || world.isClient) {
             return;
         }
-        if (nbt.contains(FishingCardSerializer.TAG)) {
-            fishingCard = FishingCardSerializer.fromNbt((PlayerEntity) (Object) this, nbt.getCompound(FishingCardSerializer.TAG));
-        } else {
-            fishingCard = FishingCard.createCard((PlayerEntity) (Object) this);
-        }
+        fishingCard = FishingCardSerializer.fromNbt((PlayerEntity) (Object) this, nbt.getCompound(FishingCardSerializer.TAG));
         FishingDatabase.putCard(uuid, fishingCard);
     }
 }

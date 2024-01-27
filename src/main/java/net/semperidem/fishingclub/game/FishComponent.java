@@ -40,7 +40,7 @@ public class FishComponent {
     public FishComponent(FishingGameController parent){
         this.parent = parent;
 
-        Species species = parent.hookedFish.species;
+        Species species = parent.hookedFish.getSpecies();
         stamina = STAMINA_BASE + species.getStaminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;

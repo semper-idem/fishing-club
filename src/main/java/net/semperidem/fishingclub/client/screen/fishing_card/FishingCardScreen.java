@@ -12,7 +12,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -91,11 +90,11 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     public void updateData(){
         this.name = this.client.player.getName().getString();
-        this.level = String.valueOf(FishingClubClient.getClientCard().getLevel());
-        this.exp = FishingClubClient.getClientCard().getExp() + "/" + FishingClubClient.getClientCard().nextLevelXP();
-        this.credit = String.valueOf(FishingClubClient.getClientCard().getCredit());
-        this.hasSkillPoints = FishingClubClient.getClientCard().hasSkillPoints();
-        this.skillPoints = String.valueOf(FishingClubClient.getClientCard().getSkillPoints());
+        this.level = String.valueOf(this.handler.fishingCard.getLevel());
+        this.exp = this.handler.fishingCard.getExp() + "/" + this.handler.fishingCard.nextLevelXP();
+        this.credit = String.valueOf(this.handler.fishingCard.getCredit());
+        this.hasSkillPoints = this.handler.fishingCard.hasSkillPoints();
+        this.skillPoints = String.valueOf(this.handler.fishingCard.getSkillPoints());
     }
 
     public static void openScreen(PlayerEntity player){
@@ -214,8 +213,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            if (!FishingClubClient.getClientCard().availablePerk(selectedPerk) || FishingClubClient.getClientCard().hasPerk(selectedPerk)) return;
-            FishingClubClient.getClientCard().addPerk(selectedPerk.getName());
+            if (!this.handler.fishingCard.availablePerk(selectedPerk) || this.handler.fishingCard.hasPerk(selectedPerk)) return;
+            this.handler.fishingCard.addPerk(selectedPerk.getName());
             
             ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
@@ -238,7 +237,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             }
         };
 
-        if (!FishingClubClient.getClientCard().hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
+        if (!this.handler.fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT)) {
             sellButton.visible = false;
             sellButton.active = false;
         }
@@ -292,8 +291,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         renderInfoLine(matrices, infoLineX, infoLineY + 26, sLevel, level, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 37, sExp, exp, dividerWidth);
         renderInfoLine(matrices, infoLineX, infoLineY + 48, sCredit, credit, dividerWidth);
-        if (FishingClubClient.getClientCard().hasSkillPoints()) {
-            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, String.valueOf(FishingClubClient.getClientCard().getSkillPoints()), dividerWidth);
+        if (this.handler.fishingCard.hasSkillPoints()) {
+            renderInfoLine(matrices, infoLineX, infoLineY + 59, sSkillPoint, String.valueOf(this.handler.fishingCard.getSkillPoints()), dividerWidth);
         }
 
     }
@@ -388,7 +387,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             selectedPerk = fishingPerk;
             selectedPerkX = button.x;
             selectedPerkY = button.y;
-            unlockButton.visible = FishingClubClient.getClientCard().availablePerk(fishingPerk) && !FishingClubClient.getClientCard().hasPerk(fishingPerk) && FishingClubClient.getClientCard().hasSkillPoints();
+            unlockButton.visible = this.handler.fishingCard.availablePerk(fishingPerk) && !this.handler.fishingCard.hasPerk(fishingPerk) && this.handler.fishingCard.hasSkillPoints();
             updateData();
         };
     }

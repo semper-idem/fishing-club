@@ -14,7 +14,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
@@ -45,12 +44,12 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory);
+        this.fishingCard = FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt());
     }
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
         enableSyncing();
-        this.fishingCard = playerInventory.player.world.isClient ? FishingClubClient.getClientCard() : FishingCardManager.getPlayerCard((ServerPlayerEntity) playerInventory.player);
         this.playerInventory = playerInventory;
         this.fisherInventory = fishingCard.getFisherInventory();
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
@@ -77,7 +76,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
         int credit = FishUtil.getFishValue(sellSlot.getStack());
         ClientPacketSender.sellSlot(credit);
         sellSlot.setStack(ItemStack.EMPTY);
-        FishingClubClient.getClientCard().addCredit(credit);
+        fishingCard.addCredit(credit);
         parent.updateData();
     }
 

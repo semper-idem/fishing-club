@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.client.screen.shop;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -7,19 +7,22 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.FishingDatabase;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory {
+public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
+
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
+        buf.writeNbt(FishingCardSerializer.toNbt(FishingDatabase.getCard(player.getUuid())));
     }
     @Override
     public Text getDisplayName() {
-        return Text.translatable("Fisher Info");
+        return Text.translatable("Sell");
     }
+
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new FishingCardScreenHandler(syncId, inv);

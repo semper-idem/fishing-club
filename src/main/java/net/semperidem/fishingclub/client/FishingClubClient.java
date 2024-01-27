@@ -1,17 +1,29 @@
 package net.semperidem.fishingclub.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.registry.FRegistry;
 
-public class FishingClubClient implements ClientModInitializer {
-    private static FishingCard clientInfoInstance;
+import java.util.HashMap;
 
-    public static FishingCard getClientCard() {
-        if (clientInfoInstance == null) {
-            clientInfoInstance = FishingCard.getClientCard();
-        }
-        return clientInfoInstance;
+public class FishingClubClient implements ClientModInitializer {
+    private static HashMap<FishingPerk, SpellInstance> AVAILABLE_SPELLS;
+    private static HashMap<String, FishingPerk> PERKS;
+
+    public static HashMap<FishingPerk, SpellInstance> getAvailableSpells() {
+        return AVAILABLE_SPELLS;
+    }
+
+    public static void updateAvailableSpells(HashMap<FishingPerk, SpellInstance> availableSpells) {
+        AVAILABLE_SPELLS = availableSpells;
+    }
+    public static HashMap<String, FishingPerk> getPerks() {
+        return PERKS;
+    }
+
+    public static void updatePerks(HashMap<String, FishingPerk> perksMap) {
+        PERKS = perksMap;
     }
 
     @Override

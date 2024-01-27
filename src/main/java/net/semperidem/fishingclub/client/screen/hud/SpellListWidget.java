@@ -20,9 +20,10 @@ public class SpellListWidget{
     private static final int spaceBetween = 16;
     private static final int entryWidth = 150;
 
+
     public static void updateFisherInfo(){
         availableSpells.clear();
-        availableSpells.addAll(FishingClubClient.getClientCard().getSpells());
+        availableSpells.addAll(FishingClubClient.getAvailableSpells().values());
         if (availableSpells.size() > 0 && selectedSpell == null) {
             selectedSpell = availableSpells.get(0);
         }

@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
 import java.util.ArrayList;
@@ -23,17 +24,18 @@ public class FishingCardSerializer {
     private static final String LAST_CATCH_TIMESTAMP_TAG ="lc_ts";
     private static final String FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG ="fcotd_ts";
     private static final String INVENTORY_TAG ="inv";
-    private static final String PERKS_TAG ="perks";
-    private static final String SPELLS_TAG ="spells";
+    public static final String PERKS_TAG ="perks";
+    public static final String SPELLS_TAG ="spells";
     private static final String FISHED_IN_CHUNKS_TAG ="fic";
     private static final String LAST_USED_BAIT ="lbait";
     private static final String LAST_TELEPORT_REQUEST_TAG ="ltp";
     private static final String LINKED_PLAYERS_TAG ="lp";
 
-    public static FishingCard fromNbt(PlayerEntity owner, NbtCompound fisherTag){
+    public static FishingCard fromNbt(PlayerEntity owner, NbtCompound playerNbt){
         FishingCard fishingCard = new FishingCard(owner);
-        updateFromNbt(fishingCard, fisherTag);
-        fishingCard.syncClientInfo();
+        if (playerNbt.contains(TAG)) {
+            updateFromNbt(fishingCard, playerNbt.getCompound(TAG));
+        }
         return fishingCard;
     }
 
@@ -89,7 +91,7 @@ public class FishingCardSerializer {
         return fishedChunksTag;
     }
 
-    private static NbtList getSpellListTag(FishingCard fishingCard){
+    public static NbtList getSpellListTag(FishingCard fishingCard){
         NbtList spellListTag = new NbtList();
         for(SpellInstance spellInstance : fishingCard.spells.values()) {
             spellListTag.add(SpellInstance.toNbt(spellInstance));
@@ -97,7 +99,7 @@ public class FishingCardSerializer {
         return spellListTag;
     }
 
-    private static NbtList getPerkListTag(FishingCard fishingCard){
+    public static NbtList getPerkListTag(FishingCard fishingCard){
         NbtList perkListTag = new NbtList();
         fishingCard.perks.forEach((fishingPerkName, fishingPerk) -> {
             perkListTag.add(NbtString.of(fishingPerkName));
@@ -115,6 +117,7 @@ public class FishingCardSerializer {
                     nbtElement -> FishingPerks.getPerkFromName(nbtElement.asString()).ifPresent(
                             fishingPerk -> fishingCard.perks.put(fishingPerk.getName(), fishingPerk)));
         }
+        ServerPacketSender.sendPerksUpdate(fishingCard);
     }
     private static void initPerks(FishingCard fishingCard){
         addRootPerk(fishingCard, FishingPerks.ROOT_HOBBYIST);
@@ -131,6 +134,7 @@ public class FishingCardSerializer {
             SpellInstance spellInstance = SpellInstance.fromNbt(spellListTag.getCompound(i));
             fishingCard.spells.put(spellInstance.getPerk(), spellInstance);
         }
+        ServerPacketSender.sendSpellsUpdate(fishingCard);
     }
 
     private static void setLastTeleportRequest(NbtCompound fisherTag, FishingCard fishingCard){

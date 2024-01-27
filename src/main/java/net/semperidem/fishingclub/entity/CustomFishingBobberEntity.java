@@ -22,6 +22,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.client.screen.game.FishGameScreenFactory;
 import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -29,7 +30,6 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.*;
-import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
@@ -408,7 +408,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             caughtFish.experience += reactionBonus;
             if (reactionBonus > 0) this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
 
-            ServerPacketSender.sendFishingStartPacket((ServerPlayerEntity) playerEntity, caughtFish);
+            if(playerEntity.world != null && !playerEntity.world.isClient) {
+                playerEntity.openHandledScreen(new FishGameScreenFactory(fishingCard, caughtFish));
+            }
         }
         if (this.onGround) {
             i = 2;

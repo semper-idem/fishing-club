@@ -5,7 +5,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -16,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
@@ -67,8 +65,13 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
-        FishingCard fishingCard = world.isClient ? FishingClubClient.getClientCard() : FishingCardManager.getPlayerCard((ServerPlayerEntity) user);
-        if (!fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
+        boolean hasBobberChargePerk;
+        if (world.isClient) {
+            hasBobberChargePerk = FishingClubClient.getPerks().containsKey(FishingPerks.BOBBER_THROW_CHARGE.getName());
+        } else {
+            hasBobberChargePerk = FishingCardManager.getPlayerCard(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE);
+        }
+        if (!hasBobberChargePerk) {
             castHook(world, user, 1, fishingRod);
             float damageChance = FishingRodUtil.getDamageChance(fishingRod);
             if (Math.random() < damageChance && fishingRod.getDamage() < fishingRod.getMaxDamage() - 1) {

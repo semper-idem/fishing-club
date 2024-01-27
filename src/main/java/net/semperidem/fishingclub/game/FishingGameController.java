@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.game;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.semperidem.fishingclub.client.FishingClubClient;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import org.lwjgl.glfw.GLFW;
@@ -14,14 +14,14 @@ public class FishingGameController {
     private static final boolean IS_DEBUG = false;
 
     public final PlayerEntity player;
-    public final HookedFish hookedFish;
+    public final Fish hookedFish;
     public final FishingCard fishingCard;
 
     public float reelForce = 0;
 
-    public FishingGameController(HookedFish hookedFish){
+    public FishingGameController(FishingCard fishingCard, Fish hookedFish){
         this.hookedFish = hookedFish;
-        this.fishingCard = FishingClubClient.getClientCard();
+        this.fishingCard = fishingCard;
         this.player = fishingCard.getOwner();
 
         progressComponent = new ProgressComponent(this);

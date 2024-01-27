@@ -32,7 +32,6 @@ import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -55,7 +54,7 @@ public class FishingCard {
     ArrayList<UUID> linkedFishers = new ArrayList<>();
     ItemStack lastUsedBait = ItemStack.EMPTY;
     ItemStack sharedBait = ItemStack.EMPTY;
-    TeleportRequest lastTeleportRequest;//TODO HANDLE NULL
+    TeleportRequest lastTeleportRequest;
     Chunk lastFishedInChunk;//TODO HANDLE NULL
 
     private PlayerEntity owner;
@@ -64,25 +63,14 @@ public class FishingCard {
         this.owner = playerEntity;
     }
 
-    public static FishingCard createCard(PlayerEntity playerEntity) {
-        FishingCard fishingCard = new FishingCard(playerEntity);
-        fishingCard.syncClientInfo();
-        return fishingCard;
-    }
-
     public PlayerEntity getOwner(){
         return owner;
-    }
-
-    public Collection<SpellInstance> getSpells(){
-        return this.spells.values();
     }
 
     public void resetCooldown(){
         for(SpellInstance spellInstance : spells.values()) {
             spellInstance.resetCooldown();
         }
-        syncClientInfo();
     }
 
     public int getLevel() {
@@ -118,13 +106,7 @@ public class FishingCard {
     }
 
     public boolean canAcceptTeleport(long currentWorldTime){
-        return currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
-    }
-
-    void syncClientInfo(){
-        if (this.owner == null) return;
-        if (!(this.owner instanceof ServerPlayerEntity serverFisher)) return;
-        ServerPacketSender.sendFisherInfo(serverFisher, this);
+        return lastTeleportRequest == null || currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
     }
 
 
@@ -134,10 +116,11 @@ public class FishingCard {
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
                 this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
+                ServerPacketSender.sendSpellsUpdate(this);
             }
             skillPoints--;
-            syncClientInfo();
         }
+        ServerPacketSender.sendPerksUpdate(this);
     }
 
     public void addPerk(String perkName){
@@ -150,7 +133,6 @@ public class FishingCard {
 
     public void addSkillPoints(int amount){
         this.skillPoints+= amount;
-        syncClientInfo();
     }
 
     public boolean isFishingFromBoat(){
@@ -194,7 +176,6 @@ public class FishingCard {
 
     void setSkillPoints(int skillPoints){
         this.skillPoints = skillPoints;
-        syncClientInfo();
     }
 
     public void useSpell(FishingPerk fishingPerk, Entity target){
@@ -202,20 +183,13 @@ public class FishingCard {
         SpellInstance spellInstance = spells.get(fishingPerk);
         spellInstance.use((ServerPlayerEntity) owner, target);
         spells.put(fishingPerk, spellInstance);
-        syncClientInfo();
     }
 
-
-    public SpellInstance getSpell(FishingPerk fishingPerk) {
-        if (!perks.containsKey(fishingPerk.getName())) return null;
-        return spells.get(fishingPerk);
-    }
 
     void removePerk(String perkName){
         if (!this.perks.containsKey(perkName)) return;
         this.perks.remove(perkName);
         this.skillPoints++;
-        syncClientInfo();
     }
 
     public int nextLevelXP(){
@@ -358,7 +332,6 @@ public class FishingCard {
             onLevelUpBehaviour();
             nextLevelXP = nextLevelXP();
         }
-        syncClientInfo();
     }
 
 
@@ -420,13 +393,11 @@ public class FishingCard {
         }
 
         this.credit += credit;
-        syncClientInfo();
         return true;
     }
 
     public void setCredit(int credit) {
         this.credit = credit;
-        syncClientInfo();
     }
 
     public HashMap<String, FishingPerk> getPerks(){

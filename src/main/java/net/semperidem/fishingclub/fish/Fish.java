@@ -40,7 +40,6 @@ public class Fish {
 
     public boolean consumeGradeBuff;
 
-    private NbtCompound nbt;
     public Fish(Species species, ItemStack caughtUsing, FishingCard fishingCard) {
         this.species = species;
         this.name = species.name;
@@ -78,10 +77,7 @@ public class Fish {
     }
 
      public NbtCompound getNbt(){
-         if (nbt != null) {
-             return nbt;
-         }
-         nbt = new NbtCompound();
+         NbtCompound nbt = new NbtCompound();
          nbt.putString("name", name);
          nbt.putInt("level", level);
          nbt.putInt("experience", experience);
