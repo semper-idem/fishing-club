@@ -45,6 +45,7 @@ public class FishingCard {
     int exp = 0;
     int credit = 0;
     int skillPoints = 0;
+
     long lastFishCaughtTime = 0;
     long firstFishOfTheDayCaughtTime = 0;
     final HashMap<String, FishingPerk> perks = new HashMap<>();
@@ -54,9 +55,10 @@ public class FishingCard {
     ItemStack lastUsedBait = ItemStack.EMPTY;
     ItemStack sharedBait = ItemStack.EMPTY;
     TeleportRequest lastTeleportRequest;
-    ChunkTracker chunkTracker;
+    ChunkTracker chunkTracker = new ChunkTracker(new ArrayList<>());
 
     private PlayerEntity owner;
+
 
     public FishingCard(PlayerEntity playerEntity) {
         this.owner = playerEntity;

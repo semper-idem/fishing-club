@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.fisher.util.ChunkTracker;
 import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
@@ -28,7 +27,6 @@ public class FishingCardSerializer {
     private static final String INVENTORY_TAG ="inv";
     public static final String PERKS_TAG ="perks";
     public static final String SPELLS_TAG ="spells";
-    private static final String FISHED_IN_CHUNKS_TAG ="fic";
     private static final String LAST_USED_BAIT ="lbait";
     private static final String LAST_TELEPORT_REQUEST_TAG ="ltp";
     private static final String LINKED_PLAYERS_TAG ="lp";
@@ -50,7 +48,7 @@ public class FishingCardSerializer {
         fishingCard.firstFishOfTheDayCaughtTime = fisherTag.getLong(FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG);
         fishingCard.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound(INVENTORY_TAG));
         fishingCard.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound(LAST_USED_BAIT));
-        fishingCard.chunkTracker = ChunkTracker.fromNbt(fishingCard, fisherTag.getList(FISHED_IN_CHUNKS_TAG, NbtCompound.COMPOUND_TYPE));
+        fishingCard.chunkTracker.readNbt(fisherTag);
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
         setLinked(fisherTag, fishingCard);
@@ -68,7 +66,7 @@ public class FishingCardSerializer {
         fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));
-        fisherTag.put(FISHED_IN_CHUNKS_TAG, fishingCard.chunkTracker.toNbt());
+        //fisherTag.put(FISHED_IN_CHUNKS_TAG, fishingCard.chunkTracker.toNbt());
         fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
         fisherTag.put(LAST_TELEPORT_REQUEST_TAG, TeleportRequest.toNbt(fishingCard.lastTeleportRequest));
