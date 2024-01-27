@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
@@ -69,7 +70,7 @@ public class FishingCardSerializer {
         fisherTag.put(FISHED_IN_CHUNKS_TAG, getFishedChunksList(fishingCard));
         fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
-        fisherTag.put(LAST_TELEPORT_REQUEST_TAG, teleportRequestToNbt(fishingCard.lastTeleportRequest));
+        fisherTag.put(LAST_TELEPORT_REQUEST_TAG, TeleportRequest.toNbt(fishingCard.lastTeleportRequest));
         return fisherTag;
     }
 
@@ -139,30 +140,7 @@ public class FishingCardSerializer {
 
     private static void setLastTeleportRequest(NbtCompound fisherTag, FishingCard fishingCard){
         if (!fisherTag.contains(LAST_TELEPORT_REQUEST_TAG)) return;
-        NbtCompound lastTeleportRequestTag = fisherTag.getCompound(LAST_TELEPORT_REQUEST_TAG);
-        fishingCard.lastTeleportRequest = teleportRequestFromNbt(fishingCard, lastTeleportRequestTag);
-    }
-
-
-    public static FishingCard.TeleportRequest teleportRequestFromNbt(FishingCard fishingCard, NbtCompound teleportRequestTag){
-        String summonerUUID = "";
-        if (teleportRequestTag.contains("summonerUUID")) {
-            teleportRequestTag.getString("summonerUUID");
-        }
-        long requestTick = 0;
-        if (teleportRequestTag.contains("request_tick")) {
-            teleportRequestTag.getLong("summonerUUID");
-        }
-        return fishingCard.createTeleportRequest(summonerUUID, requestTick);
-    }
-
-    public static NbtCompound teleportRequestToNbt(FishingCard.TeleportRequest teleportRequest){
-        NbtCompound self = new NbtCompound();
-        if (teleportRequest != null) {
-            self.putString("summonerUUID", teleportRequest.summonerUUID);
-            self.putLong("request_tick", teleportRequest.requestTick);
-        }
-        return self;
+        fishingCard.lastTeleportRequest = TeleportRequest.fromNbt(fishingCard, fisherTag.getCompound(LAST_TELEPORT_REQUEST_TAG));
     }
 
     private static void setLinked(NbtCompound fisherTag, FishingCard fishingCard){

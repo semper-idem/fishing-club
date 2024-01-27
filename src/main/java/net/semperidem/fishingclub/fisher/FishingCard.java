@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.fisher;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,6 +24,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -97,7 +97,7 @@ public class FishingCard {
     }
 
     public void setTeleportRequest(UUID summonerUUID, long worldTime){
-        lastTeleportRequest = new TeleportRequest(summonerUUID.toString(), worldTime);
+        lastTeleportRequest = new TeleportRequest(this, summonerUUID.toString(), worldTime);
     }
 
     public TeleportRequest getLastTeleportRequest(){
@@ -456,10 +456,6 @@ public class FishingCard {
                 "\n============[Fisher Info]============";
     }
 
-    public TeleportRequest createTeleportRequest(String summonerUUID, long requestTick) {
-        return new TeleportRequest(summonerUUID, requestTick);
-    }
-
     public static class Chunk{
         int x;
         int z;
@@ -484,23 +480,5 @@ public class FishingCard {
         }
     }
 
-    public class TeleportRequest{
-        public final String summonerUUID;
-        public final long requestTick;
 
-
-        TeleportRequest(String summonerUUID, long worldTime){
-            this.summonerUUID = summonerUUID;
-            this.requestTick = worldTime;
-        }
-
-        boolean canAccept(){
-            return owner.getWorld().getTime() - requestTick < 600;
-        }
-    }
-
-
-    //CLIENT FISHING CARD INIT EMPTY
-    public static FishingCard getClientCard(){return new FishingCard(MinecraftClient.getInstance().player);}
-    public static FishingCard EMPTY = getClientCard();
 }

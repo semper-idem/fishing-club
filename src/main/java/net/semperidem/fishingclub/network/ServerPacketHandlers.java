@@ -18,11 +18,13 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -132,18 +134,11 @@ public class ServerPacketHandlers {
         server.execute(() -> {
             FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
             if (!fishingCard.canAcceptTeleport()) return;
-            FishingCard.TeleportRequest teleportRequest = fishingCard.getLastTeleportRequest();
-            ServerPlayerEntity target = null;
-            for(ServerPlayerEntity possibleTarget : player.getWorld().getPlayers()) {
-                if  (possibleTarget.getUuidAsString().equalsIgnoreCase(teleportRequest.summonerUUID)) {
-                    target = possibleTarget;
-                    break;
-                }
-            }
-            if (target == null) return;
-            player.teleport(target.getWorld(), target.getX(), target.getY(), target.getZ(), target.getYaw(), target.getPitch());
+            TeleportRequest teleportRequest = fishingCard.getLastTeleportRequest();
+            server.getPlayerManager().getPlayerList().stream()
+                    .filter(Objects::nonNull)
+                    .filter(teleportRequest::isTarget).findAny()
+                    .ifPresent(target -> TeleportRequest.execute(player, target));
         });
     }
-
-
 }
