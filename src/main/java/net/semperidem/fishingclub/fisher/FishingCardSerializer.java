@@ -69,7 +69,7 @@ public class FishingCardSerializer {
         fisherTag.put(FISHED_IN_CHUNKS_TAG, getFishedChunksList(fishingCard));
         fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
-        fisherTag.put(LAST_TELEPORT_REQUEST_TAG, FishingCard.TeleportRequest.toNbt(fishingCard.lastTeleportRequest));
+        fisherTag.put(LAST_TELEPORT_REQUEST_TAG, teleportRequestToNbt(fishingCard.lastTeleportRequest));
         return fisherTag;
     }
 
@@ -140,7 +140,29 @@ public class FishingCardSerializer {
     private static void setLastTeleportRequest(NbtCompound fisherTag, FishingCard fishingCard){
         if (!fisherTag.contains(LAST_TELEPORT_REQUEST_TAG)) return;
         NbtCompound lastTeleportRequestTag = fisherTag.getCompound(LAST_TELEPORT_REQUEST_TAG);
-        fishingCard.lastTeleportRequest = FishingCard.TeleportRequest.fromNbt(lastTeleportRequestTag);
+        fishingCard.lastTeleportRequest = teleportRequestFromNbt(fishingCard, lastTeleportRequestTag);
+    }
+
+
+    public static FishingCard.TeleportRequest teleportRequestFromNbt(FishingCard fishingCard, NbtCompound teleportRequestTag){
+        String summonerUUID = "";
+        if (teleportRequestTag.contains("summonerUUID")) {
+            teleportRequestTag.getString("summonerUUID");
+        }
+        long requestTick = 0;
+        if (teleportRequestTag.contains("request_tick")) {
+            teleportRequestTag.getLong("summonerUUID");
+        }
+        return fishingCard.createTeleportRequest(summonerUUID, requestTick);
+    }
+
+    public static NbtCompound teleportRequestToNbt(FishingCard.TeleportRequest teleportRequest){
+        NbtCompound self = new NbtCompound();
+        if (teleportRequest != null) {
+            self.putString("summonerUUID", teleportRequest.summonerUUID);
+            self.putLong("request_tick", teleportRequest.requestTick);
+        }
+        return self;
     }
 
     private static void setLinked(NbtCompound fisherTag, FishingCard fishingCard){

@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -105,8 +104,8 @@ public class FishingCard {
         return lastTeleportRequest;
     }
 
-    public boolean canAcceptTeleport(long currentWorldTime){
-        return lastTeleportRequest == null || currentWorldTime - lastTeleportRequest.requestTick < 600; //30s
+    public boolean canAcceptTeleport(){
+        return lastTeleportRequest != null && lastTeleportRequest.canAccept();
     }
 
 
@@ -457,6 +456,10 @@ public class FishingCard {
                 "\n============[Fisher Info]============";
     }
 
+    public TeleportRequest createTeleportRequest(String summonerUUID, long requestTick) {
+        return new TeleportRequest(summonerUUID, requestTick);
+    }
+
     public static class Chunk{
         int x;
         int z;
@@ -481,7 +484,7 @@ public class FishingCard {
         }
     }
 
-    public static class TeleportRequest{
+    public class TeleportRequest{
         public final String summonerUUID;
         public final long requestTick;
 
@@ -491,25 +494,8 @@ public class FishingCard {
             this.requestTick = worldTime;
         }
 
-        public static TeleportRequest fromNbt(NbtCompound teleportRequestTag){
-            String summonerUUID = "";
-            if (teleportRequestTag.contains("summonerUUID")) {
-                teleportRequestTag.getString("summonerUUID");
-            }
-            long requestTick = 0;
-            if (teleportRequestTag.contains("request_tick")) {
-                teleportRequestTag.getLong("summonerUUID");
-            }
-            return new TeleportRequest(summonerUUID, requestTick);
-        }
-
-        public static NbtCompound toNbt(TeleportRequest teleportRequest){
-            NbtCompound self = new NbtCompound();
-            if (teleportRequest != null) {
-                self.putString("summonerUUID", teleportRequest.summonerUUID);
-                self.putLong("request_tick", teleportRequest.requestTick);
-            }
-            return self;
+        boolean canAccept(){
+            return owner.getWorld().getTime() - requestTick < 600;
         }
     }
 

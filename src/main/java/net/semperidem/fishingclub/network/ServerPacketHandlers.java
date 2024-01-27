@@ -131,9 +131,8 @@ public class ServerPacketHandlers {
     public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
             FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
-            if (!fishingCard.canAcceptTeleport(player.getWorld().getTime())) return;
+            if (!fishingCard.canAcceptTeleport()) return;
             FishingCard.TeleportRequest teleportRequest = fishingCard.getLastTeleportRequest();
-            if (teleportRequest == null) return;
             ServerPlayerEntity target = null;
             for(ServerPlayerEntity possibleTarget : player.getWorld().getPlayers()) {
                 if  (possibleTarget.getUuidAsString().equalsIgnoreCase(teleportRequest.summonerUUID)) {
