@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.entity;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
 public interface IHookEntity {
@@ -8,7 +9,7 @@ public interface IHookEntity {
 
     ItemStack getCaughtUsing();
 
-    FishingCard.Chunk getFishedInChunk();
+    ChunkPos getFishedInChunk();
 
     float getFishMultiplier();
 }

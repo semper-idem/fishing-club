@@ -24,6 +24,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import net.semperidem.fishingclub.fisher.util.ChunkTracker;
 import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
@@ -49,12 +50,11 @@ public class FishingCard {
     final HashMap<String, FishingPerk> perks = new HashMap<>();
     SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
     final HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
-    final ArrayList<Chunk> fishedChunks = new ArrayList<>();
     ArrayList<UUID> linkedFishers = new ArrayList<>();
     ItemStack lastUsedBait = ItemStack.EMPTY;
     ItemStack sharedBait = ItemStack.EMPTY;
     TeleportRequest lastTeleportRequest;
-    Chunk lastFishedInChunk;//TODO HANDLE NULL
+    ChunkTracker chunkTracker;
 
     private PlayerEntity owner;
 
@@ -205,7 +205,7 @@ public class FishingCard {
 
     public void fishHooked(IHookEntity hookEntity){
         lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
-        lastFishedInChunk = hookEntity.getFishedInChunk();
+        chunkTracker.fishedInChunk(hookEntity.getFishedInChunk());
     }
 
     public void fishCaught(Fish fish){
@@ -235,7 +235,6 @@ public class FishingCard {
         grantExperience(expGained);
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
-        fishCaughtInChunk();
         processOneTimeBuff(fish);
         prolongStatusEffects();
     }
@@ -286,14 +285,8 @@ public class FishingCard {
         }
     }
 
-    private void fishCaughtInChunk(){
-        if (!caughtInChunk(lastFishedInChunk)) {
-            fishedChunks.add(lastFishedInChunk);
-        }
-    }
-
-    public boolean hasFreshChunkBuff() {
-        return caughtInChunk(lastFishedInChunk);
+    public boolean hasFreshChunkBuff(ChunkPos chunkPos) {
+        return chunkTracker.fishedInChunk(chunkPos);
     }
 
     private void processOneTimeBuff(Fish fish){
@@ -411,16 +404,6 @@ public class FishingCard {
         return this.fisherInventory;
     }
 
-    public boolean caughtInChunk(Chunk chunk){
-        for(Chunk caughtChunk : fishedChunks) {
-            boolean chunkMatch = caughtChunk.x == chunk.x && caughtChunk.z == chunk.z;
-            if (chunkMatch) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public ArrayList<UUID> getLinkedFishers(){
         return linkedFishers;
     }
@@ -455,30 +438,5 @@ public class FishingCard {
                 "\nCredit: " + credit +
                 "\n============[Fisher Info]============";
     }
-
-    public static class Chunk{
-        int x;
-        int z;
-
-        public Chunk(int x, int z) {
-            this.x = x;
-            this.z = z;
-        }
-        public Chunk(ChunkPos chunkPos) {
-            this.x = chunkPos.x;
-            this.z = chunkPos.z;
-        }
-
-        public Chunk(String chunkString){
-            String[] chunkData = chunkString.split(";");
-            x = Integer.parseInt(chunkData[0]);
-            z = Integer.parseInt(chunkData[1]);
-        }
-
-        public String toString(){
-            return x + ";" + z;
-        }
-    }
-
 
 }

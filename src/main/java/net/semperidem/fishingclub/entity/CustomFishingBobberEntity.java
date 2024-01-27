@@ -447,8 +447,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     }
 
     @Override
-    public FishingCard.Chunk getFishedInChunk() {
-        return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
+    public ChunkPos getFishedInChunk() {
+        return getChunkPos();
     }
 
     @Override

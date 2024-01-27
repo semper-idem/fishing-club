@@ -81,8 +81,8 @@ public abstract class ServerWorldMixin extends World {
                     }
 
                     @Override
-                    public FishingCard.Chunk getFishedInChunk() {
-                        return new FishingCard.Chunk(chunkPos);
+                    public ChunkPos getFishedInChunk() {
+                        return chunkPos;
                     }
                     @Override
                     public float getFishMultiplier() {

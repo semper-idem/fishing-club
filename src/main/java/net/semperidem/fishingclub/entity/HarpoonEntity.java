@@ -9,6 +9,7 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -99,8 +100,8 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
     }
 
     @Override
-    public FishingCard.Chunk getFishedInChunk() {
-        return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
+    public ChunkPos getFishedInChunk() {
+        return getChunkPos();
     }
 
     @Override

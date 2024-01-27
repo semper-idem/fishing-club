@@ -8,6 +8,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -110,8 +111,8 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     }
 
     @Override
-    public FishingCard.Chunk getFishedInChunk() {
-        return new FishingCard.Chunk(getChunkPos().x, getChunkPos().z);
+    public ChunkPos getFishedInChunk() {
+        return getChunkPos();
     }
 
     @Override

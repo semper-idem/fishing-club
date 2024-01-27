@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.fisher.util.ChunkTracker;
 import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
@@ -49,9 +50,9 @@ public class FishingCardSerializer {
         fishingCard.firstFishOfTheDayCaughtTime = fisherTag.getLong(FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG);
         fishingCard.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound(INVENTORY_TAG));
         fishingCard.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound(LAST_USED_BAIT));
+        fishingCard.chunkTracker = ChunkTracker.fromNbt(fishingCard, fisherTag.getList(FISHED_IN_CHUNKS_TAG, NbtCompound.COMPOUND_TYPE));
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
-        setChunks(fisherTag, fishingCard);
         setLinked(fisherTag, fishingCard);
         setLastTeleportRequest(fisherTag, fishingCard);
     }
@@ -67,7 +68,7 @@ public class FishingCardSerializer {
         fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));
-        fisherTag.put(FISHED_IN_CHUNKS_TAG, getFishedChunksList(fishingCard));
+        fisherTag.put(FISHED_IN_CHUNKS_TAG, fishingCard.chunkTracker.toNbt());
         fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
         fisherTag.put(LAST_TELEPORT_REQUEST_TAG, TeleportRequest.toNbt(fishingCard.lastTeleportRequest));
@@ -81,15 +82,6 @@ public class FishingCardSerializer {
             linkedListTag.add(NbtString.of(linkedUUID.toString()));
         }
         return linkedListTag;
-    }
-
-    private static NbtList getFishedChunksList(FishingCard fishingCard){
-        NbtList fishedChunksTag = new NbtList();
-        if (fishingCard.fishedChunks.isEmpty()) return fishedChunksTag;
-        for(FishingCard.Chunk c : fishingCard.fishedChunks) {
-            fishedChunksTag.add(NbtString.of(c.toString()));
-        }
-        return fishedChunksTag;
     }
 
     public static NbtList getSpellListTag(FishingCard fishingCard){
@@ -150,13 +142,4 @@ public class FishingCardSerializer {
             fishingCard.linkedFishers.add(UUID.fromString(uuidListTag.getString(i)));
         }
     }
-
-    private static void setChunks(NbtCompound fisherTag, FishingCard fishingCard){
-        fishingCard.fishedChunks.clear();
-        NbtList chunkListTag = fisherTag.getList(FISHED_IN_CHUNKS_TAG, NbtElement.STRING_TYPE);
-        for(int i = 0; i < chunkListTag.size(); i++) {
-            fishingCard.fishedChunks.add(new FishingCard.Chunk(chunkListTag.getString(i)));
-        }
-    }
-
 }

@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
@@ -40,16 +41,16 @@ public class Fish {
 
     public boolean consumeGradeBuff;
 
-    public Fish(Species species, ItemStack caughtUsing, FishingCard fishingCard) {
+    public Fish(Species species, FishingCard fishingCard, IHookEntity hookedWith) {
         this.species = species;
         this.name = species.name;
 
-        this.caughtUsing = caughtUsing;
+        this.caughtUsing = hookedWith.getCaughtUsing();
 
         int fisherLevel = fishingCard.getLevel();
         boolean hasBoatBoostedHealth = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
         int minGrade = fishingCard.getMinGrade();
-        boolean hasFreshChunkBuff = fishingCard.hasFreshChunkBuff();
+        boolean hasFreshChunkBuff = fishingCard.hasFreshChunkBuff(hookedWith.getFishedInChunk());
 
         this.level = calculateLevel(fisherLevel);
         this.weight = calculateWeight(minGrade);
