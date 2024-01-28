@@ -1,0 +1,73 @@
+package net.semperidem.fishingclub.fisher.util;
+
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.fisher.FishingCard;
+
+import java.util.Objects;
+
+public class SummonRequestManager extends DataManager {
+    public String targetUUID;
+    public long requestTick;
+
+    public SummonRequestManager(FishingCard requestFor){
+        super(requestFor);
+    }
+
+    public void set(ServerPlayerEntity target){
+        targetUUID = target.getUuidAsString();
+        requestTick = target.getWorld().getTime();
+    }
+
+    public boolean canAccept(){
+        return trackedFor.getHolder().getWorld().getTime() - requestTick < 600;
+    }
+
+    public boolean isTarget(ServerPlayerEntity possibleTarget) {
+        return possibleTarget.getUuidAsString().equalsIgnoreCase(targetUUID);
+    }
+
+    public void execute() {//If this doesn't work we can pass server instance directly from network handlers
+        if (!(trackedFor.getHolder() instanceof ServerPlayerEntity source)) {
+            return;
+        }
+        if (!canAccept()){
+            return;
+        }
+        source.server.getPlayerManager().getPlayerList().stream()
+                .filter(Objects::nonNull)
+                .filter(this::isTarget)
+                .findAny()
+                .ifPresent(target -> teleport(source, target));
+    }
+
+    private static void teleport(ServerPlayerEntity source, ServerPlayerEntity target) {
+        source.teleport(
+                target.getWorld(),
+                target.getX(),
+                target.getY(),
+                target.getZ(),
+                target.getYaw(),
+                target.getPitch()
+        );
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbtCompound) {
+        NbtCompound summonTag = nbtCompound.getCompound(TAG);
+        targetUUID = summonTag.contains(TARGET_TAG) ? summonTag.getString(TARGET_TAG) : "";
+        requestTick = summonTag.contains(REQUEST_TICK_TAG) ? summonTag.getLong(REQUEST_TICK_TAG) : 0;
+    }
+
+    @Override
+    public void writeNbt(NbtCompound nbtCompound) {
+        NbtCompound summonTag = new NbtCompound();
+        summonTag.putString(TARGET_TAG, targetUUID);
+        summonTag.putLong(REQUEST_TICK_TAG, requestTick);
+        nbtCompound.put(TAG, summonTag);
+    }
+
+    private static final String TAG = "summon";
+    private static final String TARGET_TAG = "target_UUID";
+    private static final String REQUEST_TICK_TAG = "request_tick";
+}

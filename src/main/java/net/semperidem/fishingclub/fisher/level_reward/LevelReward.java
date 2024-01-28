@@ -43,10 +43,10 @@ public class LevelReward {
         int fisherLevel = fishingCard.getLevel();
         int resultAmount = amount.get(fisherLevel);
         switch (rewardType) {
-            case ITEM -> grantItemReward((ServerPlayerEntity) fishingCard.getOwner(), fisherLevel);
+            case ITEM -> grantItemReward((ServerPlayerEntity) fishingCard.getHolder(), fisherLevel);
             case CREDIT -> fishingCard.addCredit(resultAmount);
             case SKILL_POINT -> fishingCard.addSkillPoints(resultAmount);
-            case BOX -> grantBoxReward((ServerPlayerEntity) fishingCard.getOwner(), fisherLevel);
+            case BOX -> grantBoxReward((ServerPlayerEntity) fishingCard.getHolder(), fisherLevel);
             default -> throw new IllegalStateException("Unexpected value: " + rewardType);
         }
     }

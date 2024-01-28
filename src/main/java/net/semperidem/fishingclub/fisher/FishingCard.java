@@ -24,8 +24,8 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.fisher.util.ChunkTracker;
-import net.semperidem.fishingclub.fisher.util.TeleportRequest;
+import net.semperidem.fishingclub.fisher.util.ChunkManager;
+import net.semperidem.fishingclub.fisher.util.SummonRequestManager;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
@@ -38,34 +38,43 @@ import java.util.UUID;
 
 public class FishingCard {
 
+    //Progression manager?
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
-
     int level = 1;
     int exp = 0;
-    int credit = 0;
     int skillPoints = 0;
+    final HashMap<String, FishingPerk> perks = new HashMap<>();
+    final HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
 
+    //Inventory manager
+    //Fishing vest etc?
+    ItemStack sharedBait = ItemStack.EMPTY;
+    SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
+    int credit = 0;
+
+    //Link manager
+    ArrayList<UUID> linkedFishers = new ArrayList<>();
+
+    //HistoryManager?
     long lastFishCaughtTime = 0;
     long firstFishOfTheDayCaughtTime = 0;
-    final HashMap<String, FishingPerk> perks = new HashMap<>();
-    SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
-    final HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
-    ArrayList<UUID> linkedFishers = new ArrayList<>();
     ItemStack lastUsedBait = ItemStack.EMPTY;
-    ItemStack sharedBait = ItemStack.EMPTY;
-    TeleportRequest lastTeleportRequest;
-    ChunkTracker chunkTracker = new ChunkTracker(new ArrayList<>());
 
-    private PlayerEntity owner;
+    SummonRequestManager summonRequestManager;
+    ChunkManager chunkManager;
+
+    private final PlayerEntity holder;
 
 
     public FishingCard(PlayerEntity playerEntity) {
-        this.owner = playerEntity;
+        this.holder = playerEntity;
+        this.summonRequestManager = new SummonRequestManager(this);
+        this.chunkManager = new ChunkManager(new ArrayList<>());
     }
 
-    public PlayerEntity getOwner(){
-        return owner;
+    public PlayerEntity getHolder(){
+        return holder;
     }
 
     public void resetCooldown(){
@@ -98,22 +107,17 @@ public class FishingCard {
         return lastUsedBait;
     }
 
-    public void setTeleportRequest(UUID summonerUUID, long worldTime){
-        lastTeleportRequest = new TeleportRequest(this, summonerUUID.toString(), worldTime);
+    public void setSummonRequest(ServerPlayerEntity target){
+        summonRequestManager.set(target);
     }
 
-    public TeleportRequest getLastTeleportRequest(){
-        return lastTeleportRequest;
+    public void acceptSummonRequest(){
+        summonRequestManager.execute();
     }
-
-    public boolean canAcceptTeleport(){
-        return lastTeleportRequest != null && lastTeleportRequest.canAccept();
-    }
-
 
     void addPerk(FishingPerk perk){
         if (availablePerk(perk) && hasSkillPoints()) {
-            perk.onEarn(owner);
+            perk.onEarn(holder);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
                 this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
@@ -137,20 +141,20 @@ public class FishingCard {
     }
 
     public boolean isFishingFromBoat(){
-        return owner.getVehicle() != null && owner.getVehicle() instanceof BoatEntity;
+        return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
     }
     public int getMinGrade(){
         int minGrade = 0;
-        long worldTime = this.owner.world.getTime();
+        long worldTime = this.holder.world.getTime();
         if (this.firstFishOfTheDayCaughtTime + 24000 < worldTime) {
             if (hasPerk(FishingPerks.FIRST_CATCH)) {
                 minGrade++;
             }
             minGrade++;
         }
-        if (this.owner.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
+        if (this.holder.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
             minGrade++;
-        } else if (this.owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
+        } else if (this.holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
 
@@ -182,7 +186,7 @@ public class FishingCard {
     public void useSpell(FishingPerk fishingPerk, Entity target){
         if (!perks.containsKey(fishingPerk.getName())) return;
         SpellInstance spellInstance = spells.get(fishingPerk);
-        spellInstance.use((ServerPlayerEntity) owner, target);
+        spellInstance.use((ServerPlayerEntity) holder, target);
         spells.put(fishingPerk, spellInstance);
     }
 
@@ -207,21 +211,21 @@ public class FishingCard {
 
     public void fishHooked(IHookEntity hookEntity){
         lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
-        chunkTracker.fishedInChunk(hookEntity.getFishedInChunk());
+        chunkManager.fishedInChunk(hookEntity.getFishedInChunk());
     }
 
     public void fishCaught(Fish fish){
         int expGained = fish.experience;
-        if (owner.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
-            float multiplier = (float) (1 + 0.1 * (owner.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
+        if (holder.hasStatusEffect(FStatusEffectRegistry.EXP_BUFF)) {
+            float multiplier = (float) (1 + 0.1 * (holder.getStatusEffect(FStatusEffectRegistry.EXP_BUFF).getAmplifier() + 1));
             expGained = (int) (expGained * multiplier);
         }
 
-        Box box = new Box(owner.getBlockPos());
+        Box box = new Box(holder.getBlockPos());
         box.expand(3);
-        boolean qualitySharing = fish.grade >= 4 && hasPerk(FishingPerks.QUALITY_SHARING) && !owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff;
+        boolean qualitySharing = fish.grade >= 4 && hasPerk(FishingPerks.QUALITY_SHARING) && !holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) && !fish.consumeGradeBuff;
         float passivExpMultiplier = 1;
-        for(Entity entity : owner.getEntityWorld().getOtherEntities(null, box)) {
+        for(Entity entity : holder.getEntityWorld().getOtherEntities(null, box)) {
             if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
                 if (FishingDatabase.getCard(entity.getUuid()).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                     passivExpMultiplier += 0.1f;
@@ -233,7 +237,7 @@ public class FishingCard {
         }
         expGained = (int)(expGained * passivExpMultiplier);
 
-        long worldTime = owner.world.getTime();
+        long worldTime = holder.world.getTime();
         grantExperience(expGained);
         setLastFishCaughtTime(worldTime);
         firstFishOfTheDayCaught(worldTime);
@@ -247,11 +251,11 @@ public class FishingCard {
             return;
         }
 
-        if (!this.owner.hasVehicle()) {
+        if (!this.holder.hasVehicle()) {
             return;
         }
 
-        if (!(this.owner.getVehicle() instanceof BoatEntity boatEntity)) {
+        if (!(this.holder.getVehicle() instanceof BoatEntity boatEntity)) {
             return;
         }
 
@@ -280,32 +284,32 @@ public class FishingCard {
         }
         setFirstFishOfTheDayCaughtTime(worldTime);
         if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-            owner.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
+            holder.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
         }
         if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-            owner.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
+            holder.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
         }
     }
 
     public boolean hasFreshChunkBuff(ChunkPos chunkPos) {
-        return chunkTracker.fishedInChunk(chunkPos);
+        return chunkManager.fishedInChunk(chunkPos);
     }
 
     private void processOneTimeBuff(Fish fish){
         if (!fish.consumeGradeBuff) {
             return;
         }
-        if (!owner.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+        if (!holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
         decreaseOneTimeBuff();
     }
 
     private void decreaseOneTimeBuff(){
-        StatusEffectInstance sei = owner.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        StatusEffectInstance sei = holder.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
         if (effectPower == 0) {
-            owner.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+            holder.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         } else {
             sei.upgrade(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF,sei.getDuration(), effectPower - 1));
         }
@@ -316,7 +320,7 @@ public class FishingCard {
             return;
         }
 
-        owner.addExperience((int) Math.max(1, gainedXP / 10));
+        holder.addExperience((int) Math.max(1, gainedXP / 10));
 
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
@@ -330,17 +334,17 @@ public class FishingCard {
 
 
     private void onLevelUpBehaviour(){
-        if (owner == null) return;
+        if (holder == null) return;
         for(LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)){
             reward.grant(this);
         }
 
         boolean isMilestone = this.level % 5 == 0;
         boolean isHundred = this.level % 100 == 0;
-        double x = owner.getX();
-        double y = owner.getY();
-        double z = owner.getZ();
-        ServerWorld world = (ServerWorld) owner.getWorld();
+        double x = holder.getX();
+        double y = holder.getY();
+        double z = holder.getZ();
+        ServerWorld world = (ServerWorld) holder.getWorld();
 
         if (isHundred) {
             hundredthLevelUpEffect(world, x, y, z);
@@ -352,7 +356,7 @@ public class FishingCard {
 
 
         if (Math.random() < 0.01) { //FUNNY :DDD
-           world.playSound(owner, x, y, z, SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1f, 0.4f, 0L);
+           world.playSound(holder, x, y, z, SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1f, 0.4f, 0L);
         }
     }
 

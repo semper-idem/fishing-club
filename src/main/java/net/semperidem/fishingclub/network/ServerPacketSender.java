@@ -39,7 +39,7 @@ public class ServerPacketSender {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.put(FishingCardSerializer.PERKS_TAG, FishingCardSerializer.getPerkListTag(fishingCard));
         packet.writeNbt(nbtCompound);
-        sendPacket((ServerPlayerEntity) fishingCard.getOwner(), S2C_PERKS_LIST, packet);
+        sendPacket((ServerPlayerEntity) fishingCard.getHolder(), S2C_PERKS_LIST, packet);
     }
 
     public static void sendSpellsUpdate(FishingCard fishingCard){
@@ -47,7 +47,7 @@ public class ServerPacketSender {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.put(FishingCardSerializer.SPELLS_TAG, FishingCardSerializer.getSpellListTag(fishingCard));
         packet.writeNbt(nbtCompound);
-        sendPacket((ServerPlayerEntity) fishingCard.getOwner(), S2C_SPELL_INSTANCES_LIST, packet);
+        sendPacket((ServerPlayerEntity) fishingCard.getHolder(), S2C_SPELL_INSTANCES_LIST, packet);
     }
 
 
@@ -55,7 +55,7 @@ public class ServerPacketSender {
         for(UUID linkedFisherUUID : FishingCardManager.getPlayerCard(summoner).getLinkedFishers()) {
             for(ServerPlayerEntity linkedFisherPlayer : summoner.getWorld().getPlayers()) {
                 if (!linkedFisherPlayer.getUuid().equals(linkedFisherUUID)) continue;
-                FishingCardManager.getPlayerCard(linkedFisherPlayer).setTeleportRequest(summoner.getUuid(), summoner.getWorld().getTime());
+                FishingCardManager.getPlayerCard(linkedFisherPlayer).setSummonRequest(summoner);
                 PacketByteBuf packet = PacketByteBufs.create();
                 packet.writeString(summoner.getDisplayName().getString());
                 sendPacket(summoner, S2C_SUMMON_REQUEST, packet);

@@ -59,7 +59,7 @@ public class Fish {
         this.damage = calculateDamage(fisherLevel, hasBoatBoostedHealth);
         this.value = calculateValue();
 
-        PlayerEntity caughtBy = fishingCard.getOwner();
+        PlayerEntity caughtBy = fishingCard.getHolder();
         this.experience = calculateExperience(caughtBy);
         this.caughtByUUID = caughtBy.getUuid();
         this.consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);

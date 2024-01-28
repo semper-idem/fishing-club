@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.fisher.util.TeleportRequest;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
@@ -28,18 +27,17 @@ public class FishingCardSerializer {
     public static final String PERKS_TAG ="perks";
     public static final String SPELLS_TAG ="spells";
     private static final String LAST_USED_BAIT ="lbait";
-    private static final String LAST_TELEPORT_REQUEST_TAG ="ltp";
     private static final String LINKED_PLAYERS_TAG ="lp";
 
     public static FishingCard fromNbt(PlayerEntity owner, NbtCompound playerNbt){
         FishingCard fishingCard = new FishingCard(owner);
         if (playerNbt.contains(TAG)) {
-            updateFromNbt(fishingCard, playerNbt.getCompound(TAG));
+            readNbt(fishingCard, playerNbt.getCompound(TAG));
         }
         return fishingCard;
     }
 
-    public static void updateFromNbt(FishingCard fishingCard,NbtCompound fisherTag) {
+    private static void readNbt(FishingCard fishingCard, NbtCompound fisherTag) {
         fishingCard.level = fisherTag.getInt(LEVEL_TAG);
         fishingCard.exp = fisherTag.getInt(EXP_TAG);
         fishingCard.credit = fisherTag.getInt(CREDIT_TAG);
@@ -48,11 +46,12 @@ public class FishingCardSerializer {
         fishingCard.firstFishOfTheDayCaughtTime = fisherTag.getLong(FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG);
         fishingCard.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound(INVENTORY_TAG));
         fishingCard.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound(LAST_USED_BAIT));
-        fishingCard.chunkTracker.readNbt(fisherTag);
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
         setLinked(fisherTag, fishingCard);
-        setLastTeleportRequest(fisherTag, fishingCard);
+
+        fishingCard.chunkManager.readNbt(fisherTag);
+        fishingCard.summonRequestManager.readNbt(fisherTag);
     }
 
     public static NbtCompound toNbt(FishingCard fishingCard){
@@ -66,11 +65,15 @@ public class FishingCardSerializer {
         fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));
-        //fisherTag.put(FISHED_IN_CHUNKS_TAG, fishingCard.chunkTracker.toNbt());
         fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
-        fisherTag.put(LAST_TELEPORT_REQUEST_TAG, TeleportRequest.toNbt(fishingCard.lastTeleportRequest));
+        writeNbt(fishingCard, fisherTag);
         return fisherTag;
+    }
+
+    private static void writeNbt(FishingCard fishingCard, NbtCompound fisherTag) {
+        fishingCard.chunkManager.writeNbt(fisherTag);
+        fishingCard.summonRequestManager.writeNbt(fisherTag);
     }
 
 
@@ -128,10 +131,6 @@ public class FishingCardSerializer {
         ServerPacketSender.sendSpellsUpdate(fishingCard);
     }
 
-    private static void setLastTeleportRequest(NbtCompound fisherTag, FishingCard fishingCard){
-        if (!fisherTag.contains(LAST_TELEPORT_REQUEST_TAG)) return;
-        fishingCard.lastTeleportRequest = TeleportRequest.fromNbt(fishingCard, fisherTag.getCompound(LAST_TELEPORT_REQUEST_TAG));
-    }
 
     private static void setLinked(NbtCompound fisherTag, FishingCard fishingCard){
         fishingCard.linkedFishers = new ArrayList<>();

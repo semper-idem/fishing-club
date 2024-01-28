@@ -35,4 +35,8 @@ public class FishingCardManager {
     public static void removePerk(ServerPlayerEntity playerEntity, String perkName){
         getPlayerCard(playerEntity).removePerk(perkName);
     }
+
+    public static void acceptSummonRequest(ServerPlayerEntity playerEntity){
+        getPlayerCard(playerEntity).summonRequestManager.execute();
+    }
 }

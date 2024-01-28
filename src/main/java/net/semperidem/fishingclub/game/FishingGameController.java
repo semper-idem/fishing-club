@@ -22,7 +22,7 @@ public class FishingGameController {
     public FishingGameController(FishingCard fishingCard, Fish hookedFish){
         this.hookedFish = hookedFish;
         this.fishingCard = fishingCard;
-        this.player = fishingCard.getOwner();
+        this.player = fishingCard.getHolder();
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);

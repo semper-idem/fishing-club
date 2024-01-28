@@ -7,13 +7,13 @@ import net.minecraft.util.math.ChunkPos;
 
 import java.util.ArrayList;
 
-public class ChunkTracker implements NbtData {
+public class ChunkManager implements NbtData {
     private static final String TAG = "used_chunks";
 
     ArrayList<Chunk> usedChunks;
     Chunk lastFishedInChunk;
 
-    public ChunkTracker(ArrayList<Chunk> usedChunks) {
+    public ChunkManager(ArrayList<Chunk> usedChunks) {
         this.usedChunks = usedChunks;
     }
 
