@@ -20,6 +20,7 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
+import net.semperidem.fishingclub.fisher.managers.LinkingManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -53,9 +54,6 @@ public class FishingCard {
     SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
     int credit = 0;
 
-    //Link manager
-    ArrayList<UUID> linkedFishers = new ArrayList<>();
-
     //HistoryManager?
     long lastFishCaughtTime = 0;
     long firstFishOfTheDayCaughtTime = 0;
@@ -63,6 +61,7 @@ public class FishingCard {
 
     SummonRequestManager summonRequestManager;
     ChunkManager chunkManager;
+    LinkingManager linkingManager;
 
     private final PlayerEntity holder;
 
@@ -71,6 +70,7 @@ public class FishingCard {
         this.holder = playerEntity;
         this.summonRequestManager = new SummonRequestManager(this);
         this.chunkManager = new ChunkManager(this);
+        this.linkingManager = new LinkingManager(this);
     }
 
     public PlayerEntity getHolder(){
@@ -411,28 +411,18 @@ public class FishingCard {
     }
 
     public ArrayList<UUID> getLinkedFishers(){
-        return linkedFishers;
+        return linkingManager.getLinkedFishers();
     }
 
     public boolean isLinked(UUID uuid){
-        return linkedFishers.contains(uuid);
+        return linkingManager.isLinked(uuid);
     }
 
-    public void unlinkFisher(UUID uuid){
-        if (!linkedFishers.contains(uuid)) return;
-        linkedFishers.remove(uuid);
+    public void unlinkFisher(UUID target){
+        linkingManager.unlinkFisher(target);
     }
-    public void linkedFisher(UUID linkUUID){
-        int allowedSize = hasPerk(FishingPerks.FISHERMAN_LINK) ? hasPerk(FishingPerks.DOUBLE_LINK) ? 2 : 1 : 0;
-        if (allowedSize == 0) {
-            return;
-        }
-        if (linkedFishers.size() < allowedSize) {
-            linkedFishers.add(linkUUID);
-        } else {
-            linkedFishers.remove(0);
-            linkedFishers.add(linkUUID);
-        }
+    public void linkedFisher(UUID target){
+        linkingManager.linkedFisher(target);
     }
 
     @Override

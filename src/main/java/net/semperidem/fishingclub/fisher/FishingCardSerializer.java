@@ -48,10 +48,10 @@ public class FishingCardSerializer {
         fishingCard.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound(LAST_USED_BAIT));
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
-        setLinked(fisherTag, fishingCard);
 
         fishingCard.chunkManager.readNbt(fisherTag);
         fishingCard.summonRequestManager.readNbt(fisherTag);
+        fishingCard.linkingManager.readNbt(fisherTag);
     }
 
     public static NbtCompound toNbt(FishingCard fishingCard){
@@ -65,7 +65,6 @@ public class FishingCardSerializer {
         fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));
-        fisherTag.put(LINKED_PLAYERS_TAG, getLinkedList(fishingCard));
         fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
         writeNbt(fishingCard, fisherTag);
         return fisherTag;
@@ -74,16 +73,10 @@ public class FishingCardSerializer {
     private static void writeNbt(FishingCard fishingCard, NbtCompound fisherTag) {
         fishingCard.chunkManager.writeNbt(fisherTag);
         fishingCard.summonRequestManager.writeNbt(fisherTag);
+        fishingCard.linkingManager.writeNbt(fisherTag);
     }
 
 
-    private static NbtList getLinkedList(FishingCard fishingCard){
-        NbtList linkedListTag = new NbtList();
-        for(UUID linkedUUID : fishingCard.linkedFishers) {
-            linkedListTag.add(NbtString.of(linkedUUID.toString()));
-        }
-        return linkedListTag;
-    }
 
     public static NbtList getSpellListTag(FishingCard fishingCard){
         NbtList spellListTag = new NbtList();
@@ -131,12 +124,4 @@ public class FishingCardSerializer {
         ServerPacketSender.sendSpellsUpdate(fishingCard);
     }
 
-
-    private static void setLinked(NbtCompound fisherTag, FishingCard fishingCard){
-        fishingCard.linkedFishers = new ArrayList<>();
-        NbtList uuidListTag = fisherTag.getList(LINKED_PLAYERS_TAG, NbtElement.STRING_TYPE);
-        for(int i = 0; i < uuidListTag.size(); i++) {
-            fishingCard.linkedFishers.add(UUID.fromString(uuidListTag.getString(i)));
-        }
-    }
 }
