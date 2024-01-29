@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fisher.util;
+package net.semperidem.fishingclub.fisher.managers;
 
 import net.semperidem.fishingclub.fisher.FishingCard;
 
