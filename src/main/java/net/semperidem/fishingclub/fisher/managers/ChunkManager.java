@@ -4,17 +4,19 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.util.ArrayList;
 
-public class ChunkManager implements NbtData {
+public class ChunkManager extends DataManager {
     private static final String TAG = "used_chunks";
 
     ArrayList<Chunk> usedChunks;
     Chunk lastFishedInChunk;
 
-    public ChunkManager(ArrayList<Chunk> usedChunks) {
-        this.usedChunks = usedChunks;
+    public ChunkManager(FishingCard trackedFor) {
+        super(trackedFor);
+        this.usedChunks = new ArrayList<>();
     }
 
     public boolean fishedInChunk(ChunkPos chunkPos) {

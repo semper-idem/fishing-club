@@ -70,7 +70,7 @@ public class FishingCard {
     public FishingCard(PlayerEntity playerEntity) {
         this.holder = playerEntity;
         this.summonRequestManager = new SummonRequestManager(this);
-        this.chunkManager = new ChunkManager(new ArrayList<>());
+        this.chunkManager = new ChunkManager(this);
     }
 
     public PlayerEntity getHolder(){
