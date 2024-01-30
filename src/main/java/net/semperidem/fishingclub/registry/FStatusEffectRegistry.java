@@ -16,7 +16,6 @@ public class FStatusEffectRegistry {
     public static final StatusEffect SLOW_FISH_BUFF = new FishSlowBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
     public static final StatusEffect BOBBER_BUFF = new FishBobberBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
     public static final StatusEffect ONE_TIME_QUALITY_BUFF = new FishOneTimeQualityStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect SHARED_BAIT_BUFF = new FishSharedBaitStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
 
     public static void register(){
         Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("quality_buff"), QUALITY_BUFF);
@@ -25,6 +24,5 @@ public class FStatusEffectRegistry {
         Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("slow_fish_buff"), SLOW_FISH_BUFF);
         Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("bobber_buff"), BOBBER_BUFF);
         Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("one_time_quality_buff"), ONE_TIME_QUALITY_BUFF);
-        Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("shared_bait_buff"), SHARED_BAIT_BUFF);
     }
 }

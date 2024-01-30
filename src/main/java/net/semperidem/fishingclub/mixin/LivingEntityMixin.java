@@ -4,9 +4,16 @@ package net.semperidem.fishingclub.mixin;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.world.World;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.item.HarpoonRodItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -16,13 +23,19 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+public abstract class LivingEntityMixin extends Entity{
+
     @Unique private int pullPower = 0;
+
+    public LivingEntityMixin(EntityType<?> type, World world) {
+        super(type, world);
+    }
 
 
     @Inject(method = "stopUsingItem", at = @At("TAIL"))
@@ -44,6 +57,16 @@ public abstract class LivingEntityMixin {
         tickPullPower(power);
     }
 
+    @Inject(method="addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("TAIL"))
+    private void onAddStatusEffect(StatusEffectInstance effect, Entity source, CallbackInfoReturnable<Boolean> cir) {
+        if (!isPlayer() || world.isClient) {
+            return;
+        }
+        FishingCard fishingCard = FishingCardManager.getPlayerCard((ServerPlayerEntity)(Object)this);
+        if (fishingCard != null) {
+            fishingCard.shareStatusEffect(effect);
+        }
+    }
 
     private void tickPullPower(int power){
         if (power != this.pullPower && power != 0) {

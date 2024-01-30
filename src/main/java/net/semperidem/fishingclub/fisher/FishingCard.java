@@ -100,6 +100,10 @@ public class FishingCard {
         this.sharedBait = baitToShare;
     }
 
+    public void shareStatusEffect(StatusEffectInstance sei){
+        linkingManager.shareStatusEffect(sei);
+    }
+
     public ItemStack getSharedBait(){
         return sharedBait;
     }
@@ -425,6 +429,9 @@ public class FishingCard {
         linkingManager.linkedFisher(target);
     }
 
+    public void shareBait() {
+        linkingManager.shareBait(lastUsedBait);
+    }
     @Override
     public String toString(){
         return "\n============[Fisher Info]============" +

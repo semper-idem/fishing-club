@@ -222,10 +222,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
-        ChunkPos worldChunkPos = world.getChunk(getBlockPos()).getPos();
         ItemStack fishingRodCopy = fishingRod.copy();
-        if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.SHARED_BAIT_BUFF)) {
-            FishingRodPartController.putPart(fishingRodCopy, fishingCard.getSharedBait().copy());
+        ItemStack sharedBait = fishingCard.getSharedBait();
+        if (sharedBait != ItemStack.EMPTY) {
+            FishingRodPartController.putPart(fishingRodCopy, sharedBait);
+            fishingRod = fishingRodCopy;
         }
         caughtFish = FishUtil.getFishOnHook(this);
         this.getVelocity().add(0,-0.03 * caughtFish.grade * caughtFish.grade,0);
@@ -238,7 +239,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.hookCountdown = (int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
-        if (FishingRodPartController.hasBait(fishingRod)) {
+        if (sharedBait != ItemStack.EMPTY) {
+            int damage = sharedBait.getDamage();
+            sharedBait.setDamage(damage + 1);
+            if (damage + 1 > sharedBait.getMaxDamage()) {
+                fishingCard.setSharedBait(ItemStack.EMPTY);//todo fix ugly
+            }
+        } else if (FishingRodPartController.hasBait(fishingRod)) {
             FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
         }
     }

@@ -1,10 +1,15 @@
 package net.semperidem.fishingclub.fisher.managers;
 
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.stat.Stat;
+import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 import java.util.ArrayList;
@@ -40,6 +45,35 @@ public class LinkingManager extends DataManager {
         }
         return 0;
     }
+
+    public void shareStatusEffect(StatusEffectInstance sei) {
+        if (sei.getDuration() < 20) {
+            return;
+        }
+        trackedFor.getHolder().addStatusEffect(sei);
+        for(UUID linkedFisher : linkedFishers) {
+            FishingDatabase.getCard(linkedFisher).shareStatusEffect(getWeakerStatusEffectInstance(sei));
+        }
+    }
+
+    private StatusEffectInstance getWeakerStatusEffectInstance(StatusEffectInstance sei) {
+        return new StatusEffectInstance(
+                sei.getEffectType(),
+                (int) (sei.getDuration() * 0.9f),
+                sei.getAmplifier(),
+                sei.isAmbient(),
+                sei.shouldShowParticles(),
+                sei.shouldShowIcon()
+        );
+    }
+
+
+    public void shareBait(ItemStack baitToShare) {
+        for(UUID linkedFisher : linkedFishers) {
+            FishingDatabase.getCard(linkedFisher).setSharedBait(baitToShare.copy());
+        }
+    }
+
 
     public void linkedFisher(UUID target){
         int linkLimit = getLinkLimit();
