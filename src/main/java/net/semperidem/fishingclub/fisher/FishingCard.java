@@ -418,19 +418,12 @@ public class FishingCard {
         return linkingManager.getLinkedFishers();
     }
 
-    public boolean isLinked(UUID uuid){
-        return linkingManager.isLinked(uuid);
-    }
-
-    public void unlinkFisher(UUID target){
-        linkingManager.unlinkFisher(target);
-    }
-    public void linkedFisher(UUID target){
-        linkingManager.linkedFisher(target);
+    public void linkTarget(Entity target){
+        linkingManager.linkTarget(target);
     }
 
     public void shareBait() {
-        linkingManager.shareBait(lastUsedBait);
+        linkingManager.shareBait(lastUsedBait.copy());
     }
     @Override
     public String toString(){

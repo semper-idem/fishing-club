@@ -38,30 +38,6 @@ public class Spells {
     static Spell FREE_SHOP_SUMMON;
     static HashMap<FishingPerk, Spell> perkToSpell = new HashMap<>();
 
-
-    private static void castAOEBuff(ServerPlayerEntity caster,int range, StatusEffectInstance effect){
-        Box box = new Box(caster.getBlockPos());
-        FishingCard casterCard = FishingCardManager.getPlayerCard(caster);
-        box.expand(range);
-        List<Entity> iterableEntities = caster.getEntityWorld().getOtherEntities(null, box);
-        iterableEntities.add(caster);
-        for(Entity entity : iterableEntities) {
-            if (!(entity instanceof ServerPlayerEntity playerEntity)) continue;
-            playerEntity.addStatusEffect(effect);
-            FishingCard playerCard = FishingCardManager.getPlayerCard(playerEntity);
-            if (!playerCard.hasPerk(FishingPerks.FISHERMAN_LINK)) continue;
-            for(UUID linkedFisher : FishingCardManager.getPlayerCard(caster).getLinkedFishers()) {
-                for(ServerPlayerEntity linkedFisherPlayer : caster.getWorld().getPlayers()) {
-                    if (linkedFisherPlayer.getUuid().equals(linkedFisher)) continue;
-                    linkedFisherPlayer.addStatusEffect(effect);
-                    if (effect.getEffectType() != FStatusEffectRegistry.SHARED_BAIT_BUFF) continue;
-                    FishingCardManager.getPlayerCard(linkedFisherPlayer).setSharedBait(casterCard.getLastUsedBait());
-                    //MAYBE REFACTOR HERE IDK :P n^3 big bad
-                }
-            }
-        }
-    }
-
     private static void castEffect(ServerPlayerEntity caster,int range, StatusEffectInstance effect){
         Box aoe = new Box(caster.getBlockPos());
         aoe.expand(range);
@@ -104,18 +80,7 @@ public class Spells {
         FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
-                if (!(target instanceof PlayerEntity playerTarget)) return;
-                FishingCard fishingCard = FishingCardManager.getPlayerCard(source);
-                UUID targetUUID = target.getUuid();
-                if (fishingCard.isLinked(target.getUuid())) {
-                    fishingCard.unlinkFisher(targetUUID);
-                    source.sendMessage(Text.of("[Fishing Club] Unlinked from: " + playerTarget.getDisplayName().getString()), true);
-                    playerTarget.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has unlinked from you"), true);
-                } else {
-                    FishingCardManager.getPlayerCard(source).linkedFisher(target.getUuid());
-                    source.sendMessage(Text.of("[Fishing Club] Linked to: " + playerTarget.getDisplayName().getString()), true);
-                    playerTarget.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has linked to you"), true);
-                }
+                FishingCardManager.getPlayerCard(source).linkTarget(target);
             }
         });
         SHARED_BAIT = new Spell(FishingPerks.SHARED_BAIT.getName(), FishingPerks.SHARED_BAIT, 6000,   new Spell.Effect() {
