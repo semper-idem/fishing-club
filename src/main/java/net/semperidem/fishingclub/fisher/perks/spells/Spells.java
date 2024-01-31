@@ -92,7 +92,7 @@ public class Spells {
         FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                ClientPacketSender.sendSummonRequest();
+                FishingCardManager.getPlayerCard(source).requestSummon();;
             }
         });
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
