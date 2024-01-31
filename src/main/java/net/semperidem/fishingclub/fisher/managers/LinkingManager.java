@@ -8,9 +8,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.*;
 import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 import java.util.ArrayList;
@@ -89,6 +91,27 @@ public class LinkingManager extends DataManager {
         }
         linkedFishers.add(targetUUID);
         messageLink(trackedFor.getHolder(), playerTarget);
+    }
+
+    public void requestSummon() {
+        for(UUID linkedFisherUUID : linkedFishers) {
+            requestSummonLink(linkedFisherUUID);
+        }
+    }
+
+    private void requestSummonLink(UUID linkedFisherUUID) {
+        PlayerEntity linkedFisher = trackedFor.getHolder().getWorld().getPlayerByUuid(linkedFisherUUID);
+        if (linkedFisher == null) {
+            return;
+        }
+        FishingCardManager.getPlayerCard(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
+        messageRequestSummon(linkedFisher);
+    }
+
+    private void messageRequestSummon(PlayerEntity target) {
+        target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.getHolder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
+        target.sendMessage(MutableText.of(new LiteralTextContent("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
+
     }
 
     private void messageLink(PlayerEntity source, PlayerEntity target) {

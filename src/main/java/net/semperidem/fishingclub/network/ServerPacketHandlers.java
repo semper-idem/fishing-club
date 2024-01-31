@@ -122,7 +122,7 @@ public class ServerPacketHandlers {
 
     public static void handleSummonRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
-                    ServerPacketSender.sendSummonRequest(player);
+                    FishingCardManager.getPlayerCard(player).requestSummon();
                 }
         );
     }

@@ -15,15 +15,6 @@ import java.util.HashMap;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SUMMON_REQUEST, (client, handler, buf, responseSender) -> {
-            String target =  buf.readString();
-            client.execute( () -> {
-               client.player.sendMessage(Text.of("Your friend:" + target + " send you summon request, You have 30s to accept"), false);
-               client.player.sendMessage(MutableText.of(new LiteralTextContent("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
-            });
-        });
-
-
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_PERKS_LIST, (client, handler, buf, responseSender) -> {
             NbtCompound nbtCompound =  buf.readNbt();
             NbtList perkListTag = nbtCompound.getList(FishingCardSerializer.PERKS_TAG, NbtElement.STRING_TYPE);

@@ -414,12 +414,12 @@ public class FishingCard {
         return this.fisherInventory;
     }
 
-    public ArrayList<UUID> getLinkedFishers(){
-        return linkingManager.getLinkedFishers();
-    }
-
     public void linkTarget(Entity target){
         linkingManager.linkTarget(target);
+    }
+
+    public void requestSummon(){
+        linkingManager.requestSummon();
     }
 
     public void shareBait() {
