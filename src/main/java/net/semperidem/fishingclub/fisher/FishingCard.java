@@ -105,9 +105,6 @@ public class FishingCard {
     public ItemStack getSharedBait(){
         return sharedBait;
     }
-    public ItemStack getLastUsedBait(){
-        return lastUsedBait;
-    }
 
     public void setSummonRequest(ServerPlayerEntity target){
         summonRequestManager.set(target);
@@ -262,9 +259,7 @@ public class FishingCard {
         }
 
         ImmutableList<Entity> passengers = (ImmutableList<Entity>) boatEntity.getPassengerList();
-        if (passengers.size() <= 1) {
-            return;
-        }
+
         for(Entity passenger : passengers) {
             if(!(passenger instanceof PlayerEntity playerPassenger)) continue;
             playerPassenger.getStatusEffects().forEach(
@@ -310,10 +305,10 @@ public class FishingCard {
     private void consumeOneTimeBuff(){
         StatusEffectInstance sei = holder.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
-        if (effectPower == 0) {
-            holder.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
-        } else {
-            sei.upgrade(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF,sei.getDuration(), effectPower - 1));
+        holder.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        if (effectPower > 0) {
+            StatusEffectInstance lowerSei = new StatusEffectInstance(sei.getEffectType(), sei.getDuration(), effectPower - 1);
+            holder.addStatusEffect(lowerSei);
         }
     }
 
