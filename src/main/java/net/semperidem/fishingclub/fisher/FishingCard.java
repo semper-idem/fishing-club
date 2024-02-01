@@ -335,56 +335,10 @@ public class FishingCard {
     }
 
 
-    private void onLevelUpBehaviour(){
-        if (holder == null) return;
-        for(LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)){
+    private void onLevelUpBehaviour() {
+        for (LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)) {
             reward.grant(this);
         }
-
-        boolean isMilestone = this.level % 5 == 0;
-        boolean isHundred = this.level % 100 == 0;
-        double x = holder.getX();
-        double y = holder.getY();
-        double z = holder.getZ();
-        ServerWorld world = (ServerWorld) holder.getWorld();
-
-        if (isHundred) {
-            hundredthLevelUpEffect(world, x, y, z);
-        } else if(isMilestone) {
-            fifthLevelUpEffect(world, x, y, z);
-        } else {
-            levelUpEffect(world, x, y, z);
-        }
-
-
-        if (Math.random() < 0.01) { //FUNNY :DDD
-           world.playSound(holder, x, y, z, SoundEvents.ENTITY_RAVAGER_ROAR, SoundCategory.PLAYERS, 1f, 0.4f, 0L);
-        }
-    }
-
-    private void hundredthLevelUpEffect(ServerWorld world, double x, double y, double z){
-        world.spawnParticles(ParticleTypes.DRAGON_BREATH, x, y + 2, z, 200,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, x, y + 2, z, 25,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.FIREWORK, x, y + 2, z, 100,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.SCRAPE, x, y + 2, z, 100,0.5,0.5,0.5,0.1);
-        world.playSound(null, x, y, z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.6f, 0.7f, 0L);
-        world.playSound(null, x, y, z, SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, SoundCategory.PLAYERS, 0.5f, 0.2f, 0L);
-
-    }
-
-    private void fifthLevelUpEffect(ServerWorld world, double x, double y, double z){
-        world.spawnParticles(ParticleTypes.DRAGON_BREATH, x, y + 2, z, 100,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.FIREWORK, x, y + 2, z, 100,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.SCRAPE, x, y + 2, z, 100,0.5,0.5,0.5,0.1);
-        world.playSound(null, x, y, z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.5f, 0.7f, 0L);
-        world.playSound(null, x, y, z, this.level == 100 ? SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST : SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST, SoundCategory.PLAYERS, 0.3f, 0.2f, 0L);
-    }
-
-    private void levelUpEffect(ServerWorld world, double x, double y, double z){
-        world.spawnParticles(ParticleTypes.FIREWORK, x, y + 2, z, 25,0,0,0,0.1);
-        world.spawnParticles(ParticleTypes.SCRAPE, x, y + 2, z, 25,0.5,0.5,0.5,0.1);
-        world.playSound(null, x, y, z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.25f, 0.7f, 0L);
-        world.playSound(null, x, y, z, this.level == 100 ? SoundEvents.ENTITY_FIREWORK_ROCKET_LARGE_BLAST : SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST, SoundCategory.PLAYERS, 0.25f, 0.2f, 0L);
     }
 
     public boolean addCredit(int credit) {

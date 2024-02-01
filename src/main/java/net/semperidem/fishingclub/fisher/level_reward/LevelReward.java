@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fisher.level_reward;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ public class LevelReward {
     Amount amount;
     @Nullable ItemStack itemReward;
     RewardType rewardType;
+    LevelUpEffect effect;
 
     private LevelReward(@Nullable ItemStack itemReward, Amount amount, RewardType rewardType) {
         this.itemReward = itemReward;
@@ -23,6 +25,12 @@ public class LevelReward {
         this.amount = amount;
         this.rewardType = rewardType;
     }
+
+    private LevelReward(LevelUpEffect effect){
+        this.effect = effect;
+        this.rewardType = RewardType.EFFECT;
+    }
+
 
     private void grantBoxReward(ServerPlayerEntity serverPlayerEntity, int level){
         Random r = new Random();
@@ -47,8 +55,23 @@ public class LevelReward {
             case CREDIT -> fishingCard.addCredit(resultAmount);
             case SKILL_POINT -> fishingCard.addSkillPoints(resultAmount);
             case BOX -> grantBoxReward((ServerPlayerEntity) fishingCard.getHolder(), fisherLevel);
+            case EFFECT -> executeEffect(fishingCard);
             default -> throw new IllegalStateException("Unexpected value: " + rewardType);
         }
+    }
+
+    private void executeEffect(FishingCard fishingCard) {
+        if (fishingCard.getHolder() instanceof ServerPlayerEntity serverFisher) {
+            ServerWorld world = serverFisher.getWorld();
+            double x = serverFisher.getX();
+            double y = serverFisher.getY();
+            double z = serverFisher.getZ();
+            effect.execute(world, x, y, z);
+        }
+    }
+
+    static LevelReward effectReward(LevelUpEffect effect) {
+        return new LevelReward(effect);
     }
 
     static LevelReward itemReward(ItemStack itemStack, Amount amount){
@@ -115,5 +138,6 @@ enum RewardType{
     CREDIT,
     ITEM,
     SKILL_POINT,
-    BOX
+    BOX,
+    EFFECT
 }

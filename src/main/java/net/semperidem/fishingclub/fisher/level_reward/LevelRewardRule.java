@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fisher.level_reward;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 import static net.semperidem.fishingclub.fisher.level_reward.LevelReward.*;
 
 public class LevelRewardRule {
-    private static final ArrayList<LevelRewardRule> LEVEL_REWARD_RULES = new ArrayList<>();
+    private static final ArrayList<LevelRewardRule> LEVEL_REWARD_RULES = new ArrayList<>();//This could've been hashmap with levels being keys
     private static final int MAX_LEVEL = 9001;
 
     private ArrayList<LevelReward> rewards;
@@ -33,8 +34,12 @@ public class LevelRewardRule {
         return this;
     }
 
-    public static LevelRewardRule create(int from, int to, int repeating){
-        return new LevelRewardRule(from, to, repeating);
+    public static LevelRewardRule create(int from, int to, int every){
+        return new LevelRewardRule(from, to, every);
+    }
+
+    public static LevelRewardRule create(int from, int to){
+        return new LevelRewardRule(from, to, 1);
     }
 
     private static void addRule(LevelRewardRule rule){
@@ -43,14 +48,14 @@ public class LevelRewardRule {
 
     public static void initDefaultRewards() {//TODO READ FROM CONFIGURED REWARDS HERE
         //SKILL POINTS
-        addRule(create(1,5, 1).withRewards(skillPointReward(1)));
+        addRule(create(1,5).withRewards(skillPointReward(1)));
         addRule(create(6,15, 2).withRewards(skillPointReward(1)));
         addRule(create(16,30, 3).withRewards(skillPointReward(1)));
         addRule(create(31,50, 4).withRewards(skillPointReward(1)));
         addRule(create(51, 100, 5).withRewards(skillPointReward(1)));
 
         //CREDIT
-        addRule(create(0,MAX_LEVEL, 1).withRewards(creditReward(new Amount(0, 10, 1))));
+        addRule(create(0,MAX_LEVEL).withRewards(creditReward(new Amount(0, 10, 1))));
 
         //ITEMS
 
@@ -63,6 +68,12 @@ public class LevelRewardRule {
 
         //Lootbox
         addRule(create(0, MAX_LEVEL, 5).withRewards(illegalGoodsReward()));
+
+        //EFFECT
+        addRule(create(0, MAX_LEVEL).withRewards(effectReward(LevelUpEffect.COMMON_EFFECT)));
+        addRule(create(0, MAX_LEVEL, 5).withRewards(effectReward(LevelUpEffect.UNCOMMON_EFFECT)));
+        addRule(create(0, MAX_LEVEL, 100).withRewards(effectReward(LevelUpEffect.RARE_EFFECT)));
+
     }
 
     private static boolean isAtLevel(LevelRewardRule rule, int level) {
