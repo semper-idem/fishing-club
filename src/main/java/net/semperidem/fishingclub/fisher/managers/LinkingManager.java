@@ -26,10 +26,6 @@ public class LinkingManager extends DataManager {
         super(trackedFor);
     }
 
-    public ArrayList<UUID> getLinkedFishers() {
-        return linkedFishers;
-    }
-
     private int getLinkLimit() {
         if (trackedFor.hasPerk(FishingPerks.DOUBLE_LINK)) {
             return 2;
