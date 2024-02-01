@@ -32,9 +32,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.UUID;
 
 
 public class FishingCard {
@@ -306,10 +304,10 @@ public class FishingCard {
         if (!holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
-        decreaseOneTimeBuff();
+        consumeOneTimeBuff();
     }
 
-    private void decreaseOneTimeBuff(){
+    private void consumeOneTimeBuff(){
         StatusEffectInstance sei = holder.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
         if (effectPower == 0) {
