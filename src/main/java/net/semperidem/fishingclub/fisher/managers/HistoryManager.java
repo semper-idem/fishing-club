@@ -88,12 +88,7 @@ public class HistoryManager extends DataManager {
         NbtCompound historyTag = nbtCompound.getCompound(TAG);
         NbtList tag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
         usedChunks = new ArrayList<>();
-        tag.forEach(chunk -> {
-            Chunk usedChunk = new Chunk();
-            usedChunk.readNbt((NbtCompound) chunk);
-            usedChunks.add(usedChunk);
-        });
-
+        tag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
         lastUsedBait = ItemStack.fromNbt(historyTag.getCompound(LAST_USED_BAIT_TAG));
@@ -103,11 +98,7 @@ public class HistoryManager extends DataManager {
     public void writeNbt(NbtCompound nbtCompound) {
         NbtCompound historyTag = new NbtCompound();
         NbtList nbtList = new NbtList();
-        usedChunks.forEach(chunk -> {
-            NbtCompound chunkNbt = new NbtCompound();
-            chunk.writeNbt(chunkNbt);
-            nbtList.add(chunk.toNbt());
-        });
+        usedChunks.forEach(chunk -> nbtList.add(chunk.toNbt()));
         historyTag.put(USED_CHUNKS_TAG, nbtList);
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
@@ -122,6 +113,10 @@ public class HistoryManager extends DataManager {
         int x;
         int z;
 
+        private Chunk(NbtCompound chunkTag) {
+            readNbt(chunkTag);
+        }
+        private Chunk() {}
         public static Chunk create(ChunkPos chunkPos) {
             Chunk chunk = new Chunk();
             chunk.x = chunkPos.x;
