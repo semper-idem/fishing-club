@@ -23,16 +23,14 @@ public class HistoryManager extends DataManager {
     private static final String TAG = "history";
     private static final long DAY_LENGTH = 24000;
 
-    ArrayList<Chunk> usedChunks;
-    long lastCatchTime = 0;
-    long firstCatchOfTheDay = 0;
-    boolean firstCatchInChunk = false;
-    ItemStack lastUsedBait = ItemStack.EMPTY;
-
+    private ArrayList<Chunk> usedChunks = new ArrayList<>();
+    private long lastCatchTime = 0;
+    private long firstCatchOfTheDay = 0;
+    private boolean firstCatchInChunk = false;
+    private ItemStack lastUsedBait = ItemStack.EMPTY;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
-        this.usedChunks = new ArrayList<>();
     }
 
     public void fishHooked(IHookEntity hookEntity) {
@@ -56,6 +54,7 @@ public class HistoryManager extends DataManager {
     public ItemStack getLastUsedBait() {
         return lastUsedBait;
     }
+
     public boolean isFirstCatchOfTheDay() {
         return getCurrentTime() + DAY_LENGTH > firstCatchOfTheDay;
     }
@@ -63,6 +62,7 @@ public class HistoryManager extends DataManager {
     public boolean isFirstCatchInChunk() {
         return firstCatchInChunk;
     }
+
     public int getDaysSinceLastCatch() {
         return (int) Math.floor((lastCatchTime - getCurrentTime()) / (1f * DAY_LENGTH));
     }
@@ -105,7 +105,6 @@ public class HistoryManager extends DataManager {
         historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
         nbtCompound.put(TAG, historyTag);
     }
-
 
     private static class Chunk implements NbtData{
         private static final String X_TAG = "x";
