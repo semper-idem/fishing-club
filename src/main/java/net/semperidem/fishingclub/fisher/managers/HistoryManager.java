@@ -37,7 +37,7 @@ public class HistoryManager extends DataManager {
 
     public void fishHooked(IHookEntity hookEntity) {
         lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
-        fishedInChunk(hookEntity.getFishedInChunk());
+        checkChunk(hookEntity.getFishedInChunk());
     }
 
     public void fishCaught() {
@@ -68,7 +68,7 @@ public class HistoryManager extends DataManager {
     }
 
 
-    public void fishedInChunk(ChunkPos chunkPos) {
+    private void checkChunk(ChunkPos chunkPos) {
         Chunk chunk = Chunk.create(chunkPos);
         for(Chunk usedChunk : usedChunks) {
             if (usedChunk.matches(chunkPos)) {
@@ -116,7 +116,7 @@ public class HistoryManager extends DataManager {
     }
 
 
-    public static class Chunk implements NbtData{
+    private static class Chunk implements NbtData{
         private static final String X_TAG = "x";
         private static final String Z_TAG = "z";
         int x;

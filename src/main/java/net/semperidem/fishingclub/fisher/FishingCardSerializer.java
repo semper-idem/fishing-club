@@ -18,13 +18,9 @@ public class FishingCardSerializer {
     private static final String EXP_TAG = "xp";
     private static final String CREDIT_TAG = "c";
     private static final String SKILL_POINTS_TAG = "sp";
-    private static final String LAST_CATCH_TIMESTAMP_TAG ="lc_ts";
-    private static final String FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG ="fcotd_ts";
     private static final String INVENTORY_TAG ="inv";
     public static final String PERKS_TAG ="perks";
     public static final String SPELLS_TAG ="spells";
-    private static final String LAST_USED_BAIT ="lbait";
-    private static final String LINKED_PLAYERS_TAG ="lp";
 
     public static FishingCard fromNbt(PlayerEntity owner, NbtCompound playerNbt){
         FishingCard fishingCard = new FishingCard(owner);
