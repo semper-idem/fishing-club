@@ -39,10 +39,7 @@ public class FishingCardSerializer {
         fishingCard.exp = fisherTag.getInt(EXP_TAG);
         fishingCard.credit = fisherTag.getInt(CREDIT_TAG);
         fishingCard.skillPoints = fisherTag.getInt(SKILL_POINTS_TAG);
-        fishingCard.lastFishCaughtTime = fisherTag.getLong(LAST_CATCH_TIMESTAMP_TAG);
-        fishingCard.firstFishOfTheDayCaughtTime = fisherTag.getLong(FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG);
         fishingCard.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound(INVENTORY_TAG));
-        fishingCard.lastUsedBait = ItemStack.fromNbt(fisherTag.getCompound(LAST_USED_BAIT));
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
 
