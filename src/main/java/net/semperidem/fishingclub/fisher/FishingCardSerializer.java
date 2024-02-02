@@ -12,9 +12,6 @@ import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.util.InventoryUtil;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 public class FishingCardSerializer {
     public static final String TAG = "fishing_card";
     private static final String LEVEL_TAG = "lvl";
@@ -49,7 +46,7 @@ public class FishingCardSerializer {
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
 
-        fishingCard.chunkManager.readNbt(fisherTag);
+        fishingCard.historyManager.readNbt(fisherTag);
         fishingCard.summonRequestManager.readNbt(fisherTag);
         fishingCard.linkingManager.readNbt(fisherTag);
     }
@@ -60,18 +57,15 @@ public class FishingCardSerializer {
         fisherTag.putInt(EXP_TAG, fishingCard.exp);
         fisherTag.putInt(CREDIT_TAG, fishingCard.credit);
         fisherTag.putInt(SKILL_POINTS_TAG, fishingCard.skillPoints);
-        fisherTag.putLong(LAST_CATCH_TIMESTAMP_TAG, fishingCard.lastFishCaughtTime);
-        fisherTag.putLong(FIRST_CATCH_OF_THE_DAY_TIMESTAMP_TAG, fishingCard.firstFishOfTheDayCaughtTime);
         fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
-        fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));
-        fisherTag.put(LAST_USED_BAIT, fishingCard.lastUsedBait.writeNbt(new NbtCompound()));
+        fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));;
         writeNbt(fishingCard, fisherTag);
         return fisherTag;
     }
 
     private static void writeNbt(FishingCard fishingCard, NbtCompound fisherTag) {
-        fishingCard.chunkManager.writeNbt(fisherTag);
+        fishingCard.historyManager.writeNbt(fisherTag);
         fishingCard.summonRequestManager.writeNbt(fisherTag);
         fishingCard.linkingManager.writeNbt(fisherTag);
     }

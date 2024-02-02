@@ -7,13 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.entity.IHookEntity;
@@ -25,10 +20,8 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.fisher.managers.ChunkManager;
+import net.semperidem.fishingclub.fisher.managers.HistoryManager;
 import net.semperidem.fishingclub.fisher.managers.SummonRequestManager;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
@@ -52,13 +45,9 @@ public class FishingCard {
     SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
     int credit = 0;
 
-    //HistoryManager?
-    long lastFishCaughtTime = 0;
-    long firstFishOfTheDayCaughtTime = 0;
-    ItemStack lastUsedBait = ItemStack.EMPTY;
 
     SummonRequestManager summonRequestManager;
-    ChunkManager chunkManager;
+    HistoryManager historyManager;
     LinkingManager linkingManager;
 
     private final PlayerEntity holder;
@@ -67,7 +56,7 @@ public class FishingCard {
     public FishingCard(PlayerEntity playerEntity) {
         this.holder = playerEntity;
         this.summonRequestManager = new SummonRequestManager(this);
-        this.chunkManager = new ChunkManager(this);
+        this.historyManager = new HistoryManager(this);
         this.linkingManager = new LinkingManager(this);
     }
 
@@ -144,8 +133,10 @@ public class FishingCard {
     }
     public int getMinGrade(){
         int minGrade = 0;
-        long worldTime = this.holder.world.getTime();
-        if (this.firstFishOfTheDayCaughtTime + 24000 < worldTime) {
+        if (historyManager.isFirstCatchInChunk()) {
+            minGrade++;
+        }
+        if (historyManager.isFirstCatchOfTheDay()) {
             if (hasPerk(FishingPerks.FIRST_CATCH)) {
                 minGrade++;
             }
@@ -156,14 +147,10 @@ public class FishingCard {
         } else if (this.holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
-
-        if (hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && lastFishCaughtTime - worldTime > 24000) {
-            int daysSinceLastFish = (int) ((lastFishCaughtTime - worldTime) / 24000f);
-            while (daysSinceLastFish > 4) {
-                minGrade++;
-                daysSinceLastFish -= 4;
-            }
-            if (Math.random() < 0.25f * daysSinceLastFish) {
+        int daysSinceLastFish = historyManager.getDaysSinceLastCatch();
+        if (hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) &&  daysSinceLastFish > 0) {
+            minGrade = (int) (minGrade + Math.floor(daysSinceLastFish / 4f));
+            if (Math.random() < 0.25f * (daysSinceLastFish % 4)) {
                 minGrade++;
             }
         }
@@ -200,17 +187,8 @@ public class FishingCard {
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
-    public void setFirstFishOfTheDayCaughtTime(long time) {
-        this.firstFishOfTheDayCaughtTime = time;
-    }
-
-    public void setLastFishCaughtTime(long time){
-        this.lastFishCaughtTime = time;
-    }
-
-    public void fishHooked(IHookEntity hookEntity){
-        lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
-        chunkManager.fishedInChunk(hookEntity.getFishedInChunk());
+    public void fishHooked(IHookEntity hookEntity){;
+        historyManager.fishHooked(hookEntity);
     }
 
     public void fishCaught(Fish fish){
@@ -236,10 +214,8 @@ public class FishingCard {
         }
         expGained = (int)(expGained * passivExpMultiplier);
 
-        long worldTime = holder.world.getTime();
         grantExperience(expGained);
-        setLastFishCaughtTime(worldTime);
-        firstFishOfTheDayCaught(worldTime);
+        historyManager.fishCaught();
         processOneTimeBuff(fish);
         prolongStatusEffects();
     }
@@ -273,23 +249,6 @@ public class FishingCard {
             );
         }
 
-    }
-
-    private void firstFishOfTheDayCaught(long worldTime){
-        if (worldTime < firstFishOfTheDayCaughtTime + 24000) {
-            return;
-        }
-        setFirstFishOfTheDayCaughtTime(worldTime);
-        if (hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-            holder.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,120));
-        }
-        if (hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-            holder.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,120));
-        }
-    }
-
-    public boolean hasFreshChunkBuff(ChunkPos chunkPos) {
-        return chunkManager.fishedInChunk(chunkPos);
     }
 
     private void processOneTimeBuff(Fish fish){
@@ -370,7 +329,7 @@ public class FishingCard {
     }
 
     public void shareBait() {
-        linkingManager.shareBait(lastUsedBait.copy());
+        linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
     @Override
     public String toString(){

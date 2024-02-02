@@ -50,12 +50,10 @@ public class Fish {
         int fisherLevel = fishingCard.getLevel();
         boolean hasBoatBoostedHealth = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
         int minGrade = fishingCard.getMinGrade();
-        boolean hasFreshChunkBuff = fishingCard.hasFreshChunkBuff(hookedWith.getFishedInChunk());
-
         this.level = calculateLevel(fisherLevel);
         this.weight = calculateWeight(minGrade);
         this.length = calculateLength(minGrade);
-        this.grade = calculateGrade(hasFreshChunkBuff);
+        this.grade = calculateGrade();
         this.damage = calculateDamage(fisherLevel, hasBoatBoostedHealth);
         this.value = calculateValue();
 
@@ -155,13 +153,10 @@ public class Fish {
         return MathHelper.clamp(fishExp, MIN_EXP, MAX_EXP);
     }
 
-    private int calculateGrade(boolean hasFreshChunkBuff){
+    private int calculateGrade(){
         int weightGrade = FishUtil.getWeightGrade(this);
         int lengthGrade = FishUtil.getLengthGrade(this);
         float oneUpChance = Math.max(0, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_RARITY_BONUS));
-        if (hasFreshChunkBuff) {
-            oneUpChance = 1;
-        }
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
