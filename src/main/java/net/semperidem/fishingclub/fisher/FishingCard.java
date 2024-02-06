@@ -8,6 +8,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
@@ -42,7 +43,7 @@ public class FishingCard {
     //Inventory manager
     //Fishing vest etc?
     ItemStack sharedBait = ItemStack.EMPTY;
-    SimpleInventory fisherInventory = new SimpleInventory(FishingCardScreenHandler.SLOT_COUNT);
+    DefaultedList<ItemStack> fisherInventory = DefaultedList.ofSize (FishingCardScreenHandler.SLOT_COUNT, ItemStack.EMPTY);
     int credit = 0;
 
 
@@ -316,7 +317,7 @@ public class FishingCard {
         return perks.containsKey(perk.getName());
     }
 
-    public SimpleInventory getFisherInventory(){
+    public DefaultedList<ItemStack> getFisherInventory(){
         return this.fisherInventory;
     }
 

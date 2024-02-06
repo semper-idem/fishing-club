@@ -14,6 +14,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.collection.DefaultedList;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
@@ -51,7 +52,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
         super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
         enableSyncing();
         this.playerInventory = playerInventory;
-        this.fisherInventory = fishingCard.getFisherInventory();
+        this.fisherInventory = new SimpleInventory(fishingCard.getFisherInventory());
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
         addFisherInventory();
         addSellSlot();

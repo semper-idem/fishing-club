@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -35,13 +36,13 @@ public class FishingCardSerializer {
         fishingCard.exp = fisherTag.getInt(EXP_TAG);
         fishingCard.credit = fisherTag.getInt(CREDIT_TAG);
         fishingCard.skillPoints = fisherTag.getInt(SKILL_POINTS_TAG);
-        fishingCard.fisherInventory = InventoryUtil.readInventory(fisherTag.getCompound(INVENTORY_TAG));
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
 
         fishingCard.historyManager.readNbt(fisherTag);
         fishingCard.summonRequestManager.readNbt(fisherTag);
         fishingCard.linkingManager.readNbt(fisherTag);
+        Inventories.readNbt(fisherTag, fishingCard.fisherInventory);
     }
 
     public static NbtCompound toNbt(FishingCard fishingCard){
@@ -50,7 +51,6 @@ public class FishingCardSerializer {
         fisherTag.putInt(EXP_TAG, fishingCard.exp);
         fisherTag.putInt(CREDIT_TAG, fishingCard.credit);
         fisherTag.putInt(SKILL_POINTS_TAG, fishingCard.skillPoints);
-        fisherTag.put(INVENTORY_TAG, InventoryUtil.writeInventory(fishingCard.fisherInventory));
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));;
         writeNbt(fishingCard, fisherTag);
@@ -61,6 +61,7 @@ public class FishingCardSerializer {
         fishingCard.historyManager.writeNbt(fisherTag);
         fishingCard.summonRequestManager.writeNbt(fisherTag);
         fishingCard.linkingManager.writeNbt(fisherTag);
+        Inventories.writeNbt(fisherTag, fishingCard.fisherInventory);
     }
 
 
