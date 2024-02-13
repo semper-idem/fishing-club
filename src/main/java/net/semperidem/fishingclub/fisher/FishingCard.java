@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
@@ -16,20 +15,20 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
+import net.semperidem.fishingclub.fisher.managers.HistoryManager;
 import net.semperidem.fishingclub.fisher.managers.LinkingManager;
+import net.semperidem.fishingclub.fisher.managers.SummonRequestManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.fisher.managers.HistoryManager;
-import net.semperidem.fishingclub.fisher.managers.SummonRequestManager;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
 import java.util.HashMap;
 
 
-public class FishingCard {
+public class FishingCard extends FishingCardInventory {
 
     //Progression manager?
     private static final int BASE_EXP = 50;

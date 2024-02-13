@@ -14,7 +14,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.collection.DefaultedList;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
@@ -34,7 +33,7 @@ import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_
 public class FishingCardScreenHandler extends ScreenHandler {
     public final static int SLOT_COUNT = 5;
 
-    private final SimpleInventory fisherInventory;
+    private SimpleInventory fisherInventory;
     private final PlayerInventory playerInventory;
     private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
     private NbtCompound lastSavedNbt;
@@ -52,12 +51,12 @@ public class FishingCardScreenHandler extends ScreenHandler {
         super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
         enableSyncing();
         this.playerInventory = playerInventory;
-        this.fisherInventory = new SimpleInventory(fishingCard.getFisherInventory());
+       // this.fisherInventory = new SimpleInventory(fishingCard.getFisherInventory());
         this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
         addFisherInventory();
         addSellSlot();
         addPlayerInventorySlots();
-        this.fisherInventory.addListener(onInventoryChange());
+        //this.fisherInventory.addListener(onInventoryChange());
     }
 
     private InventoryChangedListener onInventoryChange(){
