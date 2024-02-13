@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin;
+package net.semperidem.fishingclub.mixin.client;
 
 
 import net.fabricmc.api.EnvType;

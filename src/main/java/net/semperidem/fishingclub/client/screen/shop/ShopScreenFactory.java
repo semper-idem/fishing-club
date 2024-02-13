@@ -7,8 +7,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCardSerializer.toNbt(FishingDatabase.getCard(player.getUuid())));
+        buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
     }
     @Override
     public Text getDisplayName() {

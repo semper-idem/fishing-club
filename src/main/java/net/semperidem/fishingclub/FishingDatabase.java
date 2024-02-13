@@ -22,7 +22,4 @@ public class FishingDatabase {
         FISHER_TO_CARD_MAP.put(fisherUUID, fishingCard);
     }
 
-    public static FishingCard getCard(UUID fisherUUID){
-        return FISHER_TO_CARD_MAP.get(fisherUUID);
-    }
 }

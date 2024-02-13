@@ -8,9 +8,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
-import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -41,8 +41,10 @@ public class LinkingManager extends DataManager {
             return;
         }
         trackedFor.getHolder().addStatusEffect(sei);
+        PlayerManager playerManager = trackedFor.getHolder().getServer().getPlayerManager();
         for(UUID linkedFisher : linkedFishers) {
-            FishingDatabase.getCard(linkedFisher).shareStatusEffect(getWeakerEffect(sei));
+            FishingCardManager.getPlayerCard(playerManager.getPlayer(linkedFisher))
+                    .shareStatusEffect(getWeakerEffect(sei));
         }
     }
 
@@ -58,8 +60,9 @@ public class LinkingManager extends DataManager {
     }
 
     public void shareBait(ItemStack baitToShare) {
+        PlayerManager playerManager = trackedFor.getHolder().getServer().getPlayerManager();
         for(UUID linkedFisher : linkedFishers) {
-            FishingDatabase.getCard(linkedFisher).setSharedBait(baitToShare.copy());
+            FishingCardManager.getPlayerCard(playerManager.getPlayer(linkedFisher)).setSharedBait(baitToShare.copy());
         }
     }
 

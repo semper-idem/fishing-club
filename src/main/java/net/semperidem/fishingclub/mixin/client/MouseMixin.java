@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin;
+package net.semperidem.fishingclub.mixin.client;
 
 import net.minecraft.client.Mouse;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;

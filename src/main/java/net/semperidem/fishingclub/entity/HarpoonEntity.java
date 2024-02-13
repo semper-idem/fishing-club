@@ -13,9 +13,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
@@ -91,7 +91,10 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingDatabase.getCard(getOwner().getUuid());
+        if (getOwner() instanceof PlayerEntity playerOwner) {
+            return FishingCardManager.getPlayerCard(playerOwner);
+        }
+        return FishingCardManager.EMPTY_CARD;//drowned can pickup harpoon too
     }
 
     @Override

@@ -6,7 +6,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
@@ -29,7 +28,7 @@ public class ServerPacketHandlers {
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         try {
-            Fish fish = FishingDatabase.getLastCatch(player.getUuid());
+            Fish fish = new Fish(buf.readNbt());//TO-DO MOVE FISHING GAME TO SERVER CAUSE THIS IS EZ CHEATING123
             int rewardCount = buf.readInt();
             ArrayList<ItemStack> rewards = new ArrayList<>();
             for(int i = 0; i < rewardCount; i++) {

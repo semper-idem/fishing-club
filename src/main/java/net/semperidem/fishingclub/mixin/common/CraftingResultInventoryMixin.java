@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin;
+package net.semperidem.fishingclub.mixin.common;
 
 
 import net.minecraft.inventory.CraftingResultInventory;

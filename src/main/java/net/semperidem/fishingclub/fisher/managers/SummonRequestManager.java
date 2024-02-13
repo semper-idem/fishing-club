@@ -61,6 +61,9 @@ public class SummonRequestManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound) {
+        if (targetUUID == null) {
+            return;
+        }
         NbtCompound summonTag = new NbtCompound();
         summonTag.putString(TARGET_TAG, targetUUID);
         summonTag.putLong(REQUEST_TICK_TAG, requestTick);

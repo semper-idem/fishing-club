@@ -4,17 +4,16 @@
   "package": "net.semperidem.fishingclub.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "CraftingResultInventoryMixin",
-    "EnchantmentHelperMixin",
-    "EntityMixin",
-    "PlayerEntityMixin",
-    "ServerWorldMixin",
-    "WanderingTraderEntityMixin"
+    "common.CraftingResultInventoryMixin",
+    "common.EnchantmentHelperMixin",
+    "common.ServerPlayerEntityMixin",
+    "common.ServerWorldMixin",
+    "common.WanderingTraderEntityMixin"
   ],
   "client": [
-    "InGameHudMixin",
-    "LivingEntityMixin",
-    "MouseMixin"
+    "client.InGameHudMixin",
+    "client.LivingEntityMixin",
+    "client.MouseMixin"
   ],
   "server": [
   ],

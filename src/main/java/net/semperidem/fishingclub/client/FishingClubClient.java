@@ -8,8 +8,8 @@ import net.semperidem.fishingclub.registry.FRegistry;
 import java.util.HashMap;
 
 public class FishingClubClient implements ClientModInitializer {
-    private static HashMap<FishingPerk, SpellInstance> AVAILABLE_SPELLS;
-    private static HashMap<String, FishingPerk> PERKS;
+    private static HashMap<FishingPerk, SpellInstance> AVAILABLE_SPELLS = new HashMap<>();
+    private static HashMap<String, FishingPerk> PERKS = new HashMap<>();
 
     public static HashMap<FishingPerk, SpellInstance> getAvailableSpells() {
         return AVAILABLE_SPELLS;

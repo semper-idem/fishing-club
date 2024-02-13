@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.FishingDatabase;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -50,7 +49,7 @@ public class FishingCard extends FishingCardInventory {
     HistoryManager historyManager;
     LinkingManager linkingManager;
 
-    private final PlayerEntity holder;
+    private PlayerEntity holder;
 
 
     public FishingCard(PlayerEntity playerEntity) {
@@ -59,6 +58,8 @@ public class FishingCard extends FishingCardInventory {
         this.historyManager = new HistoryManager(this);
         this.linkingManager = new LinkingManager(this);
     }
+
+    FishingCard() {}
 
     public PlayerEntity getHolder(){
         return holder;
@@ -204,7 +205,7 @@ public class FishingCard extends FishingCardInventory {
         float passivExpMultiplier = 1;
         for(Entity entity : holder.getEntityWorld().getOtherEntities(null, box)) {
             if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                if (FishingDatabase.getCard(entity.getUuid()).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                if (FishingCardManager.getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                     passivExpMultiplier += 0.1f;
                 }
                 if (qualitySharing && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {

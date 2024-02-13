@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.fish.Fish;
 
 import java.util.ArrayList;
 
@@ -14,7 +13,6 @@ public class ClientPacketSender {
         buf.writeInt(treasureRewards.size());
         for(ItemStack reward : treasureRewards) {
             buf.writeItemStack(reward);
-
         }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
     }
