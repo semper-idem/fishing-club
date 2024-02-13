@@ -7,10 +7,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
+import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {

@@ -6,8 +6,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
@@ -19,6 +18,7 @@ import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 
 import java.util.ArrayList;
 import java.util.Optional;

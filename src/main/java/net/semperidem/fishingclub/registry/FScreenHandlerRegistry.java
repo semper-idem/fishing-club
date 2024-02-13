@@ -3,8 +3,7 @@ package net.semperidem.fishingclub.registry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
 import net.semperidem.fishingclub.client.screen.game.FishGameScreen;
@@ -13,6 +12,7 @@ import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 
 import static net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.registerExtended;
 import static net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.registerSimple;

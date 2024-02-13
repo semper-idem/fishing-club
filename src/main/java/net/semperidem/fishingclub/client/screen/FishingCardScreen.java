@@ -1,6 +1,7 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -8,13 +9,20 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.screen.FisherSlot;
+import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -97,12 +105,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         this.skillPoints = String.valueOf(this.handler.fishingCard.getSkillPoints());
     }
 
-    public static void openScreen(PlayerEntity player){
-        if(player.world != null && !player.world.isClient) {
-            player.openHandledScreen(new FishingCardScreenFactory());
-        }
-    }
-
     @Override
     protected void init() {
         this.x = (width - BACKGROUND_TEXTURE_WIDTH - BANNER_WIDTH) / 2;
@@ -169,27 +171,27 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     }
 
     private void initSkillButtons(){
-        hButton = getButtonForSkill(FishingPerks.ROOT_HOBBYIST);
-        oButton = getButtonForSkill(FishingPerks.ROOT_OPPORTUNIST);
-        sButton = getButtonForSkill(FishingPerks.ROOT_SOCIALIST);
+        hButton = getButtonForPath(FishingPerks.ROOT_HOBBYIST);
+        oButton = getButtonForPath(FishingPerks.ROOT_OPPORTUNIST);
+        sButton = getButtonForPath(FishingPerks.ROOT_SOCIALIST);
     }
 
 
 
-    private ButtonWidget getButtonForSkill(FishingPerk fishingPerk) {
+    private ButtonWidget getButtonForPath(FishingPerk fishingPerk) {
         ButtonWidget skillButton = new ButtonWidget(
                 lastButtonX,
                 buttonsY,
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
                 Text.of(fishingPerk.getLabel()),
-                skillButtonAction(fishingPerk)
+                changePathAction(fishingPerk)
         );
         lastButtonX += BUTTON_WIDTH + BUTTON_GAP;
         return skillButton;
     }
 
-    private ButtonWidget.PressAction skillButtonAction(FishingPerk fishingPerk) {
+    private ButtonWidget.PressAction changePathAction(FishingPerk fishingPerk) {
         return button -> {
             BACKGROUND = BACKGROUND_SKILL;
             this.handler.removePlayerInventorySlots();
@@ -232,7 +234,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         ){
             @Override
             public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-                if (!handler.sellSlot.hasStack()) return;
+                if (!handler.shouldRenderSellButton()) return;
                 super.renderButton(matrices, mouseX, mouseY, delta);
             }
         };
@@ -309,8 +311,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private void renderSlotDisabled(MatrixStack matrices){
         if (this.handler.rootPerk != null) return;
         for(Slot slot : this.handler.slots) {
-            if (!(slot instanceof FishingCardScreenHandler.FisherSlot)) continue;
-            if (slot.isEnabled()) continue;;
+            if (!(slot instanceof FisherSlot)) continue;
+            if (slot.isEnabled()) continue;
             fill(matrices, x + slot.x, y + slot.y, x + slot.x + 16, y + slot.y + 16, 0x55000001);
         }
     }
@@ -441,5 +443,26 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
                 drawTexture(matrices, x, y, 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
             }
         }
+    }
+
+    public static void openScreen(PlayerEntity player){
+        if(player.world == null || player.world.isClient) {
+            return;
+        }
+        player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+            @Override
+            public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
+            }
+
+            @Override
+            public Text getDisplayName() {
+                return Text.empty();
+            }
+            @Override
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return new FishingCardScreenHandler(syncId, inv);
+            }
+        });
     }
 }

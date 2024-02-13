@@ -1,9 +1,8 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.screen;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BoatItem;
@@ -14,6 +13,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
@@ -38,9 +38,9 @@ public class FishingCardScreenHandler extends ScreenHandler {
     private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
     private NbtCompound lastSavedNbt;
 
-    FishingCard fishingCard;
-    FishingPerk rootPerk;
-    FisherSlot sellSlot;
+    public FishingCard fishingCard;
+    public FishingPerk rootPerk;
+    public FisherSlot sellSlot;
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory);
@@ -57,6 +57,10 @@ public class FishingCardScreenHandler extends ScreenHandler {
         addSellSlot();
         addPlayerInventorySlots();
         //this.fisherInventory.addListener(onInventoryChange());
+    }
+
+    public boolean shouldRenderSellButton(){
+        return sellSlot.hasStack();
     }
 
     private InventoryChangedListener onInventoryChange(){
@@ -86,7 +90,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     private void addSellSlot(){
-        sellSlot = new FisherSlot(fisherInventory, 4, 323, 226, FishingPerks.INSTANT_FISH_CREDIT){
+        sellSlot = new FisherSlot(this, fisherInventory, 4, 323, 226, FishingPerks.INSTANT_FISH_CREDIT){
             @Override
             public int getMaxItemCount() {
                 return 1;
@@ -111,28 +115,25 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addSlot(new FisherSlot(fisherInventory, 0, 25, 199, FishingPerks.FISHING_ROD_SLOT){
+        addSlot(new FisherSlot(this, fisherInventory, 0, 25, 199, FishingPerks.FISHING_ROD_SLOT){
             @Override
             public boolean canInsert(ItemStack stack) {
                 return fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT) && stack.getItem() instanceof FishingRodItem;
             }
-
-
         });
-        addSlot(new FisherSlot(fisherInventory, 1, 55, 199, FishingPerks.BOAT_SLOT){
+        addSlot(new FisherSlot(this, fisherInventory, 1, 55, 199, FishingPerks.BOAT_SLOT){
             @Override
             public boolean canInsert(ItemStack stack) {
                 return fishingCard.hasPerk(FishingPerks.BOAT_SLOT) && stack.getItem() instanceof BoatItem;
             }
-
         });
-        addSlot(new FisherSlot(fisherInventory, 2, 25, 229, FishingPerks.NET_SLOT_UNLOCK){
+        addSlot(new FisherSlot(this, fisherInventory, 2, 25, 229, FishingPerks.NET_SLOT_UNLOCK){
             @Override
             public boolean canInsert(ItemStack stack) {
                 return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
             }
         });
-        addSlot(new FisherSlot(fisherInventory, 3, 55, 229, FishingPerks.NET_SLOT_UNLOCK){
+        addSlot(new FisherSlot(this, fisherInventory, 3, 55, 229, FishingPerks.NET_SLOT_UNLOCK){
             @Override
             public boolean canInsert(ItemStack stack) {
                 return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
@@ -203,17 +204,4 @@ public class FishingCardScreenHandler extends ScreenHandler {
         return itemStackCopy;
     }
 
-    class FisherSlot extends Slot{
-        FishingPerk requiredPerk;
-        public FisherSlot(Inventory inventory, int index, int x, int y, FishingPerk requiredPerk) {
-            super(inventory, index, x, y);
-            this.requiredPerk = requiredPerk;
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return rootPerk == null && fishingCard.hasPerk(requiredPerk);
-        }
-
-    }
 }
