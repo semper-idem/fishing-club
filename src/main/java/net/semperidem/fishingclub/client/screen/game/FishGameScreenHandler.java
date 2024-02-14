@@ -18,6 +18,10 @@ public class FishGameScreenHandler extends ScreenHandler {
         hookedFish = new Fish(buf.readNbt());
     }
 
+    public FishGameScreenHandler(int syncId, PlayerInventory playerInventory) {
+        super(FScreenHandlerRegistry.FISH_GAME_SCREEN, syncId);
+    }
+
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         return ItemStack.EMPTY;

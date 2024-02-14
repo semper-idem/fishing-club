@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
@@ -32,6 +31,6 @@ public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
     }
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FishingCardScreenHandler(syncId, inv);
+        return new FishGameScreenHandler(syncId, inv);
     }
 }
