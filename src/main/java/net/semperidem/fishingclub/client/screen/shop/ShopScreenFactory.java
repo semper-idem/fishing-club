@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.shop;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -9,7 +10,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
@@ -25,6 +25,8 @@ public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FishingCardScreenHandler(syncId, inv);
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
+        return new ShopScreenHandler(syncId, inv, buf);
     }
 }
