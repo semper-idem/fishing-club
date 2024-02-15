@@ -1,7 +1,9 @@
 package net.semperidem.fishingclub.registry;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
@@ -19,7 +21,7 @@ import static net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.reg
 
 public class FScreenHandlerRegistry {
     public static ScreenHandlerType<FisherWorkbenchScreenHandler> FISHER_WORKBENCH_SCREEN_HANDLER;
-    public static ScreenHandlerType<FishingCardScreenHandler> FISHING_CARD_SCREEN;
+    public static ExtendedScreenHandlerType<FishingCardScreenHandler> FISHING_CARD_SCREEN = new ExtendedScreenHandlerType<>(FishingCardScreenHandler::new);
     public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER;
     public static ScreenHandlerType<ShopScreenHandler> SHOP_SCREEN;
     public static ScreenHandlerType<FishGameScreenHandler> FISH_GAME_SCREEN;
@@ -27,7 +29,8 @@ public class FScreenHandlerRegistry {
     @SuppressWarnings("deprecation") //TODO FIX DEPRECATION
     public static void register(){
         FISHER_WORKBENCH_SCREEN_HANDLER = registerSimple(FishingClub.getIdentifier("fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
-        FISHING_CARD_SCREEN = registerExtended(FishingClub.getIdentifier("fisher_info_screen"), FishingCardScreenHandler::new);
+
+        Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("fisher_info_screen"), FISHING_CARD_SCREEN);
         FISHING_NET_SCREEN_HANDLER = registerExtended(FishingClub.getIdentifier("fishing_net_screen_handler"), FishingNetScreenHandler::new);
         SHOP_SCREEN = registerExtended(FishingClub.getIdentifier("sell_screen"), ShopScreenHandler::new);
         FISH_GAME_SCREEN = registerExtended(FishingClub.getIdentifier("fish_game_screen"), FishGameScreenHandler::new);

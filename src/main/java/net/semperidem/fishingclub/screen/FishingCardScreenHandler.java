@@ -1,178 +1,125 @@
 package net.semperidem.fishingclub.screen;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.InventoryChangedListener;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.BoatItem;
-import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.FishingNetItem;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
-import net.semperidem.fishingclub.util.InventoryUtil;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
 public class FishingCardScreenHandler extends ScreenHandler {
-    public final static int SLOT_COUNT = 5;
+    private final static int SLOT_COUNT = 5;
 
-    private SimpleInventory fisherInventory;
     private final PlayerInventory playerInventory;
-    private final ArrayList<Slot> playerInventorySlots = new ArrayList<>();
-    private NbtCompound lastSavedNbt;
 
     public FishingCard fishingCard;
     public FishingPerk rootPerk;
-    public FisherSlot sellSlot;
+    public InstantSellSlot instantSellSlot;
+
+    private final HashMap<String, FishingCardTab> tabs = new HashMap<>();
+    public final FishingCardTab generalTab;
+    public final FishingCardTab hobbyistTab;
+    public final FishingCardTab opportunistTab;
+    public final FishingCardTab socialistTab;
+    private FishingCardTab activeTab;
+
+
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory);
-        this.fishingCard = FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt());
+        this(syncId, playerInventory, FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt()));
     }
 
-    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory) {
+    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
         super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
-        enableSyncing();
         this.playerInventory = playerInventory;
-       // this.fisherInventory = new SimpleInventory(fishingCard.getFisherInventory());
-        this.lastSavedNbt = playerInventory.player.writeNbt(new NbtCompound());
+        this.fishingCard = fishingCard;
+
+        generalTab = new FishingCardTab("General");
+        hobbyistTab = new FishingCardTab("Hobbyist");
+        opportunistTab = new FishingCardTab("Opportunist");
+        socialistTab = new FishingCardTab("Socialist");
+        tabs.put("General", generalTab);
+        tabs.put("Hobbyist", hobbyistTab);
+        tabs.put("Opportunist", opportunistTab);
+        tabs.put("Socialist", socialistTab);
+        activeTab = generalTab;
+
         addFisherInventory();
-        addSellSlot();
+        addInstantSellSlot();
         addPlayerInventorySlots();
-        //this.fisherInventory.addListener(onInventoryChange());
+
+
+    }
+
+    public FishingCardTab getActiveTab(){
+        return activeTab;
+    }
+
+    public void setActiveTab(String tabName){
+        this.activeTab = tabs.get(tabName);
     }
 
     public boolean shouldRenderSellButton(){
-        return sellSlot.hasStack();
+        return instantSellSlot.hasStack() && instantSellSlot.isEnabled();
     }
 
-    private InventoryChangedListener onInventoryChange(){
-        return sender -> {
-            NbtCompound playerNbt = new NbtCompound();
-            playerInventory.player.writeNbt(playerNbt);
-            NbtCompound fisherInventoryTag = InventoryUtil.writeInventory((SimpleInventory) sender);
-            if (!fisherInventoryTag.equals(lastSavedNbt)) {
-                playerNbt.getCompound(FishingCardSerializer.TAG).put("inventory", fisherInventoryTag);
-                playerInventory.player.readNbt(playerNbt);
-                lastSavedNbt = fisherInventoryTag;
-            }
-        };
+
+    public void instantSell(){
+        instantSellSlot.setStack(ItemStack.EMPTY);
     }
 
-    public void sellSlot(FishingCardScreen parent){
-        int credit = FishUtil.getFishValue(sellSlot.getStack());
-        ClientPacketSender.sellSlot(credit);
-        sellSlot.setStack(ItemStack.EMPTY);
-        fishingCard.addCredit(credit);
-        parent.updateData();
+    private void addInstantSellSlot(){
+        instantSellSlot = new InstantSellSlot(
+                fishingCard, 4, 323, 226,
+                this, generalTab,
+                fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT),
+                FishUtil.FISH_ITEM);
+        addSlot(instantSellSlot);
     }
 
-    public void soldSlot(ServerPlayerEntity player, int amount){
-        FishingCardManager.addCredit(player, amount);
-        sellSlot.setStack(ItemStack.EMPTY);
-    }
-
-    private void addSellSlot(){
-        sellSlot = new FisherSlot(this, fisherInventory, 4, 323, 226, FishingPerks.INSTANT_FISH_CREDIT){
-            @Override
-            public int getMaxItemCount() {
-                return 1;
-            }
-
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT) && stack.isOf(FishUtil.FISH_ITEM);
-            }
-
-            @Override
-            public void setStack(ItemStack stack) {
-                if (stack.isOf(FishUtil.FISH_ITEM) && !this.getStack().isEmpty()) {
-                    if (playerInventory.player.world.isClient && MinecraftClient.getInstance().currentScreen != null) {
-                        sellSlot((FishingCardScreen) MinecraftClient.getInstance().currentScreen);
-                    }
-                }
-                super.setStack(stack);
-            }
-        };
-        addSlot(sellSlot);
+    private void addFishingCardSlot(int index, int x, int y, boolean isUnlocked, Item itemBound) {
+        addSlot(new UnlockableBoundSlot(fishingCard, index, x, y, this, generalTab, isUnlocked, itemBound));
     }
 
     private void addFisherInventory(){
-        addSlot(new FisherSlot(this, fisherInventory, 0, 25, 199, FishingPerks.FISHING_ROD_SLOT){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT) && stack.getItem() instanceof FishingRodItem;
-            }
-        });
-        addSlot(new FisherSlot(this, fisherInventory, 1, 55, 199, FishingPerks.BOAT_SLOT){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fishingCard.hasPerk(FishingPerks.BOAT_SLOT) && stack.getItem() instanceof BoatItem;
-            }
-        });
-        addSlot(new FisherSlot(this, fisherInventory, 2, 25, 229, FishingPerks.NET_SLOT_UNLOCK){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
-            }
-        });
-        addSlot(new FisherSlot(this, fisherInventory, 3, 55, 229, FishingPerks.NET_SLOT_UNLOCK){
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK) && stack.getItem() instanceof FishingNetItem;
-            }
-        });
+        addFishingCardSlot(0, 25, 199, fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT), Items.FISHING_ROD);
+        addFishingCardSlot(1, 55, 199, fishingCard.hasPerk(FishingPerks.BOAT_SLOT), Items.OAK_BOAT);
+        addFishingCardSlot(2, 25, 229, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK),FItemRegistry.FISHING_NET);
+        addFishingCardSlot(3, 55, 229, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), FItemRegistry.FISHING_NET);
     }
 
     public void addPlayerInventorySlots(){
-        addPlayerInventory();
-        addPlayerHotbar();
-    }
-
-    public void removePlayerInventorySlots(){
-        playerInventorySlots.forEach(slots::remove);
-        playerInventorySlots.clear();
-    }
-    
-    private void addPlayerInventorySlot(int index, int x, int y){
-        Slot slot = new Slot(playerInventory, index, x, y);
-        playerInventorySlots.add(slot);
-        addSlot(slot);
-    }
-
-    private void addPlayerInventory(){
+        for(int x = 0; x < SLOTS_PER_ROW; ++x) {
+            addSlot(new TabSlot(playerInventory, x, 157 + x * SLOT_SIZE, 226, this, generalTab));
+        }
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 9; ++x) {
-                addPlayerInventorySlot(x + y * SLOTS_PER_ROW + 9, 157 + x * SLOT_SIZE, 166 + y * SLOT_SIZE);
+                addSlot(new TabSlot(playerInventory,
+                        x + (y * SLOTS_PER_ROW) + SLOTS_PER_ROW,
+                        157 + x * SLOT_SIZE,
+                        166 + y * SLOT_SIZE,
+                        this, generalTab
+                ));
             }
-        }
-    }
-
-    private void addPlayerHotbar(){
-        for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addPlayerInventorySlot(x, 157 + x * SLOT_SIZE, 226);
         }
     }
 
     public boolean canUse(PlayerEntity playerEntity) {
-        return this.fisherInventory.canPlayerUse(playerEntity);
+        return true;
     }
 
     @Override

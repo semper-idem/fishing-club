@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.fisher;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -10,8 +9,6 @@ import net.minecraft.nbt.NbtString;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.network.ServerPacketSender;
-import net.semperidem.fishingclub.util.InventoryUtil;
 
 public class FishingCardSerializer {
     public static final String TAG = "fishing_card";
@@ -23,11 +20,9 @@ public class FishingCardSerializer {
     public static final String PERKS_TAG ="perks";
     public static final String SPELLS_TAG ="spells";
 
-    public static FishingCard fromNbt(PlayerEntity owner, NbtCompound playerNbt){
+    public static FishingCard fromNbt(PlayerEntity owner, NbtCompound nbt){
         FishingCard fishingCard = new FishingCard(owner);
-        if (playerNbt.contains(TAG)) {
-            readNbt(fishingCard, playerNbt.getCompound(TAG));
-        }
+        readNbt(fishingCard, nbt.contains(TAG) ? nbt.getCompound(TAG) : nbt);
         return fishingCard;
     }
 
@@ -42,7 +37,7 @@ public class FishingCardSerializer {
         fishingCard.historyManager.readNbt(fisherTag);
         fishingCard.summonRequestManager.readNbt(fisherTag);
         fishingCard.linkingManager.readNbt(fisherTag);
-        Inventories.readNbt(fisherTag, fishingCard.fisherInventory);
+        Inventories.readNbt(fisherTag, fishingCard.inventory);
     }
 
     public static NbtCompound toNbt(FishingCard fishingCard){
@@ -61,7 +56,7 @@ public class FishingCardSerializer {
         fishingCard.historyManager.writeNbt(fisherTag);
         fishingCard.summonRequestManager.writeNbt(fisherTag);
         fishingCard.linkingManager.writeNbt(fisherTag);
-        Inventories.writeNbt(fisherTag, fishingCard.fisherInventory);
+        Inventories.writeNbt(fisherTag, fishingCard.inventory);
     }
 
 
@@ -92,7 +87,6 @@ public class FishingCardSerializer {
                     nbtElement -> FishingPerks.getPerkFromName(nbtElement.asString()).ifPresent(
                             fishingPerk -> fishingCard.perks.put(fishingPerk.getName(), fishingPerk)));
         }
-        ServerPacketSender.sendPerksUpdate(fishingCard);
     }
     private static void initPerks(FishingCard fishingCard){
         addRootPerk(fishingCard, FishingPerks.ROOT_HOBBYIST);
@@ -109,7 +103,6 @@ public class FishingCardSerializer {
             SpellInstance spellInstance = SpellInstance.fromNbt(spellListTag.getCompound(i));
             fishingCard.spells.put(spellInstance.getPerk(), spellInstance);
         }
-        ServerPacketSender.sendSpellsUpdate(fishingCard);
     }
 
 }

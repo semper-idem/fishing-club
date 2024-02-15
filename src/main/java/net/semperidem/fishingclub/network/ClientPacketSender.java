@@ -36,11 +36,8 @@ public class ClientPacketSender {
         buf.writeInt(containerValue);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
     }
-    public static void sellSlot(int slotValue) {
-        if (slotValue <= 0 ) return;
-        PacketByteBuf  buf = PacketByteBufs.create();
-        buf.writeInt(slotValue);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SLOT_SELL, buf);
+    public static void instantSellSlot() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SLOT_SELL, PacketByteBufs.empty());
     }
 
     public static void unlockPerk(String perkName){

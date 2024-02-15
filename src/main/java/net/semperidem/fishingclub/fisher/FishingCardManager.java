@@ -7,6 +7,9 @@ public class FishingCardManager {
     public static FishingCard EMPTY_CARD = new FishingCard();
 
     public static FishingCard getPlayerCard(PlayerEntity user){
+        if (!(user instanceof ServerPlayerEntity)) {
+            return EMPTY_CARD;
+        }
         return ((FishingPlayerEntity)user).getCard();
     }
 

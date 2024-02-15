@@ -8,11 +8,8 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class FishingCardInventory implements Inventory{
     public static final int SLOT_COUNT = 5;
-    DefaultedList<ItemStack> inventory;
+    DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
 
-    public FishingCardInventory() {
-
-    }
     @Override
     public int size() {
         return SLOT_COUNT;

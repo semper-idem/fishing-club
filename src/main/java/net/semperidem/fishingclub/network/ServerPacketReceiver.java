@@ -16,7 +16,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_F_SHOP_BUY, ServerPacketHandlers::handleFishingShopBuyBasket);
             registerReceiver(handler, C2S_F_DATA_PERK_ADD, ServerPacketHandlers::handlePerkAdd);
             registerReceiver(handler, C2S_CAST_SPELL, ServerPacketHandlers::handleSpellCast);
-            registerReceiver(handler, C2S_F_SLOT_SELL, ServerPacketHandlers::handleSlotSold);
+            registerReceiver(handler, C2S_F_SLOT_SELL, ServerPacketHandlers::handleFishingCardInstantSell);
             registerReceiver(handler, C2S_SUMMON_ACCEPT, ServerPacketHandlers::handleSummonAccept);//todo maybe use spell cast instead of command
             registerReceiver(handler, C2S_REPAIR_ROD, ServerPacketHandlers::handleRepairRod);
         });

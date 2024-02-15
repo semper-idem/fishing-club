@@ -1,13 +1,17 @@
 package net.semperidem.fishingclub.fisher;
 
 import com.google.common.collect.ImmutableList;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -20,14 +24,14 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
-import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
 
-public class FishingCard extends FishingCardInventory {
+public class FishingCard extends FishingCardInventory implements ExtendedScreenHandlerFactory {
 
     //Progression manager?
     private static final int BASE_EXP = 50;
@@ -41,7 +45,6 @@ public class FishingCard extends FishingCardInventory {
     //Inventory manager
     //Fishing vest etc?
     ItemStack sharedBait = ItemStack.EMPTY;
-    DefaultedList<ItemStack> fisherInventory = DefaultedList.ofSize (FishingCardScreenHandler.SLOT_COUNT, ItemStack.EMPTY);
     int credit = 0;
 
 
@@ -110,11 +113,9 @@ public class FishingCard extends FishingCardInventory {
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
                 this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
-                ServerPacketSender.sendSpellsUpdate(this);
             }
             skillPoints--;
         }
-        ServerPacketSender.sendPerksUpdate(this);
     }
 
     public void addPerk(String perkName){
@@ -317,9 +318,6 @@ public class FishingCard extends FishingCardInventory {
         return perks.containsKey(perk.getName());
     }
 
-    public DefaultedList<ItemStack> getFisherInventory(){
-        return this.fisherInventory;
-    }
 
     public void linkTarget(Entity target){
         linkingManager.linkTarget(target);
@@ -332,6 +330,7 @@ public class FishingCard extends FishingCardInventory {
     public void shareBait() {
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
+
     @Override
     public String toString(){
         return "\n============[Fisher Info]============" +
@@ -342,4 +341,21 @@ public class FishingCard extends FishingCardInventory {
                 "\n============[Fisher Info]============";
     }
 
+
+
+    @Override
+    public Text getDisplayName() {
+        return Text.empty();
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return new FishingCardScreenHandler(syncId, inv, this);
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeNbt(FishingCardSerializer.toNbt(this));
+    }
 }

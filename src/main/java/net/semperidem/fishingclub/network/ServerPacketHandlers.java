@@ -6,7 +6,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
@@ -62,7 +61,9 @@ public class ServerPacketHandlers {
         server.execute(() -> ShopScreenUtil.openShopScreen(player));
     }
     public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> FishingCardScreen.openScreen(player));
+        server.execute(() ->{
+            player.openHandledScreen(FishingCardManager.getPlayerCard(player));
+        });
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -101,27 +102,20 @@ public class ServerPacketHandlers {
         String uuidString = buf.readString();
         FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
             if (!Spells.perkHasSpell(perk)) return;
-            server.execute(() -> {
-                FishingCardManager.getPlayerCard(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString)));
-            });
+            server.execute(() -> FishingCardManager.getPlayerCard(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
         });
     }
 
 
-    public static void handleSlotSold(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int creditGained = buf.readInt();
-        server.execute(() -> {
-                    Optional.ofNullable(player.currentScreenHandler)
-                            .filter(FishingCardScreenHandler.class::isInstance)
-                            .map(FishingCardScreenHandler.class::cast)
-                            .ifPresent(screenHandler -> screenHandler.soldSlot(player, creditGained));
-                }
+    public static void handleFishingCardInstantSell(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
+                .filter(FishingCardScreenHandler.class::isInstance)
+                .map(FishingCardScreenHandler.class::cast)
+                .ifPresent(FishingCardScreenHandler::instantSell)
         );
     }
 
     public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> {
-            FishingCardManager.getPlayerCard(player).acceptSummonRequest();
-        });
+        server.execute(() -> FishingCardManager.getPlayerCard(player).acceptSummonRequest());
     }
 }
