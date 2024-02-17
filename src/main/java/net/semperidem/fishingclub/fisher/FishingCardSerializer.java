@@ -30,7 +30,7 @@ public class FishingCardSerializer {
         fishingCard.level = fisherTag.getInt(LEVEL_TAG);
         fishingCard.exp = fisherTag.getInt(EXP_TAG);
         fishingCard.credit = fisherTag.getInt(CREDIT_TAG);
-        fishingCard.skillPoints = fisherTag.getInt(SKILL_POINTS_TAG);
+        fishingCard.perkPoints = fisherTag.getInt(SKILL_POINTS_TAG);
         setPerks(fisherTag, fishingCard);
         setSpells(fisherTag, fishingCard);
 
@@ -45,7 +45,7 @@ public class FishingCardSerializer {
         fisherTag.putInt(LEVEL_TAG, fishingCard.level);
         fisherTag.putInt(EXP_TAG, fishingCard.exp);
         fisherTag.putInt(CREDIT_TAG, fishingCard.credit);
-        fisherTag.putInt(SKILL_POINTS_TAG, fishingCard.skillPoints);
+        fisherTag.putInt(SKILL_POINTS_TAG, fishingCard.perkPoints);
         fisherTag.put(PERKS_TAG, getPerkListTag(fishingCard));
         fisherTag.put(SPELLS_TAG, getSpellListTag(fishingCard));;
         writeNbt(fishingCard, fisherTag);

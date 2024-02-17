@@ -38,7 +38,7 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
     private static final float EXP_EXPONENT = 1.25f;
     int level = 1;
     int exp = 0;
-    int skillPoints = 0;
+    int perkPoints = 0;
     final HashMap<String, FishingPerk> perks = new HashMap<>();
     final HashMap<String, SpellInstance> spells = new HashMap<>();
 
@@ -108,13 +108,13 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
     }
 
     void addPerk(FishingPerk perk){
-        if (hasRequiredPerk(perk) && hasSkillPoints()) {
+        if (hasRequiredPerk(perk) && hasPerkPoints()) {
             perk.onEarn(holder);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
                 this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
             }
-            skillPoints--;
+            perkPoints--;
         }
     }
 
@@ -128,11 +128,11 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
 
     public boolean canUnlockPerk(FishingPerk perk) {
         boolean isNotUnlocked = !this.perks.containsKey(perk.getName());
-        return hasRequiredPerk(perk) && hasSkillPoints() && isNotUnlocked;
+        return hasRequiredPerk(perk) && hasPerkPoints() && isNotUnlocked;
     }
 
     public void addSkillPoints(int amount){
-        this.skillPoints+= amount;
+        this.perkPoints += amount;
     }
 
     public boolean isFishingFromBoat(){
@@ -164,16 +164,16 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         return Math.min(4, minGrade);
     }
 
-    public int getSkillPoints(){
-        return this.skillPoints;
+    public int getPerkPoints(){
+        return this.perkPoints;
     }
 
-    public boolean hasSkillPoints(){
-        return this.skillPoints > 0;
+    public boolean hasPerkPoints(){
+        return this.perkPoints > 0;
     }
 
-    void setSkillPoints(int skillPoints){
-        this.skillPoints = skillPoints;
+    void setPerkPoints(int perkPoints){
+        this.perkPoints = perkPoints;
     }
 
     public void useSpell(String perkName, Entity target){
@@ -187,7 +187,7 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
     void removePerk(String perkName){
         if (!this.perks.containsKey(perkName)) return;
         this.perks.remove(perkName);
-        this.skillPoints++;
+        this.perkPoints++;
     }
 
     public int nextLevelXP(){

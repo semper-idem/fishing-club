@@ -35,7 +35,7 @@ public class InstantSellSlot extends UnlockableBoundSlot {
 
     private void attemptHideSellButton(ItemStack stack) {
         if (parent.isClient && MinecraftClient.getInstance().currentScreen instanceof FishingCardScreen cardScreen) {
-            cardScreen.sellButton.visible = stack.isEmpty();
+            cardScreen.instantSellSlotButton.visible = stack.isEmpty();
         }
     }
 }

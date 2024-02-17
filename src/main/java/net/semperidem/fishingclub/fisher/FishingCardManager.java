@@ -30,7 +30,7 @@ public class FishingCardManager {
     }
 
     public static void setSkillPoint(ServerPlayerEntity playerEntity, int count){
-        getPlayerCard(playerEntity).setSkillPoints(count);
+        getPlayerCard(playerEntity).setPerkPoints(count);
     }
     public static void addSkillPoint(ServerPlayerEntity playerEntity, int count){
         getPlayerCard(playerEntity).addSkillPoints(count);
