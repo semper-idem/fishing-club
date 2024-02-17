@@ -61,10 +61,7 @@ public class SpellInstance {
 
     public static SpellInstance fromNbt(NbtCompound nbt) {
         String perkName = nbt.getString(KEY_TAG);
-        return new SpellInstance(
-                FishingPerks.getPerkFromName(perkName).orElse(FishingPerks.FREE_SHOP_SUMMON),
-                nbt.getLong(NEXT_CAST_TAG)
-        );
+        return new SpellInstance(FishingPerks.getPerkFromName(perkName), nbt.getLong(NEXT_CAST_TAG));
     }
 
     public static NbtCompound toNbt(SpellInstance spellInstance) {

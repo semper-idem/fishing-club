@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.FishingCardScreen;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
 import net.semperidem.fishingclub.client.screen.game.FishGameScreen;

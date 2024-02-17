@@ -40,7 +40,7 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
     int exp = 0;
     int skillPoints = 0;
     final HashMap<String, FishingPerk> perks = new HashMap<>();
-    final HashMap<FishingPerk, SpellInstance> spells = new HashMap<>();
+    final HashMap<String, SpellInstance> spells = new HashMap<>();
 
     //Inventory manager
     //Fishing vest etc?
@@ -108,22 +108,27 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
     }
 
     void addPerk(FishingPerk perk){
-        if (availablePerk(perk) && hasSkillPoints()) {
+        if (hasRequiredPerk(perk) && hasSkillPoints()) {
             perk.onEarn(holder);
             this.perks.put(perk.getName(), perk);
             if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk, SpellInstance.getSpellInstance(perk, 0));
+                this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
             }
             skillPoints--;
         }
     }
 
     public void addPerk(String perkName){
-        FishingPerks.getPerkFromName(perkName).ifPresent(this::addPerk);
+        addPerk(FishingPerks.getPerkFromName(perkName));
     }
 
-    public boolean availablePerk(FishingPerk perk){
+    public boolean hasRequiredPerk(FishingPerk perk){
         return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
+    }
+
+    public boolean canUnlockPerk(FishingPerk perk) {
+        boolean isNotUnlocked = !this.perks.containsKey(perk.getName());
+        return hasRequiredPerk(perk) && hasSkillPoints() && isNotUnlocked;
     }
 
     public void addSkillPoints(int amount){
@@ -171,11 +176,11 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         this.skillPoints = skillPoints;
     }
 
-    public void useSpell(FishingPerk fishingPerk, Entity target){
-        if (!perks.containsKey(fishingPerk.getName())) return;
-        SpellInstance spellInstance = spells.get(fishingPerk);
+    public void useSpell(String perkName, Entity target){
+        if (!perks.containsKey(perkName)) return;
+        SpellInstance spellInstance = spells.get(perkName);
         spellInstance.use((ServerPlayerEntity) holder, target);
-        spells.put(fishingPerk, spellInstance);
+        spells.put(perkName, spellInstance);
     }
 
 

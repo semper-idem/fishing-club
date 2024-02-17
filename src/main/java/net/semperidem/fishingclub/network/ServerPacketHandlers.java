@@ -12,8 +12,6 @@ import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenH
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -90,20 +88,13 @@ public class ServerPacketHandlers {
 
     public static void handlePerkAdd(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
-        FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
-            server.execute(() -> {
-                FishingCardManager.addPerk(player, perkName);
-            });
-        });
+            server.execute(() -> FishingCardManager.addPerk(player, perkName));
     }
 
     public static void handleSpellCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
         String uuidString = buf.readString();
-        FishingPerks.getPerkFromName(perkName).ifPresent( perk -> {
-            if (!Spells.perkHasSpell(perk)) return;
-            server.execute(() -> FishingCardManager.getPlayerCard(player).useSpell(perk, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
-        });
+            server.execute(() -> FishingCardManager.getPlayerCard(player).useSpell(perkName, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
     }
 
 

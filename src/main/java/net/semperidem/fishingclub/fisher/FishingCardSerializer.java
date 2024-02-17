@@ -80,28 +80,18 @@ public class FishingCardSerializer {
     private static void setPerks(NbtCompound fisherTag, FishingCard fishingCard){
         fishingCard.perks.clear();
         NbtList perkListTag = fisherTag.getList(PERKS_TAG, NbtElement.STRING_TYPE);
-        if (perkListTag.isEmpty()) {
-            initPerks(fishingCard);
-        } else {
-            perkListTag.forEach(
-                    nbtElement -> FishingPerks.getPerkFromName(nbtElement.asString()).ifPresent(
-                            fishingPerk -> fishingCard.perks.put(fishingPerk.getName(), fishingPerk)));
-        }
+        perkListTag.forEach(nbtElement -> {
+            FishingPerk perk = FishingPerks.getPerkFromName(nbtElement.asString());
+            fishingCard.perks.put(perk.getName(), perk);
+        });
     }
-    private static void initPerks(FishingCard fishingCard){
-        addRootPerk(fishingCard, FishingPerks.ROOT_HOBBYIST);
-        addRootPerk(fishingCard, FishingPerks.ROOT_OPPORTUNIST);
-        addRootPerk(fishingCard, FishingPerks.ROOT_SOCIALIST);
-    }
-    private static void addRootPerk(FishingCard fishingCard, FishingPerk perk){
-        fishingCard.perks.put(perk.getName(), perk);
-    }
+
     private static void setSpells(NbtCompound fisherTag, FishingCard fishingCard){
         fishingCard.spells.clear();
         NbtList spellListTag = fisherTag.getList(SPELLS_TAG, NbtElement.COMPOUND_TYPE);
         for(int i = 0; i < spellListTag.size(); i++) {
             SpellInstance spellInstance = SpellInstance.fromNbt(spellListTag.getCompound(i));
-            fishingCard.spells.put(spellInstance.getPerk(), spellInstance);
+            fishingCard.spells.put(spellInstance.getKey(), spellInstance);
         }
     }
 

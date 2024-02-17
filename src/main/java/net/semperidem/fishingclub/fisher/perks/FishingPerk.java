@@ -10,38 +10,41 @@ import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
 
+import static net.semperidem.fishingclub.fisher.perks.FishingPerks.NAME_TO_PERK_MAP;
+import static net.semperidem.fishingclub.fisher.perks.FishingPerks.SKILL_TREE;
+
 public class FishingPerk {
     String name;
     String label;
     ArrayList<Text> description;
     ArrayList<Text> detailedDescription;
     FishingPerk parent;
-    ArrayList<FishingPerk> children = new ArrayList<>();
+    FishingPerk child;
+    Path path;
     Identifier icon;
     PerkReward reward;
 
-    private FishingPerk(String name){
+
+    FishingPerk(String name){
         this.name = name;
-        this.label =  name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-        FishingPerks.ALL_PERKS.add(this);
     }
-    private FishingPerk(String name, FishingPerk parent){
+
+    FishingPerk(String name, Path path){
         this.name = name;
+        this.path = path;
+        NAME_TO_PERK_MAP.put(name, this);
+        if (!SKILL_TREE.containsKey(path)) {
+            SKILL_TREE.put(path, new ArrayList<>());
+        }
+        SKILL_TREE.get(path).add(this);
+    }
+    FishingPerk(String name, FishingPerk parent){
+        this.name = name;
+        this.path = parent.path;
         this.parent = parent;
-        this.parent.addChild(this);
-        FishingPerks.ALL_USABLE_PERKS.add(this);
-        FishingPerks.ALL_PERKS.add(this);
+        parent.child = this;
+        NAME_TO_PERK_MAP.put(name, this);
     }
-
-    static FishingPerk createRootPerk(String name){
-        FishingPerk rootPerk = new FishingPerk(name);
-        FishingPerks.ROOT_PERKS.add(rootPerk);
-        return rootPerk;
-    }
-    static FishingPerk createPerk(String name, FishingPerk parent){
-        return new FishingPerk(name, parent);
-    }
-
 
     public void onEarn(PlayerEntity playerEntity){
         if (reward == null) return;
@@ -49,16 +52,12 @@ public class FishingPerk {
         reward.onEarn(playerEntity);
     }
 
-    void addChild(FishingPerk fishingPerk){
-        this.children.add(fishingPerk);
+    public Path getPath() {
+        return this.path;
     }
 
-    public ArrayList<FishingPerk> getChildren(){
-        return this.children;
-    }
-
-    public boolean hasChildren(){
-        return this.children.size() > 0;
+    public FishingPerk getChild(){
+        return this.child;
     }
 
     public FishingPerk withIcon(String iconName){

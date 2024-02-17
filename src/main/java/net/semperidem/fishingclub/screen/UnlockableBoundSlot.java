@@ -3,13 +3,14 @@ package net.semperidem.fishingclub.screen;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.semperidem.fishingclub.fisher.perks.Path;
 
 public class UnlockableBoundSlot extends UnlockableSlot{
     private final Item boundItem;
 
     public UnlockableBoundSlot(
             Inventory inventory, int index, int x, int y,
-            FishingCardScreenHandler parent, FishingCardTab tab,
+            FishingCardScreenHandler parent, Path tab,
             boolean isUnlocked,
             Item boundItem
     ){

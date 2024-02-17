@@ -1,11 +1,12 @@
 package net.semperidem.fishingclub.screen;
 
 import net.minecraft.inventory.Inventory;
+import net.semperidem.fishingclub.fisher.perks.Path;
 
 public class UnlockableSlot extends TabSlot {
     private boolean isUnlocked = false;
 
-    public UnlockableSlot(Inventory inventory, int index, int x, int y, FishingCardScreenHandler parent, FishingCardTab tab, boolean isUnlocked) {
+    public UnlockableSlot(Inventory inventory, int index, int x, int y, FishingCardScreenHandler parent, Path tab, boolean isUnlocked) {
         super(inventory, index, x, y, parent, tab);
         this.isUnlocked = isUnlocked;
     }
