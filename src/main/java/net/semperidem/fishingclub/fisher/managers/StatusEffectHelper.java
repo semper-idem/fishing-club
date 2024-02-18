@@ -1,7 +1,5 @@
 package net.semperidem.fishingclub.fisher.managers;
 
-import com.google.common.collect.ImmutableList;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -12,23 +10,34 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
-public class StatusEffectManager {
+import java.util.List;
+
+public class StatusEffectHelper {
+    private static final float QUALITY_BUFF_SUCCESS_CHANCE = 0.25f;
+    private static final float EXP_MULTIPLIER_PER_AMPLIFIER = 0.1f;
+    private static final int FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER = 4;
+    private static final int SPREAD_EFFECT_RANGE = 3;
+    private static final int PROLONG_EFFECT_LENGTH = 200;
+    private static final int ONE_TIME_BUFF_LENGTH = 2400;
+
     FishingCard trackedFor;
     PlayerEntity holder;
-    public StatusEffectManager(FishingCard trackedFor) {
+
+    public StatusEffectHelper(FishingCard trackedFor) {
         this.trackedFor = trackedFor;
         this.holder = trackedFor.getHolder();
     }
 
     public int getMinGrade() {
         int minGrade = 0;
-        if (this.holder.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > 0.25f) {
+        if (this.holder.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
         } else if (this.holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
         return minGrade;
     }
+
     public void fishCaught(ProgressionManager progressionManager, Fish fish){
         processOneTimeBuff(fish);
         prolongStatusEffects(progressionManager);
@@ -38,14 +47,14 @@ public class StatusEffectManager {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
         if ((xpBuffInstance = holder.getStatusEffect(FStatusEffectRegistry.EXP_BUFF)) != null) {
-             multiplier += 0.1f * (xpBuffInstance.getAmplifier() + 1);
+             multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
     }
 
-    private boolean shouldSpeardQualityBuff(ProgressionManager progressionManager, Fish fish) {
+    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, Fish fish) {
         return
-                fish.grade >= 4 &&
+                fish.grade >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
                 !holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) &&
                 !fish.consumeGradeBuff;
@@ -54,21 +63,26 @@ public class StatusEffectManager {
     public int spreadStatusEffect(ProgressionManager progressionManager, Fish fish) {
         int xpBuffAffectedCount = 0;
         Box box = new Box(holder.getBlockPos());
-        box.expand(3);
-        boolean spreadQualityBuff = shouldSpeardQualityBuff(progressionManager, fish);
-        for(Entity entity : holder.getEntityWorld().getOtherEntities(null, box)) {
-            if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                if (FishingCard.getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
-                    xpBuffAffectedCount++;
-                }
-                if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
-                    serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, 2400));
-                }
+        box.expand(SPREAD_EFFECT_RANGE);
+
+        List<ServerPlayerEntity> nearPlayers = holder.getEntityWorld()
+                .getOtherEntities(null, box)
+                .stream()
+                .filter(ServerPlayerEntity.class::isInstance)
+                .map(ServerPlayerEntity.class::cast)
+                .toList();
+
+        boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
+        for(ServerPlayerEntity serverPlayerEntity : nearPlayers) {
+            if (FishingCard.getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                xpBuffAffectedCount++;
+            }
+            if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, ONE_TIME_BUFF_LENGTH));
             }
         }
         return xpBuffAffectedCount;
     }
-
 
     private void prolongStatusEffects(ProgressionManager progressionManager){
         if (!progressionManager.hasPerk(FishingPerks.SHARED_BUFFS)) {
@@ -83,21 +97,19 @@ public class StatusEffectManager {
             return;
         }
 
-        ImmutableList<Entity> passengers = (ImmutableList<Entity>) boatEntity.getPassengerList();
-
-        for(Entity passenger : passengers) {
-            if(!(passenger instanceof PlayerEntity playerPassenger)) continue;
-            playerPassenger.getStatusEffects().forEach(
-                    sei -> sei.upgrade(
-                            new StatusEffectInstance(
-                                    sei.getEffectType(),
-                                    sei.getDuration() + 200,
-                                    sei.getAmplifier()
-                            )
-                    )
-            );
-        }
-
+        boatEntity.getPassengerList()
+                .stream()
+                .filter(PlayerEntity.class::isInstance)
+                .map(PlayerEntity.class::cast)
+                .forEach(playerEntity -> playerEntity.getStatusEffects().forEach(
+                        sei -> sei.upgrade(
+                                new StatusEffectInstance(
+                                        sei.getEffectType(),
+                                        sei.getDuration() + PROLONG_EFFECT_LENGTH,
+                                        sei.getAmplifier()
+                                )
+                        )
+                ));
     }
 
     private void processOneTimeBuff(Fish fish){

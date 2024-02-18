@@ -7,6 +7,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import java.util.Objects;
 
 public class SummonRequestManager extends DataManager {
+    private static final int REQUEST_VALID_TIME = 600;
     public String targetUUID;
     public long requestTick;
 
@@ -20,14 +21,14 @@ public class SummonRequestManager extends DataManager {
     }
 
     public boolean canAccept(){
-        return trackedFor.getHolder().getWorld().getTime() - requestTick < 600;
+        return trackedFor.getHolder().getWorld().getTime() - requestTick < REQUEST_VALID_TIME;
     }
 
     public boolean isTarget(ServerPlayerEntity possibleTarget) {
         return possibleTarget.getUuidAsString().equalsIgnoreCase(targetUUID);
     }
 
-    public void execute() {//If this doesn't work we can pass server instance directly from network handlers
+    public void execute() {
         if (!(trackedFor.getHolder() instanceof ServerPlayerEntity source)) {
             return;
         }

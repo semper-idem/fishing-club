@@ -7,7 +7,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -17,31 +16,24 @@ import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import java.util.HashMap;
 
 public class ProgressionManager extends DataManager{
-    private static final String TAG = "progression";
-    private static final String LEVEL_TAG = "lvl";
-    private static final String EXP_TAG = "xp";
-    private static final String SKILL_POINTS_TAG = "sp";
-    public static final String PERKS_TAG ="perks";
-    public static final String SPELLS_TAG ="spells";
-
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
+    private static final float PLAYER_EXP_RATIO = 0.1f;
+    private static final int MIN_PLAYER_EXP = 1;
 
-    int level = 1;
-    int exp = 0;
-    int perkPoints = 0;
-    final HashMap<String, FishingPerk> perks = new HashMap<>();
-    final HashMap<String, SpellInstance> spells = new HashMap<>();
+    private int level = 1;
+    private int exp = 0;
+    private int perkPoints = 0;
+
+    private final HashMap<String, FishingPerk> perks = new HashMap<>();
+    private final HashMap<String, SpellInstance> spells = new HashMap<>();
 
     public ProgressionManager(FishingCard trackedFor) {
         super(trackedFor);
     }
 
-
     public void resetCooldown(){
-        for(SpellInstance spellInstance : spells.values()) {
-            spellInstance.resetCooldown();
-        }
+        spells.forEach((key, spell) -> spell.resetCooldown());
     }
 
     public int getLevel() {
@@ -52,19 +44,17 @@ public class ProgressionManager extends DataManager{
         return exp;
     }
 
-    void addPerk(FishingPerk perk){
-        if (hasRequiredPerk(perk) && hasPerkPoints()) {
-            perk.onEarn(trackedFor.getHolder());
-            this.perks.put(perk.getName(), perk);
-            if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
-            }
-            perkPoints--;
-        }
-    }
-
     public void addPerk(String perkName){
-        addPerk(FishingPerks.getPerkFromName(perkName));
+        FishingPerk perk = FishingPerks.getPerkFromName(perkName);
+        if (!hasRequiredPerk(perk) || !hasPerkPoints()) {
+            return;
+        }
+        perk.onEarn(trackedFor.getHolder());
+        this.perks.put(perk.getName(), perk);
+        if (Spells.perkHasSpell(perk)) {
+            this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
+        }
+        perkPoints--;
     }
 
     public boolean hasRequiredPerk(FishingPerk perk){
@@ -76,10 +66,9 @@ public class ProgressionManager extends DataManager{
         return hasRequiredPerk(perk) && hasPerkPoints() && isNotUnlocked;
     }
 
-    public void addSkillPoints(int amount){
+    public void addPerkPoints(int amount){
         this.perkPoints += amount;
     }
-
 
     public int getPerkPoints(){
         return this.perkPoints;
@@ -89,50 +78,33 @@ public class ProgressionManager extends DataManager{
         return this.perkPoints > 0;
     }
 
-    public void setPerkPoints(int perkPoints){
-        this.perkPoints = perkPoints;
-    }
-
     public void useSpell(String perkName, Entity target){
-        if (!perks.containsKey(perkName)) return;
+        if (!perks.containsKey(perkName)){
+            return;
+        }
         SpellInstance spellInstance = spells.get(perkName);
         spellInstance.use((ServerPlayerEntity) trackedFor.getHolder(), target);
         spells.put(perkName, spellInstance);
-    }
-
-
-    public void removePerk(String perkName){
-        if (!this.perks.containsKey(perkName)) return;
-        this.perks.remove(perkName);
-        this.perkPoints++;
     }
 
     public int nextLevelXP(){
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
-
     public void grantExperience(double gainedXP){
-        if (gainedXP == 0) {
+        if (gainedXP < 0) {
             return;
         }
 
-        trackedFor.getHolder().addExperience((int) Math.max(1, gainedXP / 10));
+        trackedFor.getHolder().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
 
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
         while (this.exp >= nextLevelXP) {
             this.exp -= nextLevelXP;
             this.level++;
-            onLevelUpBehaviour();
+            LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
             nextLevelXP = nextLevelXP();
-        }
-    }
-
-
-    private void onLevelUpBehaviour() {
-        for (LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)) {
-            reward.grant(trackedFor);
         }
     }
 
@@ -144,14 +116,12 @@ public class ProgressionManager extends DataManager{
         return perks.containsKey(perk.getName());
     }
 
-
-
     @Override
     public void readNbt(NbtCompound fishingCardNbt) {
         NbtCompound progressionNbt = fishingCardNbt.getCompound(TAG);
         level = progressionNbt.getInt(LEVEL_TAG);
         exp = progressionNbt.getInt(EXP_TAG);
-        perkPoints = progressionNbt.getInt(SKILL_POINTS_TAG);
+        perkPoints = progressionNbt.getInt(PERK_POINTS);
         readPerks(progressionNbt);
         readSpells(progressionNbt);
     }
@@ -179,7 +149,7 @@ public class ProgressionManager extends DataManager{
         NbtCompound progressionNbt = new NbtCompound();
         progressionNbt.putInt(LEVEL_TAG, level);
         progressionNbt.putInt(EXP_TAG, exp);
-        progressionNbt.putInt(SKILL_POINTS_TAG, perkPoints);
+        progressionNbt.putInt(PERK_POINTS, perkPoints);
         writePerks(progressionNbt);
         writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
@@ -197,4 +167,11 @@ public class ProgressionManager extends DataManager{
         progressionNbt.put(SPELLS_TAG, spellsTag);
     }
 
+
+    private static final String TAG = "progression";
+    private static final String LEVEL_TAG = "level";
+    private static final String EXP_TAG = "exp";
+    private static final String PERK_POINTS = "perk_points";
+    private static final String PERKS_TAG ="perks";
+    private static final String SPELLS_TAG ="spells";
 }

@@ -13,13 +13,14 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 
 
 public class FishingCard extends FishingCardInventory {
-    ProgressionManager progressionManager;
-    SummonRequestManager summonRequestManager;
-    HistoryManager historyManager;
-    LinkingManager linkingManager;
-    StatusEffectManager statusEffectManager;
-
     private final PlayerEntity holder;
+
+    private final ProgressionManager progressionManager;
+    private final SummonRequestManager summonRequestManager;
+    private final HistoryManager historyManager;
+    private final LinkingManager linkingManager;
+
+    private final StatusEffectHelper statusEffectHelper;
 
 
     public FishingCard(PlayerEntity playerEntity) {
@@ -28,7 +29,7 @@ public class FishingCard extends FishingCardInventory {
         this.summonRequestManager = new SummonRequestManager(this);
         this.historyManager = new HistoryManager(this);
         this.linkingManager = new LinkingManager(this);
-        this.statusEffectManager = new StatusEffectManager(this);
+        this.statusEffectHelper = new StatusEffectHelper(this);
     }
 
     public FishingCard(PlayerEntity playerEntity, NbtCompound fishingCardNbt) {
@@ -63,7 +64,7 @@ public class FishingCard extends FishingCardInventory {
     }
 
     public void addSkillPoints(int amount){
-        progressionManager.addSkillPoints(amount);
+        progressionManager.addPerkPoints(amount);
     }
 
     public int getPerkPoints(){
@@ -116,10 +117,9 @@ public class FishingCard extends FishingCardInventory {
     public int getMinGrade(){
         int minGrade = 0;
         minGrade += historyManager.getMinGrade(progressionManager);
-        minGrade += statusEffectManager.getMinGrade();
+        minGrade += statusEffectHelper.getMinGrade();
         return Math.min(4, minGrade);
     }
-
 
     public void fishHooked(IHookEntity hookEntity){;
         historyManager.fishHooked(hookEntity);
@@ -127,15 +127,14 @@ public class FishingCard extends FishingCardInventory {
 
     public void fishCaught(Fish fish){
         int expGained = fish.experience;
-        expGained += (int) statusEffectManager.getExpMultiplier();
-        float passiveExpMultiplier = 1 + 0.1f * statusEffectManager.spreadStatusEffect(progressionManager, fish);
+        expGained += (int) statusEffectHelper.getExpMultiplier();
+        float passiveExpMultiplier = 1 + 0.1f * statusEffectHelper.spreadStatusEffect(progressionManager, fish);
         expGained = (int)(expGained * passiveExpMultiplier);
 
         progressionManager.grantExperience(expGained);
         historyManager.fishCaught();
-        statusEffectManager.fishCaught(progressionManager, fish);
+        statusEffectHelper.fishCaught(progressionManager, fish);
     }
-
 
     public void addPerk(String perkName){
         progressionManager.addPerk(perkName);
@@ -160,6 +159,4 @@ public class FishingCard extends FishingCardInventory {
     public void shareBait() {
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
-
-
 }

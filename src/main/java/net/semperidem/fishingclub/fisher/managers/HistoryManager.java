@@ -16,14 +16,10 @@ import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 import java.util.ArrayList;
 
 public class HistoryManager extends DataManager {
-    private static final String USED_CHUNKS_TAG = "used_chunks";
-    private static final String FIRST_CATCH_OF_THE_DAY_TAG = "fcotd";
-    private static final String LAST_CATCH_TIME_TAG = "lct";
-    private static final String LAST_USED_BAIT_TAG = "lub";
-    private static final String TAG = "history";
     private static final long DAY_LENGTH = 24000;
+    private static final float DAYS_SINCE_LAST_FISH_PERIOD = 4;
 
-    private ArrayList<Chunk> usedChunks = new ArrayList<>();
+    private final ArrayList<Chunk> usedChunks = new ArrayList<>();
     private long lastCatchTime = 0;
     private long firstCatchOfTheDay = 0;
     private boolean firstCatchInChunk = false;
@@ -80,8 +76,8 @@ public class HistoryManager extends DataManager {
         }
         int daysSinceLastFish = getDaysSinceLastCatch();
         if (progressionManager.hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && daysSinceLastFish > 0) {
-            minGrade = (int) (minGrade + Math.floor(daysSinceLastFish / 4f));
-            if (Math.random() < 0.25f * (daysSinceLastFish % 4)) {
+            minGrade = (int) (minGrade + Math.floor(daysSinceLastFish / DAYS_SINCE_LAST_FISH_PERIOD));
+            if (Math.random() < (1 / DAYS_SINCE_LAST_FISH_PERIOD) * (daysSinceLastFish % DAYS_SINCE_LAST_FISH_PERIOD)) {
                 minGrade++;
             }
         }
@@ -90,14 +86,8 @@ public class HistoryManager extends DataManager {
 
 
     private void checkChunk(ChunkPos chunkPos) {
-        Chunk chunk = Chunk.create(chunkPos);
-        for(Chunk usedChunk : usedChunks) {
-            if (usedChunk.matches(chunkPos)) {
-                firstCatchInChunk = false;
-            }
-        }//todo streams
-        usedChunks.add(chunk);
-        firstCatchInChunk = true;
+        firstCatchInChunk = usedChunks.stream().anyMatch(usedChunk -> usedChunk.matches(chunkPos));
+        usedChunks.add(Chunk.create(chunkPos));
     }
 
     private long getCurrentTime() {
@@ -108,7 +98,7 @@ public class HistoryManager extends DataManager {
     public void readNbt(NbtCompound nbtCompound) {
         NbtCompound historyTag = nbtCompound.getCompound(TAG);
         NbtList tag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
-        usedChunks = new ArrayList<>();
+        usedChunks.clear();
         tag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
@@ -128,8 +118,6 @@ public class HistoryManager extends DataManager {
     }
 
     private static class Chunk implements NbtData{
-        private static final String X_TAG = "x";
-        private static final String Z_TAG = "z";
         int x;
         int z;
 
@@ -167,4 +155,11 @@ public class HistoryManager extends DataManager {
         }
     }
 
+    private static final String TAG = "history";
+    private static final String USED_CHUNKS_TAG = "used_chunks";
+    private static final String FIRST_CATCH_OF_THE_DAY_TAG = "first_catch_of_the_day";
+    private static final String LAST_CATCH_TIME_TAG = "last_catch_time";
+    private static final String LAST_USED_BAIT_TAG = "last_used_bait";
+    private static final String X_TAG = "x";
+    private static final String Z_TAG = "z";
 }
