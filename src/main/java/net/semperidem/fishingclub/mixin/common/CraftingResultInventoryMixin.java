@@ -8,7 +8,7 @@ import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
@@ -52,7 +52,7 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
 
         Item output = recipe.getOutput().getItem();
         if (ITEM_TO_REQUIRED_PERK_MAP.containsKey(output)) {
-            if (!FishingCardManager.getPlayerCard(player).hasPerk(ITEM_TO_REQUIRED_PERK_MAP.get(output))) {
+            if (!FishingCard.getPlayerCard(player).hasPerk(ITEM_TO_REQUIRED_PERK_MAP.get(output))) {
                 return false;
             }
         }

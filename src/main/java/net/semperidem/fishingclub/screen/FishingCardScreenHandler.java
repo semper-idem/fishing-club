@@ -10,7 +10,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -32,7 +31,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt()));
+        this(syncId, playerInventory, new FishingCard(playerInventory.player, buf.readNbt()));
     }
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {

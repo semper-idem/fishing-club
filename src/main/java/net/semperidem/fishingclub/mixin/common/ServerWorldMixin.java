@@ -20,7 +20,6 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -54,7 +53,7 @@ public abstract class ServerWorldMixin extends World {
             return;
         }
 
-        if (!FishingCardManager.getPlayerCard(causingEntity).hasPerk(FishingPerks.BOMB_FISHING)) {
+        if (!FishingCard.getPlayerCard(causingEntity).hasPerk(FishingPerks.BOMB_FISHING)) {
             return;
         }
         int fishCount = (int) (Math.random() * power);
@@ -72,7 +71,7 @@ public abstract class ServerWorldMixin extends World {
                 FishUtil.getFishOnHook(new IHookEntity() {
                     @Override
                     public FishingCard getFishingCard() {
-                        return FishingCardManager.getPlayerCard(causingEntity);
+                        return FishingCard.getPlayerCard(causingEntity);
                     }
 
                     @Override

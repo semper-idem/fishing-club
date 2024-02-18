@@ -9,7 +9,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
@@ -50,7 +49,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(SLOT_COUNT);
-        this.fishingCard = FishingCardManager.getPlayerCard(playerInventory.player);
+        this.fishingCard = FishingCard.getPlayerCard(playerInventory.player);
         addSlots();
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);

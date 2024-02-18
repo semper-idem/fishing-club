@@ -3,26 +3,20 @@ package net.semperidem.fishingclub.fisher.perks.spells;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class Spells {
     static Spell SUMMON_RAIN;
@@ -80,19 +74,19 @@ public class Spells {
         FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
-                FishingCardManager.getPlayerCard(source).linkTarget(target);
+                FishingCard.getPlayerCard(source).linkTarget(target);
             }
         });
         SHARED_BAIT = new Spell(FishingPerks.SHARED_BAIT.getName(), FishingPerks.SHARED_BAIT, 6000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                FishingCardManager.getPlayerCard(source).shareBait();
+                FishingCard.getPlayerCard(source).shareBait();
             }
         });
         FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                FishingCardManager.getPlayerCard(source).requestSummon();;
+                FishingCard.getPlayerCard(source).requestSummon();;
             }
         });
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {

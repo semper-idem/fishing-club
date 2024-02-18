@@ -27,7 +27,6 @@ import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRende
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.*;
@@ -70,7 +69,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
-        this.fishingCard = FishingCardManager.getPlayerCard((ServerPlayerEntity) owner);
+        this.fishingCard = FishingCard.getPlayerCard((ServerPlayerEntity) owner);
         System.out.println(((FishingPlayerEntity)owner).getCard());
         this.power = power;
         setThrowDirection();
@@ -447,7 +446,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingCardManager.getPlayerCard(getPlayerOwner());
+        return FishingCard.getPlayerCard(getPlayerOwner());
     }
 
     @Override

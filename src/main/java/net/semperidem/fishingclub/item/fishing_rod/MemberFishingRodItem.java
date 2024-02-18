@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 public class MemberFishingRodItem extends FishingRodItem {
@@ -69,7 +69,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         if (world.isClient) {
             hasBobberChargePerk = FishingClubClient.getPerks().containsKey(FishingPerks.BOBBER_THROW_CHARGE.getName());
         } else {
-            hasBobberChargePerk = FishingCardManager.getPlayerCard(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE);
+            hasBobberChargePerk = FishingCard.getPlayerCard(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE);
         }
         if (!hasBobberChargePerk) {
             castHook(world, user, 1, fishingRod);

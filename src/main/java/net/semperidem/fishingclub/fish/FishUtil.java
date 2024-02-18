@@ -15,7 +15,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FItemRegistry;
 import net.semperidem.fishingclub.util.MathUtil;
@@ -41,13 +40,13 @@ public class FishUtil {
     }
 
     public static void fishCaught(ServerPlayerEntity player, Fish fish){
-        FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
+        FishingCard fishingCard = FishingCard.getPlayerCard(player);
         fishingCard.fishCaught(fish);
         giveItemStack(player, getFishStack(fish, getRewardMultiplier(fishingCard)));
     }
 
     public static void fishCaughtAt(ServerPlayerEntity player, Fish fish, BlockPos caughtAt) {
-        FishingCard fishingCard = FishingCardManager.getPlayerCard(player);
+        FishingCard fishingCard = FishingCard.getPlayerCard(player);
         fishingCard.fishCaught(fish);
         throwRandomly(player.getWorld(), caughtAt, getFishStack(fish));
     }

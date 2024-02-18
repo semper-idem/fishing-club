@@ -8,15 +8,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fisher.FishingCardSerializer;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import org.jetbrains.annotations.Nullable;
 
 public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
+        buf.writeNbt(FishingCard.getPlayerCard(player).toNbt());
     }
     @Override
     public Text getDisplayName() {
@@ -26,7 +25,7 @@ public class ShopScreenFactory  implements ExtendedScreenHandlerFactory {
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(FishingCardSerializer.toNbt(FishingCardManager.getPlayerCard(player)));
+        buf.writeNbt(FishingCard.getPlayerCard(player).toNbt());
         return new ShopScreenHandler(syncId, inv, buf);
     }
 }

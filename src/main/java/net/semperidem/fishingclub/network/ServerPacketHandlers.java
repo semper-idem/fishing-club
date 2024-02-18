@@ -6,12 +6,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -59,9 +60,7 @@ public class ServerPacketHandlers {
         server.execute(() -> ShopScreenUtil.openShopScreen(player));
     }
     public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() ->{
-            player.openHandledScreen(FishingCardManager.getPlayerCard(player));
-        });
+        server.execute(() -> player.openHandledScreen(new FishingCardScreenFactory(FishingCard.getPlayerCard(player))));
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -88,13 +87,13 @@ public class ServerPacketHandlers {
 
     public static void handlePerkAdd(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
-            server.execute(() -> FishingCardManager.addPerk(player, perkName));
+            server.execute(() -> FishingCard.getPlayerCard(player).addPerk(perkName));
     }
 
     public static void handleSpellCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
         String uuidString = buf.readString();
-            server.execute(() -> FishingCardManager.getPlayerCard(player).useSpell(perkName, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
+            server.execute(() -> FishingCard.getPlayerCard(player).useSpell(perkName, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
     }
 
 
@@ -107,6 +106,6 @@ public class ServerPacketHandlers {
     }
 
     public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> FishingCardManager.getPlayerCard(player).acceptSummonRequest());
+        server.execute(() -> FishingCard.getPlayerCard(player).acceptSummonRequest());
     }
 }

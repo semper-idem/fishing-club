@@ -11,8 +11,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
-import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
@@ -35,7 +33,7 @@ public class ShopScreenHandler extends ScreenHandler {
     public ShopScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         super(FScreenHandlerRegistry.SHOP_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fishingCard = FishingCardSerializer.fromNbt(playerInventory.player, buf.readNbt());
+        fishingCard = new FishingCard(playerInventory.player, buf.readNbt());
         this.sellContainer = new SimpleInventory(SLOT_COUNT);
         addSellInventory();
         addPlayerInventory(player.getInventory());
@@ -96,7 +94,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
     //Server
     public void soldContainer(ServerPlayerEntity player, int amount){
-        FishingCardManager.addCredit(player, amount);
+        FishingCard.getPlayerCard(player).addCredit(amount);
         for (int i = 0; i < sellContainer.size(); i++) {
             sellContainer.removeStack(i);
         }
@@ -104,7 +102,7 @@ public class ShopScreenHandler extends ScreenHandler {
 
     //Server
     public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int amount){
-        if (!FishingCardManager.addCredit(player, -amount)) return;
+        if (!FishingCard.getPlayerCard(player).addCredit(-amount)) return;
         for(ItemStack itemStack : basket) {
             player.getInventory().insertStack(itemStack.copy());
         }

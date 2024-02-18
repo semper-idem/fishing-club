@@ -15,7 +15,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.registry.FEntityRegistry;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
@@ -91,10 +90,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
     @Override
     public FishingCard getFishingCard() {
-        if (getOwner() instanceof PlayerEntity playerOwner) {
-            return FishingCardManager.getPlayerCard(playerOwner);
-        }
-        return FishingCardManager.EMPTY_CARD;//drowned can pickup harpoon too
+        return FishingCard.getPlayerCard((PlayerEntity) getOwner());
     }
 
     @Override

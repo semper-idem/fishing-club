@@ -12,7 +12,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class LinkingManager extends DataManager {
         trackedFor.getHolder().addStatusEffect(sei);
         PlayerManager playerManager = trackedFor.getHolder().getServer().getPlayerManager();
         for(UUID linkedFisher : linkedFishers) {
-            FishingCardManager.getPlayerCard(playerManager.getPlayer(linkedFisher))
+            FishingCard.getPlayerCard(playerManager.getPlayer(linkedFisher))
                     .shareStatusEffect(getWeakerEffect(sei));
         }
     }
@@ -62,7 +61,7 @@ public class LinkingManager extends DataManager {
     public void shareBait(ItemStack baitToShare) {
         PlayerManager playerManager = trackedFor.getHolder().getServer().getPlayerManager();
         for(UUID linkedFisher : linkedFishers) {
-            FishingCardManager.getPlayerCard(playerManager.getPlayer(linkedFisher)).setSharedBait(baitToShare.copy());
+            FishingCard.getPlayerCard(playerManager.getPlayer(linkedFisher)).setSharedBait(baitToShare.copy());
         }
     }
 
@@ -103,7 +102,7 @@ public class LinkingManager extends DataManager {
         if (linkedFisher == null) {
             return;
         }
-        FishingCardManager.getPlayerCard(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
+        FishingCard.getPlayerCard(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
         messageRequestSummon(linkedFisher);
     }
 

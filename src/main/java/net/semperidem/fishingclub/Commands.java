@@ -7,7 +7,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -30,9 +29,9 @@ public class Commands {
 
     public static void registerLevelUp(){
         rootCommand.then(literal("level_up").executes(context -> {
-            FishingCard fishingCard = FishingCardManager.getPlayerCard(context.getSource().getPlayer());
+            FishingCard fishingCard = FishingCard.getPlayerCard(context.getSource().getPlayer());
             int xpForLevel = fishingCard.nextLevelXP() - fishingCard.getExp();
-            fishingCard.grantExperience(xpForLevel + 1);
+            fishingCard.grantExperience(xpForLevel);
             return 1;
         }));
     }
@@ -59,14 +58,14 @@ public class Commands {
 
     public static void registerInfo(){
         rootCommand.then(literal("info").executes(context -> {
-            context.getSource().sendMessage(Text.literal(FishingCardManager.getPlayerCard(context.getSource().getPlayer()).toString()));
+            context.getSource().sendMessage(Text.literal(FishingCard.getPlayerCard(context.getSource().getPlayer()).toString()));
             return 1;
         }));
     }
 
     public static void registerResetSpellCooldown(){
         rootCommand.then(literal("reset_cooldown").executes(context -> {
-            FishingCardManager.getPlayerCard(context.getSource().getPlayer()).resetCooldown();
+            FishingCard.getPlayerCard(context.getSource().getPlayer()).resetCooldown();
             return 1;
         }));
     }
@@ -75,21 +74,8 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCardManager.addSkillPoint(target, amount);
+            FishingCard.getPlayerCard(target).addSkillPoints(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to " + targetName + " skill points"));
-        } else {
-            context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
-        }
-        return 1;
-    }
-
-
-    private static int setSkillPoints(CommandContext<ServerCommandSource> context, String targetName){
-        ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
-        if (target != null) {
-            int amount = getInteger(context, "amount");
-            FishingCardManager.setSkillPoint(target, amount);
-            context.getSource().sendMessage(Text.literal("Set available skill points of " + targetName + " to " + amount));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
         }
@@ -100,7 +86,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCardManager.addCredit(target, amount);
+            FishingCard.getPlayerCard(target).addCredit(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -112,7 +98,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCardManager.setCredit(target, amount);
+            FishingCard.getPlayerCard(target).setCredit(amount);
             context.getSource().sendMessage(Text.literal("Set available credit of " + targetName + " to " + amount));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -138,29 +124,10 @@ public class Commands {
                         .then(argument("target", word()).then(argument("amount", integer()).executes(context -> setCredit(context, getString(context, getString(context, "target"))))))
                 ).then(literal("skill_point")
                         .then(argument("amount", integer()).executes(context -> addSkillPoints(context, context.getSource().getName())))
-                        .then(argument("target", word()).then(argument("amount", integer()).executes(context -> setSkillPoints(context, getString(context, getString(context, "target"))))))
                 )
         );
     }
 
-    public static int removePerk(CommandContext<ServerCommandSource> context, String targetName){
-        ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
-        if (target != null) {
-            String perkName = getString(context, "perkName");
-            FishingCardManager.removePerk(context.getSource().getPlayer(), perkName);
-            context.getSource().sendMessage(Text.literal("Removed " + perkName + " from" + targetName));
-        } else {
-            context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
-        }
-        return 1;
-    }
-
-    public static void registerRemovePerk(){
-        rootCommand.then(literal("remove_perk")
-                        .then(argument("perkName", word()).executes(context -> removePerk(context, context.getSource().getName())))
-                        .then(argument("target", word()).then(argument("perkName", word()).executes(context -> removePerk(context, getString(context, getString(context, "target"))))))
-        );
-    }
 
 
     public static void register(){
@@ -171,7 +138,6 @@ public class Commands {
             registerResetSpellCooldown();
             registerAdd();
             registerSet();
-            registerRemovePerk();
             registerLevelUp();
             registerIllegalGoods();
             registerGiveStarterRod();

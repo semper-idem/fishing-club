@@ -9,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardSerializer;
 import org.jetbrains.annotations.Nullable;
 
 public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
@@ -22,7 +21,7 @@ public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
     }
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCardSerializer.toNbt(fishingCard));
+        buf.writeNbt(fishingCard.toNbt());
         buf.writeNbt(fish.getNbt());
     }
     @Override

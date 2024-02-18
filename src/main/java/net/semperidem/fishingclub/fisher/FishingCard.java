@@ -1,102 +1,110 @@
 package net.semperidem.fishingclub.fisher;
 
 import com.google.common.collect.ImmutableList;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
-import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
-import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.managers.HistoryManager;
 import net.semperidem.fishingclub.fisher.managers.LinkingManager;
+import net.semperidem.fishingclub.fisher.managers.ProgressionManager;
 import net.semperidem.fishingclub.fisher.managers.SummonRequestManager;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
 
 
-public class FishingCard extends FishingCardInventory implements ExtendedScreenHandlerFactory {
-
-    //Progression manager?
-    private static final int BASE_EXP = 50;
-    private static final float EXP_EXPONENT = 1.25f;
-    int level = 1;
-    int exp = 0;
-    int perkPoints = 0;
-    final HashMap<String, FishingPerk> perks = new HashMap<>();
-    final HashMap<String, SpellInstance> spells = new HashMap<>();
-
-    //Inventory manager
-    //Fishing vest etc?
-    ItemStack sharedBait = ItemStack.EMPTY;
-    int credit = 0;
-
-
+public class FishingCard extends FishingCardInventory {
+    ProgressionManager progressionManager;
     SummonRequestManager summonRequestManager;
     HistoryManager historyManager;
     LinkingManager linkingManager;
 
-    private PlayerEntity holder;
+    private final PlayerEntity holder;
 
 
     public FishingCard(PlayerEntity playerEntity) {
         this.holder = playerEntity;
+        this.progressionManager = new ProgressionManager(this);
         this.summonRequestManager = new SummonRequestManager(this);
         this.historyManager = new HistoryManager(this);
         this.linkingManager = new LinkingManager(this);
     }
 
-    FishingCard() {}
+    public FishingCard(PlayerEntity playerEntity, NbtCompound fishingCardNbt) {
+        this(playerEntity);
+        progressionManager.readNbt(fishingCardNbt);
+        historyManager.readNbt(fishingCardNbt);
+        summonRequestManager.readNbt(fishingCardNbt);
+        linkingManager.readNbt(fishingCardNbt);
+        readNbt(fishingCardNbt);
+    }
+
+    public NbtCompound toNbt() {
+        NbtCompound fishingCardNbt = new NbtCompound();
+        progressionManager.writeNbt(fishingCardNbt);
+        historyManager.writeNbt(fishingCardNbt);
+        summonRequestManager.writeNbt(fishingCardNbt);
+        linkingManager.writeNbt(fishingCardNbt);
+        writeNbt(fishingCardNbt);
+        return fishingCardNbt;
+    }
+
+    public static FishingCard getPlayerCard(PlayerEntity user){
+        return ((FishingPlayerEntity)user).getCard();
+    }
+
+    public void resetCooldown(){
+        progressionManager.resetCooldown();
+    }
+
+    public boolean hasRequiredPerk(FishingPerk perk){
+        return progressionManager.hasRequiredPerk(perk);
+    }
+
+    public void addSkillPoints(int amount){
+        progressionManager.addSkillPoints(amount);
+    }
+
+    public int getPerkPoints(){
+        return this.progressionManager.getPerkPoints();
+    }
+
+    public boolean hasPerkPoints(){
+        return this.progressionManager.hasPerkPoints();
+    }
+
+    public void useSpell(String perkName, Entity target){
+        progressionManager.useSpell(perkName, target);
+    }
+
+    public int nextLevelXP(){
+        return progressionManager.nextLevelXP();
+    }
+
+    public void grantExperience(double gainedXP){
+        progressionManager.grantExperience(gainedXP);
+    }
+
+    public int getLevel() {
+        return progressionManager.getLevel();
+    }
+
+    public int getExp() {
+        return progressionManager.getExp();
+    }
 
     public PlayerEntity getHolder(){
         return holder;
     }
 
-    public void resetCooldown(){
-        for(SpellInstance spellInstance : spells.values()) {
-            spellInstance.resetCooldown();
-        }
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public int getExp() {
-        return exp;
-    }
-
-    public int getCredit(){
-        return credit;
-    }
-
-
-    public void setSharedBait(ItemStack baitToShare){
-        this.sharedBait = baitToShare;
-    }
-
     public void shareStatusEffect(StatusEffectInstance sei){
         linkingManager.shareStatusEffect(sei);
-    }
-
-    public ItemStack getSharedBait(){
-        return sharedBait;
     }
 
     public void setSummonRequest(ServerPlayerEntity target){
@@ -105,34 +113,6 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
 
     public void acceptSummonRequest(){
         summonRequestManager.execute();
-    }
-
-    void addPerk(FishingPerk perk){
-        if (hasRequiredPerk(perk) && hasPerkPoints()) {
-            perk.onEarn(holder);
-            this.perks.put(perk.getName(), perk);
-            if (Spells.perkHasSpell(perk)) {
-                this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
-            }
-            perkPoints--;
-        }
-    }
-
-    public void addPerk(String perkName){
-        addPerk(FishingPerks.getPerkFromName(perkName));
-    }
-
-    public boolean hasRequiredPerk(FishingPerk perk){
-        return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
-    }
-
-    public boolean canUnlockPerk(FishingPerk perk) {
-        boolean isNotUnlocked = !this.perks.containsKey(perk.getName());
-        return hasRequiredPerk(perk) && hasPerkPoints() && isNotUnlocked;
-    }
-
-    public void addSkillPoints(int amount){
-        this.perkPoints += amount;
     }
 
     public boolean isFishingFromBoat(){
@@ -164,35 +144,6 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         return Math.min(4, minGrade);
     }
 
-    public int getPerkPoints(){
-        return this.perkPoints;
-    }
-
-    public boolean hasPerkPoints(){
-        return this.perkPoints > 0;
-    }
-
-    void setPerkPoints(int perkPoints){
-        this.perkPoints = perkPoints;
-    }
-
-    public void useSpell(String perkName, Entity target){
-        if (!perks.containsKey(perkName)) return;
-        SpellInstance spellInstance = spells.get(perkName);
-        spellInstance.use((ServerPlayerEntity) holder, target);
-        spells.put(perkName, spellInstance);
-    }
-
-
-    void removePerk(String perkName){
-        if (!this.perks.containsKey(perkName)) return;
-        this.perks.remove(perkName);
-        this.perkPoints++;
-    }
-
-    public int nextLevelXP(){
-        return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
-    }
 
     public void fishHooked(IHookEntity hookEntity){;
         historyManager.fishHooked(hookEntity);
@@ -211,7 +162,7 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         float passivExpMultiplier = 1;
         for(Entity entity : holder.getEntityWorld().getOtherEntities(null, box)) {
             if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                if (FishingCardManager.getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+                if (getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                     passivExpMultiplier += 0.1f;
                 }
                 if (qualitySharing && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
@@ -221,10 +172,22 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         }
         expGained = (int)(expGained * passivExpMultiplier);
 
-        grantExperience(expGained);
+        progressionManager.grantExperience(expGained);
         historyManager.fishCaught();
         processOneTimeBuff(fish);
         prolongStatusEffects();
+    }
+
+    public void addPerk(String perkName){
+        progressionManager.addPerk(perkName);
+    }
+
+    public boolean hasPerk(FishingPerk perk){
+        return progressionManager.hasPerk(perk);
+    }
+
+    public boolean canUnlockPerk(FishingPerk perk){
+        return progressionManager.canUnlockPerk(perk);
     }
 
 
@@ -278,50 +241,6 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         }
     }
 
-    public void grantExperience(double gainedXP){
-        if (gainedXP == 0) {
-            return;
-        }
-
-        holder.addExperience((int) Math.max(1, gainedXP / 10));
-
-        this.exp += gainedXP;
-        float nextLevelXP = nextLevelXP();
-        while (this.exp >= nextLevelXP) {
-            this.exp -= nextLevelXP;
-            this.level++;
-            onLevelUpBehaviour();
-            nextLevelXP = nextLevelXP();
-        }
-    }
-
-
-    private void onLevelUpBehaviour() {
-        for (LevelReward reward : LevelRewardRule.getRewardForLevel(this.level)) {
-            reward.grant(this);
-        }
-    }
-
-    public boolean addCredit(int credit) {
-        if (this.credit + credit < 0) {
-            return false;
-        }
-
-        this.credit += credit;
-        return true;
-    }
-
-    public void setCredit(int credit) {
-        this.credit = credit;
-    }
-
-    public HashMap<String, FishingPerk> getPerks(){
-        return perks;
-    }
-
-    public boolean hasPerk(FishingPerk perk) {
-        return perks.containsKey(perk.getName());
-    }
 
 
     public void linkTarget(Entity target){
@@ -336,31 +255,5 @@ public class FishingCard extends FishingCardInventory implements ExtendedScreenH
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
 
-    @Override
-    public String toString(){
-        return "\n============[Fisher Info]============" +
-                "\nLevel: " + level +
-                "\nExperience: " + exp +
-                "\nPerk Count: " + perks.size() +
-                "\nCredit: " + credit +
-                "\n============[Fisher Info]============";
-    }
 
-
-
-    @Override
-    public Text getDisplayName() {
-        return Text.empty();
-    }
-
-    @Nullable
-    @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FishingCardScreenHandler(syncId, inv, this);
-    }
-
-    @Override
-    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCardSerializer.toNbt(this));
-    }
 }

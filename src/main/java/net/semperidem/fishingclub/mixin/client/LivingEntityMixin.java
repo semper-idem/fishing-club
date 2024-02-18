@@ -13,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingCardManager;
 import net.semperidem.fishingclub.item.HarpoonRodItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.registry.FItemRegistry;
@@ -62,7 +61,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (!isPlayer() || world.isClient) {
             return;
         }
-        FishingCard fishingCard = FishingCardManager.getPlayerCard((ServerPlayerEntity)(Object)this);
+        FishingCard fishingCard = FishingCard.getPlayerCard((ServerPlayerEntity)(Object)this);
         if (fishingCard != null) {
             fishingCard.shareStatusEffect(effect);
         }
