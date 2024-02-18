@@ -67,6 +67,27 @@ public class HistoryManager extends DataManager {
         return (int) Math.floor((lastCatchTime - getCurrentTime()) / (1f * DAY_LENGTH));
     }
 
+    public int getMinGrade(ProgressionManager progressionManager) {
+        int minGrade = 0;
+        if (isFirstCatchInChunk()) {
+            minGrade++;
+        }
+        if (isFirstCatchOfTheDay()) {
+            if (progressionManager.hasPerk(FishingPerks.FIRST_CATCH)) {
+                minGrade++;
+            }
+            minGrade++;
+        }
+        int daysSinceLastFish = getDaysSinceLastCatch();
+        if (progressionManager.hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && daysSinceLastFish > 0) {
+            minGrade = (int) (minGrade + Math.floor(daysSinceLastFish / 4f));
+            if (Math.random() < 0.25f * (daysSinceLastFish % 4)) {
+                minGrade++;
+            }
+        }
+        return minGrade;
+    }
+
 
     private void checkChunk(ChunkPos chunkPos) {
         Chunk chunk = Chunk.create(chunkPos);
