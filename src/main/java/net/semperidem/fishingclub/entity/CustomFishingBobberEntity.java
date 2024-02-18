@@ -30,9 +30,9 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.*;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
-import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity implements IHookEntity{
@@ -66,7 +66,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     }
 
     public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power) {
-        this(FEntityRegistry.CUSTOM_FISHING_BOBBER, world);
+        this(EntityTypeRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
         this.fishingCard = FishingCard.getPlayerCard((ServerPlayerEntity) owner);
@@ -204,7 +204,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             this.caughtFish = null;
             if (Math.random() < 0.1) {
                 //TODO Message on parts broken
-                FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.HOOK);
+                ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.HOOK);
             }
         }
     }
@@ -247,7 +247,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 fishingCard.setSharedBait(ItemStack.EMPTY);//todo fix ugly
             }
         } else if (FishingRodPartController.hasBait(fishingRod)) {
-            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
+            ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
         }
     }
 
@@ -338,7 +338,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             }
         }
 
-        if (this.getPlayerOwner().hasStatusEffect(FStatusEffectRegistry.FREQUENCY_BUFF)) {
+        if (this.getPlayerOwner().hasStatusEffect(StatusEffectRegistry.FREQUENCY_BUFF)) {
             catchRateReduction += 0.1f;
         }
         catchRate = Math.max(.33f,(1 - catchRateReduction));
@@ -395,8 +395,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private boolean removeIfInvalid(PlayerEntity playerEntity) {
         ItemStack itemStack = playerEntity.getMainHandStack();
         ItemStack itemStack2 = playerEntity.getOffHandStack();
-        boolean bl = itemStack.isOf(FItemRegistry.CUSTOM_FISHING_ROD);
-        boolean bl2 = itemStack2.isOf(FItemRegistry.CUSTOM_FISHING_ROD);
+        boolean bl = itemStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD);
+        boolean bl2 = itemStack2.isOf(ItemRegistry.CUSTOM_FISHING_ROD);
         if (playerEntity.isRemoved() || !playerEntity.isAlive() || !bl && !bl2) {
             this.discard();
             return true;

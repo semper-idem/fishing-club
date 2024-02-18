@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 
 import static net.minecraft.util.Rarity.*;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType.*;
-import static net.semperidem.fishingclub.registry.FItemRegistry.registerItem;
+import static net.semperidem.fishingclub.registry.ItemRegistry.registerItem;
 
 public class FishingRodPartItems {
     public static FishingRodPartItem CORE_BAMBOO;

@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.registry.FRegistry;
+import net.semperidem.fishingclub.registry.FishingClubRegistry;
 
 import java.util.HashMap;
 
@@ -28,6 +28,6 @@ public class FishingClubClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        FRegistry.registerClient();
+        FishingClubRegistry.registerClient();
     }
 }

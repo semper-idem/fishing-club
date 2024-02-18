@@ -14,12 +14,12 @@ import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 import static net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.registerExtended;
 import static net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.registerSimple;
 
-public class FScreenHandlerRegistry {
+public class ScreenHandlerRegistry {
     public static ScreenHandlerType<FisherWorkbenchScreenHandler> FISHER_WORKBENCH_SCREEN_HANDLER;
     public static ExtendedScreenHandlerType<FishingCardScreenHandler> FISHING_CARD_SCREEN = new ExtendedScreenHandlerType<>(FishingCardScreenHandler::new);
     public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER;

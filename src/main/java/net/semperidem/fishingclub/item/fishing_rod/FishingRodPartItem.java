@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
 import net.minecraft.item.Item;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ public class FishingRodPartItem extends Item {
     private final FishingRodPartType partType;
 
     public FishingRodPartItem(Settings settings, FishingRodPartType partType, FishingRodStat...stats) {
-        super(settings.maxDamageIfAbsent(1).group(FItemRegistry.FISHING_CLUB_GROUP));
+        super(settings.maxDamageIfAbsent(1).group(ItemRegistry.FISHING_CLUB_GROUP));
         this.partType = partType;
         this.stats = Arrays.asList(stats);
     }

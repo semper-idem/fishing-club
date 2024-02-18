@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.UUID;
 
@@ -60,7 +60,7 @@ public class Fish {
         PlayerEntity caughtBy = fishingCard.getHolder();
         this.experience = calculateExperience(caughtBy);
         this.caughtByUUID = caughtBy.getUuid();
-        this.consumeGradeBuff = caughtBy.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        this.consumeGradeBuff = caughtBy.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
     }
 
     public Fish(NbtCompound nbt){

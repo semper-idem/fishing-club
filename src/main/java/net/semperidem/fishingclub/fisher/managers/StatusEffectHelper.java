@@ -8,7 +8,7 @@ import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.List;
 
@@ -30,9 +30,9 @@ public class StatusEffectHelper {
 
     public int getMinGrade() {
         int minGrade = 0;
-        if (this.holder.hasStatusEffect(FStatusEffectRegistry.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
+        if (this.holder.hasStatusEffect(StatusEffectRegistry.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
-        } else if (this.holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
+        } else if (this.holder.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
         return minGrade;
@@ -46,7 +46,7 @@ public class StatusEffectHelper {
     public float getExpMultiplier() {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = holder.getStatusEffect(FStatusEffectRegistry.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = holder.getStatusEffect(StatusEffectRegistry.EXP_BUFF)) != null) {
              multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
@@ -56,7 +56,7 @@ public class StatusEffectHelper {
         return
                 fish.grade >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
-                !holder.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF) &&
+                !holder.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF) &&
                 !fish.consumeGradeBuff;
     }
 
@@ -77,8 +77,8 @@ public class StatusEffectHelper {
             if (FishingCard.getPlayerCard(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
                 xpBuffAffectedCount++;
             }
-            if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
-                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF, ONE_TIME_BUFF_LENGTH));
+            if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF, ONE_TIME_BUFF_LENGTH));
             }
         }
         return xpBuffAffectedCount;
@@ -116,16 +116,16 @@ public class StatusEffectHelper {
         if (!fish.consumeGradeBuff) {
             return;
         }
-        if (!trackedFor.getHolder().hasStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
+        if (!trackedFor.getHolder().hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
         consumeOneTimeBuff();
     }
 
     private void consumeOneTimeBuff(){
-        StatusEffectInstance sei = holder.getStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        StatusEffectInstance sei = holder.getStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
-        holder.removeStatusEffect(FStatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        holder.removeStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         if (effectPower > 0) {
             StatusEffectInstance lowerSei = new StatusEffectInstance(sei.getEffectType(), sei.getDuration(), effectPower - 1);
             holder.addStatusEffect(lowerSei);

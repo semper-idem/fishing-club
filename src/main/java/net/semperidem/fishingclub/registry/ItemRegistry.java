@@ -11,14 +11,14 @@ import net.semperidem.fishingclub.item.armor.FisherMaterial;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
-public class FItemRegistry {
+public class ItemRegistry {
 
     public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build( FishingClub.getIdentifier("fishing_club_group"), () -> new ItemStack(Items.COD));
 
-    public static final Item DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
+    public static final DoubleFishingNetItem DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final MemberFishingRodItem CUSTOM_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
-    public static final Item FISHER_WORKBENCH = new BlockItem(FBlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
-    public static final Item FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
+    public static final Item FISHER_WORKBENCH = new BlockItem(BlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
+    public static final FishingNetItem FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item FISH_COIN_BUNDLE = new FishCoinBundleItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
     public static final ArmorMaterial FISHER_MATERIAL = new FisherMaterial();
     public static final Item FISHER_HAT = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(FISHING_CLUB_GROUP));

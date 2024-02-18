@@ -5,7 +5,7 @@ import net.minecraft.util.math.MathHelper;
 import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOAT_BOBBER_SIZE;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController.getStat;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType.BOBBER_WIDTH;
-import static net.semperidem.fishingclub.registry.FStatusEffectRegistry.BOBBER_BUFF;
+import static net.semperidem.fishingclub.registry.StatusEffectRegistry.BOBBER_BUFF;
 
 public class BobberComponent {
     private static final float BASE_LENGTH = 0.25f;

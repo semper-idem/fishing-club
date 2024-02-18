@@ -11,9 +11,9 @@ import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
-import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,25 +50,25 @@ public class Spells {
         FISHING_SCHOOL = new Spell(FishingPerks.FISHING_SCHOOL.getName(), FishingPerks.FISHING_SCHOOL, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FStatusEffectRegistry.BOBBER_BUFF, 6000));
+                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 6000));
             }
         });
         SLOWER_FISH = new Spell(FishingPerks.SLOWER_FISH.getName(), FishingPerks.SLOWER_FISH, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FStatusEffectRegistry.SLOW_FISH_BUFF, 6000));
+                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.SLOW_FISH_BUFF, 6000));
             }
         });
         EXPERIENCE_BOOST = new Spell(FishingPerks.EXPERIENCE_BOOST.getName(), FishingPerks.EXPERIENCE_BOOST, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FStatusEffectRegistry.EXP_BUFF,  6000));
+                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.EXP_BUFF,  6000));
             }
         });
         LUCKY_FISHING = new Spell(FishingPerks.LUCKY_FISHING.getName(), FishingPerks.LUCKY_FISHING, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                castEffect(source, 4, new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,  6000));
+                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF,  6000));
             }
         });
         FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
@@ -93,11 +93,11 @@ public class Spells {
             @Override
             public void cast(ServerPlayerEntity source){
                 ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
-                ItemStack rodStack = FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
-                if (mainHand.getItem().equals(FItemRegistry.CUSTOM_FISHING_ROD)) {
+                ItemStack rodStack = ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
+                if (mainHand.getItem().equals(ItemRegistry.CUSTOM_FISHING_ROD)) {
                     rodStack = source.getStackInHand(Hand.MAIN_HAND);
                 }
-                ItemStack clonedStack = FItemRegistry.CLONED_ROD.getDefaultStack();
+                ItemStack clonedStack = ItemRegistry.CLONED_ROD.getDefaultStack();
                 NbtCompound clonedNbt = rodStack.getNbt();
                 clonedNbt.putLong("creation_tick", source.getWorld().getTime());
                 source.giveItemStack(clonedStack);
@@ -109,7 +109,7 @@ public class Spells {
                 //TODO Make only on Derek per world
                 //TODO Add condition to spawn only in water or near water
                 //ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-                FEntityRegistry.FISHERMAN.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
+                EntityTypeRegistry.FISHERMAN.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
             }
         });
     }

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.screen;
+package net.semperidem.fishingclub.screen.fishing_card;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -12,8 +12,8 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
-import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -35,7 +35,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
-        super(FScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
+        super(ScreenHandlerRegistry.FISHING_CARD_SCREEN, syncId);
         this.playerInventory = playerInventory;
         this.fishingCard = fishingCard;
         addFisherInventory();
@@ -78,8 +78,8 @@ public class FishingCardScreenHandler extends ScreenHandler {
     private void addFisherInventory(){
         addFishingCardSlot(0, 310, 163, fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT), Items.FISHING_ROD);
         addFishingCardSlot(1, 328, 163, fishingCard.hasPerk(FishingPerks.BOAT_SLOT), Items.OAK_BOAT);
-        addFishingCardSlot(2, 310, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK),FItemRegistry.FISHING_NET);
-        addFishingCardSlot(3, 328, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), FItemRegistry.FISHING_NET);
+        addFishingCardSlot(2, 310, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
+        addFishingCardSlot(3, 328, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
     }
 
     public void addPlayerInventorySlots(){

@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 
-import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.ItemRegistry.CUSTOM_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
     FisherWorkbenchScreenHandler parent;

@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,7 +43,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(1,60,2, Items.STRING, 2));
         ALL_REWARDS.add(new TreasureReward(1,60,4, Items.INK_SAC, 2));
 
-        ALL_REWARDS.add(new TreasureReward(1,30,4, FItemRegistry.FISH_COIN_BUNDLE, 10));
+        ALL_REWARDS.add(new TreasureReward(1,30,4, ItemRegistry.FISH_COIN_BUNDLE, 10));
 
 
 
@@ -54,7 +54,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(2,100,1, Items.DARK_OAK_CHEST_BOAT, 1));
         ALL_REWARDS.add(new TreasureReward(2,100,1, Items.ACACIA_CHEST_BOAT, 1));
 
-        ALL_REWARDS.add(new TreasureReward(2,120,1, FItemRegistry.CUSTOM_FISHING_ROD, 1));
+        ALL_REWARDS.add(new TreasureReward(2,120,1, ItemRegistry.CUSTOM_FISHING_ROD, 1));
 
         ALL_REWARDS.add(new TreasureReward(2,160,6, Items.COD, 5));
         ALL_REWARDS.add(new TreasureReward(2,160,1, Items.TROPICAL_FISH, 3));
@@ -62,7 +62,7 @@ public class Rewards {
 
         ALL_REWARDS.add(new TreasureReward(2,60,8, Items.COAL, 4));
 
-        ALL_REWARDS.add(new TreasureReward(2,30,10, FItemRegistry.FISH_COIN_BUNDLE, 10));
+        ALL_REWARDS.add(new TreasureReward(2,30,10, ItemRegistry.FISH_COIN_BUNDLE, 10));
 
         ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.BAIT_WORM, 1));
         ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.CORE_BAMBOO, 1));
@@ -78,13 +78,13 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_HELMET, 1));
         ALL_REWARDS.add(new TreasureReward(3,160,0.8f, Items.LEATHER_LEGGINGS, 1));
 
-        ALL_REWARDS.add(new TreasureReward(3,45,12, FItemRegistry.FISH_COIN_BUNDLE, 5));
+        ALL_REWARDS.add(new TreasureReward(3,45,12, ItemRegistry.FISH_COIN_BUNDLE, 5));
 
 
         ALL_REWARDS.add(new TreasureReward(4,120,3, Items.IRON_INGOT, 5));
         ALL_REWARDS.add(new TreasureReward(4,120,3, Items.GOLD_INGOT, 10));
 
-        ALL_REWARDS.add(new TreasureReward(4,60,16, FItemRegistry.FISH_COIN_BUNDLE, 5));
+        ALL_REWARDS.add(new TreasureReward(4,60,16, ItemRegistry.FISH_COIN_BUNDLE, 5));
 
 
 
@@ -104,18 +104,18 @@ public class Rewards {
 
         ALL_REWARDS.add(new TreasureReward(5,300,8, Items.EMERALD, 3));
 
-        ALL_REWARDS.add(new TreasureReward(5,80,20, FItemRegistry.FISH_COIN_BUNDLE, 5));
+        ALL_REWARDS.add(new TreasureReward(5,80,20, ItemRegistry.FISH_COIN_BUNDLE, 5));
 
 
-        ALL_REWARDS.add(new TreasureReward(6,250,1, FItemRegistry.FISHING_NET, 2));
-        ALL_REWARDS.add(new TreasureReward(6,350,1, FItemRegistry.DOUBLE_FISHING_NET, 1));
+        ALL_REWARDS.add(new TreasureReward(6,250,1, ItemRegistry.FISHING_NET, 2));
+        ALL_REWARDS.add(new TreasureReward(6,350,1, ItemRegistry.DOUBLE_FISHING_NET, 1));
 
         ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_BOOTS, 1));
         ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_CHESTPLATE, 1));
         ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_HELMET, 1));
         ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_LEGGINGS, 1));
 
-        ALL_REWARDS.add(new TreasureReward(6,100,30, FItemRegistry.FISH_COIN_BUNDLE, 5));
+        ALL_REWARDS.add(new TreasureReward(6,100,30, ItemRegistry.FISH_COIN_BUNDLE, 5));
 
 
         ALL_REWARDS.add(new TreasureReward(7,400,1, FishingRodPartItems.BAIT_CRAFTED, 1));
@@ -129,7 +129,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(7,800,0.2f, Items.DIAMOND_LEGGINGS, 1));
 
         ALL_REWARDS.add(new TreasureReward(7,800,4, Items.DIAMOND, 1));
-        ALL_REWARDS.add(new TreasureReward(7,100,40, FItemRegistry.FISH_COIN_BUNDLE, 5));
+        ALL_REWARDS.add(new TreasureReward(7,100,40, ItemRegistry.FISH_COIN_BUNDLE, 5));
 
     }
 

@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.Random;
 
@@ -32,8 +32,8 @@ public class TreasureReward {
 
     ItemStack roll(){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isOf(FItemRegistry.CUSTOM_FISHING_ROD)) {
-            return FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
+        if (rewardStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD)) {
+            return ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {
@@ -51,7 +51,7 @@ public class TreasureReward {
             return rewardStack;
         }
 
-        if (item == FItemRegistry.FISH_COIN_BUNDLE) {
+        if (item == ItemRegistry.FISH_COIN_BUNDLE) {
            return FishCoinBundleItem.ofValue((int) (quality * (1 + MathHelper.clamp(0, 4, Math.abs(random.nextGaussian())))));
         }
         if (quality != 1) {

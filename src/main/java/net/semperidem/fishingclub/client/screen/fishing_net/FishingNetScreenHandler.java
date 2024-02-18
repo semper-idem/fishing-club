@@ -4,13 +4,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
-import net.semperidem.fishingclub.util.InventoryUtil;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 
@@ -27,12 +27,12 @@ public class FishingNetScreenHandler extends ScreenHandler {
     }
 
     public FishingNetScreenHandler(int syncId,PlayerInventory playerInventory, ItemStack itemStack) {
-        super(FScreenHandlerRegistry.FISHING_NET_SCREEN_HANDLER, syncId);
-        this.rows = itemStack.isOf(FItemRegistry.FISHING_NET) ? 3 : 6;
+        super(ScreenHandlerRegistry.FISHING_NET_SCREEN_HANDLER, syncId);
+        this.rows = itemStack.isOf(ItemRegistry.FISHING_NET) ? 3 : 6;
         this.slotCount = SLOTS_PER_ROW * rows;
         this.playerInventory = playerInventory;
         this.fishingNetStack = itemStack;
-        this.fishingNetInventory = InventoryUtil.readFishingNetInventory(itemStack);
+        this.fishingNetInventory = FishingNetItem.readFishingNetInventory(itemStack);
 
         addFishingNetInventory();
         addPlayerInventory();
@@ -50,7 +50,7 @@ public class FishingNetScreenHandler extends ScreenHandler {
                 this.addSlot(new Slot(fishingNetInventory, k + j * 9, 8 + k * 18, 18 + j * 18){
                     @Override
                     public boolean canInsert(ItemStack stack) {
-                        return stack.isOf(Items.TROPICAL_FISH);
+                        return stack.isOf(FishUtil.FISH_ITEM);
                     }
                 });
             }

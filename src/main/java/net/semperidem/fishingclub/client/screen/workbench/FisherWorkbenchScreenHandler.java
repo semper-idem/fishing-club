@@ -12,14 +12,14 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
-import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
+import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType.*;
-import static net.semperidem.fishingclub.registry.FBlockRegistry.FISHER_WORKBENCH_BLOCK;
+import static net.semperidem.fishingclub.registry.BlockRegistry.FISHER_WORKBENCH_BLOCK;
 
 public class FisherWorkbenchScreenHandler extends ScreenHandler {
 
@@ -46,7 +46,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
     }
 
     public FisherWorkbenchScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(FScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
+        super(ScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(SLOT_COUNT);
         this.fishingCard = FishingCard.getPlayerCard(playerInventory.player);

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.screen;
+package net.semperidem.fishingclub.screen.fishing_card;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.inventory.Inventory;

@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.ArrayList;
 
@@ -40,10 +40,10 @@ public class HistoryManager extends DataManager {
         }
         firstCatchOfTheDay = getCurrentTime();
         if (trackedFor.hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.FREQUENCY_BUFF,1200));
+            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.FREQUENCY_BUFF,1200));
         }
         if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FStatusEffectRegistry.QUALITY_BUFF,1200));
+            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF,1200));
         }
     }
 

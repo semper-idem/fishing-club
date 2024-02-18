@@ -8,14 +8,14 @@ import net.semperidem.fishingclub.status_effects.*;
 
 import java.awt.*;
 
-public class FStatusEffectRegistry {
+public class StatusEffectRegistry {
     //TODO TREASURE CHANCE BUFF
-    public static final StatusEffect QUALITY_BUFF = new FishQualityBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect FREQUENCY_BUFF = new FishFrequencyBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect EXP_BUFF = new FishExpBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect SLOW_FISH_BUFF = new FishSlowBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect BOBBER_BUFF = new FishBobberBuffStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
-    public static final StatusEffect ONE_TIME_QUALITY_BUFF = new FishOneTimeQualityStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect QUALITY_BUFF = new IncreaseFishQualityStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect FREQUENCY_BUFF = new IncreaseCatchFrequencyStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect EXP_BUFF = new IncreaseFishingExpStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect SLOW_FISH_BUFF = new DecreaseFishSpeedStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect BOBBER_BUFF = new IncreaseBobberSizeStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
+    public static final StatusEffect ONE_TIME_QUALITY_BUFF = new OneTimeIncreaseFishQualityStatusEffect(StatusEffectCategory.BENEFICIAL, Color.CYAN.getRGB());
 
     public static void register(){
         Registry.register(Registry.STATUS_EFFECT, FishingClub.getIdentifier("quality_buff"), QUALITY_BUFF);

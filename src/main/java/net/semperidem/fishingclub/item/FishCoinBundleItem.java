@@ -9,7 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class FishCoinBundleItem extends Item {
     public FishCoinBundleItem(Settings settings) {
@@ -18,7 +18,7 @@ public class FishCoinBundleItem extends Item {
 
 
     public static ItemStack ofValue(int value){
-        ItemStack bundleStack = FItemRegistry.FISH_COIN_BUNDLE.getDefaultStack();
+        ItemStack bundleStack = ItemRegistry.FISH_COIN_BUNDLE.getDefaultStack();
         bundleStack.getOrCreateNbt().putInt("value", value);
         return bundleStack;
     }

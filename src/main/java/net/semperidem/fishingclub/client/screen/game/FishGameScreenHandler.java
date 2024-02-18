@@ -8,12 +8,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FScreenHandlerRegistry;
+import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
+
 public class FishGameScreenHandler extends ScreenHandler {
     FishingCard fishingCard;
     Fish hookedFish;
     public FishGameScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        super(FScreenHandlerRegistry.FISH_GAME_SCREEN, syncId);
+        super(ScreenHandlerRegistry.FISH_GAME_SCREEN, syncId);
         NbtCompound fishingCardNbt = buf.readNbt();
         NbtCompound fishNbt = buf.readNbt();
 
@@ -22,7 +23,7 @@ public class FishGameScreenHandler extends ScreenHandler {
     }
 
     public FishGameScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(FScreenHandlerRegistry.FISH_GAME_SCREEN, syncId);
+        super(ScreenHandlerRegistry.FISH_GAME_SCREEN, syncId);
     }
 
     @Override

@@ -16,7 +16,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.network.ClientPacketSender;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 import java.awt.*;
 import java.util.ArrayList;

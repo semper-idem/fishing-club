@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {
     public static final Identifier DEFAULT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
@@ -55,7 +55,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         matrixStack.pop();
         int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
-        if (!itemStack.isOf(FItemRegistry.CUSTOM_FISHING_ROD)) {
+        if (!itemStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD)) {
             j = -j;
         }
         float h = playerEntity.getHandSwingProgress(g);

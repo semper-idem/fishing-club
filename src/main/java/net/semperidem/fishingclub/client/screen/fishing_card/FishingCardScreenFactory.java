@@ -8,7 +8,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory {

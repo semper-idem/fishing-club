@@ -2,8 +2,7 @@ package net.semperidem.fishingclub.fisher.level_reward;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +59,8 @@ public class LevelRewardRule {
         //ITEMS
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
-        addRule(create(5, 0, 0).withRewards(itemReward(FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
-        addRule(create(50, 0, 0).withRewards(itemReward(FItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
+        addRule(create(5, 0, 0).withRewards(itemReward(ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
+        addRule(create(50, 0, 0).withRewards(itemReward(ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
 
         //Trophy //TODO ADD TROPHY, CHANGE PER PRESTIGE
         addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));

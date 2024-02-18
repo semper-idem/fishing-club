@@ -8,10 +8,10 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.block.FisherWorkbenchBlock;
 
 
-public class FBlockRegistry {
+public class BlockRegistry {
     public static final Block FISHER_WORKBENCH_BLOCK = new FisherWorkbenchBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE));
 
     public static void register(){
-        Registry.register(Registry.BLOCK, FishingClub.getIdentifier("fisher_workbench"), FBlockRegistry.FISHER_WORKBENCH_BLOCK);
+        Registry.register(Registry.BLOCK, FishingClub.getIdentifier("fisher_workbench"), BlockRegistry.FISHER_WORKBENCH_BLOCK);
     }
 }

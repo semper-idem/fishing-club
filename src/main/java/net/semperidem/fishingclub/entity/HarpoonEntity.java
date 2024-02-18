@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
+import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
     boolean dealtDamage;
@@ -24,12 +24,12 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
 
     public HarpoonEntity(EntityType<? extends TridentEntity> entityType, World world) {
-        super(FEntityRegistry.HARPOON_ENTITY, world);
+        super(EntityTypeRegistry.HARPOON_ENTITY, world);
     }
 
 
     public HarpoonEntity(World world, LivingEntity owner, ItemStack stack) {
-        super(FEntityRegistry.HARPOON_ENTITY, world);
+        super(EntityTypeRegistry.HARPOON_ENTITY, world);
         this.setOwner(owner);
         harpoonStack = stack;
         this.setPosition(owner.getX(), owner.getEyeY() - (double)0.1f, owner.getZ());

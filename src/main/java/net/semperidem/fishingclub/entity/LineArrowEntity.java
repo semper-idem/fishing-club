@@ -14,8 +14,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
 
 public class LineArrowEntity extends PersistentProjectileEntity implements IHookEntity{
@@ -26,7 +26,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     }
 
     public LineArrowEntity(World world, LivingEntity shooter) {
-        super(FEntityRegistry.LINE_ARROW_ENTITY, shooter, world);
+        super(EntityTypeRegistry.LINE_ARROW_ENTITY, shooter, world);
         pickupType = PickupPermission.ALLOWED;
     }
 
@@ -96,7 +96,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
 
     @Override
     protected ItemStack asItemStack() {
-        return FItemRegistry.LINE_ARROW.getDefaultStack();
+        return ItemRegistry.LINE_ARROW.getDefaultStack();
     }
 
     @Override

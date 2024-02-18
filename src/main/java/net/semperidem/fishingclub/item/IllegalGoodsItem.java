@@ -22,7 +22,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.registry.EnchantmentRegistry;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +64,8 @@ public class IllegalGoodsItem extends Item {
     }
 
     public static ItemStack getStackWithTier(int tier){
-        ItemStack defaultStack = new ItemStack(FItemRegistry.ILLEGAL_GOODS);
-        ((IllegalGoodsItem)FItemRegistry.ILLEGAL_GOODS).setTier(defaultStack, tier);
+        ItemStack defaultStack = new ItemStack(ItemRegistry.ILLEGAL_GOODS);
+        ((IllegalGoodsItem) ItemRegistry.ILLEGAL_GOODS).setTier(defaultStack, tier);
         return defaultStack;
     }
 

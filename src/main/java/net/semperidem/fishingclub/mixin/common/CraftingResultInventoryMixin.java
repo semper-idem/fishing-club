@@ -12,7 +12,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,10 +25,10 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
     @Unique
     private static final HashMap<Item, FishingPerk> ITEM_TO_REQUIRED_PERK_MAP = new HashMap<>();
     static {
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHING_NET, FishingPerks.FISHING_NET);
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.DOUBLE_FISHING_NET, FishingPerks.UPGRADE_NET);
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHER_HAT, FishingPerks.FISHER_HAT);
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.FISHER_VEST, FishingPerks.FISHER_VEST);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.FISHING_NET, FishingPerks.FISHING_NET);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.DOUBLE_FISHING_NET, FishingPerks.UPGRADE_NET);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.FISHER_HAT, FishingPerks.FISHER_HAT);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.FISHER_VEST, FishingPerks.FISHER_VEST);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_FEATHER, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_MAGNET, FishingPerks.BAIT_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.BAIT_CRAFTED, FishingPerks.BAIT_CRAFTING);
@@ -42,8 +42,8 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker{
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_IRON, FishingPerks.HOOK_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_GOLD, FishingPerks.HOOK_CRAFTING);
         ITEM_TO_REQUIRED_PERK_MAP.put(FishingRodPartItems.HOOK_NETHERITE, FishingPerks.HOOK_CRAFTING);
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.HARPOON_ROD, FishingPerks.HARPOON_ROD);
-        ITEM_TO_REQUIRED_PERK_MAP.put(FItemRegistry.LINE_ARROW, FishingPerks.BOW_FISHING);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.HARPOON_ROD, FishingPerks.HARPOON_ROD);
+        ITEM_TO_REQUIRED_PERK_MAP.put(ItemRegistry.LINE_ARROW, FishingPerks.BOW_FISHING);
     }
 
     @Override

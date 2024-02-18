@@ -20,7 +20,7 @@ import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 
-public class FEntityRegistry {
+public class EntityTypeRegistry {
 
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,

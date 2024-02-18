@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.HarpoonRodItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
-import net.semperidem.fishingclub.registry.FItemRegistry;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.registry.FItemRegistry.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.ItemRegistry.CUSTOM_FISHING_ROD;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LivingEntity.class)
@@ -48,7 +48,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (activeStack.isOf(CUSTOM_FISHING_ROD)){
             power = FishingRodUtil.getFishingRodChargePower(getItemUseTime());
             tickPullPower(power);
-        } else if (activeStack.isOf(FItemRegistry.HARPOON_ROD)) {
+        } else if (activeStack.isOf(ItemRegistry.HARPOON_ROD)) {
             power = HarpoonRodItem.getPower(getItemUseTime());
         } else {
             return;

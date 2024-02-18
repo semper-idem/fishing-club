@@ -18,14 +18,14 @@ import net.minecraft.util.math.Vec3f;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
-import net.semperidem.fishingclub.registry.FEntityRegistry;
+import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
     public static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/harpoon_rod.png");
     private final HarpoonEntityModel model;
     public HarpoonEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
-        this.model = new HarpoonEntityModel(context.getPart(FEntityRegistry.MODEL_HARPOON_LAYER));
+        this.model = new HarpoonEntityModel(context.getPart(EntityTypeRegistry.MODEL_HARPOON_LAYER));
     }
 
 

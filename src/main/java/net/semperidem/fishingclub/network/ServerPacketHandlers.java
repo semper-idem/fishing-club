@@ -15,8 +15,8 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
-import net.semperidem.fishingclub.registry.FItemRegistry;
-import net.semperidem.fishingclub.screen.FishingCardScreenHandler;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public class ServerPacketHandlers {
         server.execute(() -> {
             ItemStack fishingRod = player.getStackInHand(player.getActiveHand());
             if (!(fishingRod.getItem() instanceof FishingRodPartItem)) return;
-            FItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
+            ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
         });
     }
 

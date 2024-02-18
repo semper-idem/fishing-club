@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.game;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.registry.FStatusEffectRegistry;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import static net.semperidem.fishingclub.util.MathUtil.quadraticBezier;
 
@@ -134,7 +134,7 @@ public class FishComponent {
     public void calculateSpeed() {
         float staminaPercent = getStaminaPercentage();
         speed = baseSpeed + 0.75f * staminaPercent;
-        if (parent.player.hasStatusEffect(FStatusEffectRegistry.SLOW_FISH_BUFF)) {
+        if (parent.player.hasStatusEffect(StatusEffectRegistry.SLOW_FISH_BUFF)) {
             speed = speed * 0.75f;
         }
     }
