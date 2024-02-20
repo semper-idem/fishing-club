@@ -17,6 +17,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -45,6 +46,15 @@ public class ServerPacketHandlers {
         server.execute(() -> {
             if (!(player.currentScreenHandler instanceof FisherWorkbenchScreenHandler screenHandler)) return;
             screenHandler.repairRod();
+        });
+    }
+    public static void handleBobberMovement(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        float reelForce = buf.readFloat();
+        boolean isReeling = buf.readBoolean();
+        boolean isPulling = buf.readBoolean();
+        server.execute(() -> {
+            if (!(player.currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) return;
+            screenHandler.consumeBobberMovement(reelForce, isReeling, isPulling);
         });
     }
 

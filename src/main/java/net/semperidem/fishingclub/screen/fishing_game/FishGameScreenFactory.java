@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.game;
+package net.semperidem.fishingclub.screen.fishing_game;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +12,8 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import org.jetbrains.annotations.Nullable;
 
 public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
-    FishingCard fishingCard;
-    Fish fish;
+    private final FishingCard fishingCard;
+    private final Fish fish;
 
     public FishGameScreenFactory(FishingCard fishingCard, Fish fish) {
         this.fishingCard = fishingCard;
@@ -24,12 +24,14 @@ public class FishGameScreenFactory  implements ExtendedScreenHandlerFactory {
         buf.writeNbt(fishingCard.toNbt());
         buf.writeNbt(fish.getNbt());
     }
+
     @Override
     public Text getDisplayName() {
-        return Text.translatable("Fish Game");
+        return Text.empty();
     }
+
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FishGameScreenHandler(syncId, inv);
+        return new FishingGameScreenHandler(syncId, inv, fishingCard, fish);
     }
 }

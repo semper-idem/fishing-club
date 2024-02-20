@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.game.treasure.Reward;
 import net.semperidem.fishingclub.game.treasure.Rewards;
 
@@ -22,16 +22,37 @@ public class TreasureGameController {
     private boolean isWon;
     private final FishingGameController parent;
 
-    public TreasureGameController(FishingGameController parent) {
-        this.parent = parent;
-    }
-    public void start(FishingCard fishingCard) {
-        this.treasureReward = Rewards.roll(fishingCard);
-        this.arrowSpeed = 1 + treasureReward.getGrade();
-        this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
-        this.treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
+
+    public void readInitialData(PacketByteBuf buf) {
+        treasureSpotSize = buf.readFloat();
     }
 
+    public void writeInitialData(PacketByteBuf buf) {
+        buf.writeFloat(treasureSpotSize);
+    }
+
+    public void readData(PacketByteBuf buf) {
+        arrowPos = buf.readFloat();
+        treasureHookedTicks = buf.readInt();
+        isWon = buf.readBoolean();
+    }
+
+    public void writeData(PacketByteBuf buf) {
+        buf.writeFloat(arrowPos);
+        buf.writeInt(treasureHookedTicks);
+        buf.writeBoolean(isWon);
+    }
+
+    public TreasureGameController(FishingGameController parent) {
+        this.parent = parent;
+        this.treasureReward = Rewards.roll(parent.fishingCard);
+        this.arrowSpeed = 1 + treasureReward.getGrade();
+        this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
+    }
+
+    public void start() {
+        this.treasureHookedTicks = (8 - treasureReward.getGrade()) * 60;
+    }
 
     public void tick() {
         if (treasureHookedTicks == 0) {

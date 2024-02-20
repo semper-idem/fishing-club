@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.game;
 
+import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 
@@ -19,6 +20,16 @@ public class ProgressComponent {
         this.parent = parent;
         gain = BASE_GAIN * (1 + getProgressMultiplierBonus());
         loss = BASE_LOSS + (parent.hookedFish.damage * 0.01f);
+    }
+
+
+
+    public void readData(PacketByteBuf buf) {
+        this.progress = buf.readFloat();
+    }
+
+    public void writeData(PacketByteBuf buf) {
+        buf.writeFloat(progress);
     }
 
     private float getProgressMultiplierBonus() {

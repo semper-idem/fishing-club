@@ -19,6 +19,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_F_SLOT_SELL, ServerPacketHandlers::handleFishingCardInstantSell);
             registerReceiver(handler, C2S_SUMMON_ACCEPT, ServerPacketHandlers::handleSummonAccept);
             registerReceiver(handler, C2S_REPAIR_ROD, ServerPacketHandlers::handleRepairRod);
+            registerReceiver(handler, C2S_BOBBER_MOVEMENT, ServerPacketHandlers::handleBobberMovement);
         });
     }
 }

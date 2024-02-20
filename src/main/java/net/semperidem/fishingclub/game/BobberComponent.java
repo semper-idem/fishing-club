@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.game;
 
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 
 import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOAT_BOBBER_SIZE;
@@ -14,7 +15,7 @@ public class BobberComponent {
     private static final float BOAT_PERK_BONUS = 0.1f;
     private static final float BUFF_BONUS = 0.1f;
 
-    private final float length;
+    private float length;
     private final float baseResistance;
 
     private final float minPositionX;
@@ -31,6 +32,27 @@ public class BobberComponent {
         this.baseResistance = getBaseResistance();
         this.minPositionX = 0 + length / 2;
         this.maxPositionX = 1 - length / 2;
+    }
+
+    public void readInitialData(PacketByteBuf buf) {
+        this.length = buf.readFloat();
+    }
+
+    public void writeInitialData(PacketByteBuf buf) {
+        buf.writeFloat(length);
+    }
+
+
+    public void readData(PacketByteBuf buf) {
+        this.positionX = buf.readFloat();
+    }
+
+    public void writeData(PacketByteBuf buf) {
+        buf.writeFloat(positionX);
+    }
+
+    public void setPositionX(float positionX) {
+        this.positionX = positionX;
     }
 
     private float calculateLength(){

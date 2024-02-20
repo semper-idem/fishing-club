@@ -1,7 +1,11 @@
 package net.semperidem.fishingclub.network;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.game.FishingGameController;
 
 public class ServerPacketSender {
 
@@ -14,6 +18,20 @@ public class ServerPacketSender {
                         player.playerScreenHandler.getCursorStack()
                 )
         );
+    }
+
+    public static void sendInitialFishingGameData(ServerPlayerEntity player, FishingGameController fishingGameController
+    ){
+        PacketByteBuf fishMovementPacket = PacketByteBufs.create();
+        fishingGameController.writeInitialPacket(fishMovementPacket);
+        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_FISH_GAME_INITIAL, fishMovementPacket);
+    }
+
+    public static void sendFishingGameData(ServerPlayerEntity player, FishingGameController fishingGameController
+    ){
+        PacketByteBuf fishMovementPacket = PacketByteBufs.create();
+        fishingGameController.writeUpdatePacket(fishMovementPacket);
+        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_FISH_GAME_UPDATE, fishMovementPacket);
     }
 
 }

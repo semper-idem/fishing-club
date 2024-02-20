@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.game;
 
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
@@ -55,6 +56,17 @@ public class FishComponent {
         patternInstance = new MovementPatternInstance(species.getFishPattern(), parent.hookedFish.level);
         lastSegmentIndex = 0;
         currentSegment = patternInstance.getSegmentList().get(lastSegmentIndex);
+    }
+
+
+    public void readData(PacketByteBuf buf) {
+        this.positionX = buf.readFloat();
+        this.positionY = buf.readFloat();
+    }
+
+    public void writeData(PacketByteBuf buf) {
+        buf.writeFloat(positionX);
+        buf.writeFloat(positionY);
     }
 
     public void tick() {
@@ -137,6 +149,11 @@ public class FishComponent {
         if (parent.player.hasStatusEffect(StatusEffectRegistry.SLOW_FISH_BUFF)) {
             speed = speed * 0.75f;
         }
+    }
+
+    public void setPosition(float fishPositionX, float fishPositionY){
+        this.positionX = fishPositionX;
+        this.positionY = fishPositionY;
     }
 
     public float getPositionX() {

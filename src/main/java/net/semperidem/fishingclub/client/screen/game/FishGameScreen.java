@@ -1,16 +1,22 @@
 package net.semperidem.fishingclub.client.screen.game;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.FishingGameController;
+import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
+import org.lwjgl.glfw.GLFW;
 
-public class FishGameScreen extends HandledScreen<FishGameScreenHandler> implements ScreenHandlerProvider<FishGameScreenHandler> {
+public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
     private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";
 
     private static final int DEFAULT_COLOR = 0xFFFFFF;
@@ -55,35 +61,59 @@ public class FishGameScreen extends HandledScreen<FishGameScreenHandler> impleme
 
     private int halfBobber = 0;
     private int halfFish = fishIconWidth / 2;
-    FishingGameController fishGameLogic;
     boolean lightTick = false;
+    public final FishingGameController fishGameLogic;
 
-    public FishGameScreen(FishGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
+    private float startingPitch = 0;
+    private float reelForce = 0;
+
+    public FishGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
         super(fishGameScreenHandler, playerInventory, text);
-        this.fishGameLogic = new FishingGameController(this.getScreenHandler().fishingCard, this.getScreenHandler().hookedFish);
+        this.fishGameLogic = fishGameScreenHandler.fishGameLogic;
+        startingPitch = playerInventory.player.getYaw();
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        float saveZone = 0.02f;
-
+        float saveZone = 0.01f;
+        float reelForce = 0;
         if (mouseX > width / 2f - width * saveZone && mouseX < width / 2f + width *saveZone) {
-            fishGameLogic.reelForce = 0;
+            reelForce = 0;
         } else if (mouseX < width / 2f - width * saveZone){
-            fishGameLogic.reelForce = ((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
+            reelForce = ((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
         } else if (mouseX > width / 2f + width * saveZone) {
-            fishGameLogic.reelForce = ((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
+            reelForce = ((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
         }
+        this.reelForce = reelForce;
+        ClientPacketSender.sendBobberMovement(reelForce, isReeling(), isPulling());
         super.mouseMoved(mouseX, mouseY);
     }
 
+    public void sync(PacketByteBuf buf){
+        fishGameLogic.readUpdatePacket(buf);
+    }
+    public void syncInit(PacketByteBuf buf){
+        fishGameLogic.readInitialPacket(buf);
+    }
+
+    private boolean keyPressed(int keyCode){
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
+    }
+
+    boolean isReeling(){
+        return keyPressed(GLFW.GLFW_KEY_SPACE);
+    }
+
+    boolean isPulling(){
+        return keyPressed(GLFW.GLFW_KEY_ENTER);
+    }
 
 
     @Override
     protected void init() {
         super.init();
-        x = (this.width - backgroundWidth) / 2;
-        y = (this.height- backgroundHeight) / 2;
+        x = 10;//(this.width - backgroundWidth) / 2;
+        y = 10;//(this.height- backgroundHeight) / 2;
         halfBobber = (int) (fishGameLogic.getBobberSize() * bobberWidth / 2);
 
         barX = x + 16;
@@ -115,21 +145,9 @@ public class FishGameScreen extends HandledScreen<FishGameScreenHandler> impleme
     @Override
     public void handledScreenTick() {
         lightTick = !lightTick;
-        this.fishGameLogic.tick();
-
-        //TODO ADD PACKET TO FINISH GAME
-//        if (this.fishGameLogic.isFinished()) {
-//            this.close();
-//            if (this.fishGameLogic.isFishCaptured()) {
-//                MinecraftClient.getInstance().player.sendMessage(Text.of("Caught Lvl." + this.fishGameLogic.getLevel() + " " + this.fishGameLogic.getName() + "! Nice"));
-//                MinecraftClient.getInstance().player.sendMessage(Text.of("Exp gained: " + this.fishGameLogic.getExperience()));
-//            } else {
-//                MinecraftClient.getInstance().player.sendMessage(Text.of("Fish escaped"));
-//                    if (this.fishGameLogic.isTreasureCaptured()) {
-//                    MinecraftClient.getInstance().player.sendMessage(Text.of("But we got the treasure :^)"));
-//                }
-//            }
-//        }
+        MinecraftClient.getInstance().player.setBodyYaw(startingPitch + reelForce * 400);
+        MinecraftClient.getInstance().player.setYaw(startingPitch + reelForce * 800);//cool but laggy we prob we set pitch to desired value instantly instead "movement"
+        //this.fishGameLogic.tick();
     }
 
     @Override

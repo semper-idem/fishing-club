@@ -22,7 +22,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.game.FishGameScreenFactory;
 import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -33,6 +32,7 @@ import net.semperidem.fishingclub.item.fishing_rod.*;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import net.semperidem.fishingclub.screen.fishing_game.FishGameScreenFactory;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity implements IHookEntity{

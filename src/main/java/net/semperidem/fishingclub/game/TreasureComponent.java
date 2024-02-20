@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.game;
 
+import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 public class TreasureComponent {
@@ -8,9 +9,11 @@ public class TreasureComponent {
     private static final float TREASURE_MIN_TRIGGER_POINT = 0.5f;
     private static final float TREASURE_MAX_TRIGGER_POINT = 0.25f;
 
-    private final boolean isActive;
+    private boolean isActive;
+    private boolean canPullTreasure;
     private int pullTreasureTicks = 0;
     private float treasureTriggerPoint;
+
 
     private final FishingGameController parent;
 
@@ -26,6 +29,24 @@ public class TreasureComponent {
         this.isActive = Math.random() < treasureChance;
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
     }
+
+
+    public void readInitialData(PacketByteBuf buf) {
+        this.isActive = buf.readBoolean();
+    }
+
+    public void writeInitialData(PacketByteBuf buf) {
+        buf.writeBoolean(isActive);
+    }
+
+    public void readData(PacketByteBuf buf) {
+        this.canPullTreasure = buf.readBoolean();
+    }
+
+    public void writeData(PacketByteBuf buf) {
+        buf.writeBoolean(canPullTreasure);
+    }
+
 
     public void tick() {
         if (!isActive){
@@ -49,6 +70,6 @@ public class TreasureComponent {
     }
 
     public boolean canPullTreasure() {
-        return pullTreasureTicks > 0;
+        return canPullTreasure;
     }
 }

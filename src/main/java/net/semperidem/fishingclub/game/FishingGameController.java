@@ -1,23 +1,24 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
-import org.lwjgl.glfw.GLFW;
-
+import net.semperidem.fishingclub.network.ServerPacketSender;
 
 
 public class FishingGameController {
-    private static final boolean IS_DEBUG = false;
 
     public final PlayerEntity player;
     public final Fish hookedFish;
     public final FishingCard fishingCard;
 
     public float reelForce = 0;
+    private boolean isReeling;
+    private boolean isPulling;
 
     public FishingGameController(FishingCard fishingCard, Fish hookedFish){
         this.hookedFish = hookedFish;
@@ -30,14 +31,50 @@ public class FishingGameController {
         healthComponent = new HealthComponent(this);
         treasureComponent = new TreasureComponent(this);
         treasureGameController = new TreasureGameController(this);
+        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPacketSender.sendInitialFishingGameData(serverPlayerEntity,this);
+        }
+    }
+
+    public void writeInitialPacket(PacketByteBuf buf) {
+        bobberComponent.writeInitialData(buf);
+        treasureComponent.writeInitialData(buf);
+        treasureGameController.writeInitialData(buf);
+    }
+
+    public void readInitialPacket(PacketByteBuf buf) {
+        bobberComponent.readInitialData(buf);
+        treasureComponent.readInitialData(buf);
+        treasureGameController.readInitialData(buf);
+    }
+
+    public void writeUpdatePacket(PacketByteBuf buf) {
+        bobberComponent.writeData(buf);
+        fishComponent.writeData(buf);
+        healthComponent.writeData(buf);
+        progressComponent.writeData(buf);
+        treasureComponent.writeData(buf);
+        treasureGameController.writeData(buf);
+    }
+
+
+    public void readUpdatePacket(PacketByteBuf buf) {
+        bobberComponent.readData(buf);
+        fishComponent.readData(buf);
+        healthComponent.readData(buf);
+        progressComponent.readData(buf);
+        treasureComponent.readData(buf);
+        treasureGameController.readData(buf);
     }
 
     public void tick() {
-        if(!keyPressed(GLFW.GLFW_KEY_C) && IS_DEBUG) return;
         if (isTreasureHuntActive()) {
             treasureGameController.tick();
         } else {
             tickInner();
+        }
+        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPacketSender.sendFishingGameData(serverPlayerEntity,this);
         }
     }
 
@@ -49,16 +86,18 @@ public class FishingGameController {
         treasureComponent.tick();
     }
 
-    private boolean keyPressed(int keyCode){
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
+    public boolean isReeling(){
+        return  isReeling;
+    }
+    public boolean isPulling(){
+        return  isPulling;
     }
 
-    boolean isReeling(){
-        return keyPressed(GLFW.GLFW_KEY_SPACE);
-    }
+    public void consumeBobberMovementPacket(float reelForce, boolean isReeling, boolean isPulling) {
+        this.reelForce = reelForce;
+        this.isReeling = isReeling;
+        this.isPulling = isPulling;
 
-    boolean isPulling(){
-        return keyPressed(GLFW.GLFW_KEY_ENTER);
     }
 
     public float getFishPosX() {
@@ -118,7 +157,7 @@ public class FishingGameController {
     }
 
     public void startTreasureHunt() {
-        treasureGameController.start(fishingCard);
+        treasureGameController.start();
     }
 
     public boolean isTreasureHuntActive(){

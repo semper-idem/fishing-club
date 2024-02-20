@@ -68,4 +68,12 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_SUMMON_ACCEPT, PacketByteBufs.create());
     }
 
+    public static void sendBobberMovement(float reelForce, boolean isReeling, boolean isPulling) {
+        PacketByteBuf movementPacket = PacketByteBufs.create();
+        movementPacket.writeFloat(reelForce);
+        movementPacket.writeBoolean(isReeling);
+        movementPacket.writeBoolean(isPulling);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_BOBBER_MOVEMENT, movementPacket);
+    }
+
 }
