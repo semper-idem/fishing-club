@@ -8,7 +8,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
-import net.semperidem.fishingclub.client.screen.game.FishGameScreen;
+import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
@@ -41,6 +41,6 @@ public class ScreenHandlerRegistry {
         HandledScreens.register(FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
         HandledScreens.register(FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
-        HandledScreens.register(FISH_GAME_SCREEN, FishGameScreen::new);
+        HandledScreens.register(FISH_GAME_SCREEN, FishingGameScreen::new);
     }
 }

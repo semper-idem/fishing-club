@@ -17,8 +17,8 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import org.lwjgl.glfw.GLFW;
 
-public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
-    private static final String TEXTURE_DIR_ROOT = "textures/gui/fish_game/";
+public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
+    private static final String TEXTURE_DIR_ROOT = "textures/gui/fishing_game/";
 
     private static final int DEFAULT_COLOR = 0xFFFFFF;
     private static final int TREASURE_COLOR = 0xFFBB33;
@@ -75,7 +75,7 @@ public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> impl
     private float targetPitch;
     PlayerEntity clientPlayer;
 
-    public FishGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
+    public FishingGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
         super(fishGameScreenHandler, playerInventory, text);
         this.fishGameLogic = fishGameScreenHandler.fishGameLogic;
         clientPlayer = playerInventory.player;
