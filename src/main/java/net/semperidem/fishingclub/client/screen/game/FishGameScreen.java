@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -59,33 +60,37 @@ public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> impl
     private int treasureSpotX, treasureSpotY;
     private int treasureMarkX, treasureMarkY;
 
+    private static final float safeZone = 0.01f;
+    private float halfScreen;
     private int halfBobber = 0;
+
     private int halfFish = fishIconWidth / 2;
     boolean lightTick = false;
     public final FishingGameController fishGameLogic;
 
-    private float startingPitch = 0;
-    private float reelForce = 0;
+    private final float startingPitch;
+    private final float startingYaw;
+    private float targetYaw;
+    private float targetBodyYaw;
+    private float targetPitch;
+    PlayerEntity clientPlayer;
 
     public FishGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
         super(fishGameScreenHandler, playerInventory, text);
         this.fishGameLogic = fishGameScreenHandler.fishGameLogic;
-        startingPitch = playerInventory.player.getYaw();
+        clientPlayer = playerInventory.player;
+        startingYaw = clientPlayer.getYaw();
+        startingPitch = clientPlayer.getPitch();
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        float saveZone = 0.01f;
-        float reelForce = 0;
-        if (mouseX > width / 2f - width * saveZone && mouseX < width / 2f + width *saveZone) {
-            reelForce = 0;
-        } else if (mouseX < width / 2f - width * saveZone){
-            reelForce = ((((float) mouseX - (width / 2f - width * saveZone)) / width) / 10f);
-        } else if (mouseX > width / 2f + width * saveZone) {
-            reelForce = ((((float) mouseX - (width / 2f + width * saveZone)) / width) / 10f);
-        }
-        this.reelForce = reelForce;
-        ClientPacketSender.sendBobberMovement(reelForce, isReeling(), isPulling());
+        double distanceFromCenterPercent = (halfScreen - mouseX) / halfScreen;
+        this.handler.fishGameLogic.reelForce = (Math.abs(distanceFromCenterPercent) > safeZone) ?
+                (float) (distanceFromCenterPercent * -0.05f) :
+                0;
+        updateCameraTarget();
+        ClientPacketSender.sendBobberMovement(this.handler.fishGameLogic.reelForce, isReeling(), isPulling());
         super.mouseMoved(mouseX, mouseY);
     }
 
@@ -112,9 +117,10 @@ public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> impl
     @Override
     protected void init() {
         super.init();
-        x = 10;//(this.width - backgroundWidth) / 2;
-        y = 10;//(this.height- backgroundHeight) / 2;
+        x = (this.width - backgroundWidth) / 2;
+        y = (this.height- backgroundHeight) / 2;
         halfBobber = (int) (fishGameLogic.getBobberSize() * bobberWidth / 2);
+        halfScreen = width / 2f;
 
         barX = x + 16;
         barY = y + backgroundHeight - barHeight - 16;
@@ -145,14 +151,39 @@ public class FishGameScreen extends HandledScreen<FishingGameScreenHandler> impl
     @Override
     public void handledScreenTick() {
         lightTick = !lightTick;
-        MinecraftClient.getInstance().player.setBodyYaw(startingPitch + reelForce * 400);
-        MinecraftClient.getInstance().player.setYaw(startingPitch + reelForce * 800);//cool but laggy we prob we set pitch to desired value instantly instead "movement"
-        //this.fishGameLogic.tick();
+    }
+
+    private void updateCameraTarget() {
+        targetYaw = startingYaw + this.handler.fishGameLogic.reelForce * 800;
+        targetBodyYaw = startingYaw + this.handler.fishGameLogic.reelForce * 6000;
+        targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.fishGameLogic.reelForce )) * 1000) * 4));
+    }
+
+    private float getNextFramePitch(){
+        float currentPitch = clientPlayer.getPitch();
+        return currentPitch  + ((targetPitch - currentPitch) / 20);
+    }
+    private float getNextFrameYaw(){
+        float currentYaw = clientPlayer.getYaw();
+        return currentYaw  + ((targetYaw - currentYaw) / 10);
+    }
+    private float getNextFrameBodyYaw(){
+        float currentBodyYaw = clientPlayer.getBodyYaw();
+       return currentBodyYaw  + ((targetBodyYaw - currentBodyYaw) / 5);
+
+    }
+
+    private void updateCamera(){
+        clientPlayer.setPitch(getNextFramePitch());
+        clientPlayer.setYaw(getNextFrameYaw());
+        clientPlayer.setHeadYaw(getNextFrameYaw());
+        clientPlayer.setBodyYaw(getNextFrameBodyYaw());
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         matrices.push();
+        updateCamera();
         if (isTreasureHooked()) {
             renderTreasure(matrices, delta);
         } else {

@@ -51,9 +51,6 @@ public class BobberComponent {
         buf.writeFloat(positionX);
     }
 
-    public void setPositionX(float positionX) {
-        this.positionX = positionX;
-    }
 
     private float calculateLength(){
 
@@ -97,7 +94,11 @@ public class BobberComponent {
     }
 
     private float getCurrentResistance() {
-        return (parent.fishComponent.getPositionX() - 0.5f) * baseResistance * parent.fishComponent.getStaminaPercentage();
+        float fishDistanceFromCenterPercent = parent.fishComponent.getPositionX() - 0.5f;
+        if (Math.abs(fishDistanceFromCenterPercent) < 0.01f) {
+            return 0;
+        }
+        return (fishDistanceFromCenterPercent) * baseResistance * parent.fishComponent.getStaminaPercentage();
     }
 
     public float getPositionX() {
