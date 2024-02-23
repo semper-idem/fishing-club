@@ -140,15 +140,6 @@ public class DialogScreen extends Screen {
             put('!', 10);
         }};
 
-        Entry(String text){
-            this(text, "");
-        }
-
-        Entry(String text, String query, Entry parent){
-            this(text, query);
-            parent.addChoice(this);
-        }
-
         Entry(String text, String query){
             this.id = lastId++;
             this.text = text;

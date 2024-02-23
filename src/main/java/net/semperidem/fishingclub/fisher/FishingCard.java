@@ -6,10 +6,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+
+import java.util.HashSet;
 
 
 public class FishingCard extends FishingCardInventory {
@@ -109,6 +112,13 @@ public class FishingCard extends FishingCardInventory {
 
     public void acceptSummonRequest(){
         summonRequestManager.execute();
+    }
+
+    public HashSet<String> getKeys(FishermanEntity.SummonType summonType) {
+        HashSet<String> keys = new HashSet<>();
+        keys.add(historyManager.metDerek(summonType) ? "NOT_UNIQUE" : "UNIQUE");
+        keys.add(historyManager.gaveDerekFish() ? "WELCOME": "NOT_WELCOME");
+        return keys;
     }
 
     public boolean isFishingFromBoat(){

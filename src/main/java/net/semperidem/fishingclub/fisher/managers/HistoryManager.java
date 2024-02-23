@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
@@ -24,9 +25,27 @@ public class HistoryManager extends DataManager {
     private long firstCatchOfTheDay = 0;
     private boolean firstCatchInChunk = false;
     private ItemStack lastUsedBait = ItemStack.EMPTY;
+    private final ArrayList<String> derekMet = new ArrayList<>();
+    private boolean gaveDerekFish = false;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
+    }
+
+    public void meetDerek(FishermanEntity.SummonType summonType) {
+        derekMet.add(summonType.name());
+    }
+
+    public void giveDerekFish(){
+        gaveDerekFish = true;
+    }
+
+    public boolean metDerek(FishermanEntity.SummonType summonType) {
+        return derekMet.contains(summonType.name());
+    }
+
+    public boolean gaveDerekFish() {
+        return gaveDerekFish;
     }
 
     public void fishHooked(IHookEntity hookEntity) {
