@@ -5,23 +5,25 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DialogBox extends ScrollableWidget{
-    ArrayList<String> renderedMessages = new ArrayList<>();
-    TextRenderer textRenderer;
-    String renderedLine = "";
-    String lineToRender = "";
-    DialogNode response;
     ArrayList<String> responseLines = new ArrayList<>();
+    TextRenderer textRenderer;
+    String trailingLine = "";
+    String lineInQueue = "";
+    DialogNode response;
+    ArrayList<String> responseLinesQueue = new ArrayList<>();
     ArrayList<String> possibleQuestions = new ArrayList<>();
-    int nextLineLength = 0;
+    int lineInQueueFinishTick = 0;
     int tick = 0;
     int lineHeight = 11;
     public int textSpeed = 1;
+
 
     public DialogBox(int x, int y, int width, int height, TextRenderer textRenderer) {
         super(x,y, width, height, Text.empty());
@@ -29,41 +31,72 @@ public class DialogBox extends ScrollableWidget{
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         if (!this.visible) {
             return;
         }
         enableScissor(this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1);
-        matrices.push();
-        matrices.translate(0.0, -this.getScrollY(), 0.0);
-        this.renderContents(matrices, mouseX, mouseY, delta);
-        matrices.pop();
+        matrixStack.push();
+        matrixStack.translate(0.0, -this.getScrollY(), 0.0);
+        this.renderContents(matrixStack, mouseX, mouseY, delta);
+        matrixStack.pop();
         disableScissor();
-        this.renderOverlay(matrices);
+       //fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
+        if (overflows()) {
+            renderScrollbar(matrixStack);
+        }
+    }
+
+    private void renderScrollbar(MatrixStack matrixStack) {
+        int i = MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
+        int l = Math.max(this.y, (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
+        int m = l + i;
+        int scrollBarX = x + width;
+        int scrollBarWidth = 4;
+        int scrollBarShadowWidth = 1;
+        fill(
+                matrixStack,
+                scrollBarX - scrollBarWidth,
+                l,
+                scrollBarX,
+                m,
+                Color.BLACK.getRGB()
+        );
+        fill(
+                matrixStack,
+                scrollBarX - scrollBarWidth  + scrollBarShadowWidth,
+                l + scrollBarShadowWidth,
+                scrollBarX - scrollBarShadowWidth,
+                m - scrollBarShadowWidth,
+                Color.DARK_GRAY.darker().darker().darker().getRGB()
+        );
     }
 
     @Override
     protected int getContentsHeight() {
-        return renderedMessages.size() * lineHeight;
+        if (responseLinesQueue.isEmpty()) {
+            return responseLines.size() * lineHeight + possibleQuestions.size() * lineHeight + 1;
+        }
+        return responseLines.size() * (lineHeight + 1);
     }
 
     @Override
     protected boolean overflows() {
-        return false;
+        return getContentsHeight() > height;
     }
 
     @Override
     protected double getDeltaYPerScroll() {
-        return 0;
+        return 5;
     }
 
-    private void tick() {
-        tick+=textSpeed;
-        if (finishedRenderingLine() && !responseLines.isEmpty()) {
+    void tick() {
+        if (finishedRenderingLine() && !responseLinesQueue.isEmpty()) {
             consumeMessage();
         }
-        renderedLine = DialogHelper.getTextForTick(lineToRender, tick/5);
+        trailingLine = DialogHelper.getTextForTick(lineInQueue, tick);
         textSpeed = 1;
+        tick+=textSpeed;
     }
 
     public void addMessage(DialogNode nextNode) {
@@ -74,53 +107,70 @@ public class DialogBox extends ScrollableWidget{
         }
         temp.addAll(List.of(response.content.split("\n")));
         for(String responseLine : temp) {
-            responseLines.add(DialogHelper.replaceTemplates(responseLine));
+            responseLinesQueue.add(DialogHelper.replaceTemplates(responseLine));
         }
         possibleQuestions.clear();
         for(DialogNode question : response.questions) {
             possibleQuestions.add(DialogHelper.replaceTemplates(question.title));
         }
-        lineToRender = responseLines.get(0);
+        lineInQueue = responseLinesQueue.get(0);
+        lineInQueueFinishTick = DialogHelper.getTickForText(lineInQueue);
         tick = 0;
+        setFocused(true);
     }
 
     private void consumeMessage() {
-        if (renderedLine.isEmpty()) {
+        if (trailingLine.isEmpty()) {
             return;
         }
-        renderedMessages.add(renderedLine);
-        responseLines.remove(renderedLine);
-        lineToRender = "";
-        if (!responseLines.isEmpty()) {
-            lineToRender = responseLines.get(0);
-            tick = 0;
+        responseLines.add(trailingLine);
+        responseLinesQueue.remove(trailingLine);
+        lineInQueue = "";
+        setScrollY(getMaxScrollY());
+        if (!responseLinesQueue.isEmpty()) {
+            lineInQueue = responseLinesQueue.get(0);
+            lineInQueueFinishTick = DialogHelper.getTickForText(lineInQueue);
+            tick = -5;
         }
     }
 
     private boolean finishedRenderingLine() {
-        return renderedLine.length() == 0 || (lineToRender.length() == renderedLine.length() && lineToRender != "");
+        return tick > lineInQueueFinishTick;
     }
 
     public void finishLine(){
-        tick = 1000;
-        renderedLine = lineToRender;
+        tick = lineInQueueFinishTick;
+        trailingLine = lineInQueue;
     }
 
     @Override
-    protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        tick();
-        for(int i = 0; i < renderedMessages.size(); i++) {
-            drawTextWithShadow(matrices, textRenderer, Text.of(renderedMessages.get(i)), x + getPadding(), y + i * lineHeight + getPadding(), Color.WHITE.getRGB());
+    protected void renderContents(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        renderMessages(matrixStack);
+        if (responseLinesQueue.isEmpty()) {
+            renderPossibleQuestions(matrixStack);
+            return;
         }
-        if (responseLines.isEmpty()) {
-            for(int i = 0; i < response.questions.size(); i++) {
-                drawTextWithShadow(matrices, textRenderer, Text.of("["+(i+1)+"] " + possibleQuestions.get(i)), x + getPadding(), y + renderedMessages.size() * lineHeight + i * lineHeight + getPadding() + 2, Color.LIGHT_GRAY.getRGB());
-            }
-        } else {
-            drawTextWithShadow(matrices, textRenderer, Text.of(renderedLine), x + getPadding(), y + renderedMessages.size() * lineHeight + getPadding(), Color.WHITE.getRGB());
+        renderTrailingLine(matrixStack);
+    }
+
+    private void renderMessages(MatrixStack matrixStack) {
+        for(int i = 0; i < responseLines.size(); i++) {
+            drawTextWithShadow(matrixStack, textRenderer, Text.of(responseLines.get(i)), x + getPadding(), y + i * lineHeight + getPadding(), Color.LIGHT_GRAY.getRGB());
         }
     }
 
+    private void renderPossibleQuestions(MatrixStack matrixStack) {
+        for(int i = 0; i < response.questions.size(); i++) {
+            drawTextWithShadow(matrixStack, textRenderer, Text.of("["+(i+1)+"] " + possibleQuestions.get(i)), x + getPadding(), y + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2, Color.WHITE.getRGB());
+        }
+    }
+
+    private void renderTrailingLine(MatrixStack matrixStack) {
+        if (trailingLine.isEmpty()) {
+            return;
+        }
+        drawTextWithShadow(matrixStack, textRenderer, Text.of(trailingLine), x + getPadding(), y + responseLines.size() * lineHeight + getPadding(), Color.WHITE.getRGB());
+    }
 
     @Override
     protected int getPadding() {

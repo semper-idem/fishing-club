@@ -18,7 +18,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     private static final Texture TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/derek_dialog.png"),
             420,
-            180
+            120
     );
     private static final int tileSize = 4;
 
@@ -64,16 +64,25 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
         this.titleY = y + 13 * tileSize;
         addPlayerFaceComponent();
         addDrawable(dialogBox = new DialogBox(
-                x + tileSize * 11,
-                y + tileSize * 2,
-                TEXTURE.textureWidth  - tileSize * 13,
-                TEXTURE.textureHeight  - tileSize * 12,
+                x + tileSize * 10,
+                y + tileSize * 1,
+                TEXTURE.textureWidth  - tileSize * 11,
+                TEXTURE.textureHeight  - tileSize * 2,
                 textRenderer
         ));
         DialogNode startingNode = DialogHelper.getStartQuestion(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, NOT_MEMBER, UNIQUE, SUMMONER));
         dialogBox.addMessage(startingNode);
     }
 
+    @Override
+    protected void handledScreenTick() {
+        dialogBox.tick();
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return dialogBox.mouseScrolled(mouseX, mouseY, amount);
+    }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {

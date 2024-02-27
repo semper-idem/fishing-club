@@ -45,16 +45,16 @@ public class DialogHelper {
         itMustBeYours.chain(hereTakeThisFishingRod);
         DialogNode waitTrade = new DialogNode("Wait, Can I take a look?", Responses.TRADE);
         hereTakeThisFishingRod.chain(waitTrade);
-        DialogNode politeExit = new DialogNode("Thanks, bye", Responses.EXIT);
+        DialogNode politeExit = new DialogNode("Thanks, bye.", Responses.EXIT);
         hereTakeThisFishingRod.chain(politeExit);
-        DialogNode trade = new DialogNode("Hi, let's trade", Responses.TRADE);
-        DialogNode neverMind = new DialogNode("Umm... never mind", Responses.EXIT);
+        DialogNode trade = new DialogNode("Hi, let's trade.", Responses.TRADE);
+        DialogNode neverMind = new DialogNode("Umm... never mind.", Responses.EXIT);
         hello.chain(trade);
         hello.chain(neverMind);
-        DialogNode areYouSure = new DialogNode("No, sorry", Responses.areYouSure);
+        DialogNode areYouSure = new DialogNode("No, sorry.", Responses.areYouSure);
         itMustBeYours.chain(areYouSure);
         canIHaveIt.chain(areYouSure);
-        DialogNode itsAllRight = new DialogNode("No, If it's worth so much for you I'd like to keep it", Responses.itsAllRight);
+        DialogNode itsAllRight = new DialogNode("No, If it's worth so much for you I'd like to keep it.", Responses.itsAllRight);
         areYouSure.chain(itsAllRight);
         areYouSure.chain(hereTakeThisFishingRod);
         DialogNode silentExit = new DialogNode("...", Responses.EXIT);
@@ -64,9 +64,9 @@ public class DialogHelper {
 
         DialogNode really = new DialogNode("Yeah, that's me that's my fish...", Responses.really);
         hahaha.chain(really);
-        DialogNode anyway = new DialogNode("Sure", Responses.anyway);
+        DialogNode anyway = new DialogNode("Sure.", Responses.anyway);
         really.chain(anyway);
-        DialogNode wellNoRod = new DialogNode("Sure", Responses.wellNoRod);
+        DialogNode wellNoRod = new DialogNode("Sure.", Responses.wellNoRod);
         ohItsYouAgain.chain(wellNoRod);
 
 
@@ -80,7 +80,7 @@ public class DialogHelper {
         huhWhat.chain(trade);
         huhWhat.chain(neverMind);
         huhWhatInsane.chain(neverMind);
-        DialogNode helpfulTrade = new DialogNode("I can help you by buying all your stock! Let's trade", Responses.TRADE);
+        DialogNode helpfulTrade = new DialogNode("I can help you by buying all your stock! Let's trade.", Responses.TRADE);
         huhWhatInsane.chain(helpfulTrade);
         DialogNode questionTrade = new DialogNode("Trade?", Responses.TRADE);
         DialogNode nothing = new DialogNode("Nothing...", Responses.EXIT);
@@ -97,17 +97,17 @@ public class DialogHelper {
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, REPEATED, NOT_UNIQUE, NOT_MEMBER, SUMMONER), disappointed);
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, NOT_MEMBER, SUMMONER), notMemberDamn);
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, MEMBER, SUMMONER), memberDamn);
-        DialogNode gradeTrade = new DialogNode("Well it was me but you can have it. Let's trad", Responses.TRADE);
+        DialogNode gradeTrade = new DialogNode("Well it was me but you can have it. Let's trade.", Responses.TRADE);
         memberDamn.chain(gradeTrade);
         DialogNode giveItBackMember = new DialogNode("Hey it was mine, give it back!", Responses.hahaWhy);
         memberDamn.chain(giveItBackMember);
         DialogNode luckyYou = new DialogNode("Lucky you...", Responses.EXIT);
         memberDamn.chain(luckyYou);
-        DialogNode yeahRightAnyway = new DialogNode("Yeah right, anyway can we at least trade", Responses.TRADE);
+        DialogNode yeahRightAnyway = new DialogNode("Yeah right, anyway can we at least trade.", Responses.TRADE);
         giveItBackMember.chain(yeahRightAnyway);
-        DialogNode okBye = new DialogNode("Okay... bye", Responses.EXIT);
+        DialogNode okBye = new DialogNode("Okay... bye.", Responses.EXIT);
         giveItBackMember.chain(okBye);
-        DialogNode youCanHaveIt = new DialogNode("Well it was me but you can have it I guess", Responses.hereTakeThisFishingRod);
+        DialogNode youCanHaveIt = new DialogNode("Well it was me but you can have it I guess.", Responses.hereTakeThisFishingRod);
         notMemberDamn.chain(youCanHaveIt);
         DialogNode youCantHaveIt = new DialogNode("Hey it was mine, give it back!", Responses.silly);
         youCantHaveIt.chain(silentExit);
@@ -160,11 +160,23 @@ public class DialogHelper {
         return text.substring(0, lastCharIndex);
     }
 
+    public static int getTickForText(String text) {
+        int tickCount = 0;
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+        for(int i = 0; i < text.length(); i++) {
+            tickCount+= getTicksPerCharacter(text.charAt(i));
+        }
+        return tickCount;
+    }
+
     private static int getTicksPerCharacter(char c) {
         return switch (c) {
             case '.' -> 15;
             case '?', '!' -> 10;
             case ',' -> 3;
+            case ' ' -> 2;
             default -> 1;
         };
     }

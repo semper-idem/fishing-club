@@ -5,9 +5,9 @@ public class Responses {
     public static final String TRADE = "[TRADE]";
 
     public static final String start_itMustBeYours = """
-            Oh, this must be your gold fish.....
-            It doesn't grant any wishes, but It's very precious to me...
-            Can I have it? I'll give you my trusty fishing rod in return
+            Oh, this must be your gold fish... It doesn't grant any wishes,
+            but It's very precious to me. Can I have it? I'll give you
+            my trusty fishing rod in return.
             """;
 
     //      Here take this fishing rod it was a gift from my father on my 7th birthd //Limit length
@@ -22,7 +22,7 @@ public class Responses {
 
     public static final String areYouSure = """
             Are you sure about that?
-            I'd really really appreciate if you'd kindly give it to me
+            I'd really really appreciate if you'd kindly give it to me.
             """;
 
     public static final String itsAllRight = """
@@ -43,14 +43,14 @@ public class Responses {
 
     public static final String anyway = """
             Anyway, I'm Derek, traveling fisher,
-            I also run a little business 
-            If you'd need something maybe I have it. See you around
+            I also run a little business,
+            If you'd need something maybe I have it. See you around.
             """;
 
 
     public static final String wellNoRod = """
             Well I don't have another rod,
-            but you can have this shiny book I fished some time ago
+            but you can have this shiny book I fished some time ago.
             """;
 
     public static final String start_ohItsYouAgain = """
@@ -58,7 +58,7 @@ public class Responses {
             """;
 
     public static final String start_hello = """
-            Hello, how can I help you today
+            Hello, how can I help you today.
             """;
 
     public static final String youDontExist = """
@@ -86,19 +86,19 @@ public class Responses {
             """;
 
     public static final String start_goddamn = """
-            Damn, someone threw away this fine fish... well their lose
+            Damn, someone threw away this fine fish... well their lose.
             """;
 
     public static final String hahaWhy = """
-            Hah, why would you throw it away then, thought you're good fisher, 
+            Hah, why would you throw it away then, thought you're good fisher,
             someone who appreciates things of value... 
-            I'll take better care of you(seems like you lost him, he's talking to fish...)
+            I'll take better care of you (seems like you've lost him, he's talking to fish...)
             """;
 
     public static final String silly = """
             Yeah right, do i look like silly to you?
             You are not a fisher, you either stole it or found it before me either way
-            I'm disappointed. Ok I'll give it back
+            I'm disappointed. Ok I'll give it back.
             """;
 
     public static final String start_Disrespect = """
