@@ -5,17 +5,19 @@ public class Responses {
     public static final String TRADE = "[TRADE]";
 
     public static final String start_itMustBeYours = """
-            Oh it must've been yours...
-            It doesn't grant any wishes but It's very precious to me,
-            Can I have it? I can give you little something for it
+            Oh, this must be your gold fish.....
+            It doesn't grant any wishes, but It's very precious to me...
+            Can I have it? I'll give you my trusty fishing rod in return
             """;
 
+    //      Here take this fishing rod it was a gift from my father on my 7th birthd //Limit length
     public static final String hereTakeThisFishingRod = """
-            Here take this fishing rod it was a gift from my father on my 7th birthday
-            when I officially became a fisher
-            And this bag I found in my boat...
-            Yeah anyway, I'm Derek I'm traveling fisher,
-            I also run a little business if you'd need something maybe I have it. See you around.
+            Here, this rod was a gift from my father on my 7th birthday
+            when I officially became a fisher, also take this bag
+            I found it in my boat...someone must've dropped it.....
+            Yeah anyway, I'm Derek I'm traveling fisher, I also run
+            a little business if you'd need something, maybe I have it.
+            See you around.
             """;
 
     public static final String areYouSure = """

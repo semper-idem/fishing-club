@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.entity;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -14,7 +13,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
+import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandlerFactory;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 import java.util.ArrayList;
@@ -54,10 +54,13 @@ public class FishermanEntity extends WanderingTraderEntity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+    }
+
+    @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        if (world.isClient()){
-            MinecraftClient.getInstance().setScreen(new DialogScreen(getCustomName()));
-        }
+        playerEntity.openHandledScreen(new DialogScreenHandlerFactory(FishingCard.getPlayerCard(playerEntity), this));
         return ActionResult.CONSUME;
     }
 

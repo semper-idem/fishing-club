@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -39,7 +40,7 @@ public class DialogHelper {
         DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, NOT_UNIQUE, SUMMONER), canIHaveIt);
         DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_UNIQUE, MEMBER), hello);
         DEREK_ROOT_QUESTION.put(Set.of(NOT_MEMBER, NOT_SUMMONER), angry);
-        DialogNode hereTakeThisFishingRod = new DialogNode("Sure, my name is $PLAYER_NAME", Responses.hereTakeThisFishingRod);
+        DialogNode hereTakeThisFishingRod = new DialogNode("Sure, my name is $PLAYER_NAME.", Responses.hereTakeThisFishingRod);
         canIHaveIt.chain(hereTakeThisFishingRod);
         itMustBeYours.chain(hereTakeThisFishingRod);
         DialogNode waitTrade = new DialogNode("Wait, Can I take a look?", Responses.TRADE);
@@ -144,5 +145,46 @@ public class DialogHelper {
         HashSet<String> keys = fishermanEntity.getKeys(playerEntity);
         keys.addAll(FishingCard.getPlayerCard(playerEntity).getKeys(fishermanEntity.getSummonType()));
         return keys;
+    }
+
+    public static String getTextForTick(String text, int tick) {
+        int lastCharIndex = 0;
+        int tickCount = 0;
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+        while(tickCount < tick && lastCharIndex < text.length()) {
+            tickCount += getTicksPerCharacter(text.charAt(lastCharIndex));
+            lastCharIndex++;
+        }
+        return text.substring(0, lastCharIndex);
+    }
+
+    private static int getTicksPerCharacter(char c) {
+        return switch (c) {
+            case '.' -> 15;
+            case '?', '!' -> 10;
+            case ',' -> 3;
+            default -> 1;
+        };
+    }
+
+    public static String getStringForTemplate(String template) {
+        return switch (template) {
+            case "$PLAYER_NAME" -> MinecraftClient.getInstance().player.getName().getString();
+            case "$INITIAL_FISHER_NAME" -> MinecraftClient.getInstance().player.getName().getString();
+            default -> "";
+        };
+    }
+
+    public static String replaceTemplates(String input) {
+        String output = input;
+        if (input.contains("$PLAYER_NAME")) {
+            output = input.replace("$PLAYER_NAME", getStringForTemplate("$PLAYER_NAME"));
+        }
+        if (input.contains("$INITIAL_FISHER_NAME")) {
+            output = output.replace("$INITIAL_FISHER_NAME", getStringForTemplate("$INITIAL_FISHER_NAME"));
+        }
+        return output;
     }
 }

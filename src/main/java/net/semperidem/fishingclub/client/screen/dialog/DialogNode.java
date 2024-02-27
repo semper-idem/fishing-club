@@ -5,12 +5,12 @@ import java.util.List;
 
 public class DialogNode {
     String title;
-    String response;
-    List<DialogNode> questions;
+    String content;
+    ArrayList<DialogNode> questions;
 
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
-        this.response = response;
+        this.content = response;
         this.title = title;
     }
 

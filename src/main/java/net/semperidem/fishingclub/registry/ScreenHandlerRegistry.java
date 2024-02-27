@@ -5,6 +5,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
+import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
@@ -25,12 +27,14 @@ public class ScreenHandlerRegistry {
     public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER;
     public static ScreenHandlerType<ShopScreenHandler> SHOP_SCREEN;
     public static ScreenHandlerType<FishingGameScreenHandler> FISH_GAME_SCREEN;
+    public static ExtendedScreenHandlerType<DialogScreenHandler> DIALOG_SCREEN = new ExtendedScreenHandlerType<>(DialogScreenHandler::new);
 
     @SuppressWarnings("deprecation") //TODO FIX DEPRECATION
     public static void register(){
         FISHER_WORKBENCH_SCREEN_HANDLER = registerSimple(FishingClub.getIdentifier("fisher_workbench_gui"), FisherWorkbenchScreenHandler::new);
 
-        Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("fisher_info_screen"), FISHING_CARD_SCREEN);
+        Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("dialog_screen_handler"), DIALOG_SCREEN);
+        Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("fisher_info_screen_handler"), FISHING_CARD_SCREEN);
         FISHING_NET_SCREEN_HANDLER = registerExtended(FishingClub.getIdentifier("fishing_net_screen_handler"), FishingNetScreenHandler::new);
         SHOP_SCREEN = registerExtended(FishingClub.getIdentifier("sell_screen"), ShopScreenHandler::new);
         FISH_GAME_SCREEN = registerExtended(FishingClub.getIdentifier("fish_game_screen"), FishingGameScreenHandler::new);
@@ -40,6 +44,7 @@ public class ScreenHandlerRegistry {
         HandledScreens.register(SHOP_SCREEN, ShopScreen::new);
         HandledScreens.register(FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
+        HandledScreens.register(DIALOG_SCREEN, DialogScreen::new);
         HandledScreens.register(FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
         HandledScreens.register(FISH_GAME_SCREEN, FishingGameScreen::new);
     }
