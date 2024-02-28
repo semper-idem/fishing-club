@@ -27,6 +27,7 @@ public class ItemRegistry {
     public static final Item LINE_ARROW = new LineArrowItem(new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final Item CLONED_ROD = new ClonedFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
     public static final Item ILLEGAL_GOODS = new IllegalGoodsItem(new Item.Settings().group(FISHING_CLUB_GROUP).rarity(Rarity.RARE).maxCount(1));
+    public static final Item GOLD_FISH = new Item(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
 
     public static void register(){
         registerItem(("fisher_workbench"), FISHER_WORKBENCH);
@@ -40,6 +41,7 @@ public class ItemRegistry {
         registerItem(("line_arrow"), LINE_ARROW);
         registerItem(("cloned_rod"), CLONED_ROD);
         registerItem(("illegal_goods"), ILLEGAL_GOODS);
+        registerItem(("gold_fish"), GOLD_FISH);
         FishingRodPartItems.registerParts();
     }
 

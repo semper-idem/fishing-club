@@ -6,6 +6,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -15,23 +16,30 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.screen.dialog.DialogHelper;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandlerFactory;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class FishermanEntity extends WanderingTraderEntity {
     private SummonType summonType = SummonType.SPELL;
     private ArrayList<PlayerEntity> talkedTo = new ArrayList<>();
-    private PlayerEntity summoner;
-    public FishermanEntity(World world) {
+    private UUID summonerUUID;
+    public FishermanEntity(World world, ItemStack spawnedFrom, UUID summonerUUID) {
         super(EntityTypeRegistry.FISHERMAN, world);
+        if (spawnedFrom.isEmpty() || summonerUUID == null) {
+            return;
+        }
+        this.summonType = spawnedFrom.isOf(FishUtil.FISH_ITEM) ? SummonType.HIGH_GRADE_FISH : SummonType.GOLDEN_FISH;
+        this.summonerUUID = summonerUUID;
     }
 
     public HashSet<String> getKeys(PlayerEntity playerEntity){
         HashSet<String> fisherKeys = new HashSet<>();
-        fisherKeys.add(playerEntity == summoner ? "SUMMONER" : "NOT_SUMMONER");
+        fisherKeys.add(playerEntity.getUuid() == summonerUUID ? "SUMMONER" : "NOT_SUMMONER");
         fisherKeys.add(talkedTo.contains(playerEntity) ? "REPEATED" : "NOT_REPEATED");
         fisherKeys.add(summonType.name());
         return fisherKeys;
@@ -62,8 +70,10 @@ public class FishermanEntity extends WanderingTraderEntity {
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!isClient()) {
+            HashSet<String> keySet = DialogHelper.getKeys(playerEntity, this);
             FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
-            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(DialogHelper.getKeys(playerEntity, this)));
+            talkedTo.add(playerEntity);
+            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
         }
         return ActionResult.CONSUME;
     }

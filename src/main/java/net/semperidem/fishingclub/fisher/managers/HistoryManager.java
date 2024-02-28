@@ -28,7 +28,7 @@ public class HistoryManager extends DataManager {
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
-    private String invitingPlayerName;
+    private String invitingPlayerName = "";
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);

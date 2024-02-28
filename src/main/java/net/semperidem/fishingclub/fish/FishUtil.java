@@ -26,6 +26,7 @@ import java.util.*;
 public class FishUtil {
     public static final Item FISH_ITEM = Items.TROPICAL_FISH;
     private static final Random RANDOM = new Random(42L);
+    private static final String CAUGHT_BY_TAG = "caught_by";
 
 
     public static ItemStack getFishStack(Fish fish){
@@ -37,6 +38,14 @@ public class FishUtil {
         setFishDetails(fishReward, fish);
         fishReward.setCount(count);
         return fishReward;
+    }
+
+    public static UUID getSummonerUUID(ItemStack spawnedFrom) {
+        NbtCompound itemNbt = spawnedFrom.getOrCreateNbt();
+        if (!itemNbt.containsUuid(CAUGHT_BY_TAG)) {
+             return null;
+        }
+        return itemNbt.getUuid(CAUGHT_BY_TAG);
     }
 
     public static void fishCaught(ServerPlayerEntity player, Fish fish){
