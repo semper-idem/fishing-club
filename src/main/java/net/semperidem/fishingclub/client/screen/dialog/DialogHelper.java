@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -15,8 +14,6 @@ public class DialogHelper {
     private static final String GOLDEN = "GOLDEN";
     private static final String GRADE = "GRADE";
     private static final String SPELL = "SPELL";
-    private static final String MEMBER = "MEMBER";
-    private static final String NOT_MEMBER = "NOT_MEMBER";
     private static final String UNIQUE = "UNIQUE";
     private static final String NOT_UNIQUE = "NOT_UNIQUE";
     private static final String SUMMONER = "SUMMONER";
@@ -29,17 +26,15 @@ public class DialogHelper {
     public static void register() {
         DEREK_ROOT_QUESTION = new HashMap<>();
         DialogNode itMustBeYours = new DialogNode(Responses.start_itMustBeYours);
-        DialogNode hahaha = new DialogNode(Responses.start_hahaha);
         DialogNode ohItsYouAgain = new DialogNode(Responses.start_ohItsYouAgain);
         DialogNode canIHaveIt = new DialogNode(Responses.start_soCanIHaveIt);
         DialogNode hello = new DialogNode(Responses.start_hello);
         DialogNode angry = new DialogNode(Responses.youDontExist);
-        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, NOT_MEMBER, UNIQUE, SUMMONER), itMustBeYours);
-        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, MEMBER, UNIQUE, SUMMONER), hahaha);
-        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_REPEATED, MEMBER, NOT_UNIQUE, SUMMONER), ohItsYouAgain);
+        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, UNIQUE, SUMMONER), itMustBeYours);
+        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_REPEATED, NOT_UNIQUE, SUMMONER), ohItsYouAgain);
         DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, NOT_UNIQUE, SUMMONER), canIHaveIt);
-        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_UNIQUE, MEMBER), hello);
-        DEREK_ROOT_QUESTION.put(Set.of(NOT_MEMBER, NOT_SUMMONER), angry);
+        DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_UNIQUE), hello);
+        DEREK_ROOT_QUESTION.put(Set.of(NOT_SUMMONER), angry);
         DialogNode hereTakeThisFishingRod = new DialogNode("Sure, my name is $PLAYER_NAME.", Responses.hereTakeThisFishingRod);
         canIHaveIt.chain(hereTakeThisFishingRod);
         itMustBeYours.chain(hereTakeThisFishingRod);
@@ -62,10 +57,6 @@ public class DialogHelper {
         itsAllRight.chain(silentExit);
         angry.chain(questionableExit);
 
-        DialogNode really = new DialogNode("Yeah, that's me that's my fish...", Responses.really);
-        hahaha.chain(really);
-        DialogNode anyway = new DialogNode("Sure.", Responses.anyway);
-        really.chain(anyway);
         DialogNode wellNoRod = new DialogNode("Sure.", Responses.wellNoRod);
         ohItsYouAgain.chain(wellNoRod);
 
@@ -74,9 +65,9 @@ public class DialogHelper {
         DialogNode huhWhat = new DialogNode(Responses.start_huhWhat);
         DialogNode huhWhatInsane = new DialogNode(Responses.start_huhWhatSlightlyInsane);
         DialogNode whatDoYouWant = new DialogNode(Responses.start_whatDoYouWant);
-        DEREK_ROOT_QUESTION.put(Set.of(SPELL, NOT_REPEATED, MEMBER, UNIQUE), huhWhat);
-        DEREK_ROOT_QUESTION.put(Set.of(SPELL, NOT_REPEATED, MEMBER, NOT_UNIQUE), huhWhatInsane);
-        DEREK_ROOT_QUESTION.put(Set.of(SPELL, REPEATED, MEMBER), whatDoYouWant);
+        DEREK_ROOT_QUESTION.put(Set.of(SPELL, NOT_REPEATED, WELCOME, UNIQUE), huhWhat);
+        DEREK_ROOT_QUESTION.put(Set.of(SPELL, NOT_REPEATED, WELCOME, NOT_UNIQUE), huhWhatInsane);
+        DEREK_ROOT_QUESTION.put(Set.of(SPELL, REPEATED, WELCOME), whatDoYouWant);
         huhWhat.chain(trade);
         huhWhat.chain(neverMind);
         huhWhatInsane.chain(neverMind);
@@ -93,10 +84,10 @@ public class DialogHelper {
         DialogNode memberDamn = new DialogNode(Responses.start_goddamn);
         DialogNode notMemberDamn = new DialogNode(Responses.start_goddamn);
         DialogNode disappointed = new DialogNode(Responses.start_Disrespect);
-        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_UNIQUE, MEMBER), hello);
-        DEREK_ROOT_QUESTION.put(Set.of(GRADE, REPEATED, NOT_UNIQUE, NOT_MEMBER, SUMMONER), disappointed);
-        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, NOT_MEMBER, SUMMONER), notMemberDamn);
-        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, MEMBER, SUMMONER), memberDamn);
+        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_UNIQUE, WELCOME), hello);
+        DEREK_ROOT_QUESTION.put(Set.of(GRADE, REPEATED, NOT_UNIQUE, NOT_WELCOME, SUMMONER), disappointed);
+        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, NOT_WELCOME, SUMMONER), notMemberDamn);
+        DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, WELCOME, SUMMONER), memberDamn);
         DialogNode gradeTrade = new DialogNode("Well it was me but you can have it. Let's trade.", Responses.TRADE);
         memberDamn.chain(gradeTrade);
         DialogNode giveItBackMember = new DialogNode("Hey it was mine, give it back!", Responses.hahaWhy);
@@ -118,7 +109,7 @@ public class DialogHelper {
 
     public static DialogNode getStartQuestion(Set<String> keySet) {
         int bestScore = 0;
-        DialogNode bestNode = null;
+        DialogNode bestNode = new DialogNode("MMmmmm", "MMmmmm");
             for (Set<String> initialNodeKey : DEREK_ROOT_QUESTION.keySet()) {
                 int matchScore = keysMatch(keySet, initialNodeKey);
                 if (matchScore > bestScore) {
@@ -134,8 +125,6 @@ public class DialogHelper {
         for(String key : against) {
             if (keySet.contains(key)) {
                 score++;
-            } else {
-                return 0;
             }
         }
         return score;
@@ -148,11 +137,11 @@ public class DialogHelper {
     }
 
     public static String getTextForTick(String text, int tick) {
-        int lastCharIndex = 0;
-        int tickCount = 0;
         if (text == null || text.isEmpty()) {
             return "";
         }
+        int lastCharIndex = 0;
+        int tickCount = 0;
         while(tickCount < tick && lastCharIndex < text.length()) {
             tickCount += getTicksPerCharacter(text.charAt(lastCharIndex));
             lastCharIndex++;
@@ -161,10 +150,10 @@ public class DialogHelper {
     }
 
     public static int getTickForText(String text) {
-        int tickCount = 0;
         if (text == null || text.isEmpty()) {
             return 0;
         }
+        int tickCount = 0;
         for(int i = 0; i < text.length(); i++) {
             tickCount+= getTicksPerCharacter(text.charAt(i));
         }
@@ -179,24 +168,5 @@ public class DialogHelper {
             case ' ' -> 2;
             default -> 1;
         };
-    }
-
-    public static String getStringForTemplate(String template) {
-        return switch (template) {
-            case "$PLAYER_NAME" -> MinecraftClient.getInstance().player.getName().getString();
-            case "$INITIAL_FISHER_NAME" -> MinecraftClient.getInstance().player.getName().getString();
-            default -> "";
-        };
-    }
-
-    public static String replaceTemplates(String input) {
-        String output = input;
-        if (input.contains("$PLAYER_NAME")) {
-            output = input.replace("$PLAYER_NAME", getStringForTemplate("$PLAYER_NAME"));
-        }
-        if (input.contains("$INITIAL_FISHER_NAME")) {
-            output = output.replace("$INITIAL_FISHER_NAME", getStringForTemplate("$INITIAL_FISHER_NAME"));
-        }
-        return output;
     }
 }

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
@@ -41,7 +42,6 @@ public class DialogBox extends ScrollableWidget{
         this.renderContents(matrixStack, mouseX, mouseY, delta);
         matrixStack.pop();
         disableScissor();
-       //fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         if (overflows()) {
             renderScrollbar(matrixStack);
         }
@@ -102,16 +102,16 @@ public class DialogBox extends ScrollableWidget{
     public void addMessage(DialogNode nextNode) {
         response = nextNode;
         ArrayList<String> temp = new ArrayList<>();
-        if (!response.title.isEmpty()) {
+        if (response.title != null && !response.title.isEmpty()) {
             temp.add(" - " + response.title);
         }
         temp.addAll(List.of(response.content.split("\n")));
         for(String responseLine : temp) {
-            responseLinesQueue.add(DialogHelper.replaceTemplates(responseLine));
+            responseLinesQueue.add(responseLine.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
         }
         possibleQuestions.clear();
         for(DialogNode question : response.questions) {
-            possibleQuestions.add(DialogHelper.replaceTemplates(question.title));
+            possibleQuestions.add(question.title.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
         }
         lineInQueue = responseLinesQueue.get(0);
         lineInQueueFinishTick = DialogHelper.getTickForText(lineInQueue);

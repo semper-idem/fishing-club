@@ -5,24 +5,26 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.HashSet;
+import java.util.List;
 
 public class DialogScreenHandler extends ScreenHandler {
-    public DialogScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId) {
-        super(type, syncId);
-    }
-
+    HashSet<String> openingKeys = new HashSet<>();
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FishingCard(playerInventory.player, buf.readNbt()));
+        this(syncId, playerInventory,  buf.readString());
     }
 
-    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
+
+    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString) {
         super(ScreenHandlerRegistry.DIALOG_SCREEN, syncId);
+        openingKeys.addAll(List.of(openingKeyString.split(";")));
     }
 
+    public HashSet<String> getOpeningKeys(){
+        return openingKeys;
+    }
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         return null;

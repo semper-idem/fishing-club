@@ -54,6 +54,10 @@ public class FishingCard extends FishingCardInventory {
         return fishingCardNbt;
     }
 
+    public void meetDerek(FishermanEntity.SummonType summonType) {
+        historyManager.meetDerek(summonType);
+    }
+
     public static FishingCard getPlayerCard(PlayerEntity user){
         return ((FishingPlayerEntity)user).getCard();
     }
@@ -116,6 +120,7 @@ public class FishingCard extends FishingCardInventory {
 
     public HashSet<String> getKeys(FishermanEntity.SummonType summonType) {
         HashSet<String> keys = new HashSet<>();
+        keys.add(historyManager.getInvitingPlayerName().isEmpty() ? "NOT_MEMBER" : "MEMBER");
         keys.add(historyManager.metDerek(summonType) ? "NOT_UNIQUE" : "UNIQUE");
         keys.add(historyManager.gaveDerekFish() ? "WELCOME": "NOT_WELCOME");
         return keys;

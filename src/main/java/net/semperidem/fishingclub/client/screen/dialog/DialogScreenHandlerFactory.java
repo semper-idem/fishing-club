@@ -7,17 +7,15 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.entity.FishermanEntity;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import org.jetbrains.annotations.Nullable;
 
-public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory {
-    FishingCard fishingCard;
-    FishermanEntity fishermanEntity;
+import java.util.HashSet;
 
-    public DialogScreenHandlerFactory(FishingCard fishingCard, FishermanEntity fishermanEntity) {
-        this.fishingCard = fishingCard;
-        this.fishermanEntity = fishermanEntity;
+public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory {
+    HashSet<String> openingKeys;
+
+    public DialogScreenHandlerFactory(HashSet<String> openingKeys) {
+        this.openingKeys = openingKeys;
     }
     @Override
     public Text getDisplayName() {
@@ -27,11 +25,11 @@ public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new DialogScreenHandler(syncId, inv, fishingCard);
+        return new DialogScreenHandler(syncId, inv, String.join(";", openingKeys));
     }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(fishingCard.toNbt());
+        buf.writeString(String.join(";", openingKeys));
     }
 }

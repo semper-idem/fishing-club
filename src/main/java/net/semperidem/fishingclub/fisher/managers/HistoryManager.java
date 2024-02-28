@@ -15,6 +15,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryManager extends DataManager {
     private static final long DAY_LENGTH = 24000;
@@ -27,6 +28,7 @@ public class HistoryManager extends DataManager {
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
+    private String invitingPlayerName;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -38,6 +40,14 @@ public class HistoryManager extends DataManager {
 
     public void giveDerekFish(){
         gaveDerekFish = true;
+    }
+
+    public void setInvitingPlayerName(String inviter) {
+        this.invitingPlayerName = inviter;
+    }
+
+    public String getInvitingPlayerName() {
+        return invitingPlayerName;
     }
 
     public boolean metDerek(FishermanEntity.SummonType summonType) {
@@ -122,6 +132,10 @@ public class HistoryManager extends DataManager {
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
         lastUsedBait = ItemStack.fromNbt(historyTag.getCompound(LAST_USED_BAIT_TAG));
+        derekMet.clear();
+        derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
+        gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
+        invitingPlayerName = historyTag.getString(INVITER_TAG);
     }
 
     @Override
@@ -133,6 +147,9 @@ public class HistoryManager extends DataManager {
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
         historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
+        historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
+        historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
+        historyTag.putString(INVITER_TAG, invitingPlayerName);
         nbtCompound.put(TAG, historyTag);
     }
 
@@ -174,6 +191,7 @@ public class HistoryManager extends DataManager {
         }
     }
 
+
     private static final String TAG = "history";
     private static final String USED_CHUNKS_TAG = "used_chunks";
     private static final String FIRST_CATCH_OF_THE_DAY_TAG = "first_catch_of_the_day";
@@ -181,4 +199,7 @@ public class HistoryManager extends DataManager {
     private static final String LAST_USED_BAIT_TAG = "last_used_bait";
     private static final String X_TAG = "x";
     private static final String Z_TAG = "z";
+    private static final String DEREK_MET_TAG = "derek_met";
+    private static final String WELCOMED_DEREK_TAG = "welcomed_derek";
+    private static final String INVITER_TAG = "invited_by";
 }

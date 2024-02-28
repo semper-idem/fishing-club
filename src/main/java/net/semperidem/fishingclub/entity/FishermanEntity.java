@@ -13,6 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.client.screen.dialog.DialogHelper;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandlerFactory;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
@@ -60,7 +61,10 @@ public class FishermanEntity extends WanderingTraderEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        playerEntity.openHandledScreen(new DialogScreenHandlerFactory(FishingCard.getPlayerCard(playerEntity), this));
+        if(!isClient()) {
+            FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
+            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(DialogHelper.getKeys(playerEntity, this)));
+        }
         return ActionResult.CONSUME;
     }
 

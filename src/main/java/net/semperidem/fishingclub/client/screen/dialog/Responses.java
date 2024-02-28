@@ -30,24 +30,6 @@ public class Responses {
             I won't bother you anymore...(Reduce despawn timer)
             """;
 
-    public static final String start_hahaha = """
-            Hahaha, you must be $PLAYER_NAME, $INITIAL_FISHER_NAME mentioned you last time we spoke...
-            or maybe I overhead him talking about you...?
-            """;
-
-    public static final String really = """
-            Really, how about I take fish and in exchange I can give you my fish'o'reel.
-            My father gave it to me on my 7th birthday,
-            it's little bit old but in perfect condition...
-            """;
-
-    public static final String anyway = """
-            Anyway, I'm Derek, traveling fisher,
-            I also run a little business,
-            If you'd need something maybe I have it. See you around.
-            """;
-
-
     public static final String wellNoRod = """
             Well I don't have another rod,
             but you can have this shiny book I fished some time ago.

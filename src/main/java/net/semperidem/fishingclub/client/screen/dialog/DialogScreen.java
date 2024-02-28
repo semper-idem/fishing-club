@@ -9,7 +9,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
-import net.semperidem.fishingclub.entity.FishermanEntity;
 
 import java.awt.*;
 import java.util.Set;
@@ -22,30 +21,18 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     );
     private static final int tileSize = 4;
 
-
-    private static final String GOLDEN = "GOLDEN";
-    private static final String GRADE = "GRADE";
-    private static final String SPELL = "SPELL";
-    private static final String MEMBER = "MEMBER";
-    private static final String NOT_MEMBER = "NOT_MEMBER";
-    private static final String UNIQUE = "UNIQUE";
-    private static final String NOT_UNIQUE = "NOT_UNIQUE";
-    private static final String SUMMONER = "SUMMONER";
-    private static final String NOT_SUMMONER = "NOT_SUMMONER";
-    private static final String REPEATED = "REPEATED";
-    private static final String NOT_REPEATED = "NOT_REPEATED";
-    private static final String WELCOME = "WELCOME";
-    private static final String NOT_WELCOME = "NOT_WELCOME";
-
     private int x, y;
     private int titleX, titleY;
     private DialogBox dialogBox;
-    private FishermanEntity fishermanEntity;
+    private final Set<String> dialogOpeningKey;
+
+
 
     public DialogScreen(DialogScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
         super(dialogScreenHandler, playerInventory, title);
-        this.fishermanEntity = fishermanEntity;
+        this.dialogOpeningKey = handler.getOpeningKeys();
      }
+
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
@@ -65,12 +52,12 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
         addPlayerFaceComponent();
         addDrawable(dialogBox = new DialogBox(
                 x + tileSize * 10,
-                y + tileSize * 1,
+                y + tileSize,
                 TEXTURE.textureWidth  - tileSize * 11,
                 TEXTURE.textureHeight  - tileSize * 2,
                 textRenderer
         ));
-        DialogNode startingNode = DialogHelper.getStartQuestion(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, NOT_MEMBER, UNIQUE, SUMMONER));
+        DialogNode startingNode = DialogHelper.getStartQuestion(dialogOpeningKey);
         dialogBox.addMessage(startingNode);
     }
 
