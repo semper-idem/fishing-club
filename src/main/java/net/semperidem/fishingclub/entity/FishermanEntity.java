@@ -9,6 +9,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -35,8 +38,9 @@ public class FishermanEntity extends WanderingTraderEntity {
 
 
     private SummonType summonType = SummonType.SPELL;
-    private ArrayList<PlayerEntity> talkedTo = new ArrayList<>();
+    private final ArrayList<UUID> talkedTo = new ArrayList<>();
     private UUID summonerUUID;
+
     public FishermanEntity(World world) {
         super(EntityTypeRegistry.FISHERMAN, world);
     }
@@ -59,6 +63,37 @@ public class FishermanEntity extends WanderingTraderEntity {
         }
     }
 
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putString("summonType", summonType.name());
+        if (this.summonerUUID != null) {
+            nbt.putUuid("summonerUUID", summonerUUID);
+        }
+        NbtList talkedToUUIDNbt = new NbtList();
+        for(UUID interactedWith : talkedTo) {
+            talkedToUUIDNbt.add(NbtHelper.fromUuid(interactedWith));
+        }
+        nbt.put("talkedTo", talkedToUUIDNbt);
+    }
+
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("summonType")) {
+            this.summonType = SummonType.valueOf(nbt.getString("summonType"));
+        }
+
+        if (nbt.contains("summonerUUID")) {
+            this.summonerUUID = nbt.getUuid("summonerUUID");
+        }
+        if (!nbt.contains("talkedTo")) {
+            return;
+        }
+        nbt.getList("talkedTo", NbtElement.INT_ARRAY_TYPE).forEach(
+                talkedToUUID -> talkedTo.add(NbtHelper.toUuid(talkedToUUID))
+        );
+    }
+
+
     private void setSummonDetails(ItemStack spawnedFrom, UUID summonerUUID) {
         if (spawnedFrom.isEmpty() || summonerUUID == null) {
             return;
@@ -70,7 +105,7 @@ public class FishermanEntity extends WanderingTraderEntity {
     public HashSet<String> getKeys(PlayerEntity playerEntity){
         HashSet<String> fisherKeys = new HashSet<>();
         fisherKeys.add(playerEntity.getUuid() == summonerUUID ? "SUMMONER" : "NOT_SUMMONER");
-        fisherKeys.add(talkedTo.contains(playerEntity) ? "REPEATED" : "NOT_REPEATED");
+        fisherKeys.add(talkedTo.contains(playerEntity.getUuid()) ? "REPEATED" : "NOT_REPEATED");
         fisherKeys.add(summonType.name());
         return fisherKeys;
     }
@@ -102,7 +137,7 @@ public class FishermanEntity extends WanderingTraderEntity {
         if(!isClient()) {
             HashSet<String> keySet = DialogHelper.getKeys(playerEntity, this);
             FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
-            talkedTo.add(playerEntity);
+            talkedTo.add(playerEntity.getUuid());
             playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
         }
         return ActionResult.CONSUME;
