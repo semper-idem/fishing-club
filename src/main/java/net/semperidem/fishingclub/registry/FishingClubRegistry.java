@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.registry;
 
-import net.semperidem.fishingclub.client.screen.dialog.DialogHelper;
+import net.semperidem.fishingclub.client.screen.dialog.DialogUtil;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
@@ -16,7 +16,7 @@ public class FishingClubRegistry {
         EnchantmentRegistry.register();
         LevelRewardRule.initDefaultRewards();
         FishingPerks.register();
-        DialogHelper.register();
+        DialogUtil.register();
     }
 
     public static void registerClient(){

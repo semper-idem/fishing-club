@@ -8,20 +8,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DialogHelper {
-    private static HashMap<Set<String>, DialogNode> DEREK_ROOT_QUESTION;
+import static net.semperidem.fishingclub.client.screen.dialog.DialogKey.*;
 
-    private static final String GOLDEN = "GOLDEN";
-    private static final String GRADE = "GRADE";
-    private static final String SPELL = "SPELL";
-    private static final String UNIQUE = "UNIQUE";
-    private static final String NOT_UNIQUE = "NOT_UNIQUE";
-    private static final String SUMMONER = "SUMMONER";
-    private static final String NOT_SUMMONER = "NOT_SUMMONER";
-    private static final String REPEATED = "REPEATED";
-    private static final String NOT_REPEATED = "NOT_REPEATED";
-    private static final String WELCOME = "WELCOME";
-    private static final String NOT_WELCOME = "NOT_WELCOME";
+
+public class DialogUtil {
+    private static HashMap<Set<DialogKey>, DialogNode> DEREK_ROOT_QUESTION;
+
 
     public static void register() {
         DEREK_ROOT_QUESTION = new HashMap<>();
@@ -107,10 +99,10 @@ public class DialogHelper {
     }
 
 
-    public static DialogNode getStartQuestion(Set<String> keySet) {
+    public static DialogNode getStartQuestion(Set<DialogKey> keySet) {
         int bestScore = 0;
         DialogNode bestNode = new DialogNode("MMmmmm", "MMmmmm");
-            for (Set<String> initialNodeKey : DEREK_ROOT_QUESTION.keySet()) {
+            for (Set<DialogKey> initialNodeKey : DEREK_ROOT_QUESTION.keySet()) {
                 int matchScore = keysMatch(keySet, initialNodeKey);
                 if (matchScore > bestScore) {
                     bestScore = matchScore;
@@ -120,9 +112,25 @@ public class DialogHelper {
         return bestNode;
     }
 
-    private static int keysMatch(Set<String> keySet, Set<String> against) {
+    public static HashSet<DialogKey> getKeysFromString(String keysString) {
+        HashSet<DialogKey> result = new HashSet<>();
+        for(String keyString : keysString.split(";")) {
+            result.add(DialogKey.valueOf(keyString));
+        }
+        return result;
+    }
+
+    public static String getStringFromKeys(HashSet<DialogKey> keys) {
+        StringBuilder result = new StringBuilder();
+        for(DialogKey key : keys) {
+            result.append(key).append(";");
+        }
+        return result.toString();
+    }
+
+    private static int keysMatch(Set<DialogKey> keySet, Set<DialogKey> against) {
         int score = 0;
-        for(String key : against) {
+        for(DialogKey key : against) {
             if (keySet.contains(key)) {
                 score++;
             }
@@ -130,8 +138,8 @@ public class DialogHelper {
         return score;
     }
 
-    public static HashSet<String> getKeys(PlayerEntity playerEntity, FishermanEntity fishermanEntity) {
-        HashSet<String> keys = fishermanEntity.getKeys(playerEntity);
+    public static HashSet<DialogKey> getKeys(PlayerEntity playerEntity, FishermanEntity fishermanEntity) {
+        HashSet<DialogKey> keys = fishermanEntity.getKeys(playerEntity);
         keys.addAll(FishingCard.getPlayerCard(playerEntity).getKeys(fishermanEntity.getSummonType()));
         return keys;
     }

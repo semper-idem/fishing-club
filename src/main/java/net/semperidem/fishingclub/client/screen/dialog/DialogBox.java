@@ -94,7 +94,7 @@ public class DialogBox extends ScrollableWidget{
         if (finishedRenderingLine() && !responseLinesQueue.isEmpty()) {
             consumeMessage();
         }
-        trailingLine = DialogHelper.getTextForTick(lineInQueue, tick);
+        trailingLine = DialogUtil.getTextForTick(lineInQueue, tick);
         textSpeed = 1;
         tick+=textSpeed;
     }
@@ -114,7 +114,7 @@ public class DialogBox extends ScrollableWidget{
             possibleQuestions.add(question.title.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
         }
         lineInQueue = responseLinesQueue.get(0);
-        lineInQueueFinishTick = DialogHelper.getTickForText(lineInQueue);
+        lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
         tick = 0;
         setFocused(true);
     }
@@ -129,7 +129,7 @@ public class DialogBox extends ScrollableWidget{
         setScrollY(getMaxScrollY());
         if (!responseLinesQueue.isEmpty()) {
             lineInQueue = responseLinesQueue.get(0);
-            lineInQueueFinishTick = DialogHelper.getTickForText(lineInQueue);
+            lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
             tick = -5;
         }
     }

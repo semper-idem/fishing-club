@@ -28,7 +28,6 @@ public class HistoryManager extends DataManager {
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
-    private String invitingPlayerName = "";
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -42,13 +41,6 @@ public class HistoryManager extends DataManager {
         gaveDerekFish = true;
     }
 
-    public void setInvitingPlayerName(String inviter) {
-        this.invitingPlayerName = inviter;
-    }
-
-    public String getInvitingPlayerName() {
-        return invitingPlayerName;
-    }
 
     public boolean metDerek(FishermanEntity.SummonType summonType) {
         return derekMet.contains(summonType.name());
@@ -135,7 +127,6 @@ public class HistoryManager extends DataManager {
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
-        invitingPlayerName = historyTag.getString(INVITER_TAG);
     }
 
     @Override
@@ -149,7 +140,6 @@ public class HistoryManager extends DataManager {
         historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
-        historyTag.putString(INVITER_TAG, invitingPlayerName);
         nbtCompound.put(TAG, historyTag);
     }
 

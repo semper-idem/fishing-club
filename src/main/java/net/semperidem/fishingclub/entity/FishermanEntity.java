@@ -23,8 +23,9 @@ import net.minecraft.util.Pair;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.dialog.DialogHelper;
+import net.semperidem.fishingclub.client.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandlerFactory;
+import net.semperidem.fishingclub.client.screen.dialog.DialogUtil;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
@@ -102,11 +103,11 @@ public class FishermanEntity extends WanderingTraderEntity {
         this.summonerUUID = summonerUUID;
     }
 
-    public HashSet<String> getKeys(PlayerEntity playerEntity){
-        HashSet<String> fisherKeys = new HashSet<>();
-        fisherKeys.add(playerEntity.getUuid() == summonerUUID ? "SUMMONER" : "NOT_SUMMONER");
-        fisherKeys.add(talkedTo.contains(playerEntity.getUuid()) ? "REPEATED" : "NOT_REPEATED");
-        fisherKeys.add(summonType.name());
+    public HashSet<DialogKey> getKeys(PlayerEntity playerEntity){
+        HashSet<DialogKey> fisherKeys = new HashSet<>();
+        fisherKeys.add(playerEntity.getUuid() == summonerUUID ? DialogKey.SUMMONER : DialogKey.NOT_SUMMONER);
+        fisherKeys.add(talkedTo.contains(playerEntity.getUuid()) ? DialogKey.REPEATED : DialogKey.NOT_REPEATED);
+        fisherKeys.add(DialogKey.valueOf(summonType.name()));
         return fisherKeys;
     }
 
@@ -135,7 +136,7 @@ public class FishermanEntity extends WanderingTraderEntity {
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!isClient()) {
-            HashSet<String> keySet = DialogHelper.getKeys(playerEntity, this);
+            HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
             FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
             playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));

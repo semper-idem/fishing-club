@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.client.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -118,11 +119,10 @@ public class FishingCard extends FishingCardInventory {
         summonRequestManager.execute();
     }
 
-    public HashSet<String> getKeys(FishermanEntity.SummonType summonType) {
-        HashSet<String> keys = new HashSet<>();
-        keys.add(historyManager.getInvitingPlayerName().isEmpty() ? "NOT_MEMBER" : "MEMBER");
-        keys.add(historyManager.metDerek(summonType) ? "NOT_UNIQUE" : "UNIQUE");
-        keys.add(historyManager.gaveDerekFish() ? "WELCOME": "NOT_WELCOME");
+    public HashSet<DialogKey> getKeys(FishermanEntity.SummonType summonType) {
+        HashSet<DialogKey> keys = new HashSet<>();
+        keys.add(historyManager.metDerek(summonType) ? DialogKey.NOT_UNIQUE : DialogKey.UNIQUE);
+        keys.add(historyManager.gaveDerekFish() ? DialogKey.WELCOME: DialogKey.NOT_WELCOME);
         return keys;
     }
 

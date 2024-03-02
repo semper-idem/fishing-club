@@ -24,7 +24,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     private int x, y;
     private int titleX, titleY;
     private DialogBox dialogBox;
-    private final Set<String> dialogOpeningKey;
+    private final Set<DialogKey> dialogOpeningKey;
 
 
 
@@ -57,7 +57,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
                 TEXTURE.textureHeight  - tileSize * 2,
                 textRenderer
         ));
-        DialogNode startingNode = DialogHelper.getStartQuestion(dialogOpeningKey);
+        DialogNode startingNode = DialogUtil.getStartQuestion(dialogOpeningKey);
         dialogBox.addMessage(startingNode);
     }
 

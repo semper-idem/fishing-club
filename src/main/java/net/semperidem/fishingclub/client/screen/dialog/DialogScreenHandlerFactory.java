@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 
 public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory {
-    HashSet<String> openingKeys;
+    HashSet<DialogKey> openingKeys;
 
-    public DialogScreenHandlerFactory(HashSet<String> openingKeys) {
+    public DialogScreenHandlerFactory(HashSet<DialogKey> openingKeys) {
         this.openingKeys = openingKeys;
     }
     @Override
@@ -25,11 +25,11 @@ public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new DialogScreenHandler(syncId, inv, String.join(";", openingKeys));
+        return new DialogScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys));
     }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeString(String.join(";", openingKeys));
+        buf.writeString(DialogUtil.getStringFromKeys(openingKeys));
     }
 }

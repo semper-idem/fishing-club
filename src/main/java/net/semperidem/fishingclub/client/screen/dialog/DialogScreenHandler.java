@@ -8,10 +8,9 @@ import net.minecraft.screen.ScreenHandler;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.HashSet;
-import java.util.List;
 
 public class DialogScreenHandler extends ScreenHandler {
-    HashSet<String> openingKeys = new HashSet<>();
+    HashSet<DialogKey> openingKeys;
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory,  buf.readString());
     }
@@ -19,10 +18,10 @@ public class DialogScreenHandler extends ScreenHandler {
 
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString) {
         super(ScreenHandlerRegistry.DIALOG_SCREEN, syncId);
-        openingKeys.addAll(List.of(openingKeyString.split(";")));
+        openingKeys = DialogUtil.getKeysFromString(openingKeyString);
     }
 
-    public HashSet<String> getOpeningKeys(){
+    public HashSet<DialogKey> getOpeningKeys(){
         return openingKeys;
     }
     @Override
