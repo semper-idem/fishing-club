@@ -23,6 +23,8 @@ public class MemberFishingRodItem extends FishingRodItem {
         super(settings);
     }
 
+
+
     @Override
         public ItemStack getDefaultStack() {
         return FishingRodUtil.getBasicRod();

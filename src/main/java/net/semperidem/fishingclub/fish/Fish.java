@@ -73,6 +73,7 @@ public class Fish {
         this.weight = nbt.getFloat("weight");
         this.length = nbt.getFloat("length");
         this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
+        this.caughtByUUID = nbt.getUuid("caughtBy");
     }
 
      public NbtCompound getNbt(){
@@ -85,6 +86,7 @@ public class Fish {
          nbt.putFloat("weight", weight);
          nbt.putFloat("length", length);
          nbt.put("caughtUsing", caughtUsing.writeNbt(new NbtCompound()));
+         nbt.putUuid("caughtBy", caughtByUUID);
          return nbt;
     }
 

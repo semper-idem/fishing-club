@@ -5,15 +5,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
+import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.ItemRegistry;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,50 +24,59 @@ import java.util.UUID;
 public abstract class ItemEntityMixin extends Entity{
     @Unique
     UUID summonerUUID;
+    @Unique
+    boolean isSummonItem;
 
     public ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
+    }
+
+    @Inject(method = "setStack", at = @At("TAIL"))
+    private void onInit(ItemStack stack, CallbackInfo ci) {
+        if (stack.isOf(ItemRegistry.GOLD_FISH)) {
+            summonerUUID = FishUtil.getCaughtBy(getStack());
+            isSummonItem = true;
+            return;
+        }
+
+        if (!stack.isOf(FishUtil.FISH_ITEM)) {
+            return;
+        }
+        Fish fish = FishUtil.getFishFromStack(stack);
+        if (fish != null && fish.grade >= 4) {
+            summonerUUID = fish.caughtByUUID;
+            isSummonItem = true;
+        }
     }
 
     @Shadow public abstract ItemStack getStack();
 
     @Shadow private int itemAge;
 
-    @Shadow private @Nullable UUID owner;
-
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (!(getStack().isOf(ItemRegistry.GOLD_FISH) || getStack().isOf(FishUtil.FISH_ITEM))) {
+        if (!isSummonItem) {
             return;
         }
-
-        if (summonerUUID == null) {
-            setSummoner();
-        }
-
 
         if (itemAge < 20) {
             return;
         }
-        FishermanEntity derek = new FishermanEntity(this.world, getStack(), summonerUUID);
-        derek.setPosition(this.getPos());
-        world.spawnEntity(derek);
-        if (!(world instanceof ServerWorld serverWorld)) {
-            return;
-        }
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, getX(), getY() + 1, getZ(), 100,1,1,1,0.1);
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, getX(), getY() + 1, getZ(), 100,1,1,1,0.1);
-        serverWorld.spawnParticles(ParticleTypes.EXPLOSION, getX(), getY() + 2, getZ(), 50,0.5,0.5,0.5,0.1);
-        serverWorld.playSound(null, getX(), getY(), getZ(), SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.PLAYERS, 0.3f, 0.2f, 0L);
-        discard();
+
+        summonDerek();
     }
 
     @Unique
-    private void setSummoner() {
-        summonerUUID = FishUtil.getSummonerUUID(getStack());
-        if (summonerUUID == null) {
-            summonerUUID = owner;
+    private void summonDerek() {
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return;
         }
+        FishermanEntity derek = FishermanEntity.getDerek(serverWorld, getStack(), summonerUUID);
+        derek.setPosition(this.getPos());
+        world.spawnEntity(derek);
 
+        FishermanEntity.onSummonEffect(serverWorld, derek);
+        discard();
     }
+
 }

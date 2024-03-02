@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
@@ -26,7 +25,7 @@ public class EntityTypeRegistry {
     public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
             Registry.ENTITY_TYPE,
             FishingClub.getIdentifier("fisherman"),
-            FabricEntityTypeBuilder.<FishermanEntity>create(SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world, ItemStack.EMPTY, null))
+            FabricEntityTypeBuilder.<FishermanEntity>create(SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world))
                     .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                     .build()
     );

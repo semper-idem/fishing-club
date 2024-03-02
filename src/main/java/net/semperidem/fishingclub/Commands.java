@@ -3,13 +3,16 @@ package net.semperidem.fishingclub;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -23,7 +26,7 @@ public class Commands {
     public static void registerSummonAccept(){
         rootCommand.then(literal("summon_accept").executes(context -> {
                     ClientPacketSender.sendSummonAccept();
-            return 1;
+            return 0;
         }));
     }
 
@@ -32,7 +35,7 @@ public class Commands {
             FishingCard fishingCard = FishingCard.getPlayerCard(context.getSource().getPlayer());
             int xpForLevel = fishingCard.nextLevelXP() - fishingCard.getExp();
             fishingCard.grantExperience(xpForLevel);
-            return 1;
+            return 0;
         }));
     }
 
@@ -40,33 +43,42 @@ public class Commands {
         rootCommand.then(literal("illegal_goods").then(argument("tier", integer()).executes(context -> {
             int tier = getInteger(context, "tier");
             context.getSource().getPlayer().giveItemStack(IllegalGoodsItem.getStackWithTier(tier));
-            return 1;
+            return 0;
         })));
     }
     public static void registerGiveStarterRod(){
         rootCommand.then(literal("starter_rod").executes(context -> {
             context.getSource().getPlayer().giveItemStack(FishingRodUtil.getStarterRod());
-            return 1;
+            return 0;
         }));
     }
     public static void registerGiveAdvancedRod(){
         rootCommand.then(literal("advanced_rod").executes(context -> {
             context.getSource().getPlayer().giveItemStack(FishingRodUtil.getAdvancedRod());
-            return 1;
+            return 0;
         }));
     }
 
     public static void registerInfo(){
         rootCommand.then(literal("info").executes(context -> {
             context.getSource().sendMessage(Text.literal(FishingCard.getPlayerCard(context.getSource().getPlayer()).toString()));
-            return 1;
+            return 0;
+        }));
+    }
+
+    public static void registerGoldFish() {
+        rootCommand.then(literal("gold_fish").executes(context -> {
+            ItemStack goldFish = ItemRegistry.GOLD_FISH.getDefaultStack();
+            FishUtil.putCaughtBy(goldFish, context.getSource().getPlayer().getUuid());
+            context.getSource().getPlayer().giveItemStack(goldFish);
+            return 0;
         }));
     }
 
     public static void registerResetSpellCooldown(){
         rootCommand.then(literal("reset_cooldown").executes(context -> {
             FishingCard.getPlayerCard(context.getSource().getPlayer()).resetCooldown();
-            return 1;
+            return 0;
         }));
     }
 
@@ -79,7 +91,7 @@ public class Commands {
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
         }
-        return 1;
+        return 0;
     }
 
     private static int addCredit(CommandContext<ServerCommandSource> context, String targetName){
@@ -91,7 +103,7 @@ public class Commands {
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
         }
-        return 1;
+        return 0;
     }
 
     private static int setCredit(CommandContext<ServerCommandSource> context, String targetName){
@@ -103,7 +115,7 @@ public class Commands {
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
         }
-        return 1;
+        return 0;
     }
 
     public static void registerAdd(){
@@ -134,7 +146,7 @@ public class Commands {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             registerSummonAccept();
             registerInfo();
-            registerSummonAccept();
+            registerGoldFish();
             registerResetSpellCooldown();
             registerAdd();
             registerSet();

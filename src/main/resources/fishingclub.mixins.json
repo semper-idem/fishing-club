@@ -6,6 +6,7 @@
   "mixins": [
     "common.CraftingResultInventoryMixin",
     "common.EnchantmentHelperMixin",
+    "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
     "common.PlayerEntityMixin",
     "common.ServerWorldMixin",

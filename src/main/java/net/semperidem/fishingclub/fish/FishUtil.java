@@ -29,18 +29,27 @@ public class FishUtil {
     private static final String CAUGHT_BY_TAG = "caught_by";
 
 
-    public static ItemStack getFishStack(Fish fish){
-        return getFishStack(fish, 1);
+    public static ItemStack getStackFromFish(Fish fish){
+        return getStackFromFish(fish, 1);
     }
 
-    public static ItemStack getFishStack(Fish fish, int count){
+    public static ItemStack getStackFromFish(Fish fish, int count){
         ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
         setFishDetails(fishReward, fish);
         fishReward.setCount(count);
         return fishReward;
     }
 
-    public static UUID getSummonerUUID(ItemStack spawnedFrom) {
+    public static Fish getFishFromStack(ItemStack fishStack) {
+        NbtCompound itemNbt = fishStack.getOrCreateNbt();
+        if (!itemNbt.contains("fish_details")) {
+            return null;
+        }
+        return new Fish(itemNbt.getCompound("fish_details"));
+    }
+
+    //Used by goldfish only
+    public static UUID getCaughtBy(ItemStack spawnedFrom) {
         NbtCompound itemNbt = spawnedFrom.getOrCreateNbt();
         if (!itemNbt.containsUuid(CAUGHT_BY_TAG)) {
              return null;
@@ -48,16 +57,21 @@ public class FishUtil {
         return itemNbt.getUuid(CAUGHT_BY_TAG);
     }
 
+    //Used by goldfish only
+    public static void putCaughtBy(ItemStack spawnedFrom, UUID uuid) {
+        spawnedFrom.getOrCreateNbt().putUuid(CAUGHT_BY_TAG, uuid);
+    }
+
     public static void fishCaught(ServerPlayerEntity player, Fish fish){
         FishingCard fishingCard = FishingCard.getPlayerCard(player);
         fishingCard.fishCaught(fish);
-        giveItemStack(player, getFishStack(fish, getRewardMultiplier(fishingCard)));
+        giveItemStack(player, getStackFromFish(fish, getRewardMultiplier(fishingCard)));
     }
 
     public static void fishCaughtAt(ServerPlayerEntity player, Fish fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.getPlayerCard(player);
         fishingCard.fishCaught(fish);
-        throwRandomly(player.getWorld(), caughtAt, getFishStack(fish));
+        throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
     }
 
     public static void giveReward(ServerPlayerEntity player, ArrayList<ItemStack> treasureReward){
