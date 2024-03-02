@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.screen.dialog;
 
 public enum DialogKey {
         GOLDEN, GRADE, SPELL, //SummonType

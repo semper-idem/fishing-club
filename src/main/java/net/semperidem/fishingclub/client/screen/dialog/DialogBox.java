@@ -7,6 +7,8 @@ import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.screen.dialog.DialogNode;
+import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 
 import java.awt.*;
 import java.util.ArrayList;

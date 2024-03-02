@@ -23,12 +23,12 @@ import net.minecraft.util.Pair;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.dialog.DialogKey;
-import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandlerFactory;
-import net.semperidem.fishingclub.client.screen.dialog.DialogUtil;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.screen.dialog.DialogKey;
+import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
+import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -99,7 +99,7 @@ public class FishermanEntity extends WanderingTraderEntity {
         if (spawnedFrom.isEmpty() || summonerUUID == null) {
             return;
         }
-        this.summonType = spawnedFrom.isOf(FishUtil.FISH_ITEM) ? SummonType.HIGH_GRADE_FISH : SummonType.GOLDEN_FISH;
+        this.summonType = spawnedFrom.isOf(FishUtil.FISH_ITEM) ? SummonType.GRADE : SummonType.GOLDEN;
         this.summonerUUID = summonerUUID;
     }
 
@@ -155,8 +155,8 @@ public class FishermanEntity extends WanderingTraderEntity {
 
 
     public enum SummonType {
-        GOLDEN_FISH,
-        HIGH_GRADE_FISH,
+        GOLDEN,
+        GRADE,
         SPELL
     }
 }

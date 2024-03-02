@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.screen.dialog;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;

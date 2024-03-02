@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.screen.dialog;
 
 public class Responses {
     public static final String EXIT = "[EXIT]";

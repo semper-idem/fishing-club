@@ -9,6 +9,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.screen.dialog.DialogKey;
+import net.semperidem.fishingclub.screen.dialog.DialogNode;
+import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
+import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 
 import java.awt.*;
 import java.util.Set;

@@ -1,12 +1,11 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.screen.dialog;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DialogNode {
-    String title;
-    String content;
-    ArrayList<DialogNode> questions;
+    public final String title;
+    public final String content;
+    public final ArrayList<DialogNode> questions;
 
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
@@ -20,9 +19,5 @@ public class DialogNode {
 
     public void chain(DialogNode question) {
         questions.add(question);
-    }
-
-    public List<DialogNode> getQuestions() {
-        return questions;
     }
 }

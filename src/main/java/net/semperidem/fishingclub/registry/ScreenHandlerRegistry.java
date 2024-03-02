@@ -6,7 +6,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
-import net.semperidem.fishingclub.client.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
@@ -15,6 +14,7 @@ import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 

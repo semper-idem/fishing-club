@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.screen.dialog;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import static net.semperidem.fishingclub.client.screen.dialog.DialogKey.*;
+import static net.semperidem.fishingclub.screen.dialog.DialogKey.*;
 
 
 public class DialogUtil {

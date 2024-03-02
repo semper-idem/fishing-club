@@ -6,12 +6,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
 import java.util.HashSet;
 
