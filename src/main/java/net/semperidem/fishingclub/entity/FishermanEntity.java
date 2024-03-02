@@ -1,9 +1,7 @@
 package net.semperidem.fishingclub.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
@@ -16,12 +14,13 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -44,24 +43,44 @@ public class FishermanEntity extends WanderingTraderEntity {
 
     public FishermanEntity(World world) {
         super(EntityTypeRegistry.FISHERMAN, world);
+        this.setCustomName(Text.of("Derek ol'Stinker"));
+    }
+
+    public static void summonDerek(Vec3d pos, ServerWorld serverWorld, ItemStack itemStack, UUID uuid) {
+        FishermanEntity derek = getDerek(serverWorld, itemStack, uuid);
+        derek.putInBoat();
+        derek.moveToSummonPosition(pos, serverWorld);
+        serverWorld.spawnEntity(derek);
+        serverWorld.getEntitiesByType(EntityTypeRegistry.FISHERMAN, o -> o != DEREK.getRight()).forEach(Entity::discard);
+        onSummonEffect(serverWorld, derek);
+    }
+
+    private void moveToSummonPosition(Vec3d pos, ServerWorld serverWorld) {
+        while(serverWorld.isWater(new BlockPos(pos))) {
+            pos = pos.add(0, 1, 0);
+        }
+        if (hasVehicle()) {
+            getVehicle().setPosition(pos);
+        }
+        setPosition(pos);
     }
 
     public static FishermanEntity getDerek(ServerWorld world, ItemStack spawnedFrom, UUID summonerUUID) {
         if (DEREK == null || DEREK.getLeft() != world) {
             DEREK = new Pair<>(world, new FishermanEntity(world));
         }
-        discardOldDerek(world);//seems like cursed code fix later
         DEREK.getRight().setSummonDetails(spawnedFrom, summonerUUID);
         return DEREK.getRight();
     }
 
-    private static void discardOldDerek(ServerWorld world) {
-        for(Entity fisher : world.getEntitiesByType(EntityTypeRegistry.FISHERMAN, o -> true)) {
-            if (fisher == DEREK.getRight()) {
-                continue;
-            }
-            fisher.discard();
+    private void putInBoat() {
+        if (this.fluidHeight.getDouble(FluidTags.WATER) == 0.0 || this.hasVehicle()) {
+            return;
         }
+        ChestBoatEntity boat = new ChestBoatEntity(EntityType.CHEST_BOAT, world);
+        boat.setPosition(getX(), getY(), getZ());
+        startRiding(boat);
+        world.spawnEntity(boat);
     }
 
     public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -92,6 +111,9 @@ public class FishermanEntity extends WanderingTraderEntity {
         nbt.getList("talkedTo", NbtElement.INT_ARRAY_TYPE).forEach(
                 talkedToUUID -> talkedTo.add(NbtHelper.toUuid(talkedToUUID))
         );
+        if (world instanceof ServerWorld serverWorld){
+            DEREK = new Pair<>(serverWorld, this);
+        }
     }
 
 
@@ -113,24 +135,6 @@ public class FishermanEntity extends WanderingTraderEntity {
 
     public SummonType getSummonType() {
         return summonType;
-    }
-
-    @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt) {
-        this.setCustomName(Text.of("Derek ol'Stinker"));
-        if (!this.hasVehicle()) {
-            // Create the boat.
-            ChestBoatEntity boat = new ChestBoatEntity(EntityType.CHEST_BOAT, (World) world);
-            boat.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0, 0.0F);
-            this.startRiding(boat);
-            world.spawnEntity(boat);
-        }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
     }
 
     @Override
