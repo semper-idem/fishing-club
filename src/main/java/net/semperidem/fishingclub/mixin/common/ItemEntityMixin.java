@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -76,10 +75,7 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Unique
     private void summonDerek() {
-        if (!(world instanceof ServerWorld serverWorld)) {
-            return;
-        }
-        FishermanEntity.summonDerek(getPos(), serverWorld, getStack(), summonerUUID);
+        FishermanEntity.summonDerek(getPos(), world, getStack(), summonerUUID);
         discard();
     }
 }
