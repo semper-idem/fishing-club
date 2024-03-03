@@ -9,8 +9,7 @@
     "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
     "common.PlayerEntityMixin",
-    "common.ServerWorldMixin",
-    "common.WanderingTraderEntityMixin"
+    "common.ServerWorldMixin"
   ],
   "client": [
     "client.InGameHudMixin",

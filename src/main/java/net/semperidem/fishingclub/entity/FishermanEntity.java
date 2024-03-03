@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.WanderingTraderEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.ItemStack;
@@ -10,10 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -28,12 +25,15 @@ import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
+import net.semperidem.fishingclub.util.EffectUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class FishermanEntity extends WanderingTraderEntity {
+
+public class FishermanEntity extends PassiveEntity {
     private static Pair<ServerWorld, FishermanEntity> DEREK;
 
 
@@ -41,9 +41,12 @@ public class FishermanEntity extends WanderingTraderEntity {
     private final ArrayList<UUID> talkedTo = new ArrayList<>();
     private UUID summonerUUID;
 
-    public FishermanEntity(World world) {
-        super(EntityTypeRegistry.FISHERMAN, world);
-        this.setCustomName(Text.of("Derek ol'Stinker"));
+    public static FishermanEntity getDerek(ServerWorld world, ItemStack spawnedFrom, UUID summonerUUID) {
+        if (DEREK == null || DEREK.getLeft() != world) {
+            DEREK = new Pair<>(world, new FishermanEntity(world));
+        }
+        DEREK.getRight().setSummonDetails(spawnedFrom, summonerUUID);
+        return DEREK.getRight();
     }
 
     public static void summonDerek(Vec3d pos, ServerWorld serverWorld, ItemStack itemStack, UUID uuid) {
@@ -52,8 +55,14 @@ public class FishermanEntity extends WanderingTraderEntity {
         derek.moveToSummonPosition(pos, serverWorld);
         serverWorld.spawnEntity(derek);
         serverWorld.getEntitiesByType(EntityTypeRegistry.FISHERMAN, o -> o != DEREK.getRight()).forEach(Entity::discard);
-        onSummonEffect(serverWorld, derek);
+        EffectUtils.onDerekSummonEffect(serverWorld, derek);
     }
+
+    public FishermanEntity(World world) {
+        super(EntityTypeRegistry.FISHERMAN, world);
+        this.setCustomName(Text.of("Derek ol'Stinker"));
+    }
+
 
     private void moveToSummonPosition(Vec3d pos, ServerWorld serverWorld) {
         while(serverWorld.isWater(new BlockPos(pos))) {
@@ -65,13 +74,6 @@ public class FishermanEntity extends WanderingTraderEntity {
         setPosition(pos);
     }
 
-    public static FishermanEntity getDerek(ServerWorld world, ItemStack spawnedFrom, UUID summonerUUID) {
-        if (DEREK == null || DEREK.getLeft() != world) {
-            DEREK = new Pair<>(world, new FishermanEntity(world));
-        }
-        DEREK.getRight().setSummonDetails(spawnedFrom, summonerUUID);
-        return DEREK.getRight();
-    }
 
     private void putInBoat() {
         if (this.fluidHeight.getDouble(FluidTags.WATER) == 0.0 || this.hasVehicle()) {
@@ -81,6 +83,12 @@ public class FishermanEntity extends WanderingTraderEntity {
         boat.setPosition(getX(), getY(), getZ());
         startRiding(boat);
         world.spawnEntity(boat);
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return null;
     }
 
     public void writeCustomDataToNbt(NbtCompound nbt) {
@@ -139,7 +147,7 @@ public class FishermanEntity extends WanderingTraderEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        if(!isClient()) {
+        if(!world.isClient) {
             HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
             FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
@@ -147,16 +155,6 @@ public class FishermanEntity extends WanderingTraderEntity {
         }
         return ActionResult.CONSUME;
     }
-
-    public static void onSummonEffect(ServerWorld serverWorld, FishermanEntity fishermanEntity) {
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, fishermanEntity.getX(), fishermanEntity.getY() + 1, fishermanEntity.getZ(), 50,1,1,1,0.01);
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, fishermanEntity.getX(), fishermanEntity.getY() + 1, fishermanEntity.getZ(), 50,1,1,1,0.02);
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, fishermanEntity.getX(), fishermanEntity.getY() + 1, fishermanEntity.getZ(), 50,1,1,1,0.03);
-        serverWorld.spawnParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, fishermanEntity.getX(), fishermanEntity.getY() + 1, fishermanEntity.getZ(), 50,1,1,1,0.01);
-        serverWorld.spawnParticles(ParticleTypes.EXPLOSION, fishermanEntity.getX(), fishermanEntity.getY() + 2, fishermanEntity.getZ(), 10,0.5,0.5,0.5,0.1);
-        serverWorld.playSound(null, fishermanEntity.getX(), fishermanEntity.getY(), fishermanEntity.getZ(), SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.PLAYERS, 0.3f, 0.2f, 0L);
-    }
-
 
     public enum SummonType {
         GOLDEN,

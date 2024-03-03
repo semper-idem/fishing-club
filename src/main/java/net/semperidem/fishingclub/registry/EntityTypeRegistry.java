@@ -18,6 +18,7 @@ import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRende
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 
 public class EntityTypeRegistry {
@@ -65,9 +66,13 @@ public class EntityTypeRegistry {
                     .build()
     );
     public static final EntityModelLayer MODEL_HARPOON_LAYER = new EntityModelLayer(FishingClub.getIdentifier("harpoon_rod"), "main");
+    public static final EntityModelLayer MODEL_FISHERMAN_LAYER = new EntityModelLayer(FishingClub.getIdentifier("fisherman"), "main");
 
 
     public static void register(){
+        EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(MODEL_FISHERMAN_LAYER, FishermanEntityModel::getTextureModelData);
+
         FabricDefaultAttributeRegistry.register(FISHERMAN, FishermanEntity.createMobAttributes());
 
         EntityRendererRegistry.register(FISHERMAN, FishermanEntityRenderer::new);
@@ -75,7 +80,6 @@ public class EntityTypeRegistry {
         EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
         EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
 
-        EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
 
     }
 }
