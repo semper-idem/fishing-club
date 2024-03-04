@@ -10,6 +10,7 @@ public class FishermanEntityModel<T extends Entity> extends VillagerResemblingMo
         super(root);
     }
 
+
     public static TexturedModelData getTextureModelData() {
         return TexturedModelData.of(FishermanEntityModel.getModelData(), 64, 64);
     }

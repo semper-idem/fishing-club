@@ -1,20 +1,18 @@
 package net.semperidem.fishingclub.entity;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.*;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -23,6 +21,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -59,58 +58,26 @@ public class FishermanEntity extends PassiveEntity {
     private SummonType summonType = SummonType.SPELL;
     private final ArrayList<UUID> talkedTo = new ArrayList<>();
     private UUID summonerUUID;
-    private BoatMoveControl boatMoveControl;
 
 
     @Override
-    public void setMovementSpeed(float movementSpeed) {
-        if (movementSpeed > 0 && (hasVehicle() && getVehicle() instanceof BoatEntity boatEntity)) {
-            float r = movementSpeed;
-            float x = (float) (r*Math.sin(getYaw()));
-            float z = (float) (r*Math.cos(getYaw()));
-            boatEntity.setVelocity(new Vec3d(x,0,z));
+    public void setPosition(double x, double y, double z) {
+        FluidState fluidState = world.getFluidState(new BlockPos(x,y,z));
+
+        if ((fluidState.isIn(FluidTags.WATER))) {
+            super.setPosition(x, y - 1 + fluidState.getHeight(), z);
         }
-        super.setMovementSpeed(movementSpeed);
+        super.setPosition(x, y, z);
     }
+
 
     @Override
-    public void setYaw(float yaw) {
-        super.setYaw(yaw);
-        if ((hasVehicle() && getVehicle() instanceof BoatEntity boatEntity)) {
-            boatEntity.setYaw(yaw);
+    public void updateVelocity(float speed, Vec3d movementInput) {
+        if (isSubmergedInWater() || world.getFluidState(getBlockPos()).isIn(FluidTags.WATER)) {
+            setVelocity(getVelocity().add(0,0.01,0));
         }
+        super.updateVelocity(speed, movementInput);
     }
-
-    private static class BoatLookControl extends LookControl {
-        public BoatLookControl(MobEntity entity) {
-            super(entity);
-        }
-
-        public void tick() {
-            if (this.shouldStayHorizontal()) {
-                this.entity.setPitch(0.0F);
-            }
-
-            if (this.field_35103 > 0) {
-                --this.field_35103;
-                this.getTargetYaw().ifPresent((yaw) -> {
-                    this.entity.headYaw = this.changeAngle(this.entity.headYaw, yaw, this.maxYawChange);
-                    this.entity.setYaw(yaw);
-                    if (entity.hasVehicle()) {
-                        entity.getVehicle().setYaw(yaw);
-                    }
-                });
-                this.getTargetPitch().ifPresent((pitch) -> {
-                    this.entity.setPitch(this.changeAngle(this.entity.getPitch(), pitch, this.maxPitchChange));
-                });
-            } else {
-                this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0F);
-            }
-
-            this.clampHeadYaw();
-        }
-    }
-
 
     private static class BoatMoveControl extends MoveControl {
         public BoatMoveControl(MobEntity entity) {
@@ -127,6 +94,7 @@ public class FishermanEntity extends PassiveEntity {
             }
 
         }
+
     }
     private static class BoatNavigation extends MobNavigation {
         BoatNavigation(FishermanEntity entity, World world) {
@@ -145,24 +113,23 @@ public class FishermanEntity extends PassiveEntity {
 
         @Override
         public boolean isValidPosition(BlockPos pos) {
-            return this.world.getBlockState(pos).isOf(Blocks.WATER) || super.isValidPosition(pos);
+            return (this.world.getBlockState(pos.up()).isOf(Blocks.AIR) && this.world.getBlockState(pos).isOf(Blocks.WATER) )|| super.isValidPosition(pos);
         }
     }
 
     protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new FleeEntityGoal(this, ZoglinEntity.class, 10.0F, 0.5, 0.5));
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new FleeEntityGoal(this, ZoglinEntity.class, 10.0F, 0.5, 0.5));
+//        this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
         this.goalSelector.add(2, new WanderAroundGoal(this, 1, 60));
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
-        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
-        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+//        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
+//        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
+//        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
     }
 
@@ -184,29 +151,7 @@ public class FishermanEntity extends PassiveEntity {
         this.setCustomName(Text.of("Derek ol'Stinker"));
         this.moveControl = new BoatMoveControl(this);
         this.navigation = new BoatNavigation(this, world);
-        this.lookControl = new BoatLookControl(this);
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
-    }
-
-
-    private void moveToSummonPosition(Vec3d pos, World world) {
-        while(world.isWater(new BlockPos(pos))) {
-            pos = pos.add(0, 1, 0);
-        }
-        if (hasVehicle()) {
-            getVehicle().setPosition(pos);
-        }
-        setPosition(pos);
-    }
-
-
-    private void putInBoat() {
-        if (this.hasVehicle()) {
-            return;
-        }
-        ChestBoatEntity boat = new ChestBoatEntity(EntityType.CHEST_BOAT, world);
-        startRiding(boat);
-        world.spawnEntity(boat);
     }
 
     @Nullable
@@ -290,8 +235,10 @@ public class FishermanEntity extends PassiveEntity {
 
     public static void summonDerek(Vec3d pos, World world, ItemStack itemStack, UUID uuid) {
         FishermanEntity derek = getDerek(world, itemStack, uuid);
-        derek.putInBoat();
-        derek.moveToSummonPosition(pos, world);
+        while(world.isWater(new BlockPos(pos))) {
+            pos = pos.add(0, 1, 0);
+        }
+        derek.refreshPositionAndAngles(pos.x, pos.y, pos.z ,derek.getYaw(), derek.getPitch());
         world.spawnEntity(derek);
         //serverWorld.getEntitiesByType(EntityTypeRegistry.FISHERMAN, o -> o != DEREK.getRight()).forEach(Entity::discard);
         if (world instanceof  ServerWorld serverWorld) {
