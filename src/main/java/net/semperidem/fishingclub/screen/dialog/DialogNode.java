@@ -10,7 +10,7 @@ public class DialogNode {
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
         this.content = response;
-        this.title = title;
+        this.title = Responses.actions.contains(response) ? response + title : title;
     }
 
     public DialogNode(String response) {

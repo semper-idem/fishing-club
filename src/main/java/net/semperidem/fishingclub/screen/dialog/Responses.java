@@ -1,8 +1,16 @@
 package net.semperidem.fishingclub.screen.dialog;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Responses {
     public static final String EXIT = "[EXIT]";
     public static final String TRADE = "[TRADE]";
+    public static final HashSet<String> actions = new HashSet<>(Set.of(
+            EXIT,
+            TRADE
+    ));
+
 
     public static final String start_itMustBeYours = """
             Oh, this must be your gold fish... It doesn't grant any wishes,
@@ -27,7 +35,7 @@ public class Responses {
 
     public static final String itsAllRight = """
             It's alright I'm sorry it's yours.
-            I won't bother you anymore...(Reduce despawn timer)
+            I won't bother you anymore...
             """;
 
     public static final String wellNoRod = """
@@ -44,7 +52,8 @@ public class Responses {
             """;
 
     public static final String youDontExist = """
-            (Seems like he doesn't acknowledge your existence, almost like you are a ghost to him...)
+            (Seems like he doesn't acknowledge your existence,
+            almost like you are a ghost to him...)
             """;
 
     public static final String start_soCanIHaveIt = """
@@ -53,7 +62,8 @@ public class Responses {
 
     public static final String start_huhWhat = """
             Huh? What? Damn I almost had this bastard.
-            Must've been really rare fish, fought fiercely and had glowing almost hypnotizing eyes...
+            Must've been really rare fish, fought fiercely and had glowing,
+            almost hypnotizing eyes...
             ahh never mind how can I help you?
             """;
 
@@ -73,14 +83,15 @@ public class Responses {
 
     public static final String hahaWhy = """
             Hah, why would you throw it away then, thought you're good fisher,
-            someone who appreciates things of value... 
-            I'll take better care of you (seems like you've lost him, he's talking to fish...)
+            someone who appreciates things of value... I'll take
+            better care of you (seems like you've lost him,
+            he's talking to fish...)
             """;
 
     public static final String silly = """
             Yeah right, do i look like silly to you?
-            You are not a fisher, you either stole it or found it before me either way
-            I'm disappointed. Ok I'll give it back.
+            You are not a fisher, you either stole it or found it
+            before me either way I'm disappointed... Ok I'll give it back.
             """;
 
     public static final String start_Disrespect = """

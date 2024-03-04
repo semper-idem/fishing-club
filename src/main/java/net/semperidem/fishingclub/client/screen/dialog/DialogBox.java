@@ -7,8 +7,10 @@ import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
+import net.semperidem.fishingclub.screen.dialog.Responses;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -133,6 +135,14 @@ public class DialogBox extends ScrollableWidget{
             lineInQueue = responseLinesQueue.get(0);
             lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
             tick = -5;
+            processAction(lineInQueue);
+        }
+    }
+
+    private void processAction(String lineInQueue) {
+        switch (lineInQueue) {
+            case Responses.EXIT -> MinecraftClient.getInstance().currentScreen.close();
+            case Responses.TRADE -> ClientPacketSender.sendOpenSellShopRequest();
         }
     }
 
