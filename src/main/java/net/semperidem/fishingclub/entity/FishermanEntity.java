@@ -25,7 +25,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -44,6 +46,18 @@ import java.util.UUID;
 
 public class FishermanEntity extends PassiveEntity {
     private static Pair<ServerWorld, FishermanEntity> DEREK;
+	private final float[] paddlePhases = new float[2];
+    private PlayerEntity customer;
+    int ticks;
+    int despawnTimer;
+
+    public FishermanEntity(World world) {
+        super(EntityTypeRegistry.FISHERMAN, world);
+        this.setCustomName(Text.of("Derek ol'Stinker"));
+        this.intersectionChecked = true;
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
+        this.despawnTimer = 100;
+    }
 
 
     @Override
@@ -68,8 +82,57 @@ public class FishermanEntity extends PassiveEntity {
         return state.isIn(FluidTags.WATER);
     }
 
+    private boolean isPaddleMoving(int paddle) {
+        return limbDistance > 0.01;
+    }
+
+    @Override
+    public boolean hasVehicle() {
+        return isSubmergedInWater();
+    }
+
+    protected SoundEvent getPaddleSoundEvent() {
+        return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
+    }
+
+    @Override
+    public void tickMovement() {
+        if (customer != null) {
+            return;
+        }
+        despawnTimer--;
+        super.tickMovement();
+    }
+
     @Override
     public void tick() {
+        if (despawnTimer <= 0) {
+            if (world instanceof ServerWorld serverWorld) {
+                EffectUtils.onDerekDisappearEffect(serverWorld, this);
+            }
+            this.discard();
+        }
+        ticks++;
+
+        for(int i = 0; i <= 1; ++i) {
+            if (this.isPaddleMoving(i)) {
+                if (!this.isSilent() && (double)(this.paddlePhases[i] % 6.2831855F) <= 0.7853981852531433 && (double)((this.paddlePhases[i] + 0.3926991F) % 6.2831855F) >= 0.7853981852531433) {
+                    SoundEvent soundEvent = this.getPaddleSoundEvent();
+                    if (soundEvent != null) {
+                        Vec3d vec3d = this.getRotationVec(1.0F);
+                        double d = i == 1 ? -vec3d.z : vec3d.z;
+                        double e = i == 1 ? vec3d.x : -vec3d.x;
+                        this.world.playSound((PlayerEntity)null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+                    }
+                }
+
+                float[] var10000 = this.paddlePhases;
+                var10000[i] += 0.3926991F;
+            } else {
+                this.paddlePhases[i] = 0.0F;
+            }
+        }
+
         super.tick();
         if (isInWater()) {
             ShapeContext shapeContext = ShapeContext.of(this);
@@ -99,6 +162,10 @@ public class FishermanEntity extends PassiveEntity {
         } else {
             super.fall(heightDifference, onGround, state, landedPosition);
         }
+    }
+
+    public float interpolatePaddlePhase(int paddle, float tickDelta) {
+        return this.isPaddleMoving(paddle) ? MathHelper.clampedLerp(this.paddlePhases[paddle] - 0.3926991F, this.paddlePhases[paddle], tickDelta) : 0.0F;
     }
 
     private static class BoatNavigation extends MobNavigation {
@@ -151,13 +218,6 @@ public class FishermanEntity extends PassiveEntity {
 
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_WANDERING_TRADER_DEATH;
-    }
-
-    public FishermanEntity(World world) {
-        super(EntityTypeRegistry.FISHERMAN, world);
-        this.setCustomName(Text.of("Derek ol'Stinker"));
-        this.intersectionChecked = true;
-        this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
     }
 
     @Nullable
@@ -222,13 +282,21 @@ public class FishermanEntity extends PassiveEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        if(!world.isClient) {
+        if(!world.isClient && customer == null) {
             HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
             FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
-            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
+            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet, this));
+            setCustomer(playerEntity);
         }
         return ActionResult.CONSUME;
+    }
+
+    public void setCustomer(@Nullable PlayerEntity customer) {
+        this.customer = customer;
+    }
+    public PlayerEntity getCustomer() {
+        return customer;
     }
 
     public static FishermanEntity getDerek(World world, ItemStack spawnedFrom, UUID summonerUUID) {
@@ -241,10 +309,8 @@ public class FishermanEntity extends PassiveEntity {
 
     public static void summonDerek(Vec3d pos, World world, ItemStack itemStack, UUID uuid) {
         FishermanEntity derek = getDerek(world, itemStack, uuid);
-        while(world.isWater(new BlockPos(pos))) {
-            pos = pos.add(0, 1, 0);
-        }
-        derek.refreshPositionAndAngles(pos.x, pos.y, pos.z ,derek.getYaw(), derek.getPitch());
+        Vec3d waterSurface = new Vec3d(pos.x, world.getTopY(Heightmap.Type.MOTION_BLOCKING, (int)pos.x, (int)pos.z), pos.z);
+        derek.refreshPositionAndAngles(waterSurface.x, waterSurface.y, waterSurface.z ,derek.getYaw(), derek.getPitch());
         world.spawnEntity(derek);
         //serverWorld.getEntitiesByType(EntityTypeRegistry.FISHERMAN, o -> o != DEREK.getRight()).forEach(Entity::discard);
         if (world instanceof  ServerWorld serverWorld) {

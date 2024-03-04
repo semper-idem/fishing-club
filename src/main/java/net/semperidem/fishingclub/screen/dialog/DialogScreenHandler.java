@@ -5,20 +5,22 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.HashSet;
 
 public class DialogScreenHandler extends ScreenHandler {
     HashSet<DialogKey> openingKeys;
+    FishermanEntity fishermanEntity;
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory,  buf.readString());
+        this(syncId, playerInventory,  buf.readString(), null);
     }
 
-
-    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString) {
+    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString, FishermanEntity fishermanEntity) {
         super(ScreenHandlerRegistry.DIALOG_SCREEN, syncId);
-        openingKeys = DialogUtil.getKeysFromString(openingKeyString);
+        this.openingKeys = DialogUtil.getKeysFromString(openingKeyString);
+        this.fishermanEntity = fishermanEntity;
     }
 
     public HashSet<DialogKey> getOpeningKeys(){
@@ -32,5 +34,13 @@ public class DialogScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return true;
+    }
+
+    @Override
+    public void close(PlayerEntity player) {
+        if (fishermanEntity != null) {
+            fishermanEntity.setCustomer(null);
+        }
+        super.close(player);
     }
 }

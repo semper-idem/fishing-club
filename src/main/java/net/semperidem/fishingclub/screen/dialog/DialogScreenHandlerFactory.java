@@ -7,15 +7,18 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
 public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory {
     HashSet<DialogKey> openingKeys;
+    FishermanEntity fishermanEntity;
 
-    public DialogScreenHandlerFactory(HashSet<DialogKey> openingKeys) {
+    public DialogScreenHandlerFactory(HashSet<DialogKey> openingKeys, FishermanEntity fishermanEntity) {
         this.openingKeys = openingKeys;
+        this.fishermanEntity = fishermanEntity;
     }
     @Override
     public Text getDisplayName() {
@@ -25,7 +28,7 @@ public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new DialogScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys));
+        return new DialogScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys), fishermanEntity);
     }
 
     @Override
