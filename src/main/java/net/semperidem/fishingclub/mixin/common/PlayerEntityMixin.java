@@ -62,4 +62,5 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
     public Arm getMainArm() {
         return null;
     }
+
 }

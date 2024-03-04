@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -58,14 +59,14 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        if (itemAge < 100) {
+        if (itemAge < 100) {//TODO
             return;
         }
 
         if (!isSubmergedInWater()) {
             return;
         }
-//
+//TODO
 //        if (!(world.getBiome(getBlockPos()).isIn(BiomeTags.IS_OCEAN) || world.getBiome(getBlockPos()).isIn(BiomeTags.IS_RIVER))) {
 //            return;
 //        }
@@ -75,7 +76,10 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Unique
     private void summonDerek() {
-        FishermanEntity.summonDerek(getPos(), world, getStack(), summonerUUID);
+        if (!(world instanceof ServerWorld serverWorld)) {
+            return;
+        }
+        FishermanEntity.summonDerek(getPos(), serverWorld, getStack(), summonerUUID);
         discard();
     }
 }

@@ -17,6 +17,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.semperidem.fishingclub.FishingServerWorld;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -28,10 +30,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin extends World {
+public abstract class ServerWorldMixin extends World implements FishingServerWorld {
+    @Unique
+    private FishermanEntity derek;
 
     protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
         super(properties, registryRef, dimension, profiler, isClient, debugWorld, seed, maxChainedNeighborUpdates);
@@ -90,5 +95,21 @@ public abstract class ServerWorldMixin extends World {
                 }),
                 explosionPos
         );
+    }
+
+
+    @Unique
+    @Override
+    public FishermanEntity getDerek(ItemStack summonedUsing, UUID summonedBy) {
+        if (derek == null || derek.isRemoved()) {
+            derek = new FishermanEntity(this, summonedUsing, summonedBy);
+        }
+        return derek;
+    }
+
+    @Unique
+    @Override
+    public void setDerek(FishermanEntity derek) {
+        this.derek = derek;
     }
 }
