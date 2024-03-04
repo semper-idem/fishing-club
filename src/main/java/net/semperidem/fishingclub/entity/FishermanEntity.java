@@ -1,15 +1,13 @@
 package net.semperidem.fishingclub.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -29,6 +27,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
@@ -62,47 +61,53 @@ public class FishermanEntity extends PassiveEntity {
 
     @Override
     public void setPosition(double x, double y, double z) {
-        FluidState fluidState = world.getFluidState(new BlockPos(x,y,z));
-
-        if ((fluidState.isIn(FluidTags.WATER))) {
-            super.setPosition(x, y - 1 + fluidState.getHeight(), z);
-        }
         super.setPosition(x, y, z);
     }
 
+    public boolean canWalkOnFluid(FluidState state) {
+        return state.isIn(FluidTags.WATER);
+    }
 
     @Override
-    public void updateVelocity(float speed, Vec3d movementInput) {
-        if (isSubmergedInWater() || world.getFluidState(getBlockPos()).isIn(FluidTags.WATER)) {
-            setVelocity(getVelocity().add(0,0.01,0));
-        }
-        super.updateVelocity(speed, movementInput);
-    }
-
-    private static class BoatMoveControl extends MoveControl {
-        public BoatMoveControl(MobEntity entity) {
-            super(entity);
-        }
-
-        public void moveTo(double x, double y, double z, double speed) {
-            this.targetX = x;
-            this.targetY = y;
-            this.targetZ = z;
-            this.speed = speed;
-            if (this.state != MoveControl.State.JUMPING) {
-                this.state = MoveControl.State.MOVE_TO;
+    public void tick() {
+        super.tick();
+        if (isInWater()) {
+            ShapeContext shapeContext = ShapeContext.of(this);
+            if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
+                this.onGround = true;
+            } else {
+                this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
             }
-
         }
-
+        this.checkBlockCollision();
     }
+
+    public boolean isInWater() {
+        return !this.firstUpdate && this.fluidHeight.getDouble(FluidTags.WATER) > 0.0;
+    }
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        if (world.getBlockState(pos).getFluidState().isIn(FluidTags.WATER) && world.getBlockState(pos.up()).getFluidState().isEmpty()) {
+            return 10.0F;
+        } else {
+            return this.isInWater() ? Float.NEGATIVE_INFINITY : 0.0F;
+        }
+    }
+    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+        this.checkBlockCollision();
+        if (isInWater()) {
+            this.onLanding();
+        } else {
+            super.fall(heightDifference, onGround, state, landedPosition);
+        }
+    }
+
     private static class BoatNavigation extends MobNavigation {
         BoatNavigation(FishermanEntity entity, World world) {
             super(entity, world);
         }
 
         protected PathNodeNavigator createPathNodeNavigator(int range) {
-            this.nodeMaker = new LandPathNodeMaker();
+            this.nodeMaker = new AmphibiousPathNodeMaker(false);
             this.nodeMaker.setCanEnterOpenDoors(true);
             return new PathNodeNavigator(this.nodeMaker, range);
         }
@@ -113,26 +118,28 @@ public class FishermanEntity extends PassiveEntity {
 
         @Override
         public boolean isValidPosition(BlockPos pos) {
-            return (this.world.getBlockState(pos.up()).isOf(Blocks.AIR) && this.world.getBlockState(pos).isOf(Blocks.WATER) )|| super.isValidPosition(pos);
+            return this.world.getBlockState(pos).isOf(Blocks.WATER) || super.isValidPosition(pos);
         }
     }
 
     protected void initGoals() {
-//        this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new FleeEntityGoal(this, ZoglinEntity.class, 10.0F, 0.5, 0.5));
-//        this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
-        this.goalSelector.add(2, new WanderAroundGoal(this, 1, 60));
-//        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
-//        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
-//        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+        this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new FleeEntityGoal(this, ZoglinEntity.class, 10.0F, 0.5, 0.5));
+        this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
+        this.goalSelector.add(2, new WanderAroundGoal(this, 0.35));
+        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
+        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
+        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
     }
-
+    protected EntityNavigation createNavigation(World world) {
+        return new BoatNavigation(this, world);
+    }
 
     protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_WANDERING_TRADER_AMBIENT;
@@ -149,8 +156,7 @@ public class FishermanEntity extends PassiveEntity {
     public FishermanEntity(World world) {
         super(EntityTypeRegistry.FISHERMAN, world);
         this.setCustomName(Text.of("Derek ol'Stinker"));
-        this.moveControl = new BoatMoveControl(this);
-        this.navigation = new BoatNavigation(this, world);
+        this.intersectionChecked = true;
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
     }
 
