@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;

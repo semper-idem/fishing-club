@@ -92,7 +92,7 @@ public class DialogUtil {
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, REPEATED, NOT_UNIQUE, NOT_WELCOME, SUMMONER), disappointed);
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, NOT_WELCOME, SUMMONER), notMemberDamn);
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, WELCOME, SUMMONER), memberDamn);
-        DialogNode gradeTrade = new DialogNode("Well it was me but you can have it. Let's trade.", Responses.TRADE);
+        DialogNode gradeTrade = new DialogNode("Well it was mine but you can have it. Let's trade.", Responses.TRADE);
         gradeTrade.setSpecialAction(Responses.TRADE);
         memberDamn.chain(gradeTrade);
         DialogNode giveItBackMember = new DialogNode("Hey it was mine, give it back!", Responses.hahaWhy);
@@ -106,9 +106,9 @@ public class DialogUtil {
         DialogNode okBye = new DialogNode("Okay... bye.", Responses.EXIT);
         okBye.setSpecialAction(Responses.EXIT);
         giveItBackMember.chain(okBye);
-        DialogNode youCanHaveIt = new DialogNode("Well it was me but you can have it I guess.", Responses.hereTakeThisFishingRod);
+        DialogNode youCanHaveIt = new DialogNode("Well it was mine but you can have it I guess.", Responses.hereTakeThisFishingRod);
         notMemberDamn.chain(youCanHaveIt);
-        DialogNode youCantHaveIt = new DialogNode("Hey it was mine, give it back!", Responses.silly);
+        DialogNode youCantHaveIt = new DialogNode("Hey it's mine, give it back!", Responses.silly);
         youCantHaveIt.chain(silentExit);
         disappointed.chain(silentExit);
 

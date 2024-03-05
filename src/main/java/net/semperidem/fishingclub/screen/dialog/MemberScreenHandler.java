@@ -10,14 +10,14 @@ import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.HashSet;
 
-public class DialogScreenHandler extends ScreenHandler {
+public class MemberScreenHandler extends ScreenHandler {
     HashSet<DialogKey> openingKeys;
     FishermanEntity fishermanEntity;
-    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         this(syncId, playerInventory,  buf.readString(), null);
     }
 
-    public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString, FishermanEntity fishermanEntity) {
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString, FishermanEntity fishermanEntity) {
         super(ScreenHandlerRegistry.DIALOG_SCREEN, syncId);
         this.openingKeys = DialogUtil.getKeysFromString(openingKeyString);
         this.fishermanEntity = fishermanEntity;

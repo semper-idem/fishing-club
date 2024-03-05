@@ -1,6 +1,7 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.InputUtil;
@@ -11,38 +12,39 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
-import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
+import net.semperidem.fishingclub.screen.dialog.MemberScreenHandler;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 
 import java.awt.*;
 import java.util.Set;
 
-public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
-    private static final Texture TEXTURE = new Texture(
+public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
+    static final Texture TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/derek_dialog.png"),
             420,
             120
     );
-    private static final int tileSize = 4;
+    static final int TILE_SIZE = 4;
 
-    private int x, y;
+    int x;
+    int y;
     private int titleX, titleY;
-    private DialogBox dialogBox;
-    private final Set<DialogKey> dialogOpeningKey;
+    DialogScreen dialogScreen;
+    private MemberSubScreen currentView;
 
 
-
-    public DialogScreen(DialogScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
+    public MemberScreen(MemberScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
         super(dialogScreenHandler, playerInventory, title);
-        this.dialogOpeningKey = handler.getOpeningKeys();
+        this.dialogScreen = new DialogScreen(this, getScreenHandler().getOpeningKeys());
+        this.currentView  = this.dialogScreen;
      }
 
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
                 MinecraftClient.getInstance().player.getSkinTexture(),
-                x + tileSize,
-                y + TEXTURE.renderHeight - tileSize * 9
+                x + TILE_SIZE,
+                y + TEXTURE.renderHeight - TILE_SIZE * 9
         ));
     }
 
@@ -51,56 +53,43 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
         super.init();
         this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
         this.y = height - TEXTURE.renderHeight;
-        this.titleX = x + TEXTURE.renderWidth - 5 * tileSize;
-        this.titleY = y + 13 * tileSize;
+        this.titleX = x + TEXTURE.renderWidth - 5 * TILE_SIZE;
+        this.titleY = y + 13 * TILE_SIZE;
         addPlayerFaceComponent();
-        addDrawable(dialogBox = new DialogBox(
-                x + tileSize * 10,
-                y + tileSize,
-                TEXTURE.textureWidth  - tileSize * 11,
-                TEXTURE.textureHeight  - tileSize * 2,
-                textRenderer
-        ));
-        DialogNode startingNode = DialogUtil.getStartQuestion(dialogOpeningKey);
-        dialogBox.addMessage(startingNode);
+        for(Drawable components : currentView.getComponents()) {
+            addDrawable(components);
+        }
+        currentView.init();
     }
 
     @Override
     protected void handledScreenTick() {
-        dialogBox.tick();
+        currentView.handledScreenTick();
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return dialogBox.mouseScrolled(mouseX, mouseY, amount);
+        return currentView.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputUtil.GLFW_KEY_SPACE) {
-            dialogBox.finishLine();
-            return true;
-        } else if (keyCode > InputUtil.GLFW_KEY_0 && keyCode <= InputUtil.GLFW_KEY_0 + dialogBox.response.questions.size()) {
-            dialogBox.addMessage(dialogBox.response.questions.get(keyCode - InputUtil.GLFW_KEY_0 - 1));
-            return true;
-        } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
+        return currentView.keyPressed(keyCode, scanCode, modifiers);
     }
 
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        TEXTURE.render(matrixStack, x,y);
+        currentView.render(matrixStack, mouseX, mouseY, delta);
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
     @Override
     protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
+        TEXTURE.render(matrixStack, x , y);
     }
 
     @Override
     public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY) {
-        drawCenteredText(matrixStack, textRenderer, title, titleX, titleY, Color.WHITE.getRGB());
     }
 }

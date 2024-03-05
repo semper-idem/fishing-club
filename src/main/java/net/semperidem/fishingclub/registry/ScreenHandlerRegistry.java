@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
+import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreen;
 import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenHandler;
@@ -14,7 +14,7 @@ import net.semperidem.fishingclub.client.screen.shop.ShopScreen;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreen;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
+import net.semperidem.fishingclub.screen.dialog.MemberScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 
@@ -27,7 +27,7 @@ public class ScreenHandlerRegistry {
     public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER;
     public static ScreenHandlerType<ShopScreenHandler> SHOP_SCREEN;
     public static ScreenHandlerType<FishingGameScreenHandler> FISH_GAME_SCREEN;
-    public static ExtendedScreenHandlerType<DialogScreenHandler> DIALOG_SCREEN = new ExtendedScreenHandlerType<>(DialogScreenHandler::new);
+    public static ExtendedScreenHandlerType<MemberScreenHandler> DIALOG_SCREEN = new ExtendedScreenHandlerType<>(MemberScreenHandler::new);
 
     @SuppressWarnings("deprecation") //TODO FIX DEPRECATION
     public static void register(){
@@ -44,7 +44,7 @@ public class ScreenHandlerRegistry {
         HandledScreens.register(SHOP_SCREEN, ShopScreen::new);
         HandledScreens.register(FISHER_WORKBENCH_SCREEN_HANDLER, FisherWorkbenchScreen::new);
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
-        HandledScreens.register(DIALOG_SCREEN, DialogScreen::new);
+        HandledScreens.register(DIALOG_SCREEN, MemberScreen::new);
         HandledScreens.register(FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
         HandledScreens.register(FISH_GAME_SCREEN, FishingGameScreen::new);
     }

@@ -7,7 +7,7 @@ public class Responses {
     public static final String EXIT = "[EXIT]";
     public static final String TRADE = "[TRADE]";
     public static final String ACCEPT = "[ACCEPT]";
-    public static final String REFUSE = "[REFUSE =]";
+    public static final String REFUSE = "[REFUSE]";
     public static final HashSet<String> actions = new HashSet<>(Set.of(
             EXIT,
             TRADE,

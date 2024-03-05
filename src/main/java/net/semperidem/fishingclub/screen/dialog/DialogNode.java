@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.screen.dialog;
 import java.util.ArrayList;
 
 public class DialogNode {
-    public final String title;
+    public String title;
     public final String content;
     public final ArrayList<DialogNode> questions;
     public String specialAction;
@@ -11,11 +11,12 @@ public class DialogNode {
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
         this.content = response;
-        this.title = (!specialAction.isEmpty()) ? specialAction + title : title;
+        this.title = title;
     }
 
     public void setSpecialAction(String specialAction) {
         this.specialAction = specialAction;
+        this.title =  title + " " + specialAction;
     }
 
     public DialogNode(String response) {

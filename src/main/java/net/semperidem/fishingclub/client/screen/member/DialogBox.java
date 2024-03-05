@@ -1,7 +1,6 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,9 +15,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DialogBox extends ScrollableWidget{
+public class DialogBox extends ScrollableWidget {
     ArrayList<String> responseLines = new ArrayList<>();
-    TextRenderer textRenderer;
     String trailingLine = "";
     String lineInQueue = "";
     DialogNode response;
@@ -30,9 +28,15 @@ public class DialogBox extends ScrollableWidget{
     public int textSpeed = 1;
 
 
-    public DialogBox(int x, int y, int width, int height, TextRenderer textRenderer) {
+    public DialogBox(int x, int y, int width, int height) {
         super(x,y, width, height, Text.empty());
-        this.textRenderer = textRenderer;
+    }
+
+    public void resize(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -140,6 +144,9 @@ public class DialogBox extends ScrollableWidget{
     }
 
     private void processAction() {
+        if (response.specialAction == null) {
+            return;
+        }
         switch (response.specialAction) {
             case Responses.EXIT -> MinecraftClient.getInstance().currentScreen.close();
             case Responses.TRADE -> ClientPacketSender.sendOpenSellShopRequest();
@@ -169,13 +176,13 @@ public class DialogBox extends ScrollableWidget{
 
     private void renderMessages(MatrixStack matrixStack) {
         for(int i = 0; i < responseLines.size(); i++) {
-            drawTextWithShadow(matrixStack, textRenderer, Text.of(responseLines.get(i)), x + getPadding(), y + i * lineHeight + getPadding(), Color.LIGHT_GRAY.getRGB());
+            drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of(responseLines.get(i)), x + getPadding(), y + i * lineHeight + getPadding(), Color.LIGHT_GRAY.getRGB());
         }
     }
 
     private void renderPossibleQuestions(MatrixStack matrixStack) {
         for(int i = 0; i < response.questions.size(); i++) {
-            drawTextWithShadow(matrixStack, textRenderer, Text.of("["+(i+1)+"] " + possibleQuestions.get(i)), x + getPadding(), y + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2, Color.WHITE.getRGB());
+            drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of("["+(i+1)+"] " + possibleQuestions.get(i)), x + getPadding(), y + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2, Color.WHITE.getRGB());
         }
     }
 
@@ -183,7 +190,7 @@ public class DialogBox extends ScrollableWidget{
         if (trailingLine.isEmpty()) {
             return;
         }
-        drawTextWithShadow(matrixStack, textRenderer, Text.of(trailingLine), x + getPadding(), y + responseLines.size() * lineHeight + getPadding(), Color.WHITE.getRGB());
+        drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of(trailingLine), x + getPadding(), y + responseLines.size() * lineHeight + getPadding(), Color.WHITE.getRGB());
     }
 
     @Override
