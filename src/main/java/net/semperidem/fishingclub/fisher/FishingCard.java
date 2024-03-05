@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
@@ -13,6 +14,7 @@ import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 
@@ -53,6 +55,18 @@ public class FishingCard extends FishingCardInventory {
         linkingManager.writeNbt(fishingCardNbt);
         writeNbt(fishingCardNbt);
         return fishingCardNbt;
+    }
+
+    public void addUnclaimedReward(ItemStack rewardStack) {
+        historyManager.addUnclaimedReward(rewardStack);
+    }
+
+    public void claimReward(ItemStack rewardStack) {
+        historyManager.claimReward(rewardStack);
+    }
+
+    public ArrayList<ItemStack> getUnclaimedRewards() {
+        return historyManager.getUnclaimedRewards();
     }
 
     public void meetDerek(FishermanEntity.SummonType summonType) {

@@ -32,29 +32,29 @@ public class LevelReward {
     }
 
 
-    private void grantBoxReward(ServerPlayerEntity serverPlayerEntity, int level){
+    private ItemStack grantBoxReward(int level){
         Random r = new Random();
         float levelBuff = 0.5f + Math.min(2, level / 50f);
         int boxTier = (int) Math.max(1, Math.min(5, Math.abs(r.nextGaussian()) * levelBuff));
-        serverPlayerEntity.giveItemStack(IllegalGoodsItem.getStackWithTier(boxTier));
+        return IllegalGoodsItem.getStackWithTier(boxTier);
     }
 
-    private void grantItemReward(ServerPlayerEntity serverPlayerEntity, int level){
+    private ItemStack grantItemReward(int amount){
         if (itemReward == null) throw new IllegalStateException("Item reward is null");
         ItemStack rewardStack = itemReward.copy();
         int stackCount = rewardStack.getCount();
-        rewardStack.setCount(stackCount * amount.get(level));
-        serverPlayerEntity.giveItemStack(rewardStack);
+        rewardStack.setCount(stackCount * amount);
+        return rewardStack;
     }
 
     public void grant(FishingCard fishingCard){
         int fisherLevel = fishingCard.getLevel();
         int resultAmount = amount.get(fisherLevel);
         switch (rewardType) {
-            case ITEM -> grantItemReward((ServerPlayerEntity) fishingCard.getHolder(), fisherLevel);
+            case ITEM -> fishingCard.addUnclaimedReward(grantItemReward(resultAmount));
             case CREDIT -> fishingCard.addCredit(resultAmount);
             case SKILL_POINT -> fishingCard.addSkillPoints(resultAmount);
-            case BOX -> grantBoxReward((ServerPlayerEntity) fishingCard.getHolder(), fisherLevel);
+            case BOX -> fishingCard.addUnclaimedReward(grantBoxReward(fisherLevel));
             case EFFECT -> executeEffect(fishingCard);
             default -> throw new IllegalStateException("Unexpected value: " + rewardType);
         }

@@ -28,6 +28,7 @@ public class HistoryManager extends DataManager {
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
+    private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -41,6 +42,21 @@ public class HistoryManager extends DataManager {
         gaveDerekFish = true;
     }
 
+
+    public void addUnclaimedReward(ItemStack rewardStack) {
+        unclaimedRewards.add(rewardStack);
+    }
+
+    public void claimReward(ItemStack rewardStack) {
+        if (!(unclaimedRewards.contains(rewardStack))) {
+            return;
+        }
+        unclaimedRewards.remove(rewardStack);
+    }
+
+    public ArrayList<ItemStack> getUnclaimedRewards() {
+        return unclaimedRewards;
+    }
 
     public boolean metDerek(FishermanEntity.SummonType summonType) {
         return derekMet.contains(summonType.name());
@@ -118,28 +134,33 @@ public class HistoryManager extends DataManager {
     @Override
     public void readNbt(NbtCompound nbtCompound) {
         NbtCompound historyTag = nbtCompound.getCompound(TAG);
-        NbtList tag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
+        NbtList usedChunksTag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
         usedChunks.clear();
-        tag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
+        usedChunksTag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
         lastUsedBait = ItemStack.fromNbt(historyTag.getCompound(LAST_USED_BAIT_TAG));
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
+        NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
+        unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt((NbtCompound) rewardTag)));
     }
 
     @Override
     public void writeNbt(NbtCompound nbtCompound) {
         NbtCompound historyTag = new NbtCompound();
-        NbtList nbtList = new NbtList();
-        usedChunks.forEach(chunk -> nbtList.add(chunk.toNbt()));
-        historyTag.put(USED_CHUNKS_TAG, nbtList);
+        NbtList usedChunksTag = new NbtList();
+        usedChunks.forEach(chunk -> usedChunksTag.add(chunk.toNbt()));
+        historyTag.put(USED_CHUNKS_TAG, usedChunksTag);
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
         historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
+        NbtList unclaimedRewardsTag = new NbtList();
+        unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.writeNbt(new NbtCompound())));
+        historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
         nbtCompound.put(TAG, historyTag);
     }
 
@@ -184,6 +205,7 @@ public class HistoryManager extends DataManager {
 
     private static final String TAG = "history";
     private static final String USED_CHUNKS_TAG = "used_chunks";
+    private static final String UNCLAIMED_REWARDS_TAG = "unclaimed_rewards";
     private static final String FIRST_CATCH_OF_THE_DAY_TAG = "first_catch_of_the_day";
     private static final String LAST_CATCH_TIME_TAG = "last_catch_time";
     private static final String LAST_USED_BAIT_TAG = "last_used_bait";
@@ -191,5 +213,4 @@ public class HistoryManager extends DataManager {
     private static final String Z_TAG = "z";
     private static final String DEREK_MET_TAG = "derek_met";
     private static final String WELCOMED_DEREK_TAG = "welcomed_derek";
-    private static final String INVITER_TAG = "invited_by";
 }

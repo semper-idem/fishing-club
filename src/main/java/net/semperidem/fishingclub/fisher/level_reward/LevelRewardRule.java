@@ -47,11 +47,12 @@ public class LevelRewardRule {
 
     public static void initDefaultRewards() {//TODO READ FROM CONFIGURED REWARDS HERE
         //SKILL POINTS
-        addRule(create(1,5).withRewards(skillPointReward(1)));
-        addRule(create(6,15, 2).withRewards(skillPointReward(1)));
-        addRule(create(16,30, 3).withRewards(skillPointReward(1)));
-        addRule(create(31,50, 4).withRewards(skillPointReward(1)));
-        addRule(create(51, 100, 5).withRewards(skillPointReward(1)));
+        addRule(create(1,5).withRewards(skillPointReward(1))); //5
+        addRule(create(6,15, 2).withRewards(skillPointReward(1))); // 5
+        addRule(create(16,30, 3).withRewards(skillPointReward(1))); // 5
+        addRule(create(31,50, 4).withRewards(skillPointReward(1))); // 5
+        addRule(create(51, 100, 5).withRewards(skillPointReward(1))); // 10
+        addRule(create(101, 1601, 100).withRewards(skillPointReward(1))); // 15 //TODO Remove when adding prestige
 
         //CREDIT
         addRule(create(0,MAX_LEVEL).withRewards(creditReward(new Amount(0, 10, 1))));
