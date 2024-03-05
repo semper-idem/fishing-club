@@ -135,14 +135,16 @@ public class DialogBox extends ScrollableWidget{
             lineInQueue = responseLinesQueue.get(0);
             lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
             tick = -5;
-            processAction(lineInQueue);
+            processAction();
         }
     }
 
-    private void processAction(String lineInQueue) {
-        switch (lineInQueue) {
+    private void processAction() {
+        switch (response.specialAction) {
             case Responses.EXIT -> MinecraftClient.getInstance().currentScreen.close();
             case Responses.TRADE -> ClientPacketSender.sendOpenSellShopRequest();
+            case Responses.ACCEPT -> ClientPacketSender.acceptDerekOffer();
+            case Responses.REFUSE -> ClientPacketSender.refuseDerekOffer();
         }
     }
 

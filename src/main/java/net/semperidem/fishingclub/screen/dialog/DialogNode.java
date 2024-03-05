@@ -6,11 +6,16 @@ public class DialogNode {
     public final String title;
     public final String content;
     public final ArrayList<DialogNode> questions;
+    public String specialAction;
 
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
         this.content = response;
-        this.title = Responses.actions.contains(response) ? response + title : title;
+        this.title = (!specialAction.isEmpty()) ? specialAction + title : title;
+    }
+
+    public void setSpecialAction(String specialAction) {
+        this.specialAction = specialAction;
     }
 
     public DialogNode(String response) {

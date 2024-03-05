@@ -57,6 +57,9 @@ public class FishingCard extends FishingCardInventory {
         return fishingCardNbt;
     }
 
+    public void giveDerekFish() {
+        historyManager.giveDerekFish();
+    }
     public void addUnclaimedReward(ItemStack rewardStack) {
         historyManager.addUnclaimedReward(rewardStack);
     }

@@ -51,6 +51,7 @@ public class FishermanEntity extends PassiveEntity {
 	private float paddlePhases;
     private PlayerEntity customer;
     private SummonType summonType = SummonType.SPELL;
+    private ItemStack spawnedFrom;
     private final ArrayList<UUID> talkedTo = new ArrayList<>();
     private UUID summonerUUID;
     private final static int DESPAWN_TIME = 6000;
@@ -78,6 +79,7 @@ public class FishermanEntity extends PassiveEntity {
             return;
         }
         this.summonType = spawnedFrom.isOf(FishUtil.FISH_ITEM) ? SummonType.GRADE : SummonType.GOLDEN;
+        this.spawnedFrom = spawnedFrom;
     }
 
     protected void initGoals() {
@@ -108,6 +110,31 @@ public class FishermanEntity extends PassiveEntity {
 
     protected SoundEvent getPaddleSoundEvent() {
         return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
+    }
+
+    public void acceptTrade() {
+        if (world.isClient()) {
+            return;
+        }
+        if (spawnedFrom.isEmpty()) {
+            return;
+        }
+        FishingCard.getPlayerCard(world.getPlayerByUuid(summonerUUID)).giveDerekFish();
+        spawnedFrom = ItemStack.EMPTY;
+    }
+
+    public void refuseTrade() {
+        if (world.isClient()) {
+            return;
+        }
+        if (spawnedFrom.isEmpty()) {
+            return;
+        }
+
+
+        dropStack(spawnedFrom);
+        spawnedFrom = ItemStack.EMPTY;
+        this.despawnTimer = 0;
     }
 
     @Override

@@ -6,10 +6,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -117,5 +119,29 @@ public class ServerPacketHandlers {
 
     public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> FishingCard.getPlayerCard(player).acceptSummonRequest());
+    }
+
+    public static void handleAcceptDerek(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            if (!(server.getOverworld() instanceof FishingServerWorld serverWorld)) {
+                return;
+            }
+            FishermanEntity derek = serverWorld.getDerek();
+            if (derek != null) {
+                derek.acceptTrade();
+            }
+        });
+    }
+
+    public static void handleRefuseDerek(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            if (!(server.getOverworld() instanceof FishingServerWorld serverWorld)) {
+                return;
+            }
+            FishermanEntity derek = serverWorld.getDerek();
+            if (derek != null) {
+                derek.refuseTrade();
+            }
+        });
     }
 }

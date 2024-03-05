@@ -6,9 +6,13 @@ import java.util.Set;
 public class Responses {
     public static final String EXIT = "[EXIT]";
     public static final String TRADE = "[TRADE]";
+    public static final String ACCEPT = "[ACCEPT]";
+    public static final String REFUSE = "[REFUSE =]";
     public static final HashSet<String> actions = new HashSet<>(Set.of(
             EXIT,
-            TRADE
+            TRADE,
+            ACCEPT,
+            REFUSE
     ));
 
 
@@ -91,7 +95,7 @@ public class Responses {
     public static final String silly = """
             Yeah right, do i look like silly to you?
             You are not a fisher, you either stole it or found it
-            before me either way I'm disappointed... Ok I'll give it back.
+            before me either way I'm disappointed...
             """;
 
     public static final String start_Disrespect = """

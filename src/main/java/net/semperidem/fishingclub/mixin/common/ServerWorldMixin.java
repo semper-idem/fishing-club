@@ -109,6 +109,12 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
 
     @Unique
     @Override
+    public FishermanEntity getDerek() {
+        return derek;
+    }
+
+    @Unique
+    @Override
     public void setDerek(FishermanEntity derek) {
         this.derek = derek;
     }

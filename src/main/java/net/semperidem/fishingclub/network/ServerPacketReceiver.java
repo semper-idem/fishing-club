@@ -20,6 +20,8 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_SUMMON_ACCEPT, ServerPacketHandlers::handleSummonAccept);
             registerReceiver(handler, C2S_REPAIR_ROD, ServerPacketHandlers::handleRepairRod);
             registerReceiver(handler, C2S_BOBBER_MOVEMENT, ServerPacketHandlers::handleBobberMovement);
+            registerReceiver(handler, C2S_ACCEPT_DEREK, ServerPacketHandlers::handleAcceptDerek);
+            registerReceiver(handler, C2S_REFUSE_DEREK, ServerPacketHandlers::handleRefuseDerek);
         });
     }
 }

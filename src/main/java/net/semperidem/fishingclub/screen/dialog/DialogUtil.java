@@ -28,28 +28,37 @@ public class DialogUtil {
         DEREK_ROOT_QUESTION.put(Set.of(GOLDEN, WELCOME, NOT_UNIQUE), hello);
         DEREK_ROOT_QUESTION.put(Set.of(NOT_SUMMONER), angry);
         DialogNode hereTakeThisFishingRod = new DialogNode("Sure, my name is $PLAYER_NAME.", Responses.hereTakeThisFishingRod);
+        hereTakeThisFishingRod.setSpecialAction(Responses.ACCEPT);
         canIHaveIt.chain(hereTakeThisFishingRod);
         itMustBeYours.chain(hereTakeThisFishingRod);
         DialogNode waitTrade = new DialogNode("Wait, Can I take a look?", Responses.TRADE);
+        waitTrade.setSpecialAction(Responses.TRADE);
         hereTakeThisFishingRod.chain(waitTrade);
         DialogNode politeExit = new DialogNode("Thanks, bye.", Responses.EXIT);
+        politeExit.setSpecialAction(Responses.EXIT);
         hereTakeThisFishingRod.chain(politeExit);
         DialogNode trade = new DialogNode("Hi, let's trade.", Responses.TRADE);
+        trade.setSpecialAction(Responses.TRADE);
         DialogNode neverMind = new DialogNode("Umm... never mind.", Responses.EXIT);
+        neverMind.setSpecialAction(Responses.EXIT);
         hello.chain(trade);
         hello.chain(neverMind);
         DialogNode areYouSure = new DialogNode("No, sorry.", Responses.areYouSure);
         itMustBeYours.chain(areYouSure);
         canIHaveIt.chain(areYouSure);
         DialogNode itsAllRight = new DialogNode("No, If it's worth so much for you I'd like to keep it.", Responses.itsAllRight);
+        itsAllRight.setSpecialAction(Responses.REFUSE);
         areYouSure.chain(itsAllRight);
         areYouSure.chain(hereTakeThisFishingRod);
         DialogNode silentExit = new DialogNode("...", Responses.EXIT);
+        silentExit.setSpecialAction(Responses.EXIT);
         DialogNode questionableExit = new DialogNode("...?", Responses.EXIT);
+        questionableExit.setSpecialAction(Responses.EXIT);
         itsAllRight.chain(silentExit);
         angry.chain(questionableExit);
 
         DialogNode wellNoRod = new DialogNode("Sure.", Responses.wellNoRod);
+        wellNoRod.setSpecialAction(Responses.ACCEPT);
         ohItsYouAgain.chain(wellNoRod);
 
 
@@ -64,9 +73,12 @@ public class DialogUtil {
         huhWhat.chain(neverMind);
         huhWhatInsane.chain(neverMind);
         DialogNode helpfulTrade = new DialogNode("I can help you by buying all your stock! Let's trade.", Responses.TRADE);
+        helpfulTrade.setSpecialAction(Responses.TRADE);
         huhWhatInsane.chain(helpfulTrade);
         DialogNode questionTrade = new DialogNode("Trade?", Responses.TRADE);
+        questionTrade.setSpecialAction(Responses.TRADE);
         DialogNode nothing = new DialogNode("Nothing...", Responses.EXIT);
+        nothing.setSpecialAction(Responses.EXIT);
         whatDoYouWant.chain(questionTrade);
         whatDoYouWant.chain(nothing);
 
@@ -81,14 +93,18 @@ public class DialogUtil {
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, NOT_WELCOME, SUMMONER), notMemberDamn);
         DEREK_ROOT_QUESTION.put(Set.of(GRADE, NOT_REPEATED, UNIQUE, WELCOME, SUMMONER), memberDamn);
         DialogNode gradeTrade = new DialogNode("Well it was me but you can have it. Let's trade.", Responses.TRADE);
+        gradeTrade.setSpecialAction(Responses.TRADE);
         memberDamn.chain(gradeTrade);
         DialogNode giveItBackMember = new DialogNode("Hey it was mine, give it back!", Responses.hahaWhy);
         memberDamn.chain(giveItBackMember);
         DialogNode luckyYou = new DialogNode("Lucky you...", Responses.EXIT);
+        luckyYou.setSpecialAction(Responses.EXIT);
         memberDamn.chain(luckyYou);
         DialogNode yeahRightAnyway = new DialogNode("Yeah right, anyway can we at least trade.", Responses.TRADE);
+        yeahRightAnyway.setSpecialAction(Responses.TRADE);
         giveItBackMember.chain(yeahRightAnyway);
         DialogNode okBye = new DialogNode("Okay... bye.", Responses.EXIT);
+        okBye.setSpecialAction(Responses.EXIT);
         giveItBackMember.chain(okBye);
         DialogNode youCanHaveIt = new DialogNode("Well it was me but you can have it I guess.", Responses.hereTakeThisFishingRod);
         notMemberDamn.chain(youCanHaveIt);

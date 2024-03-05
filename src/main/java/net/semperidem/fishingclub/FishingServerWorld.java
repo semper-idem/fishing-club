@@ -9,5 +9,7 @@ public interface FishingServerWorld {
 
     FishermanEntity getDerek(ItemStack summonedUsing, UUID summonedBy);
 
+    FishermanEntity getDerek();
+
     void setDerek(FishermanEntity fishermanEntity);
 }
