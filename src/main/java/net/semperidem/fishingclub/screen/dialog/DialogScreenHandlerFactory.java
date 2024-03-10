@@ -28,7 +28,7 @@ public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new MemberScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys), fishermanEntity);
+        return new DialogScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys), fishermanEntity);
     }
 
     @Override

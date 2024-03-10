@@ -1,33 +1,36 @@
-package net.semperidem.fishingclub.client.screen.member;
+package net.semperidem.fishingclub.client.screen.dialog;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
-import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
+import net.semperidem.fishingclub.screen.dialog.DialogNode;
+import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
-import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
-public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
+public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
 
     int x;
     int y;
-    private MemberSubScreen currentView;
-    private ButtonWidget shopButton;
-    private ButtonWidget fireworksButton;
-    private ButtonWidget boxesButton;
-    private ButtonWidget miscButton;
+    private final DialogBox dialogBox;
 
 
 
-    public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
-        super(memberScreenHandler, playerInventory, title);
+    public DialogScreen(DialogScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
+        super(dialogScreenHandler, playerInventory, title);
+        dialogBox = new DialogBox(
+                this.x + TILE_SIZE * 10,
+                this.y + TILE_SIZE,
+                TEXTURE.textureWidth  - TILE_SIZE * 11,
+                TEXTURE.textureHeight  - TILE_SIZE * 2
+        );
+        DialogNode startingNode = DialogUtil.getStartQuestion(getScreenHandler().getOpeningKeys());
+        dialogBox.addMessage(startingNode);
      }
 
 
@@ -47,32 +50,34 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.titleX = x + TEXTURE.renderWidth - 5 * TILE_SIZE;
         this.titleY = y + 13 * TILE_SIZE;
         addPlayerFaceComponent();
-        for(Drawable components : currentView.getComponents()) {
-            addDrawable(components);
-        }
-        currentView.init();
+        dialogBox.resize(
+                this.x + TILE_SIZE * 10,
+                this.y + TILE_SIZE,
+                TEXTURE.textureWidth  - TILE_SIZE * 11,
+                TEXTURE.textureHeight  - TILE_SIZE * 2
+        );
     }
 
     @Override
     protected void handledScreenTick() {
-        currentView.handledScreenTick();
+        dialogBox.tick();
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return currentView.mouseScrolled(mouseX, mouseY, amount);
+        return dialogBox.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return currentView.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-
-    @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        currentView.render(matrixStack, mouseX, mouseY, delta);
-        super.render(matrixStack, mouseX, mouseY, delta);
+        if (keyCode == InputUtil.GLFW_KEY_SPACE) {
+            dialogBox.finishLine();
+            return true;
+        } else if (keyCode > InputUtil.GLFW_KEY_0 && keyCode <= InputUtil.GLFW_KEY_0 + dialogBox.response.questions.size()) {
+            dialogBox.addMessage(dialogBox.response.questions.get(keyCode - InputUtil.GLFW_KEY_0 - 1));
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
