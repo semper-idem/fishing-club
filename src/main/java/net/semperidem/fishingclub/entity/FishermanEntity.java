@@ -34,8 +34,10 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
+import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
+import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.EffectUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +53,7 @@ public class FishermanEntity extends PassiveEntity {
 	private float paddlePhases;
     private PlayerEntity customer;
     private SummonType summonType = SummonType.SPELL;
-    private ItemStack spawnedFrom;
+    private ItemStack spawnedFrom = ItemStack.EMPTY;
     private final ArrayList<UUID> talkedTo = new ArrayList<>();
     private UUID summonerUUID;
     private final static int DESPAWN_TIME = 6000;
@@ -140,6 +142,11 @@ public class FishermanEntity extends PassiveEntity {
     @Override
     public void tickMovement() {
         if (customer != null) {
+            if (!world.isClient) {
+                if (!(customer.currentScreenHandler instanceof DialogScreenHandler) && !(customer.currentScreenHandler instanceof MemberScreenHandler)) {
+                    customer = null;
+                }
+            }
             return;
         }
         super.tickMovement();

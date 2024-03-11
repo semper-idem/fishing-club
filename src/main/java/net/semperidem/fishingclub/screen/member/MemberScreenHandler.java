@@ -2,22 +2,14 @@ package net.semperidem.fishingclub.screen.member;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.client.screen.shop.FishSlot;
 import net.semperidem.fishingclub.entity.FishermanEntity;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
-import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
-
-import java.util.ArrayList;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -29,6 +21,7 @@ public class MemberScreenHandler extends ScreenHandler {
     private final PlayerEntity player;
     FishermanEntity fishermanEntity;
     FishingCard fishingCard;
+    String lastTossWinner;
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard, FishermanEntity fishermanEntity) {
         super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
@@ -37,6 +30,14 @@ public class MemberScreenHandler extends ScreenHandler {
         this.fishermanEntity = fishermanEntity;
         addPlayerInventory(player.getInventory());
         addPlayerHotbar(player.getInventory());
+    }
+
+    public void updateCard(PacketByteBuf buf) {
+        fishingCard = new FishingCard(player, buf.readNbt());
+    }
+
+    public FishingCard getCard() {
+        return fishingCard;
     }
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
@@ -64,5 +65,17 @@ public class MemberScreenHandler extends ScreenHandler {
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         return this.slots.get(index).getStack();
+    }
+
+    public void tossCoin(int amount, String playerChoice) {
+        ClientPacketSender.sendCoinTossRequest(amount, playerChoice);
+    }
+
+    public String getWinner() {
+        return lastTossWinner;
+    }
+
+    public void setWinner(String serverWinner) {
+        this.lastTossWinner = serverWinner;
     }
 }

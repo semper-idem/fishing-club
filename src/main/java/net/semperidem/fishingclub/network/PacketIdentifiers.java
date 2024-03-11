@@ -21,5 +21,6 @@ public class PacketIdentifiers {
     public static final Identifier C2S_BOBBER_MOVEMENT = getIdentifier("c2s_bobber_movement");
     public static final Identifier S2C_FISH_GAME_INITIAL = getIdentifier("s2c_fish_game_initial");
     public static final Identifier S2C_FISH_GAME_UPDATE = getIdentifier("s2c_fish_game_update");
+    public static final Identifier C2S_TOSS_COIN = getIdentifier("c2s_toss_coin");
 
 }

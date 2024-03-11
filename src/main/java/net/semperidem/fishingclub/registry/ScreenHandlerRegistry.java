@@ -38,9 +38,9 @@ public class ScreenHandlerRegistry {
 
         Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("dialog_screen_handler"), DIALOG_SCREEN);
         Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("fisher_info_screen_handler"), FISHING_CARD_SCREEN);
+        Registry.register(Registry.SCREEN_HANDLER, FishingClub.getIdentifier("member_screen_handler"), MEMBER_SCREEN);
         FISHING_NET_SCREEN_HANDLER = registerExtended(FishingClub.getIdentifier("fishing_net_screen_handler"), FishingNetScreenHandler::new);
         SHOP_SCREEN = registerExtended(FishingClub.getIdentifier("sell_screen"), ShopScreenHandler::new);
-        FISH_GAME_SCREEN = registerExtended(FishingClub.getIdentifier("fish_game_screen"), FishingGameScreenHandler::new);
         FISH_GAME_SCREEN = registerExtended(FishingClub.getIdentifier("fish_game_screen"), FishingGameScreenHandler::new);
     }
 

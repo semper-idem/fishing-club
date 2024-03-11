@@ -10,8 +10,8 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
-import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
+import net.semperidem.fishingclub.screen.dialog.DialogUtil;
 
 public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
 
@@ -56,6 +56,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
                 TEXTURE.textureWidth  - TILE_SIZE * 11,
                 TEXTURE.textureHeight  - TILE_SIZE * 2
         );
+        addDrawable(dialogBox);
     }
 
     @Override
@@ -89,11 +90,11 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY) {
     }
 
-    static final Texture TEXTURE = new Texture(
+    public static final Texture TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/derek_dialog.png"),
             420,
             120
     );
-    static final int TILE_SIZE = 4;
+    public static final int TILE_SIZE = 4;
 
 }

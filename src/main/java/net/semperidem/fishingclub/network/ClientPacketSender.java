@@ -17,6 +17,12 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
     }
 
+    public static void sendCoinTossRequest(int amount, String playerChoice) {
+        PacketByteBuf buf = PacketByteBufs.empty();
+        buf.writeInt(amount);
+        buf.writeString(playerChoice);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_TOSS_COIN, buf);
+    }
     public static void sendFishGameLost(){
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_LOST, PacketByteBufs.empty());
     }
