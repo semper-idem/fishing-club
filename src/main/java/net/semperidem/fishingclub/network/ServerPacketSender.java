@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.FishingGameController;
 
 public class ServerPacketSender {
@@ -34,4 +35,14 @@ public class ServerPacketSender {
         ServerPlayNetworking.send(player, PacketIdentifiers.S2C_FISH_GAME_UPDATE, fishMovementPacket);
     }
 
+    public static void sendTossResult(ServerPlayerEntity player, String result) {
+        PacketByteBuf tossResultPacket = PacketByteBufs.create();
+        tossResultPacket.writeString(result);
+        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_TOSS_RESULT, tossResultPacket);
+    }
+    public static void sendCardUpdate(ServerPlayerEntity player, FishingCard fishingCard) {
+        PacketByteBuf cardPacket = PacketByteBufs.create();
+        cardPacket.writeNbt(fishingCard.toNbt());
+        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_UPDATE_CARD, cardPacket);
+    }
 }

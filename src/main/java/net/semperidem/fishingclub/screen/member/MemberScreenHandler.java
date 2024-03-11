@@ -11,6 +11,8 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
+import java.util.HashMap;
+
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
 
@@ -21,7 +23,8 @@ public class MemberScreenHandler extends ScreenHandler {
     private final PlayerEntity player;
     FishermanEntity fishermanEntity;
     FishingCard fishingCard;
-    String lastTossWinner;
+    HashMap<Integer, String> tossHistory = new HashMap<>();
+    int tossIndex = 0;
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard, FishermanEntity fishermanEntity) {
         super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
@@ -32,8 +35,8 @@ public class MemberScreenHandler extends ScreenHandler {
         addPlayerHotbar(player.getInventory());
     }
 
-    public void updateCard(PacketByteBuf buf) {
-        fishingCard = new FishingCard(player, buf.readNbt());
+    public void updateCard(FishingCard fishingCard) {
+        this.fishingCard = fishingCard;
     }
 
     public FishingCard getCard() {
@@ -71,11 +74,12 @@ public class MemberScreenHandler extends ScreenHandler {
         ClientPacketSender.sendCoinTossRequest(amount, playerChoice);
     }
 
-    public String getWinner() {
-        return lastTossWinner;
+    public HashMap<Integer, String> getTossResult() {
+        return this.tossHistory;
     }
 
-    public void setWinner(String serverWinner) {
-        this.lastTossWinner = serverWinner;
+    public void addTossResult(String tossResult) {
+        this.tossIndex++;
+        this.tossHistory.put(tossIndex, tossResult);
     }
 }

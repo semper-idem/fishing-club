@@ -1,26 +1,30 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TEXTURE;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
 
 
 public class MemberFlipScreen implements MemberSubScreen{
-    String lastTossWinner;
+    HashMap<Integer, String> tossResult = new HashMap<>();
     String playerChoice;
-    ButtonWidget flipButton;
     ButtonWidget tailsButton;
     ButtonWidget headsButton;
-    String currentPlayerCredit;
+    String currentPlayerCredit = "0";
     TextFieldWidget flipAmountField;
     MemberScreen parent;
     private static final int buttonWidth = TILE_SIZE * 10;
@@ -29,23 +33,24 @@ public class MemberFlipScreen implements MemberSubScreen{
 
     int baseX,baseY;
     int titleX, titleY;
-    int winnerX, winnerY;
-    int flipX, flipY;
+    int historyXLeft, historyXMiddle, historyXRight;
+    int historyY, historyMaxY;
     int headsX, headsY;
     int tailsX, tailsY;
     int creditX, creditY;
     int amountFieldX, amountFieldY;
+    ArrayList<String> tossHistory = new ArrayList<>();
+    ArrayList<Drawable> components = new ArrayList<>();
 
     private static final int TEXT_HEIGHT = 12;
 
     MemberFlipScreen(MemberScreen parent) {
         this.parent = parent;
+
+        //TODO ADD MAX AMOUNT FLIP BUTTON
     }
 
 
-    public ButtonWidget.PressAction setChoice() {
-        return button -> playerChoice = button.getMessage().getString().toLowerCase();
-    }
 
     @Override
     public void init() {
@@ -55,46 +60,71 @@ public class MemberFlipScreen implements MemberSubScreen{
         titleX = baseX;
         titleY = baseY;
 
-        winnerX = baseX + TILE_SIZE * 20;
-        winnerY = baseY;
 
-        creditX = baseX + TILE_SIZE * 20;
-        creditY = winnerY + TEXT_HEIGHT + TILE_SIZE;
+        creditX = parent.x + TEXTURE.renderWidth - TILE_SIZE * 20;;
+        creditY = titleY;
 
-        amountFieldY = baseY;
-        amountFieldX = baseX;
 
-        flipX = creditX;
-        flipY = baseY;
+        amountFieldX = titleX;
+        amountFieldY = parent.height - 2 * TILE_SIZE - buttonHeight;
 
-        tailsX = baseX;
-        tailsY = baseY + buttonHeight + TILE_SIZE;
+        historyXLeft = titleX + amountFieldWidth + TILE_SIZE;
+        historyXMiddle = historyXLeft + 10 * TILE_SIZE;
+        historyXRight = creditX;
+        historyY = parent.height - TILE_SIZE - TEXT_HEIGHT;
+        historyMaxY = creditY + TEXT_HEIGHT;
 
-        headsX = baseX + buttonWidth + TILE_SIZE;
-        headsY = baseY + buttonHeight + TILE_SIZE;
+        headsX = amountFieldX - 1;
+        headsY = amountFieldY - buttonHeight - 2;
 
-        flipButton = new ButtonWidget(flipX ,flipY ,buttonWidth,buttonHeight, Text.of("Toss"), button -> tossCoin());
-        tailsButton = new ButtonWidget(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), setChoice());
-        headsButton = new ButtonWidget(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), setChoice());
+        tailsX = headsX + buttonWidth + 2;
+        tailsY = headsY;
+
+        tailsButton = new ButtonWidget(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
+        headsButton = new ButtonWidget(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
         flipAmountField = new TextFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"));
 
+        components.add(tailsButton);
+        components.add(headsButton);
+        components.add(flipAmountField);
+    }
+
+
+
+    public ButtonWidget.PressAction tossCoin() {
+        return button ->{
+            playerChoice = button.getMessage().getString();
+            parseAmount(flipAmountField.getText()).ifPresent(amount ->  {
+                if (amount <= 0) {
+                    return;
+                }
+                int maxAmount = parent.getScreenHandler().getCard().getCredit();
+                if(amount > maxAmount) {
+                    amount = maxAmount;
+                }
+                this.parent.getScreenHandler().tossCoin(amount, playerChoice);
+                tossHistory.add("Picked;" + playerChoice + ";For:  " + amount + "$");
+                flipAmountField.setText(String.valueOf(amount));
+            });
+        };
     }
 
     @Override
     public ArrayList<Drawable> getComponents() {
-        init();
-        return new ArrayList<>(List.of(flipButton, tailsButton, headsButton, flipAmountField));
+        return components;
     }
 
     @Override
     public void handledScreenTick() {
-        this.lastTossWinner = parent.getScreenHandler().getWinner();
+        HashMap<Integer, String> serverTossResult = parent.getScreenHandler().getTossResult();
+        if (tossResult.size() != serverTossResult.size()) {
+            tossResult.clear();
+            tossResult.putAll(serverTossResult);
+            tossHistory.add(tossResult.get(tossResult.size()));
+        }
         this.currentPlayerCredit = String.valueOf(parent.getScreenHandler().getCard().getCredit());
     }
 
-    public void tossCoin() {
-        parseAmount(flipAmountField.getText()).ifPresent(amount ->  this.parent.getScreenHandler().tossCoin(amount, playerChoice));
-    }
 
     private Optional<Integer> parseAmount(String input) {
         try {
@@ -106,11 +136,38 @@ public class MemberFlipScreen implements MemberSubScreen{
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        boolean consumed = false;
+        for(ClickableWidget clickable : List.of(tailsButton, headsButton, flipAmountField)) {
+            if (consumed) {
+                return true;
+            }
+            consumed = clickable.mouseScrolled(mouseX, mouseY, amount);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean consumed = false;
+        for(ClickableWidget clickable : List.of(tailsButton, headsButton, flipAmountField)) {
+            if (consumed) {
+                return true;
+            }
+            consumed = clickable.mouseClicked(mouseX, mouseY, button);
+        }
         return false;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return flipAmountField.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (chr >= InputUtil.GLFW_KEY_0 && chr <= InputUtil.GLFW_KEY_9) {
+            return flipAmountField.charTyped(chr, modifiers);
+        }
         return false;
     }
 
@@ -119,13 +176,29 @@ public class MemberFlipScreen implements MemberSubScreen{
 
         // Text Rendering
         parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, Color.WHITE.getRGB());
-        if (!lastTossWinner.isEmpty()) {
-            parent.getTextRenderer().draw(matrixStack,  Text.of("Last Winner: " + lastTossWinner), winnerX, winnerY, Color.BLACK.getRGB());
+        int historyEntryY = historyY;
+        for(String tossEntry : Lists.reverse(tossHistory)) {
+            if (historyEntryY  < historyMaxY) {
+                break;
+            }
+            String[] parts = tossEntry.split(";");
+            if (parts.length != 3) {
+                break;
+            }
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, Color.LIGHT_GRAY.getRGB());
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, Color.LIGHT_GRAY.getRGB());
+            int rightPartWidth = parent.getTextRenderer().getWidth(parts[2]);
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[2]), historyXRight - rightPartWidth, historyEntryY, Color.LIGHT_GRAY.getRGB());
+            historyEntryY -= TEXT_HEIGHT;
+
         }
-        parent.getTextRenderer().draw(matrixStack,  Text.of("Your Credit: " + currentPlayerCredit), creditX, creditY, Color.WHITE.getRGB());
+
+        String creditString = "Your Credit: " + currentPlayerCredit + "$";
+        int creditOffset = parent.getTextRenderer().getWidth(creditString);
+        parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(creditString), creditX - creditOffset, creditY, Color.WHITE.getRGB());
 
         // Render all components from getComponents()
-        for (Drawable drawable : this.getComponents()) {
+        for (Drawable drawable : components) {
             drawable.render(matrixStack, mouseX, mouseY, delta);
         }
     }

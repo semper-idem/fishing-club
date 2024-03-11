@@ -22,6 +22,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_BOBBER_MOVEMENT, ServerPacketHandlers::handleBobberMovement);
             registerReceiver(handler, C2S_ACCEPT_DEREK, ServerPacketHandlers::handleAcceptDerek);
             registerReceiver(handler, C2S_REFUSE_DEREK, ServerPacketHandlers::handleRefuseDerek);
+            registerReceiver(handler, C2S_TOSS_COIN, ServerPacketHandlers::handleCoinToss);
         });
     }
 }

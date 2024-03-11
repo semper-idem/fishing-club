@@ -22,6 +22,7 @@ import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -142,6 +143,36 @@ public class ServerPacketHandlers {
             if (derek != null) {
                 derek.refuseTrade();
             }
+        });
+    }
+    public static void handleCoinToss(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        int amount = buf.readInt();
+        String choice = buf.readString();
+        server.execute(() -> {
+            String tossResult = "";
+            if (amount <= 0) {
+                return;
+            }
+            boolean isWon = Math.random() <= 0.49;
+            tossResult = choice;
+
+            String resultString = "Was;";
+            FishingCard playerCard = FishingCard.getPlayerCard(player);
+            int maxAmount = playerCard.getCredit();
+            int betAmount = amount;
+            if (betAmount > maxAmount) {
+                betAmount = maxAmount;
+            }
+            if (isWon) {
+                resultString += "§6" + tossResult + ";+" + (betAmount) + "$";
+                FishingCard.getPlayerCard(player).addCredit(betAmount);
+            } else {
+                tossResult  = !Objects.equals(tossResult, "Heads") ? "Heads" : "Tails";
+                resultString += "§4" + tossResult + ";-" + (betAmount) + "$";
+                FishingCard.getPlayerCard(player).addCredit(-betAmount);
+            }
+            ServerPacketSender.sendTossResult(player, resultString);
+            ServerPacketSender.sendCardUpdate(player, playerCard);
         });
     }
 }

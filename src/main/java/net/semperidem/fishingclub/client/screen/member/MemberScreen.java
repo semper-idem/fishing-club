@@ -92,10 +92,10 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         fireworksButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
         nextButtonY += fireworksButton.getHeight();
         flipButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        currentView.init();
         for(Drawable components : currentView.getComponents()) {
             addDrawable(components);
         }
-        currentView.init();
     }
 
     @Override
@@ -109,6 +109,16 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return currentView.mouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        return currentView.charTyped(chr, modifiers) || super.charTyped(chr, modifiers);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return currentView.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -116,8 +126,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        currentView.render(matrixStack, mouseX, mouseY, delta);
         super.render(matrixStack, mouseX, mouseY, delta);
+        currentView.render(matrixStack, mouseX, mouseY, delta);
     }
 
     @Override

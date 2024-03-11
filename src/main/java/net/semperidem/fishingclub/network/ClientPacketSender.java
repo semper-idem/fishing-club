@@ -18,7 +18,7 @@ public class ClientPacketSender {
     }
 
     public static void sendCoinTossRequest(int amount, String playerChoice) {
-        PacketByteBuf buf = PacketByteBufs.empty();
+        PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(amount);
         buf.writeString(playerChoice);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_TOSS_COIN, buf);

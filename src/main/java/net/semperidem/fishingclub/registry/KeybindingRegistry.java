@@ -38,8 +38,11 @@ public class KeybindingRegistry {
     private static ClientTickEvents.EndTick openFisherInfoScreen(){
         return client -> {
             while (FISHER_INFO_SCREEN_KB.wasPressed()) {
-                ClientPacketSender.sendOpenFisherInfoScreen();
+                ClientPacketSender.sendOpenSellShopRequest();
             }
+//            while (FISHER_INFO_SCREEN_KB.wasPressed()) {
+//                ClientPacketSender.sendOpenFisherInfoScreen();
+//            }
         };
     }
     private static ClientTickEvents.EndTick castSpell(){

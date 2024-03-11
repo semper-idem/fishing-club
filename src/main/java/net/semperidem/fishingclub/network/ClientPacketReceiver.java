@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
+import net.semperidem.fishingclub.client.screen.member.MemberScreen;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
@@ -23,6 +25,24 @@ public class ClientPacketReceiver {
                     return;
                 }
                 fishGameScreen.syncInit(copy);
+            });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_TOSS_RESULT, (client, handler, buf, responseSender) -> {
+            String tossResult = buf.readString();
+            client.execute(() -> {
+                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
+                    return;
+                }
+                memberScreen.getScreenHandler().addTossResult(tossResult);
+            });
+        });
+        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_UPDATE_CARD, (client, handler, buf, responseSender) -> {
+            FishingCard playerCard = new FishingCard(client.player, buf.readNbt());
+            client.execute(() -> {
+                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
+                    return;
+                }
+                memberScreen.getScreenHandler().updateCard(playerCard);
             });
         });
     }
