@@ -9,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -20,6 +19,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -68,8 +68,8 @@ public class ServerPacketHandlers {
         });
     }
 
-    public static void handleFishingShopOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> ShopScreenUtil.openShopScreen(player));
+    public static void handleMemberScreenOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> player.openHandledScreen(new MemberScreenHandlerFactory()));
     }
     public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> player.openHandledScreen(new FishingCardScreenFactory(FishingCard.getPlayerCard(player))));

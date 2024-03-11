@@ -19,17 +19,28 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     int x;
     int y;
     private MemberSubScreen currentView;
-    private ButtonWidget shopButton;
-    private ButtonWidget fireworksButton;
-    private ButtonWidget boxesButton;
-    private ButtonWidget miscButton;
+    private TabButtonWidget shopButton;
+    private TabButtonWidget fireworksButton;
+    private TabButtonWidget boxesButton;
+    private TabButtonWidget miscButton;
 
 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-     }
+        shopButton = new TabButtonWidget(0,0, 1, 1, "Trade", this, new MemberShopScreen());
+        fireworksButton = new TabButtonWidget(0,0, 1, 1, "Fireworks", this, new MemberFireworkScreen());
+        boxesButton = new TabButtonWidget(0,0, 1, 1, "Black Market", this, new MemberIllegalScreen());
+        miscButton = new TabButtonWidget(0,0, 1, 1, "Misc", this, new MemberMiscScreen());
+    }
 
+    public MemberSubScreen getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(MemberSubScreen memberSubScreen) {
+        this.currentView = memberSubScreen;
+    }
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
@@ -47,6 +58,14 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.titleX = x + TEXTURE.renderWidth - 5 * TILE_SIZE;
         this.titleY = y + 13 * TILE_SIZE;
         addPlayerFaceComponent();
+        addDrawable(shopButton);
+        addDrawable(miscButton);
+        addDrawable(boxesButton);
+        addDrawable(fireworksButton);
+        shopButton.resize(0,0,1,1);
+        miscButton.resize(0,0,1,1);
+        boxesButton.resize(0,0,1,1);
+        fireworksButton.resize(0,0,1,1);
         for(Drawable components : currentView.getComponents()) {
             addDrawable(components);
         }

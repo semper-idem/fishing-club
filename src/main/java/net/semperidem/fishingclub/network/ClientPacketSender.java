@@ -34,7 +34,7 @@ public class ClientPacketSender {
     }
 
     public static void sendOpenSellShopRequest() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_OPEN, PacketByteBufs.empty());
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_MEMBER_SCREEN, PacketByteBufs.empty());
     }
     public static void sendOpenFisherInfoScreen() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_INFO_OPEN, PacketByteBufs.empty());

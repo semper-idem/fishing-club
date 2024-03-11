@@ -10,7 +10,7 @@ public class ServerPacketReceiver {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             registerReceiver(handler, C2S_F_GAME_WON, ServerPacketHandlers::handleFishingGameFished);
             registerReceiver(handler, C2S_F_GAME_LOST, ServerPacketHandlers::handleFishingGameLost);
-            registerReceiver(handler, C2S_F_SHOP_OPEN, ServerPacketHandlers::handleFishingShopOpenRequest);
+            registerReceiver(handler, C2S_OPEN_MEMBER_SCREEN, ServerPacketHandlers::handleMemberScreenOpenRequest);
             registerReceiver(handler, C2S_F_INFO_OPEN, ServerPacketHandlers::handleFishingInfoOpenRequest);
             registerReceiver(handler, C2S_F_SHOP_SELL, ServerPacketHandlers::handleFishingShopSellContainer);
             registerReceiver(handler, C2S_F_SHOP_BUY, ServerPacketHandlers::handleFishingShopBuyBasket);

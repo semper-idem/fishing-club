@@ -10,6 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.client.screen.shop.FishSlot;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -26,27 +27,20 @@ public class MemberScreenHandler extends ScreenHandler {
     final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
 
     private final PlayerEntity player;
-    private final Inventory sellContainer;
-    private int sellContainerValue = 0;
+    FishermanEntity fishermanEntity;
     FishingCard fishingCard;
 
-
-    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        super(ScreenHandlerRegistry.SHOP_SCREEN, syncId);
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard, FishermanEntity fishermanEntity) {
+        super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
-        fishingCard = new FishingCard(playerInventory.player, buf.readNbt());
-        this.sellContainer = new SimpleInventory(SLOT_COUNT);
-        addSellInventory();
+        this.fishingCard = fishingCard;
+        this.fishermanEntity = fishermanEntity;
         addPlayerInventory(player.getInventory());
         addPlayerHotbar(player.getInventory());
     }
 
-    private void addSellInventory(){
-        for(int x = 0; x < ROW_COUNT; ++x) {
-            for(int y = 0; y < SLOTS_PER_ROW; ++y) {
-                addSlot(new FishSlot(sellContainer, y + x * SLOTS_PER_ROW, 8 + y * SLOT_SIZE, SLOT_SIZE + x * SLOT_SIZE));
-            }
-        }
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
+        this(syncId, playerInventory, new FishingCard(playerInventory.player, buf.readNbt()), null);
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory){
@@ -64,99 +58,11 @@ public class MemberScreenHandler extends ScreenHandler {
     }
 
     public boolean canUse(PlayerEntity playerEntity) {
-        return this.sellContainer.canPlayerUse(playerEntity);
-    }
-
-    //TODO ADD CALCULATE SELL CONTAINER SO IT DOESNT RUN EVERY RENDER TICK
-
-
-    public void calculateSellContainer(){
-        int sellContainerValue = 0;
-        for (int i = 0; i < sellContainer.size(); i++) {
-            ItemStack fishStack = sellContainer.getStack(i);
-            if (fishStack.isOf(FishUtil.FISH_ITEM)) {
-                sellContainerValue += FishUtil.getFishValue(sellContainer.getStack(i));
-            }
-        }
-        this.sellContainerValue = sellContainerValue;
-    }
-    //Client
-    public int getSellContainerValue(){
-        return sellContainerValue;
-    }
-
-    public boolean sellContainer(){
-        if(sellContainerValue > 0) {
-            ClientPacketSender.sellShopContainer(sellContainerValue);
-            return true;
-        }
-        return false;
-    }
-
-    //Server
-    public void soldContainer(ServerPlayerEntity player, int amount){
-        FishingCard.getPlayerCard(player).addCredit(amount);
-        for (int i = 0; i < sellContainer.size(); i++) {
-            sellContainer.removeStack(i);
-        }
-    }
-
-    //Server
-    public void boughtContainer(ServerPlayerEntity player, ArrayList<ItemStack> basket, int amount){
-        if (!FishingCard.getPlayerCard(player).addCredit(-amount)) return;
-        for(ItemStack itemStack : basket) {
-            player.getInventory().insertStack(itemStack.copy());
-        }
-        ServerPacketSender.sendShopScreenInventorySyncPacket(player);
+        return true;
     }
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
-        ItemStack itemStackCopy = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot.hasStack()) {
-            ItemStack itemStackInSlot = slot.getStack();
-            itemStackCopy = itemStackInSlot.copy();
-            if (index < SLOT_COUNT) {
-                if (!this.insertItem(itemStackInSlot, SLOT_COUNT, this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else {
-                if (!this.insertItem(itemStackInSlot, 0, SLOT_COUNT, false)) {
-                    return ItemStack.EMPTY;
-                }
-            }
-            if (itemStackInSlot.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
-            if (itemStackInSlot.getCount() == itemStackCopy.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTakeItem(player, itemStackInSlot);
-        }
-        return itemStackCopy;
-    }
-
-
-    public void close(PlayerEntity player) {
-        super.close(player);
-        if (!player.world.isClient) {
-            for (int i = 0; i < sellContainer.size(); i++) {
-                returnItemStack(sellContainer.removeStack(i));
-            }
-        }
-    }
-
-    private void returnItemStack(ItemStack itemStack){
-        if (itemStack.isEmpty()) {
-            return;
-        }
-        if(player.getInventory().getEmptySlot() != -1) {
-            player.dropItem(itemStack, false);
-        } else {
-            player.giveItemStack(itemStack);
-        }
+        return this.slots.get(index).getStack();
     }
 }
