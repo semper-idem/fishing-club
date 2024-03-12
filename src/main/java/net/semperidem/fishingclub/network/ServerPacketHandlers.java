@@ -149,7 +149,7 @@ public class ServerPacketHandlers {
         int amount = buf.readInt();
         String choice = buf.readString();
         server.execute(() -> {
-            String tossResult = "";
+            String tossResult;
             if (amount <= 0) {
                 return;
             }

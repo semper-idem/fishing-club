@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -13,7 +11,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TEXTURE;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
@@ -24,8 +21,9 @@ public class MemberFlipScreen implements MemberSubScreen{
     String playerChoice;
     ButtonWidget tailsButton;
     ButtonWidget headsButton;
+    ButtonWidget maxAmountButton;
     String currentPlayerCredit = "0";
-    TextFieldWidget flipAmountField;
+    ClampedFieldWidget flipAmountField;
     MemberScreen parent;
     private static final int buttonWidth = TILE_SIZE * 10;
     private static final int buttonHeight = TILE_SIZE * 5;
@@ -46,8 +44,7 @@ public class MemberFlipScreen implements MemberSubScreen{
 
     MemberFlipScreen(MemberScreen parent) {
         this.parent = parent;
-
-        //TODO ADD MAX AMOUNT FLIP BUTTON
+        this.currentPlayerCredit = String.valueOf(parent.getScreenHandler().getCard().getCredit());
     }
 
 
@@ -82,30 +79,26 @@ public class MemberFlipScreen implements MemberSubScreen{
 
         tailsButton = new ButtonWidget(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
         headsButton = new ButtonWidget(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
-        flipAmountField = new TextFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"));
+        flipAmountField = new ClampedFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
 
+        maxAmountButton = new ButtonWidget(amountFieldX + amountFieldWidth - 24,amountFieldY,24,buttonHeight, Text.of("Max"), o -> {
+            flipAmountField.setMaxAmount();
+        });
+        components.clear();
         components.add(tailsButton);
         components.add(headsButton);
         components.add(flipAmountField);
+        components.add(maxAmountButton);
     }
 
 
 
     public ButtonWidget.PressAction tossCoin() {
-        return button ->{
+        return button -> {
             playerChoice = button.getMessage().getString();
-            parseAmount(flipAmountField.getText()).ifPresent(amount ->  {
-                if (amount <= 0) {
-                    return;
-                }
-                int maxAmount = parent.getScreenHandler().getCard().getCredit();
-                if(amount > maxAmount) {
-                    amount = maxAmount;
-                }
-                this.parent.getScreenHandler().tossCoin(amount, playerChoice);
-                tossHistory.add("Picked;" + playerChoice + ";For:  " + amount + "$");
-                flipAmountField.setText(String.valueOf(amount));
-            });
+            int amount = flipAmountField.getValidAmount();
+            this.parent.getScreenHandler().tossCoin(amount, playerChoice);
+            tossHistory.add("Picked;" + playerChoice + ";For:  " + amount + "$");
         };
     }
 
@@ -126,14 +119,6 @@ public class MemberFlipScreen implements MemberSubScreen{
     }
 
 
-    private Optional<Integer> parseAmount(String input) {
-        try {
-            return Optional.of(Integer.parseInt(input));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         boolean consumed = false;
@@ -149,7 +134,7 @@ public class MemberFlipScreen implements MemberSubScreen{
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean consumed = false;
-        for(ClickableWidget clickable : List.of(tailsButton, headsButton, flipAmountField)) {
+        for(ClickableWidget clickable : List.of(tailsButton, headsButton, maxAmountButton, flipAmountField)) {
             if (consumed) {
                 return true;
             }
@@ -165,10 +150,7 @@ public class MemberFlipScreen implements MemberSubScreen{
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        if (chr >= InputUtil.GLFW_KEY_0 && chr <= InputUtil.GLFW_KEY_9) {
-            return flipAmountField.charTyped(chr, modifiers);
-        }
-        return false;
+        return flipAmountField.charTyped(chr, modifiers);
     }
 
     @Override
