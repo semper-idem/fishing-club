@@ -68,5 +68,8 @@ public class ClampedFieldWidget extends TextFieldWidget {
 
     private void validateAmount() {
         getValidAmount();
+        if (getText().charAt(0) == '0' && getText().length() > 1) {
+            setText(getText().substring(1));
+        }
     }
 }

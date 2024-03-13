@@ -31,8 +31,8 @@ public class MemberScreenHandler extends ScreenHandler {
         this.player = playerInventory.player;
         this.fishingCard = fishingCard;
         this.fishermanEntity = fishermanEntity;
-        addPlayerInventory(player.getInventory());
-        addPlayerHotbar(player.getInventory());
+//        addPlayerInventory(player.getInventory());
+//        addPlayerHotbar(player.getInventory());
     }
 
     public void updateCard(FishingCard fishingCard) {

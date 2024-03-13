@@ -91,4 +91,8 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_BOBBER_MOVEMENT, movementPacket);
     }
 
+    public static void sendResetPerk() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_RESET_PERKS, PacketByteBufs.empty());
+    }
+
 }

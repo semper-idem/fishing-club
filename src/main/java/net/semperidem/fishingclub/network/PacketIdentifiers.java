@@ -24,5 +24,6 @@ public class PacketIdentifiers {
     public static final Identifier C2S_TOSS_COIN = getIdentifier("c2s_toss_coin");
     public static final Identifier S2C_TOSS_RESULT = getIdentifier("s2s_toss_result");
     public static final Identifier S2C_UPDATE_CARD = getIdentifier("s2c_update_card");
+    public static final Identifier C2S_RESET_PERKS = getIdentifier("c2s_reset_perks");
 
 }

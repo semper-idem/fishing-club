@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,7 +23,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private TabButtonWidget miscButton;
     private TabButtonWidget flipButton;
     private Text shopTitle = Text.of("Trade");
-    private Text miscTitle = Text.of("Misc");
+    private Text miscTitle = Text.of("Special Services");
     private Text fireworksTitle = Text.of("Fireworks");
     private Text flipTitle = Text.of("Coin Toss");
     private Text boxesTitle = Text.of("Black Market");
@@ -34,18 +33,18 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-        int buttonX = x + TEXTURE.textureWidth - buttonWidth - TILE_SIZE;
+        int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
         int nextButtonY = y + TILE_SIZE * 2 + 2;
         textRenderer = MinecraftClient.getInstance().textRenderer;
-        shopButton = new TabButtonWidget(buttonX,nextButtonY, buttonWidth, buttonHeight, shopTitle, this, new MemberShopScreen(this));
+        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, shopTitle, this, new MemberShopScreen(this));
         nextButtonY += shopButton.getHeight();
-        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, buttonWidth, buttonHeight, fireworksTitle, this, new MemberFireworkScreen(this));
+        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, fireworksTitle, this, new MemberFireworkScreen(this));
         nextButtonY += fireworksButton.getHeight();
-        boxesButton = new TabButtonWidget(buttonX,nextButtonY, buttonWidth, buttonHeight, boxesTitle, this, new MemberIllegalScreen(this));
+        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, boxesTitle, this, new MemberIllegalScreen(this));
         nextButtonY += boxesButton.getHeight();
-        miscButton = new TabButtonWidget(buttonX,nextButtonY, buttonWidth, buttonHeight, miscTitle, this, new MemberMiscScreen(this));
+        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscTitle, this, new MemberMiscScreen(this));
         nextButtonY += miscButton.getHeight();
-        flipButton = new TabButtonWidget(buttonX,nextButtonY, buttonWidth, buttonHeight, flipTitle, this, new MemberFlipScreen(this));
+        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipTitle, this, new MemberFlipScreen(this));
         currentView = new MemberFlipScreen(this);
     }
 
@@ -59,6 +58,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public void setCurrentView(IMemberSubScreen memberSubScreen) {
         this.currentView = memberSubScreen;
+        currentView.init();
     }
 
     private void addPlayerFaceComponent() {
@@ -76,26 +76,23 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
         this.y = height - TEXTURE.renderHeight;
         addPlayerFaceComponent();
-        addDrawable(shopButton);
-        addDrawable(miscButton);
-        addDrawable(boxesButton);
-        addDrawable(fireworksButton);
-        addDrawable(flipButton);
-        int buttonX = x + TEXTURE.textureWidth - buttonWidth - TILE_SIZE;
+        addDrawableChild(shopButton);
+        addDrawableChild(miscButton);
+        addDrawableChild(boxesButton);
+        addDrawableChild(fireworksButton);
+        addDrawableChild(flipButton);
+        int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
         int nextButtonY = y + TILE_SIZE * 2 + 2;
-        shopButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        shopButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += shopButton.getHeight();
-        miscButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        miscButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += miscButton.getHeight();
-        boxesButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        boxesButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += boxesButton.getHeight();
-        fireworksButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        fireworksButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += fireworksButton.getHeight();
-        flipButton.resize(buttonX,nextButtonY,buttonWidth,buttonHeight);
+        flipButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         currentView.init();
-        for(Drawable components : currentView.getComponents()) {
-            addDrawable(components);
-        }
     }
 
     @Override
@@ -145,7 +142,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
             120
     );
     static final int TILE_SIZE = 4;
-    private static final int buttonWidth = TILE_SIZE * 18;
-    private static final int buttonHeight = TILE_SIZE * 5;
+    public static final int BUTTON_WIDTH = TILE_SIZE * 22;
+    private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
 
 }

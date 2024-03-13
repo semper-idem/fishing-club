@@ -25,6 +25,10 @@ public class ProgressionManager extends DataManager{
     private int exp = 0;
     private int perkPoints = 0;
 
+    private static final int RESET_COST_PER_PERK = 1000;
+    private static final int RESET_COST_PER_RESET = 10000;
+    private int resetCount = 0;
+
     private final HashMap<String, FishingPerk> perks = new HashMap<>();
     private final HashMap<String, SpellInstance> spells = new HashMap<>();
 
@@ -34,6 +38,18 @@ public class ProgressionManager extends DataManager{
 
     public void resetCooldown(){
         spells.forEach((key, spell) -> spell.resetCooldown());
+    }
+
+
+    public int getResetCost() {
+        return RESET_COST_PER_RESET * resetCount + RESET_COST_PER_PERK * perks.size();
+    }
+
+    public void resetPerks() {
+        int refundPerkPoints = perks.size();
+        perks.clear();
+        spells.clear();
+        addPerkPoints(refundPerkPoints);
     }
 
     public int getLevel() {
@@ -122,6 +138,7 @@ public class ProgressionManager extends DataManager{
         level = progressionNbt.getInt(LEVEL_TAG);
         exp = progressionNbt.getInt(EXP_TAG);
         perkPoints = progressionNbt.getInt(PERK_POINTS);
+        resetCount = progressionNbt.getInt(RESET_COUNT);
         readPerks(progressionNbt);
         readSpells(progressionNbt);
     }
@@ -150,6 +167,7 @@ public class ProgressionManager extends DataManager{
         progressionNbt.putInt(LEVEL_TAG, level);
         progressionNbt.putInt(EXP_TAG, exp);
         progressionNbt.putInt(PERK_POINTS, perkPoints);
+        progressionNbt.putInt(RESET_COUNT, resetCount);
         writePerks(progressionNbt);
         writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
@@ -172,6 +190,7 @@ public class ProgressionManager extends DataManager{
     private static final String LEVEL_TAG = "level";
     private static final String EXP_TAG = "exp";
     private static final String PERK_POINTS = "perk_points";
+    private static final String RESET_COUNT = "reset_count";
     private static final String PERKS_TAG ="perks";
     private static final String SPELLS_TAG ="spells";
 }

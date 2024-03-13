@@ -9,8 +9,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TEXTURE;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
+import static net.semperidem.fishingclub.util.TextUtil.TEXT_HEIGHT;
 
 
 public class MemberFlipScreen extends MemberSubScreen {
@@ -21,9 +21,9 @@ public class MemberFlipScreen extends MemberSubScreen {
     ButtonWidget maxAmountButton;
     String currentPlayerCredit;
     ClampedFieldWidget flipAmountField;
-    private static final int buttonWidth = TILE_SIZE * 10;
-    private static final int buttonHeight = TILE_SIZE * 5;
-    private static final int amountFieldWidth = TILE_SIZE * 20;
+    private static final int buttonWidth = 50;
+    private static final int buttonHeight = 20;
+    private static final int amountFieldWidth = 100;
 
     int baseX,baseY;
     int titleX, titleY;
@@ -35,7 +35,6 @@ public class MemberFlipScreen extends MemberSubScreen {
     int amountFieldX, amountFieldY;
     ArrayList<String> tossHistory = new ArrayList<>();
 
-    private static final int TEXT_HEIGHT = 12;
 
     MemberFlipScreen(MemberScreen parent) {
         super(parent);
@@ -46,21 +45,22 @@ public class MemberFlipScreen extends MemberSubScreen {
 
     @Override
     public void init() {
-        baseX = parent.x + TILE_SIZE * 11;
+        super.init();
+        baseX = parent.x + TILE_SIZE * 12;
         baseY = parent.y + TILE_SIZE * 2;
 
         titleX = baseX;
         titleY = baseY;
 
 
-        creditX = parent.x + TEXTURE.renderWidth - TILE_SIZE * 20;;
+        creditX = parent.x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
         creditY = titleY;
 
 
         amountFieldX = titleX;
-        amountFieldY = parent.height - 2 * TILE_SIZE - buttonHeight;
+        amountFieldY = parent.height - 2 * TILE_SIZE - buttonHeight - 2;
 
-        historyXLeft = titleX + amountFieldWidth + TILE_SIZE;
+        historyXLeft = titleX + amountFieldWidth + 2 * TILE_SIZE;
         historyXMiddle = historyXLeft + 10 * TILE_SIZE;
         historyXRight = creditX;
         historyY = parent.height - TILE_SIZE - TEXT_HEIGHT;
@@ -79,7 +79,6 @@ public class MemberFlipScreen extends MemberSubScreen {
         maxAmountButton = new ButtonWidget(amountFieldX + amountFieldWidth - 24,amountFieldY,24,buttonHeight, Text.of("Max"), o -> {
             flipAmountField.setMaxAmount();
         });
-        components.clear();
         components.add(tailsButton);
         components.add(headsButton);
         components.add(flipAmountField);
@@ -128,7 +127,7 @@ public class MemberFlipScreen extends MemberSubScreen {
 
         }
 
-        String creditString = "Your Credit: " + currentPlayerCredit + "$";
+        String creditString = "Credit: " + currentPlayerCredit + "$";
         int creditOffset = parent.getTextRenderer().getWidth(creditString);
         parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(creditString), creditX - creditOffset, creditY, Color.WHITE.getRGB());
 

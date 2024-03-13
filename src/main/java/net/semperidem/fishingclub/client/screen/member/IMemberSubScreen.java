@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public interface IMemberSubScreen {
     void init();
     ArrayList<Drawable> getComponents();
-    void handledScreenTick();
+    default void handledScreenTick() {}
 
     default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         for (Drawable component : getComponents()) {
@@ -42,12 +42,14 @@ public interface IMemberSubScreen {
 
     default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         for (Drawable component : getComponents()) {
-            if (!(component instanceof PressableWidget pressableWidget)) {
-                continue;
-            }
-
-            if (pressableWidget.keyPressed(keyCode, scanCode, modifiers)) {
-                return true;
+            if ((component instanceof PressableWidget pressableWidget)) {
+                if (pressableWidget.keyPressed(keyCode, scanCode, modifiers)) {
+                    return true;
+                }
+            } else if (component instanceof TextFieldWidget textFieldWidget) {
+                if (textFieldWidget.keyPressed(keyCode, scanCode, modifiers)) {
+                    return true;
+                }
             }
         }
         return false;

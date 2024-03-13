@@ -14,17 +14,12 @@ public class MemberSubScreen implements IMemberSubScreen{
     }
     @Override
     public void init() {
-
+        components.clear();
     }
 
     @Override
     public ArrayList<Drawable> getComponents() {
         return components;
-    }
-
-    @Override
-    public void handledScreenTick() {
-
     }
 
     @Override

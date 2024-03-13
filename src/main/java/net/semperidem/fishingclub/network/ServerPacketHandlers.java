@@ -175,4 +175,13 @@ public class ServerPacketHandlers {
             ServerPacketSender.sendCardUpdate(player, playerCard);
         });
     }
+
+    public static void handleResetPerk(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+
+        server.execute(() -> {
+            FishingCard playerCard = FishingCard.getPlayerCard(player);
+            playerCard.resetPerks();
+            ServerPacketSender.sendCardUpdate(player, playerCard);
+        });
+    }
 }
