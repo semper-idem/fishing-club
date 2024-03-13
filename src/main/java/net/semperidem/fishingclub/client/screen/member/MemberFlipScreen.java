@@ -3,26 +3,24 @@ package net.semperidem.fishingclub.client.screen.member;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TEXTURE;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
 
 
-public class MemberFlipScreen implements MemberSubScreen{
+public class MemberFlipScreen extends MemberSubScreen {
     HashMap<Integer, String> tossResult = new HashMap<>();
     String playerChoice;
     ButtonWidget tailsButton;
     ButtonWidget headsButton;
     ButtonWidget maxAmountButton;
-    String currentPlayerCredit = "0";
+    String currentPlayerCredit;
     ClampedFieldWidget flipAmountField;
     MemberScreen parent;
     private static final int buttonWidth = TILE_SIZE * 10;
@@ -103,11 +101,6 @@ public class MemberFlipScreen implements MemberSubScreen{
     }
 
     @Override
-    public ArrayList<Drawable> getComponents() {
-        return components;
-    }
-
-    @Override
     public void handledScreenTick() {
         HashMap<Integer, String> serverTossResult = parent.getScreenHandler().getTossResult();
         if (tossResult.size() != serverTossResult.size()) {
@@ -118,45 +111,8 @@ public class MemberFlipScreen implements MemberSubScreen{
         this.currentPlayerCredit = String.valueOf(parent.getScreenHandler().getCard().getCredit());
     }
 
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        boolean consumed = false;
-        for(ClickableWidget clickable : List.of(tailsButton, headsButton, flipAmountField)) {
-            if (consumed) {
-                return true;
-            }
-            consumed = clickable.mouseScrolled(mouseX, mouseY, amount);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean consumed = false;
-        for(ClickableWidget clickable : List.of(tailsButton, headsButton, maxAmountButton, flipAmountField)) {
-            if (consumed) {
-                return true;
-            }
-            consumed = clickable.mouseClicked(mouseX, mouseY, button);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return flipAmountField.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char chr, int modifiers) {
-        return flipAmountField.charTyped(chr, modifiers);
-    }
-
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-
-        // Text Rendering
         parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, Color.WHITE.getRGB());
         int historyEntryY = historyY;
         for(String tossEntry : Lists.reverse(tossHistory)) {
@@ -179,9 +135,6 @@ public class MemberFlipScreen implements MemberSubScreen{
         int creditOffset = parent.getTextRenderer().getWidth(creditString);
         parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(creditString), creditX - creditOffset, creditY, Color.WHITE.getRGB());
 
-        // Render all components from getComponents()
-        for (Drawable drawable : components) {
-            drawable.render(matrixStack, mouseX, mouseY, delta);
-        }
+        super.render(matrixStack, mouseX, mouseY, delta);
     }
 }

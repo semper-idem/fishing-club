@@ -5,21 +5,28 @@ import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
 
-public interface MemberSubScreen {
-    void init();
-    ArrayList<Drawable> getComponents();
-    void handledScreenTick();
-    boolean mouseScrolled(double mouseX, double mouseY, double amount);
+public class MemberSubScreen implements IMemberSubScreen{
+    ArrayList<Drawable> components = new ArrayList<>();
 
-    default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return false;
-    }
-    default boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return false;
-    }
-    void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta);
+    @Override
+    public void init() {
 
-    default boolean charTyped(char chr, int modifiers) {
-        return false;
+    }
+
+    @Override
+    public ArrayList<Drawable> getComponents() {
+        return components;
+    }
+
+    @Override
+    public void handledScreenTick() {
+
+    }
+
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        for (Drawable drawable : components) {
+            drawable.render(matrixStack, mouseX, mouseY, delta);
+        }
     }
 }

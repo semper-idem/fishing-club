@@ -17,7 +17,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     int x;
     int y;
-    private MemberSubScreen currentView;
+    private IMemberSubScreen currentView;
     private TabButtonWidget shopButton;
     private TabButtonWidget fireworksButton;
     private TabButtonWidget boxesButton;
@@ -49,7 +49,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         currentView = new MemberFlipScreen(this);
     }
 
-    public MemberSubScreen getCurrentView() {
+    public IMemberSubScreen getCurrentView() {
         return currentView;
     }
 
@@ -57,7 +57,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         return textRenderer;
     }
 
-    public void setCurrentView(MemberSubScreen memberSubScreen) {
+    public void setCurrentView(IMemberSubScreen memberSubScreen) {
         this.currentView = memberSubScreen;
     }
 
