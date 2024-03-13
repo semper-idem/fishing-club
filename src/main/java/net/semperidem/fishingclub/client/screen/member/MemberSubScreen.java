@@ -6,8 +6,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import java.util.ArrayList;
 
 public class MemberSubScreen implements IMemberSubScreen{
+    MemberScreen parent;
     ArrayList<Drawable> components = new ArrayList<>();
 
+    public MemberSubScreen(MemberScreen parent) {
+        this.parent = parent;
+    }
     @Override
     public void init() {
 

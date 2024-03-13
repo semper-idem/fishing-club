@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -22,7 +21,6 @@ public class MemberFlipScreen extends MemberSubScreen {
     ButtonWidget maxAmountButton;
     String currentPlayerCredit;
     ClampedFieldWidget flipAmountField;
-    MemberScreen parent;
     private static final int buttonWidth = TILE_SIZE * 10;
     private static final int buttonHeight = TILE_SIZE * 5;
     private static final int amountFieldWidth = TILE_SIZE * 20;
@@ -36,12 +34,11 @@ public class MemberFlipScreen extends MemberSubScreen {
     int creditX, creditY;
     int amountFieldX, amountFieldY;
     ArrayList<String> tossHistory = new ArrayList<>();
-    ArrayList<Drawable> components = new ArrayList<>();
 
     private static final int TEXT_HEIGHT = 12;
 
     MemberFlipScreen(MemberScreen parent) {
-        this.parent = parent;
+        super(parent);
         this.currentPlayerCredit = String.valueOf(parent.getScreenHandler().getCard().getCredit());
     }
 
