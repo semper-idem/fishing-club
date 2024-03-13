@@ -46,6 +46,7 @@ public class ProgressionManager extends DataManager{
     }
 
     public void resetPerks() {
+        resetCount++;
         int refundPerkPoints = perks.size();
         perks.clear();
         spells.clear();

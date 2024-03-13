@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.member;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -12,17 +11,17 @@ import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_
 import static net.semperidem.fishingclub.util.TextUtil.*;
 
 public class MemberMiscScreen extends MemberSubScreen {
-    ButtonWidget resetPerksButton;
-    ButtonWidget submitBidButton;
-    ClampedFieldWidget bidField;
+    DemandingButtonWidget resetPerksButton;
+    DemandingButtonWidget submitClaimButton;
+    ClampedFieldWidget claimField;
     String resetCostString = "Free";
     String creditString = "0";
-    String minBidString = "0";
+    String minClaimString = "0";
     String capeHolderString = "";
     Text resetText = Text.literal("Reset Perks");
     Text resetCostText = Text.literal("Cost: " + resetCostString);
     Text creditText = Text.literal("Credit: " + creditString + "$");
-    Text minBidText = Text.literal("Min: " + minBidString + "$");
+    Text minClaimText = Text.literal("Min: " + minClaimString + "$");
     Text title = Text.literal("Special Services");
     Text capeHolderText = Text.literal(capeHolderString);
     Text fishingKingText = Text.literal("Fishing King Title");
@@ -33,14 +32,14 @@ public class MemberMiscScreen extends MemberSubScreen {
     private int resetCostX, resetCostY;
     private int resetButtonX, resetButtonY;
     private int resetX, resetY;
-    private int bidButtonX, bidButtonY;//TODO Rename to claim
+    private int claimButtonX, claimButtonY;//TODO Rename to claim
     private int kingTitleX, kingTitleY;
     private int capeHolderX, capeHolderY;
-    private int bidFieldX, bidFieldY;
-    private int minimumBidX, minimumBidY;
+    private int claimFieldX, claimFieldY;
+    private int minimumClaimX, minimumClaimY;
     private int creditX, creditY;
-    private int bidFieldWidth = 100;
-    private int bidButtonWidth = 40;
+    private int claimFieldWidth = 100;
+    private int claimButtonWidth = 40;
 
     public MemberMiscScreen(MemberScreen parent) {
         super(parent);
@@ -65,44 +64,50 @@ public class MemberMiscScreen extends MemberSubScreen {
         resetX = resetCostX;
         resetY = resetCostY - TEXT_HEIGHT * 3;
 
-        bidFieldX = baseX;
-        bidFieldY = parent.y + TEXTURE.textureHeight - BUTTON_HEIGHT - 2 * TILE_SIZE - 2;
+        claimFieldX = baseX;
+        claimFieldY = parent.y + TEXTURE.textureHeight - BUTTON_HEIGHT - 2 * TILE_SIZE - 2;
 
-        bidButtonX = bidFieldX + bidFieldWidth - bidButtonWidth;
-        bidButtonY = bidFieldY;
+        claimButtonX = claimFieldX + claimFieldWidth - claimButtonWidth;
+        claimButtonY = claimFieldY;
 
 
-        minimumBidX = bidFieldX + bidFieldWidth / 2;
-        minimumBidY = bidButtonY - TEXT_HEIGHT;
+        minimumClaimX = claimFieldX + claimFieldWidth / 2;
+        minimumClaimY = claimButtonY - TEXT_HEIGHT;
 
-        capeHolderX = kingTitleX;
-        capeHolderY = minimumBidY - 2 * TEXT_HEIGHT;
+        capeHolderX = minimumClaimX;
+        capeHolderY = minimumClaimY - 2 * TEXT_HEIGHT;
 
-        kingTitleX = minimumBidX;
+        kingTitleX = capeHolderX;
         kingTitleY = capeHolderY - TEXT_HEIGHT;
+
 
         creditX = parent.x + TEXTURE.renderWidth - MemberScreen.BUTTON_WIDTH - 3 * TILE_SIZE;
         creditY = titleY;
 
 
-        resetPerksButton = new ButtonWidget(resetButtonX, resetButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, Text.literal("Reset"), button -> {
+        resetPerksButton = new DemandingButtonWidget(resetButtonX, resetButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, Text.literal("Reset"), button -> {
             if (parent.getScreenHandler().getCard().canResetPerks()) {
                 ClientPacketSender.sendResetPerk();
             }
-        });
+        }, () -> parent.getScreenHandler().getCard().canResetPerks());
 
-        bidField = new ClampedFieldWidget(parent.getTextRenderer(), bidFieldX, bidFieldY, bidFieldWidth, BUTTON_HEIGHT, Text.literal(""), parent);
-        bidField.setMaxLength(10);
-        bidField.setText(minBidString);
+        claimField = new ClampedFieldWidget(parent.getTextRenderer(), claimFieldX, claimFieldY, claimFieldWidth, BUTTON_HEIGHT, Text.literal(""), parent);
+        claimField.setMaxLength(10);
+        claimField.setText("0");
 
-        submitBidButton = new ButtonWidget(bidButtonX, bidButtonY, bidButtonWidth, BUTTON_HEIGHT, Text.literal("Claim"), button -> {
-            // TODO: Add logic for submitting a bid
-        });
-
+        submitClaimButton = new DemandingButtonWidget(claimButtonX, claimButtonY, claimButtonWidth, BUTTON_HEIGHT, Text.literal("Claim"), button -> {
+            int claimAmount = claimField.getValidAmount();
+            if (claimAmount >= parent.getScreenHandler().getMinCapePrice()) {
+                ClientPacketSender.sendClaimCape(claimAmount);
+            }
+        }, () -> claimField.getValidAmount() >= parent.getScreenHandler().getMinCapePrice() &&
+                parent.getScreenHandler().getCard().getCredit() > parent.getScreenHandler().getMinCapePrice());
 
         components.add(resetPerksButton);
-        components.add(bidField);
-        components.add(submitBidButton);
+        components.add(claimField);
+        components.add(submitClaimButton);
+
+        ClientPacketSender.sendRequestCapeDetails();
     }
 
     @Override
@@ -111,8 +116,15 @@ public class MemberMiscScreen extends MemberSubScreen {
         resetCostString = resetCost == 0 ? "Free (Once)" : (resetCost + "$");
         creditString = String.valueOf(parent.getScreenHandler().getCard().getCredit());
         creditText = Text.literal("Credit: " + creditString + "$");
-        Optional.ofNullable(resetPerksButton).ifPresent(o -> o.active = parent.getScreenHandler().getCard().canResetPerks());
         resetCostText = Text.literal("Cost: " + resetCostString);
+
+        minClaimString = String.valueOf(parent.getScreenHandler().getMinCapePrice());
+        minClaimText = Text.literal("Min: " + minClaimString + "$");
+        capeHolderText = Text.literal(parent.getScreenHandler().getCapeHolder());
+
+
+        Optional.ofNullable(resetPerksButton).ifPresent(DemandingButtonWidget::tick);
+        Optional.ofNullable(submitClaimButton).ifPresent(DemandingButtonWidget::tick);
     }
 
     @Override
@@ -121,7 +133,7 @@ public class MemberMiscScreen extends MemberSubScreen {
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetText, resetX, resetY, 0xFFFFFF);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetCostText, resetCostX, resetCostY, 0xFFFFFF);
         drawTextRightAlignedTo(parent.getTextRenderer(), matrixStack, creditText, creditX, creditY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minBidText, minimumBidX, minimumBidY, 0xFFFFFF);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minClaimText, minimumClaimX, minimumClaimY, 0xFFFFFF);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, 0xFFFFFF);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, fishingKingText, kingTitleX, kingTitleY, 0xFFFFFF);
 

@@ -71,10 +71,10 @@ public class MemberFlipScreen extends MemberSubScreen {
 
         tailsX = headsX + buttonWidth + 2;
         tailsY = headsY;
+        flipAmountField = new ClampedFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
 
         tailsButton = new ButtonWidget(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
         headsButton = new ButtonWidget(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
-        flipAmountField = new ClampedFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
 
         maxAmountButton = new ButtonWidget(amountFieldX + amountFieldWidth - 24,amountFieldY,24,buttonHeight, Text.of("Max"), o -> {
             flipAmountField.setMaxAmount();
@@ -84,8 +84,6 @@ public class MemberFlipScreen extends MemberSubScreen {
         components.add(flipAmountField);
         components.add(maxAmountButton);
     }
-
-
 
     public ButtonWidget.PressAction tossCoin() {
         return button -> {

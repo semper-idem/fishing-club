@@ -4,8 +4,10 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
@@ -19,6 +21,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import java.util.ArrayList;
@@ -177,11 +180,52 @@ public class ServerPacketHandlers {
     }
 
     public static void handleResetPerk(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-
         server.execute(() -> {
             FishingCard playerCard = FishingCard.getPlayerCard(player);
             playerCard.resetPerks();
             ServerPacketSender.sendCardUpdate(player, playerCard);
+        });
+    }
+
+    public static void handleClaimCape(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        int claimPrice = buf.readInt();
+        server.execute(() -> {
+            boolean success;
+            if (!(server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties)) {
+                return;
+            }
+            success = fishingLevelProperties.claimCape(player.getUuid(), player.getName().getString(), claimPrice);
+            if (!success) {
+                return;
+            }
+            FishingCard.getPlayerCard(player).addCredit(-claimPrice);
+            PlayerManager playerManager;
+            if ((playerManager = server.getPlayerManager()) == null) {
+                return;
+            }
+            playerManager.getPlayerList().forEach(serverPlayer -> {
+                if (serverPlayer.currentScreenHandler instanceof MemberScreenHandler) {
+                    ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
+                    ServerPacketSender.sendCapeDetails(
+                            serverPlayer,
+                            fishingLevelProperties.getFishingKingName(),
+                            fishingLevelProperties.getMinFishingKingClaimPrice()
+                    );
+                }
+            });
+        });
+    }
+
+    public static void handleCapeDetailsRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> {
+            if (server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties) {
+                ServerPacketSender.sendCapeDetails(
+                        player,
+                        fishingLevelProperties.getFishingKingName(),
+                        fishingLevelProperties.getMinFishingKingClaimPrice()
+                );
+                ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
+            }
         });
     }
 }

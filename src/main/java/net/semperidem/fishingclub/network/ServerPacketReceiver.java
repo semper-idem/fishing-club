@@ -24,6 +24,8 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_REFUSE_DEREK, ServerPacketHandlers::handleRefuseDerek);
             registerReceiver(handler, C2S_TOSS_COIN, ServerPacketHandlers::handleCoinToss);
             registerReceiver(handler, C2S_RESET_PERKS, ServerPacketHandlers::handleResetPerk);
+            registerReceiver(handler, C2S_CLAIM_CAPE, ServerPacketHandlers::handleClaimCape);
+            registerReceiver(handler, C2S_GET_CAPE_DETAILS, ServerPacketHandlers::handleCapeDetailsRequest);
         });
     }
 }

@@ -95,4 +95,14 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_RESET_PERKS, PacketByteBufs.empty());
     }
 
+    public static void sendClaimCape(int claimPrice) {
+        PacketByteBuf capeClaimPacket = PacketByteBufs.create();
+        capeClaimPacket.writeInt(claimPrice);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_CLAIM_CAPE, capeClaimPacket);
+    }
+
+    public static void sendRequestCapeDetails() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_GET_CAPE_DETAILS, PacketByteBufs.empty());
+    }
+
 }

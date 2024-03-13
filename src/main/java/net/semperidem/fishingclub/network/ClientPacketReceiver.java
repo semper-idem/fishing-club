@@ -45,5 +45,15 @@ public class ClientPacketReceiver {
                 memberScreen.getScreenHandler().updateCard(playerCard);
             });
         });
+        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SET_CAPE_DETAILS, (client, handler, buf, responseSender) -> {
+            String capeHolder = buf.readString();
+            int minCapePrice = buf.readInt();
+            client.execute(() -> {
+                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
+                    return;
+                }
+                memberScreen.getScreenHandler().setCapeHolder(capeHolder, minCapePrice);
+            });
+        });
     }
 }

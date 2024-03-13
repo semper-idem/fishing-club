@@ -45,4 +45,10 @@ public class ServerPacketSender {
         cardPacket.writeNbt(fishingCard.toNbt());
         ServerPlayNetworking.send(player, PacketIdentifiers.S2C_UPDATE_CARD, cardPacket);
     }
+    public static void sendCapeDetails(ServerPlayerEntity player, String capeHolder, int minCapePrice) {
+        PacketByteBuf capeDetailsPacket = PacketByteBufs.create();
+        capeDetailsPacket.writeString(capeHolder);
+        capeDetailsPacket.writeInt(minCapePrice);
+        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_SET_CAPE_DETAILS, capeDetailsPacket);
+    }
 }

@@ -26,6 +26,9 @@ public class MemberScreenHandler extends ScreenHandler {
     HashMap<Integer, String> tossHistory = new HashMap<>();
     int tossIndex = 0;
 
+    String capeHolder = "";
+    int minCapePrice = 0;
+
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard, FishermanEntity fishermanEntity) {
         super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
@@ -33,6 +36,19 @@ public class MemberScreenHandler extends ScreenHandler {
         this.fishermanEntity = fishermanEntity;
 //        addPlayerInventory(player.getInventory());
 //        addPlayerHotbar(player.getInventory());
+    }
+
+    public void setCapeHolder(String capeHolder, int minCapePrice) {
+        this.capeHolder = capeHolder;
+        this.minCapePrice = minCapePrice;
+    }
+
+    public int getMinCapePrice(){
+        return minCapePrice;
+    }
+
+    public String getCapeHolder() {
+        return this.capeHolder;
     }
 
     public void updateCard(FishingCard fishingCard) {

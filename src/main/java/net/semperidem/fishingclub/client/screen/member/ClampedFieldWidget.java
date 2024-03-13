@@ -33,7 +33,7 @@ public class ClampedFieldWidget extends TextFieldWidget {
             amount = maxAmount;
             setText(String.valueOf(amount));
         }
-        if (amount < 0) {
+        if (amount <= 0) {
             amount = 0;
             setText(String.valueOf(amount));
         }

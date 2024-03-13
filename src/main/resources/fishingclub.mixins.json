@@ -8,6 +8,7 @@
     "common.EnchantmentHelperMixin",
     "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
+    "common.LevelPropertiesMixin",
     "common.PlayerEntityMixin",
     "common.ServerWorldMixin"
   ],

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -28,7 +29,7 @@ public interface IMemberSubScreen {
     }
 
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (Drawable component : getComponents()) {
+        for (Drawable component : Lists.reverse(getComponents())) {
             if (!(component instanceof ClickableWidget clickableWidget)) {
                 continue;
             }
