@@ -23,8 +23,7 @@ public class MemberScreenHandler extends ScreenHandler {
     private final PlayerEntity player;
     FishermanEntity fishermanEntity;
     FishingCard fishingCard;
-    HashMap<Integer, String> tossHistory = new HashMap<>();
-    int tossIndex = 0;
+    private HashMap<Integer, String> tossHistory = new HashMap<>();
 
     String capeHolder = "";
     int minCapePrice = 0;
@@ -87,15 +86,15 @@ public class MemberScreenHandler extends ScreenHandler {
     }
 
     public void tossCoin(int amount, String playerChoice) {
+        addTossEntry("Picked;" + playerChoice + ";Bet:;" + amount + "$");
         ClientPacketSender.sendCoinTossRequest(amount, playerChoice);
     }
 
-    public HashMap<Integer, String> getTossResult() {
+    public HashMap<Integer, String> getTossHistory() {
         return this.tossHistory;
     }
 
-    public void addTossResult(String tossResult) {
-        this.tossIndex++;
-        this.tossHistory.put(tossIndex, tossResult);
+    public void addTossEntry(String tossEntry) {
+        this.tossHistory.put(tossHistory.size() + 1, tossEntry);
     }
 }

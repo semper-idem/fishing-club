@@ -6,21 +6,19 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.Optional;
 
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TEXTURE;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
-import static net.semperidem.fishingclub.util.TextUtil.*;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
+import static net.semperidem.fishingclub.util.TextUtil.TEXT_HEIGHT;
+import static net.semperidem.fishingclub.util.TextUtil.drawTextCenteredAt;
 
 public class MemberMiscScreen extends MemberSubScreen {
     DemandingButtonWidget resetPerksButton;
     DemandingButtonWidget submitClaimButton;
     ClampedFieldWidget claimField;
     String resetCostString = "Free";
-    String creditString = "0";
     String minClaimString = "0";
     String capeHolderString = "";
     Text resetText = Text.literal("Reset Perks");
     Text resetCostText = Text.literal("Cost: " + resetCostString);
-    Text creditText = Text.literal("Credit: " + creditString + "$");
     Text minClaimText = Text.literal("Min: " + minClaimString + "$");
     Text title = Text.literal("Special Services");
     Text capeHolderText = Text.literal(capeHolderString);
@@ -37,7 +35,6 @@ public class MemberMiscScreen extends MemberSubScreen {
     private int capeHolderX, capeHolderY;
     private int claimFieldX, claimFieldY;
     private int minimumClaimX, minimumClaimY;
-    private int creditX, creditY;
     private int claimFieldWidth = 100;
     private int claimButtonWidth = 40;
 
@@ -81,10 +78,6 @@ public class MemberMiscScreen extends MemberSubScreen {
         kingTitleY = capeHolderY - TEXT_HEIGHT;
 
 
-        creditX = parent.x + TEXTURE.renderWidth - MemberScreen.BUTTON_WIDTH - 3 * TILE_SIZE;
-        creditY = titleY;
-
-
         resetPerksButton = new DemandingButtonWidget(resetButtonX, resetButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, Text.literal("Reset"), button -> {
             if (parent.getScreenHandler().getCard().canResetPerks()) {
                 ClientPacketSender.sendResetPerk();
@@ -114,8 +107,6 @@ public class MemberMiscScreen extends MemberSubScreen {
     public void handledScreenTick() {
         int resetCost = parent.getScreenHandler().getCard().getResetCost();
         resetCostString = resetCost == 0 ? "Free (Once)" : (resetCost + "$");
-        creditString = String.valueOf(parent.getScreenHandler().getCard().getCredit());
-        creditText = Text.literal("Credit: " + creditString + "$");
         resetCostText = Text.literal("Cost: " + resetCostString);
 
         minClaimString = String.valueOf(parent.getScreenHandler().getMinCapePrice());
@@ -129,13 +120,12 @@ public class MemberMiscScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        drawText(parent.getTextRenderer(), matrixStack, title, titleX, titleY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetText, resetX, resetY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetCostText, resetCostX, resetCostY, 0xFFFFFF);
-        drawTextRightAlignedTo(parent.getTextRenderer(), matrixStack, creditText, creditX, creditY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minClaimText, minimumClaimX, minimumClaimY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, 0xFFFFFF);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, fishingKingText, kingTitleX, kingTitleY, 0xFFFFFF);
+        parent.getTextRenderer().drawWithShadow(matrixStack, title, titleX, titleY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
 
         super.render(matrixStack, mouseX, mouseY, delta);
     }

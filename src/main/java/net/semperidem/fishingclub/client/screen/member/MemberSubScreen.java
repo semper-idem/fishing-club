@@ -11,6 +11,7 @@ public class MemberSubScreen implements IMemberSubScreen{
 
     public MemberSubScreen(MemberScreen parent) {
         this.parent = parent;
+        init();
     }
     @Override
     public void init() {

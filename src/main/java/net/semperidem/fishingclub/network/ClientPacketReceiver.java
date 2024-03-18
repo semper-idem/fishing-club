@@ -33,7 +33,7 @@ public class ClientPacketReceiver {
                 if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
                     return;
                 }
-                memberScreen.getScreenHandler().addTossResult(tossResult);
+                memberScreen.getScreenHandler().addTossEntry(tossResult);
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_UPDATE_CARD, (client, handler, buf, responseSender) -> {

@@ -12,6 +12,10 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
+import java.awt.*;
+
+import static net.semperidem.fishingclub.util.TextUtil.drawOutlinedTextRightAlignedTo;
+
 public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
 
     int x;
@@ -28,6 +32,13 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private Text flipTitle = Text.of("Coin Toss");
     private Text boxesTitle = Text.of("Black Market");
 
+    public static final int CREDIT_COLOR = 0x618853;
+    public static final int CREDIT_OUTLINE_COLOR = new Color(CREDIT_COLOR).darker().darker().getRGB();
+    public static final int BEIGE_TEXT_COLOR = 0xffeace;
+    public static final int WHITE_TEXT_COLOR = 0xdfe0df;
+
+    Text creditText;
+    int creditX, creditY;
 
 
 
@@ -45,6 +56,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscTitle, this, new MemberMiscScreen(this));
         nextButtonY += miscButton.getHeight();
         flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipTitle, this, new MemberFlipScreen(this));
+        this.creditText = Text.literal("Credit: " + getScreenHandler().getCard().getCredit() + "$");
+
         currentView = new MemberFlipScreen(this);
     }
 
@@ -57,8 +70,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     public void setCurrentView(IMemberSubScreen memberSubScreen) {
+        memberSubScreen.init();
         this.currentView = memberSubScreen;
-        currentView.init();
     }
 
     private void addPlayerFaceComponent() {
@@ -92,11 +105,14 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         fireworksButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += fireworksButton.getHeight();
         flipButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
+        creditY = y +  TILE_SIZE * 2;
         currentView.init();
     }
-
     @Override
     protected void handledScreenTick() {
+        this.creditText = Text.literal("Credit: " + getScreenHandler().getCard().getCredit() + "$");
+
         currentView.handledScreenTick();
     }
 
@@ -125,6 +141,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         super.render(matrixStack, mouseX, mouseY, delta);
         currentView.render(matrixStack, mouseX, mouseY, delta);
+        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditText, creditX, creditY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
     }
 
     @Override

@@ -167,11 +167,11 @@ public class ServerPacketHandlers {
                 betAmount = maxAmount;
             }
             if (isWon) {
-                resultString += "§6" + tossResult + ";+" + (betAmount) + "$";
+                resultString += "§6" + tossResult + ";Won ;+" + (betAmount) + "$";
                 FishingCard.getPlayerCard(player).addCredit(betAmount);
             } else {
                 tossResult  = !Objects.equals(tossResult, "Heads") ? "Heads" : "Tails";
-                resultString += "§4" + tossResult + ";-" + (betAmount) + "$";
+                resultString += "§4" + tossResult + ";Lost ;-" + (betAmount) + "$";
                 FishingCard.getPlayerCard(player).addCredit(-betAmount);
             }
             ServerPacketSender.sendTossResult(player, resultString);
