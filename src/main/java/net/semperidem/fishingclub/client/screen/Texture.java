@@ -31,8 +31,40 @@ public class Texture {
                 matrixStack,
                 x, y,
                 0, 0,
-                textureWidth, textureHeight,
-                renderWidth, renderHeight
+                renderWidth, renderHeight,
+                textureWidth, textureHeight
+        );
+    }
+
+    public void render(MatrixStack matrixStack, int x, int y, int u, int v,  int renderWidth, int renderHeight) {
+        setTexture(identifier);
+        DrawableHelper.drawTexture(
+                matrixStack,
+                x, y,
+                u, v,
+                renderWidth / 2, renderHeight / 2,
+                textureWidth, textureHeight
+        );
+        DrawableHelper.drawTexture(
+                matrixStack,
+                (int) (x + (renderWidth / 2f)), y,
+                u + textureWidth - (renderWidth / 2f), v,
+                renderWidth / 2, renderHeight / 2,
+                textureWidth, textureHeight
+        );
+        DrawableHelper.drawTexture(
+                matrixStack,
+                x, (int) (y + (renderHeight / 2f)),
+                u, v + (renderHeight / 2f),
+                renderWidth / 2, renderHeight / 2,
+                textureWidth, textureHeight
+        );
+        DrawableHelper.drawTexture(
+                matrixStack,
+                (int) (x + (renderWidth / 2f)), (int) (y + (renderHeight / 2f)),
+                u + textureWidth - (renderWidth / 2f), v + (renderHeight / 2f),
+                renderWidth / 2, renderHeight / 2,
+                textureWidth, textureHeight
         );
     }
 

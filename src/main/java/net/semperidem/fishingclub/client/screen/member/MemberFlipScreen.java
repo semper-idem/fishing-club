@@ -13,9 +13,9 @@ import static net.semperidem.fishingclub.util.TextUtil.TEXT_HEIGHT;
 
 public class MemberFlipScreen extends MemberSubScreen {
     String playerChoice;
-    ButtonWidget tailsButton;
-    ButtonWidget headsButton;
-    ButtonWidget maxAmountButton;
+    MemberButton tailsButton;
+    MemberButton headsButton;
+    MemberButton maxAmountButton;
     ClampedFieldWidget flipAmountField;
     private static final int buttonWidth = 50;
     private static final int buttonHeight = 20;
@@ -30,8 +30,8 @@ public class MemberFlipScreen extends MemberSubScreen {
     int amountFieldX, amountFieldY;
 
 
-    MemberFlipScreen(MemberScreen parent) {
-        super(parent);
+    MemberFlipScreen(MemberScreen parent, Text title) {
+        super(parent, title);
     }
 
 
@@ -43,7 +43,7 @@ public class MemberFlipScreen extends MemberSubScreen {
         baseY = parent.y + TILE_SIZE * 2;
 
         titleX = baseX;
-        titleY = baseY;
+        titleY = baseY - 1;
 
 
 
@@ -54,7 +54,7 @@ public class MemberFlipScreen extends MemberSubScreen {
         historyXMiddle = historyXLeft + 10 * TILE_SIZE;
         historyXMiddle2 = historyXMiddle + 10 * TILE_SIZE;
         historyXRight = parent.creditX;
-        historyY = parent.height - TILE_SIZE - TEXT_HEIGHT;
+        historyY = parent.height - TILE_SIZE - TEXT_HEIGHT + 2;
         historyMaxY = parent.creditY + TEXT_HEIGHT;
 
         headsX = amountFieldX - 1;
@@ -64,10 +64,10 @@ public class MemberFlipScreen extends MemberSubScreen {
         tailsY = headsY;
         flipAmountField = new ClampedFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
 
-        tailsButton = new ButtonWidget(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
-        headsButton = new ButtonWidget(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
+        tailsButton = new MemberButton(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
+        headsButton = new MemberButton(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
 
-        maxAmountButton = new ButtonWidget(amountFieldX + amountFieldWidth - 24,amountFieldY,24,buttonHeight, Text.of("Max"), o -> {
+        maxAmountButton = new MemberButton(amountFieldX + amountFieldWidth - 30,amountFieldY,30,buttonHeight, Text.of("Max"), o -> {
             flipAmountField.setMaxAmount();
         });
         components.add(tailsButton);
@@ -99,9 +99,9 @@ public class MemberFlipScreen extends MemberSubScreen {
             if (parts.length != 4) {
                 continue;
             }
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, WHITE_TEXT_COLOR);
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, WHITE_TEXT_COLOR);
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[2]), historyXMiddle2, historyEntryY, WHITE_TEXT_COLOR);
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
+            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
             TextUtil.drawOutlinedTextRightAlignedTo(parent.getTextRenderer(), matrixStack, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
             historyEntryY -= TEXT_HEIGHT;
 

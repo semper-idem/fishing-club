@@ -7,8 +7,7 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 import java.util.Optional;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
-import static net.semperidem.fishingclub.util.TextUtil.TEXT_HEIGHT;
-import static net.semperidem.fishingclub.util.TextUtil.drawTextCenteredAt;
+import static net.semperidem.fishingclub.util.TextUtil.*;
 
 public class MemberMiscScreen extends MemberSubScreen {
     DemandingButtonWidget resetPerksButton;
@@ -24,9 +23,9 @@ public class MemberMiscScreen extends MemberSubScreen {
     Text capeHolderText = Text.literal(capeHolderString);
     Text fishingKingText = Text.literal("Fishing King Title");
 
+
     private final static int BUTTON_WIDTH = 100, BUTTON_HEIGHT = 20;
     private int baseX, baseY;
-    private int titleX, titleY;
     private int resetCostX, resetCostY;
     private int resetButtonX, resetButtonY;
     private int resetX, resetY;
@@ -38,8 +37,8 @@ public class MemberMiscScreen extends MemberSubScreen {
     private int claimFieldWidth = 100;
     private int claimButtonWidth = 40;
 
-    public MemberMiscScreen(MemberScreen parent) {
-        super(parent);
+    public MemberMiscScreen(MemberScreen parent, Text title) {
+        super(parent, title);
     }
 
     @Override
@@ -48,9 +47,6 @@ public class MemberMiscScreen extends MemberSubScreen {
 
         baseX = parent.x + TILE_SIZE * 12;
         baseY = parent.y + TILE_SIZE * 2;
-
-        titleX = baseX;
-        titleY = baseY;
 
         resetButtonX = parent.x + TEXTURE.textureWidth - TILE_SIZE * 26 - BUTTON_WIDTH;
         resetButtonY = parent.y + TEXTURE.textureHeight - TILE_SIZE * 2 - BUTTON_HEIGHT - 2;
@@ -120,11 +116,10 @@ public class MemberMiscScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.getTextRenderer().drawWithShadow(matrixStack, title, titleX, titleY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, BEIGE_TEXT_COLOR);
+        drawOutlinedTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
         drawTextCenteredAt(parent.getTextRenderer(), matrixStack, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
 
         super.render(matrixStack, mouseX, mouseY, delta);

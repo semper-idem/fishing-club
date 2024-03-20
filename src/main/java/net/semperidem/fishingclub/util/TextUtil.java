@@ -21,6 +21,13 @@ public class TextUtil {
         textRenderer.drawWithShadow(matrixStack, text, textX, y, color);
     }
 
+    public static void drawOutlinedTextCenteredAt(TextRenderer textRenderer, MatrixStack matrixStack, Text text, int x, int y, int color, int outline) {
+        int textWidth = textRenderer.getWidth(text);
+        int textX = x - textWidth / 2;
+        drawTextOutline(textRenderer, matrixStack, text, textX, y, outline);
+        textRenderer.draw(matrixStack, text, textX, y, color);
+    }
+
     /**
      * Draws text right-aligned to the given x coordinate.
      * @param matrixStack The MatrixStack for rendering.

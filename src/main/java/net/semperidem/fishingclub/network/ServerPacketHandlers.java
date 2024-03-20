@@ -171,7 +171,7 @@ public class ServerPacketHandlers {
                 FishingCard.getPlayerCard(player).addCredit(betAmount);
             } else {
                 tossResult  = !Objects.equals(tossResult, "Heads") ? "Heads" : "Tails";
-                resultString += "§4" + tossResult + ";Lost ;-" + (betAmount) + "$";
+                resultString += "§8" + tossResult + ";Lost ;-" + (betAmount) + "$";
                 FishingCard.getPlayerCard(player).addCredit(-betAmount);
             }
             ServerPacketSender.sendTossResult(player, resultString);

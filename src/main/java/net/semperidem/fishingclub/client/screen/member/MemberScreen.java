@@ -12,33 +12,34 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
-import java.awt.*;
-
 import static net.semperidem.fishingclub.util.TextUtil.drawOutlinedTextRightAlignedTo;
+import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 
 public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
 
     int x;
     int y;
-    private IMemberSubScreen currentView;
+    private MemberSubScreen currentView;
     private TabButtonWidget shopButton;
     private TabButtonWidget fireworksButton;
     private TabButtonWidget boxesButton;
     private TabButtonWidget miscButton;
     private TabButtonWidget flipButton;
     private Text shopTitle = Text.of("Trade");
-    private Text miscTitle = Text.of("Special Services");
+    private Text miscTitle = Text.of("Services");
     private Text fireworksTitle = Text.of("Fireworks");
     private Text flipTitle = Text.of("Coin Toss");
-    private Text boxesTitle = Text.of("Black Market");
+    private Text boxesTitle = Text.of("Contraband");
 
-    public static final int CREDIT_COLOR = 0x618853;
-    public static final int CREDIT_OUTLINE_COLOR = new Color(CREDIT_COLOR).darker().darker().getRGB();
+    public static final int CREDIT_COLOR = 0xffcf51;
+    public static final int CREDIT_OUTLINE_COLOR = 0x4b2f00;
     public static final int BEIGE_TEXT_COLOR = 0xffeace;
     public static final int WHITE_TEXT_COLOR = 0xdfe0df;
 
-    Text creditText;
+    private final Text creditText = Text.literal("Credit: ");
+    private Text creditValue = Text.literal("0$");
     int creditX, creditY;
+    int titleX, titleY;
 
 
 
@@ -47,18 +48,17 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
         int nextButtonY = y + TILE_SIZE * 2 + 2;
         textRenderer = MinecraftClient.getInstance().textRenderer;
-        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, shopTitle, this, new MemberShopScreen(this));
+        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberShopScreen(this, shopTitle));
         nextButtonY += shopButton.getHeight();
-        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, fireworksTitle, this, new MemberFireworkScreen(this));
+        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberFireworkScreen(this, fireworksTitle));
         nextButtonY += fireworksButton.getHeight();
-        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, boxesTitle, this, new MemberIllegalScreen(this));
+        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberIllegalScreen(this, boxesTitle));
         nextButtonY += boxesButton.getHeight();
-        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscTitle, this, new MemberMiscScreen(this));
+        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberMiscScreen(this, miscTitle));
         nextButtonY += miscButton.getHeight();
-        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipTitle, this, new MemberFlipScreen(this));
-        this.creditText = Text.literal("Credit: " + getScreenHandler().getCard().getCredit() + "$");
+        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberFlipScreen(this, flipTitle));
 
-        currentView = new MemberFlipScreen(this);
+        flipButton.onPress();
     }
 
     public IMemberSubScreen getCurrentView() {
@@ -69,7 +69,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         return textRenderer;
     }
 
-    public void setCurrentView(IMemberSubScreen memberSubScreen) {
+    public void setCurrentView(MemberSubScreen memberSubScreen) {
         memberSubScreen.init();
         this.currentView = memberSubScreen;
     }
@@ -95,7 +95,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         addDrawableChild(fireworksButton);
         addDrawableChild(flipButton);
         int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
-        int nextButtonY = y + TILE_SIZE * 2 + 2;
+        int nextButtonY = y + TILE_SIZE + 1;
         shopButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         nextButtonY += shopButton.getHeight();
         miscButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -106,12 +106,15 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         nextButtonY += fireworksButton.getHeight();
         flipButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
-        creditY = y +  TILE_SIZE * 2;
+        creditY = y +  TILE_SIZE * 2 - 1;
         currentView.init();
+
+        titleX = x + TILE_SIZE * 12;
+        titleY = y + TILE_SIZE * 2 - 1;
     }
     @Override
     protected void handledScreenTick() {
-        this.creditText = Text.literal("Credit: " + getScreenHandler().getCard().getCredit() + "$");
+        this.creditValue = Text.literal(getScreenHandler().getCard().getCredit() + "$");
 
         currentView.handledScreenTick();
     }
@@ -141,12 +144,15 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         super.render(matrixStack, mouseX, mouseY, delta);
         currentView.render(matrixStack, mouseX, mouseY, delta);
-        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditText, creditX, creditY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditValue, creditX, creditY, 0xffcf51 , 0x4b2f00);//separate text and value
+        drawTextRightAlignedTo(textRenderer, matrixStack, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
     }
 
     @Override
     protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
         TEXTURE.render(matrixStack, x , y);
+        textRenderer.drawWithShadow(matrixStack,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
+
     }
 
     @Override
@@ -154,12 +160,14 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     static final Texture TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/derek_dialog.png"),
+            FishingClub.getIdentifier("textures/gui/member_screen.png"),
             420,
             120
     );
+
+
     static final int TILE_SIZE = 4;
-    public static final int BUTTON_WIDTH = TILE_SIZE * 22;
-    private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
+    public static final int BUTTON_WIDTH = TILE_SIZE * 20;
+    private static final int BUTTON_HEIGHT = (TEXTURE.renderHeight - TILE_SIZE * 2) / 5;
 
 }
