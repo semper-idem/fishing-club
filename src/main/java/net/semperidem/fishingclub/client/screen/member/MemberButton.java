@@ -10,9 +10,19 @@ import net.semperidem.fishingclub.client.screen.Texture;
 
 public class MemberButton extends ButtonWidget {
 
+    private Texture texture = BUTTON_TEXTURE;
+
+
 
     static final Texture BUTTON_TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/member_button.png"),
+            80,
+            60
+    );
+
+
+    static final Texture SLIM_BUTTON_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/member_button_slim.png"),
             80,
             60
     );
@@ -22,10 +32,14 @@ public class MemberButton extends ButtonWidget {
         super(x, y, width, height, message, onPress);
     }
 
+    public void setTexture(Texture texture){
+        this.texture = texture;
+    }
+
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        BUTTON_TEXTURE.render(matrices, x, y, 0, 20 * (active ? hovered ? 2 : 1 : 0), width, height);
+        texture.render(matrices, x, y, 0, 20 * (active ? hovered ? 2 : 1 : 0), width, height);
         int j = this.active ? MemberScreen.BEIGE_TEXT_COLOR : 10526880;
         drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
