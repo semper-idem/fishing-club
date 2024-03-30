@@ -45,6 +45,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
+        this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
+        this.y = height - TEXTURE.renderHeight;
         int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
         int nextButtonY = y + TILE_SIZE * 2 + 2;
         textRenderer = MinecraftClient.getInstance().textRenderer;
@@ -57,8 +59,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberMiscScreen(this, miscTitle));
         nextButtonY += miscButton.getHeight();
         flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberFlipScreen(this, flipTitle));
-
-        flipButton.onPress();
+        shopButton.onPress();
     }
 
     public IMemberSubScreen getCurrentView() {
@@ -107,7 +108,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         flipButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
         creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
         creditY = y +  TILE_SIZE * 2 - 1;
-        currentView.init();
 
         titleX = x + TILE_SIZE * 12;
         titleY = y + TILE_SIZE * 2 - 1;
@@ -115,7 +115,9 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     @Override
     protected void handledScreenTick() {
         this.creditValue = Text.literal(getScreenHandler().getCard().getCredit() + "$");
-
+        if (currentView == null) {
+            return;
+        }
         currentView.handledScreenTick();
     }
 

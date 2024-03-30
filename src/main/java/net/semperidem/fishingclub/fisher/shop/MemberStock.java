@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemberStock {
+    public final static String FISHER_STOCK_KEY = "FISHER";
+    public final static String LUMBERJACK_STOCK_KEY = "LUMBERJACK";
     public final static HashMap<String, ArrayList<StockEntry>> STOCK = new HashMap<>();
     public final static ArrayList<StockEntry> FISHER_STOCK = new ArrayList<>();
     public final static ArrayList<StockEntry> LUMBERJACK_STOCK = new ArrayList<>();
@@ -35,7 +37,7 @@ public class MemberStock {
         FISHER_STOCK.add(new StockEntry(30, FishingRodPartItems.LINE_STRIDER_THREAD, 7000));
         FISHER_STOCK.add(new StockEntry(30, FishingRodPartItems.HOOK_NETHERITE, 8000));
         FISHER_STOCK.add(new StockEntry(30, FishingRodPartItems.BAIT_MAGNET, 750));
-        STOCK.put("FISHER", FISHER_STOCK);
+        STOCK.put(FISHER_STOCK_KEY, FISHER_STOCK);
 
 
         LUMBERJACK_STOCK.add(new StockEntry(10, Items.OAK_LOG, 100, 4, 8, 20));
@@ -66,7 +68,7 @@ public class MemberStock {
         LUMBERJACK_STOCK.add(new StockEntry(30, Items.WARPED_HYPHAE, 100, 4, 8, 20));
         LUMBERJACK_STOCK.add(new StockEntry(30, Items.WARPED_FUNGUS, 500, 2, 1, 250));
         LUMBERJACK_STOCK.add(new StockEntry(30, Items.ENCHANTED_GOLDEN_APPLE, 10000, 2, 1, 5000));
-        STOCK.put("LUMBERJACK", LUMBERJACK_STOCK);
+        STOCK.put(LUMBERJACK_STOCK_KEY, LUMBERJACK_STOCK);
 
     }
 }
