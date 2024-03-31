@@ -14,7 +14,6 @@ public class MemberSubScreen implements IMemberSubScreen{
     public MemberSubScreen(MemberScreen parent, Text title) {
         this.parent = parent;
         this.title = title;
-        init();
     }
 
     public MemberScreen getParent() {

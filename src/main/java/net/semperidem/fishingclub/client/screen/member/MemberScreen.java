@@ -25,6 +25,11 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private TabButtonWidget boxesButton;
     private TabButtonWidget miscButton;
     private TabButtonWidget flipButton;
+    private MemberSubScreen shopView;
+    private MemberSubScreen fireworksView;
+    private MemberSubScreen boxesView;
+    private MemberSubScreen miscView;
+    private MemberSubScreen flipView;
     private Text shopTitle = Text.of("Trade");
     private Text miscTitle = Text.of("Services");
     private Text fireworksTitle = Text.of("Fireworks");
@@ -45,21 +50,12 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-        this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
-        this.y = height - TEXTURE.renderHeight;
-        int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
-        int nextButtonY = y + TILE_SIZE * 2 + 2;
-        textRenderer = MinecraftClient.getInstance().textRenderer;
-        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberShopScreen(this, shopTitle));
-        nextButtonY += shopButton.getHeight();
-        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberFireworkScreen(this, fireworksTitle));
-        nextButtonY += fireworksButton.getHeight();
-        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberIllegalScreen(this, boxesTitle));
-        nextButtonY += boxesButton.getHeight();
-        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberMiscScreen(this, miscTitle));
-        nextButtonY += miscButton.getHeight();
-        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, new MemberFlipScreen(this, flipTitle));
-        shopButton.onPress();
+        this.shopView = new MemberShopScreen(this, shopTitle);
+        this.fireworksView = new MemberFireworkScreen(this, fireworksTitle);
+        this.boxesView = new MemberIllegalScreen(this, boxesTitle);
+        this.miscView = new MemberMiscScreen(this, miscTitle);
+        this.flipView = new MemberFlipScreen(this, flipTitle);
+        this.currentView = shopView;
     }
 
     public IMemberSubScreen getCurrentView() {
@@ -90,34 +86,33 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
         this.y = height - TEXTURE.renderHeight;
         addPlayerFaceComponent();
-        addDrawableChild(shopButton);
-        addDrawableChild(miscButton);
-        addDrawableChild(boxesButton);
-        addDrawableChild(fireworksButton);
-        addDrawableChild(flipButton);
         int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
-        int nextButtonY = y + TILE_SIZE + 1;
-        shopButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        int nextButtonY = y + TILE_SIZE * 2 - 2;
+        textRenderer = MinecraftClient.getInstance().textRenderer;
+        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, shopView);
         nextButtonY += shopButton.getHeight();
-        miscButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
-        nextButtonY += miscButton.getHeight();
-        boxesButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
-        nextButtonY += boxesButton.getHeight();
-        fireworksButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, fireworksView);
         nextButtonY += fireworksButton.getHeight();
-        flipButton.resize(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, boxesView);
+        nextButtonY += boxesButton.getHeight();
+        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscView);
+        nextButtonY += miscButton.getHeight();
+        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipView);
+        addDrawableChild(shopButton);
+        addDrawableChild(fireworksButton);
+        addDrawableChild(boxesButton);
+        addDrawableChild(miscButton);
+        addDrawableChild(flipButton);
         creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
         creditY = y +  TILE_SIZE * 2 - 1;
 
         titleX = x + TILE_SIZE * 12;
         titleY = y + TILE_SIZE * 2 - 1;
+        currentView.init();
     }
     @Override
     protected void handledScreenTick() {
         this.creditValue = Text.literal(getScreenHandler().getCard().getCredit() + "$");
-        if (currentView == null) {
-            return;
-        }
         currentView.handledScreenTick();
     }
 
@@ -153,6 +148,9 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     @Override
     protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
         TEXTURE.render(matrixStack, x , y);
+        if (currentView == null) {
+            return;
+        }
         textRenderer.drawWithShadow(matrixStack,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
 
     }

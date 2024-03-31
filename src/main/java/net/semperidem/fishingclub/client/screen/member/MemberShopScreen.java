@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -31,10 +32,22 @@ public class MemberShopScreen extends MemberSubScreen {
             16
     );
 
+    static final Texture BUY_BUTTON_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/buy_button.png"),
+            36,
+            20
+    );
+
+    static final Texture SELL_BUTTON_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/sell_button.png"),
+            36,
+            20
+    );
+
 
     private int baseX, baseY;
     private int categoryButtonX, categoryButtonY;
-    private int categoryButtonCount = 0;
+    private int categoryButtonCount;
     private int offerGridX, offerGridY;
     CategoryButton fisherCategoryButton;
     CategoryButton minerCategoryButton;
@@ -44,10 +57,16 @@ public class MemberShopScreen extends MemberSubScreen {
     CategoryButton adventurerCategoryButton;
     Category currentCategory;
 
+    ButtonWidget buyButton;
+    ButtonWidget sellButton;
+
     OfferGrid offerGrid;
+
+    MinecraftClient client;
 
     public MemberShopScreen(MemberScreen parent, Text title) {
         super(parent, title);
+        client = MinecraftClient.getInstance();
     }
 
 
@@ -61,8 +80,29 @@ public class MemberShopScreen extends MemberSubScreen {
 
         baseX = parent.x + TILE_SIZE * 10;
         baseY = parent.y + TILE_SIZE * 5;
+
+        buyButton = new ButtonWidget(baseX + TILE_SIZE * 21, parent.y, 36, 20, Text.empty(), button -> {
+            components.add(buyButton);
+        } ){
+            @Override
+            public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+                BUY_BUTTON_TEXTURE.render(matrices, x, y);
+            }
+        };
+        components.add(buyButton);
+        sellButton = new ButtonWidget(baseX + TILE_SIZE * 21 + 36,  parent.y, 36, 20, Text.empty(), button -> {
+
+        }){
+            @Override
+            public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+                SELL_BUTTON_TEXTURE.render(matrices, x, y);
+            }
+
+        };
+        components.add(sellButton);
         categoryButtonX = baseX;
         categoryButtonY = baseY;
+        categoryButtonCount = 0;
         fisherCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.FISHING_ROD, 0));
         minerCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.IRON_PICKAXE, 10));
         lumberjackCategoryButton = new CategoryButton(new Category(MemberStock.LUMBERJACK_STOCK_KEY, Items.IRON_AXE, 0));
@@ -76,39 +116,58 @@ public class MemberShopScreen extends MemberSubScreen {
         setCategory(fisherCategoryButton.category);
     }
 
+
      class OfferGrid extends ScrollableWidget {
         private static final int SCROLL_WIDTH = 4;
         private int entriesPerRow;
         ArrayList<Offer> entries = new ArrayList<>();
+        ItemRenderer itemRenderer;
 
         public OfferGrid(int x, int y, int width, int height, Text text) {
             super(x, y, width, height, text);
             entriesPerRow = width / Offer.SIZE;
             components.add(this);
+            this.itemRenderer = client.getItemRenderer();
         }
 
         public void loadOffers(Category category) {
             entries.clear();
+            int currentLevel = parent.getScreenHandler().getCard().getLevel();
             for(StockEntry stockEntry : MemberStock.STOCK.get(category.name)) {
+                //  if (currentLevel > stockEntry.requiredLevel) {//TODO uncomment when finished with member screen
                 entries.add(new Offer(stockEntry));
+                //  }
+
+            }for(StockEntry stockEntry : MemberStock.STOCK.get(MemberStock.LUMBERJACK_STOCK_KEY)) {
+                //  if (currentLevel > stockEntry.requiredLevel) {//TODO uncomment when finished with member screen
+                entries.add(new Offer(stockEntry));
+                //  }
+
             }
         }
 
 
-        private static class Offer {
+        private class Offer {
             static int SIZE = 16;
             StockEntry stockEntry;
             Offer(StockEntry stockEntry) {
                 this.stockEntry = stockEntry;
             }
 
+            //(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model) {
             void render(MatrixStack matrixStack, int x, int y) {
                 OFFER_TEXTURE.render(matrixStack, x, y);
-                MinecraftClient.getInstance().getItemRenderer().renderInGui(stockEntry.item.getDefaultStack(), x, y);
+                itemRenderer.renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
             }
         }
 
-        @Override
+
+         @Override
+         protected int getMaxScrollY() {
+             return getContentsHeight() - this.height;
+         }
+
+         @Override
         protected int getContentsHeight() {
             return getRows() * Offer.SIZE;
         }
@@ -130,8 +189,8 @@ public class MemberShopScreen extends MemberSubScreen {
             return Offer.SIZE;
         }
 
-         private int getContentsHeightWithPadding() {
-             return this.getContentsHeight() + 4;
+        private int getContentsHeightWithPadding() {
+             return this.getContentsHeight();
          }
 
          private int getScrollbarThumbHeight() {
@@ -161,10 +220,15 @@ public class MemberShopScreen extends MemberSubScreen {
          }
 
          @Override
+         public boolean isFocused() {
+             return super.isFocused() || isHovered();
+         }
+
+         @Override
          public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
              if (this.visible) {
                  this.drawBox(matrices);
-                 enableScissor(this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1);
+                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                  matrices.push();
                  matrices.translate(0.0, -this.getScrollY(), 0.0);
                  this.renderContents(matrices, mouseX, mouseY, delta);
@@ -176,8 +240,8 @@ public class MemberShopScreen extends MemberSubScreen {
 
          private void drawBox(MatrixStack matrices) {
              int i = 0xff5F5F60;
-             fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, i);
-             fill(matrices, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, 0xaa00223c);
+             //fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, i);
+             fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff00223c);
          }
 
          @Override

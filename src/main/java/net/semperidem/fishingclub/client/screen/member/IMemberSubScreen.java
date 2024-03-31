@@ -33,9 +33,9 @@ public interface IMemberSubScreen {
             if (!(component instanceof ClickableWidget clickableWidget)) {
                 continue;
             }
-
             if (clickableWidget.mouseClicked(mouseX, mouseY, button)) {
-                return true;
+
+                    return true;
             }
         }
         return false;
