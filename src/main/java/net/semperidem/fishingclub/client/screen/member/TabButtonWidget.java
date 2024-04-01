@@ -12,7 +12,7 @@ public class TabButtonWidget extends ButtonWidget  {
     static final Texture BUTTON_TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/member_tab_button.png"),
             80,
-            66
+            54
     );
 
     private final MemberSubScreen tabView;
@@ -34,7 +34,7 @@ public class TabButtonWidget extends ButtonWidget  {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        BUTTON_TEXTURE.render(matrices, x, y, 0, 22 * (isSelected() ? 0 : hovered ? 2 : 1), 80, 22);
+        BUTTON_TEXTURE.render(matrices, x, y, 0, 18 * (isSelected() ? 0 : hovered ? 2 : 1), 80, 18);
         int j = this.active ? MemberScreen.BEIGE_TEXT_COLOR : 10526880;
         drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 

@@ -24,26 +24,13 @@ import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_
 
 
 
-public class MemberShopScreen extends MemberSubScreen {
+public class MemberBuyScreen extends MemberSubScreen {
 
     static final Texture OFFER_TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/offer_background.png"),
             16,
             16
     );
-
-    static final Texture BUY_BUTTON_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/buy_button.png"),
-            36,
-            20
-    );
-
-    static final Texture SELL_BUTTON_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/sell_button.png"),
-            36,
-            20
-    );
-
 
     private int baseX, baseY;
     private int categoryButtonX, categoryButtonY;
@@ -64,7 +51,7 @@ public class MemberShopScreen extends MemberSubScreen {
 
     MinecraftClient client;
 
-    public MemberShopScreen(MemberScreen parent, Text title) {
+    public MemberBuyScreen(MemberScreen parent, Text title) {
         super(parent, title);
         client = MinecraftClient.getInstance();
     }
@@ -80,26 +67,6 @@ public class MemberShopScreen extends MemberSubScreen {
 
         baseX = parent.x + TILE_SIZE * 10;
         baseY = parent.y + TILE_SIZE * 5;
-
-        buyButton = new ButtonWidget(baseX + TILE_SIZE * 21, parent.y, 36, 20, Text.empty(), button -> {
-            components.add(buyButton);
-        } ){
-            @Override
-            public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-                BUY_BUTTON_TEXTURE.render(matrices, x, y);
-            }
-        };
-        components.add(buyButton);
-        sellButton = new ButtonWidget(baseX + TILE_SIZE * 21 + 36,  parent.y, 36, 20, Text.empty(), button -> {
-
-        }){
-            @Override
-            public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-                SELL_BUTTON_TEXTURE.render(matrices, x, y);
-            }
-
-        };
-        components.add(sellButton);
         categoryButtonX = baseX;
         categoryButtonY = baseY;
         categoryButtonCount = 0;

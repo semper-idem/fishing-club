@@ -20,17 +20,20 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     int x;
     int y;
     private MemberSubScreen currentView;
-    private TabButtonWidget shopButton;
+    private TabButtonWidget buyButton;
+    private TabButtonWidget sellButton;
     private TabButtonWidget fireworksButton;
     private TabButtonWidget boxesButton;
     private TabButtonWidget miscButton;
     private TabButtonWidget flipButton;
-    private MemberSubScreen shopView;
+    private MemberSubScreen buyView;
+    private MemberSubScreen sellView;
     private MemberSubScreen fireworksView;
     private MemberSubScreen boxesView;
     private MemberSubScreen miscView;
     private MemberSubScreen flipView;
-    private Text shopTitle = Text.of("Trade");
+    private Text buyTitle = Text.of("Trade - Buy");
+    private Text sellTitle = Text.of("Trade - Sell");
     private Text miscTitle = Text.of("Services");
     private Text fireworksTitle = Text.of("Fireworks");
     private Text flipTitle = Text.of("Coin Toss");
@@ -50,12 +53,13 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-        this.shopView = new MemberShopScreen(this, shopTitle);
+        this.buyView = new MemberBuyScreen(this, buyTitle);
+        this.sellView = new MemberSellScreen(this, sellTitle);
         this.fireworksView = new MemberFireworkScreen(this, fireworksTitle);
         this.boxesView = new MemberIllegalScreen(this, boxesTitle);
         this.miscView = new MemberMiscScreen(this, miscTitle);
         this.flipView = new MemberFlipScreen(this, flipTitle);
-        this.currentView = shopView;
+        this.currentView = buyView;
     }
 
     public IMemberSubScreen getCurrentView() {
@@ -87,10 +91,12 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.y = height - TEXTURE.renderHeight;
         addPlayerFaceComponent();
         int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
-        int nextButtonY = y + TILE_SIZE * 2 - 2;
+        int nextButtonY = y + TILE_SIZE + 2;
         textRenderer = MinecraftClient.getInstance().textRenderer;
-        shopButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, shopView);
-        nextButtonY += shopButton.getHeight();
+        buyButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, buyView);
+        nextButtonY += buyButton.getHeight();
+        sellButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, sellView);
+        nextButtonY += sellButton.getHeight();
         fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, fireworksView);
         nextButtonY += fireworksButton.getHeight();
         boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, boxesView);
@@ -98,7 +104,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscView);
         nextButtonY += miscButton.getHeight();
         flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipView);
-        addDrawableChild(shopButton);
+        addDrawableChild(buyButton);
+        addDrawableChild(sellButton);
         addDrawableChild(fireworksButton);
         addDrawableChild(boxesButton);
         addDrawableChild(miscButton);
@@ -168,6 +175,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     static final int TILE_SIZE = 4;
     public static final int BUTTON_WIDTH = TILE_SIZE * 20;
-    private static final int BUTTON_HEIGHT = (TEXTURE.renderHeight - TILE_SIZE * 2) / 5;
+    private static final int BUTTON_HEIGHT = TabButtonWidget.BUTTON_TEXTURE.renderHeight / 3;
 
 }
