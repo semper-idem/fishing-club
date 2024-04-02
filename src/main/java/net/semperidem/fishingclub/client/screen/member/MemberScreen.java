@@ -20,25 +20,12 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     int x;
     int y;
     private MemberSubScreen currentView;
-    private TabButtonWidget buyButton;
-    private TabButtonWidget sellButton;
-    private TabButtonWidget fireworksButton;
-    private TabButtonWidget boxesButton;
-    private TabButtonWidget miscButton;
-    private TabButtonWidget flipButton;
-    private MemberSubScreen buyView;
-    private MemberSubScreen sellView;
-    private MemberSubScreen fireworksView;
-    private MemberSubScreen boxesView;
-    private MemberSubScreen miscView;
-    private MemberSubScreen flipView;
-    private Text buyTitle = Text.of("Trade - Buy");
-    private Text sellTitle = Text.of("Trade - Sell");
-    private Text miscTitle = Text.of("Services");
-    private Text fireworksTitle = Text.of("Fireworks");
-    private Text flipTitle = Text.of("Coin Toss");
-    private Text boxesTitle = Text.of("Contraband");
-
+    private final MemberSubScreen buyView;
+    private final MemberSubScreen sellView;
+    private final MemberSubScreen fireworksView;
+    private final MemberSubScreen boxesView;
+    private final MemberSubScreen miscView;
+    private final MemberSubScreen flipView;
     public static final int CREDIT_COLOR = 0xffcf51;
     public static final int CREDIT_OUTLINE_COLOR = 0x4b2f00;
     public static final int BEIGE_TEXT_COLOR = 0xffeace;
@@ -48,17 +35,18 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private Text creditValue = Text.literal("0$");
     int creditX, creditY;
     int titleX, titleY;
-
-
+    int subScreenButtonX;
+    int lastSubScreenButtonY;
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-        this.buyView = new MemberBuyScreen(this, buyTitle);
-        this.sellView = new MemberSellScreen(this, sellTitle);
-        this.fireworksView = new MemberFireworkScreen(this, fireworksTitle);
-        this.boxesView = new MemberIllegalScreen(this, boxesTitle);
-        this.miscView = new MemberMiscScreen(this, miscTitle);
-        this.flipView = new MemberFlipScreen(this, flipTitle);
+        textRenderer = MinecraftClient.getInstance().textRenderer;
+        this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
+        this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
+        this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
+        this.boxesView = new MemberIllegalScreen(this, Text.literal("Contraband"));
+        this.miscView = new MemberMiscScreen(this, Text.literal("Services"));
+        this.flipView = new MemberFlipScreen(this, Text.literal("Coin Toss"));
         this.currentView = buyView;
     }
 
@@ -84,37 +72,41 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
 
+    private void addTabButton(MemberSubScreen subScreen) {
+        addDrawableChild(
+                new TabButtonWidget(
+                        subScreenButtonX,
+                        lastSubScreenButtonY,
+                        BUTTON_WIDTH,
+                        BUTTON_HEIGHT,
+                        subScreen
+                )
+        );
+        lastSubScreenButtonY += BUTTON_HEIGHT;
+    }
     @Override
     protected void init() {
         super.init();
         this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
         this.y = height - TEXTURE.renderHeight;
-        addPlayerFaceComponent();
-        int buttonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
-        int nextButtonY = y + TILE_SIZE + 2;
-        textRenderer = MinecraftClient.getInstance().textRenderer;
-        buyButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, buyView);
-        nextButtonY += buyButton.getHeight();
-        sellButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, sellView);
-        nextButtonY += sellButton.getHeight();
-        fireworksButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, fireworksView);
-        nextButtonY += fireworksButton.getHeight();
-        boxesButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, boxesView);
-        nextButtonY += boxesButton.getHeight();
-        miscButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, miscView);
-        nextButtonY += miscButton.getHeight();
-        flipButton = new TabButtonWidget(buttonX,nextButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, flipView);
-        addDrawableChild(buyButton);
-        addDrawableChild(sellButton);
-        addDrawableChild(fireworksButton);
-        addDrawableChild(boxesButton);
-        addDrawableChild(miscButton);
-        addDrawableChild(flipButton);
-        creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
-        creditY = y +  TILE_SIZE * 2 - 1;
 
         titleX = x + TILE_SIZE * 12;
         titleY = y + TILE_SIZE * 2 - 1;
+
+        creditX = x + TEXTURE.renderWidth - BUTTON_WIDTH - 3 * TILE_SIZE;
+        creditY = y +  TILE_SIZE * 2 - 1;
+
+        addPlayerFaceComponent();
+
+        subScreenButtonX = x + TEXTURE.textureWidth - BUTTON_WIDTH - TILE_SIZE;
+        lastSubScreenButtonY = y + TILE_SIZE + 2;
+
+        addTabButton(buyView);
+        addTabButton(sellView);
+        addTabButton(fireworksView);
+        addTabButton(boxesView);
+        addTabButton(miscView);
+        addTabButton(flipView);
         currentView.init();
     }
     @Override
