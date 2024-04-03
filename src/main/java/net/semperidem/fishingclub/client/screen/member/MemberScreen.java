@@ -135,7 +135,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         return currentView.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         super.render(matrixStack, mouseX, mouseY, delta);

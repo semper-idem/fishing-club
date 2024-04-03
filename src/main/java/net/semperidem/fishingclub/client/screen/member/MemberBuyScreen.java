@@ -22,6 +22,7 @@ import net.semperidem.fishingclub.network.ClientPacketSender;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import static net.minecraft.client.gui.DrawableHelper.fill;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
@@ -60,6 +61,8 @@ public class MemberBuyScreen extends MemberSubScreen {
     CartWidget cartWidget;
 
     MinecraftClient client;
+
+    OfferGrid.Offer focusedOffer;
 
     public MemberBuyScreen(MemberScreen parent, Text title) {
         super(parent, title);
@@ -128,11 +131,30 @@ public class MemberBuyScreen extends MemberSubScreen {
         int color2 = 0xff061319;
         fill(matrixStack, boxX, boxY, boxX1, boxY1, color2);
         fill(matrixStack, boxX + 1, boxY + 1, boxX1 - 1, boxY1 - 1, color1);
-       // fill(matrixStack, boxX + 1, boxY1 - client.textRenderer.fontHeight - 4, boxX1 - 1, boxY1 - client.textRenderer.fontHeight - 5, color2);
+        // fill(matrixStack, boxX + 1, boxY1 - client.textRenderer.fontHeight - 4, boxX1 - 1, boxY1 - client.textRenderer.fontHeight - 5, color2);
         client.textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
         client.textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - client.textRenderer.getWidth(cartPrice) -  2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
+        if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
+            this.focusedOffer = null;
+        }
+        if (this.focusedOffer != null) {
+            StockEntry entry = this.focusedOffer.stockEntry;
+            List<Text> tooltip = parent.getTooltipFromItem(entry.item.getDefaultStack());
+            if (cartWidget.cartItems.containsKey(this.focusedOffer)) {
+                int total = (int) entry.getPriceFor(cartWidget.cartItems.get(this.focusedOffer));
+                tooltip.add(Text.literal("Total: §6" + total + "$"));
+            }
+            tooltip.add(Text.literal("Price: §6" + (int)entry.price + "$"));
+            if (entry.discount != 0) {
+                tooltip.add(Text.literal("Discount: -§6" + (int)this.focusedOffer.stockEntry.discount + "$§r for every §3" + this.focusedOffer.stockEntry.discountPer));
+                tooltip.add(Text.literal("Min Price: §6" + (int)this.focusedOffer.stockEntry.minPrice + "$"));
+            }
+            parent.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+
+        }
+
     }
 
 
@@ -199,6 +221,12 @@ public class MemberBuyScreen extends MemberSubScreen {
         protected boolean overflows() {
             return false;
         }
+
+        @Override
+        public boolean isHovered() {
+            return hovered;
+        }
+
         @Override
         protected double getDeltaYPerScroll() {
             return OfferGrid.Offer.SIZE;
@@ -284,6 +312,29 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         @Override
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            if (hovered) {
+                focusedOffer = offerAtMouse(mouseX, mouseY);
+            }
+            super.render(matrices, mouseX, mouseY, delta);
+        }
+
+        private OfferGrid.Offer offerAtMouse(double mouseX, double mouseY) {
+            if (!hovered) {
+                return null;
+            }
+            int predictedIndex = (int) ((mouseY + getScrollY() - y) / OfferGrid.Offer.SIZE);
+            if (cartItems.size() > predictedIndex && predictedIndex >= 0) {
+                int clickSize = 16;
+                boolean isIcon = mouseX >= x + clickSize  && mouseX <= x + CART_ITEM_TEXTURE.renderWidth + clickSize;
+                if (isIcon) {
+                    return new ArrayList<>(cartItems.keySet()).get(predictedIndex);
+                }
+            }
+            return null;
+        }
+
+        @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             boolean isClicked = active;
             isClicked &= visible;
@@ -311,7 +362,7 @@ public class MemberBuyScreen extends MemberSubScreen {
     }
 
 
-     class OfferGrid extends ScrollableWidget {
+    class OfferGrid extends ScrollableWidget {
         private static final int SCROLL_WIDTH = 5;
         private final int entriesPerRow;
         ArrayList<Offer> entries = new ArrayList<>();
@@ -339,6 +390,11 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
 
+        @Override
+        public boolean isHovered() {
+            return hovered;
+        }
+
         private class Offer {
             static int SIZE = 16;
             StockEntry stockEntry;
@@ -362,12 +418,12 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
 
-         @Override
-         protected int getMaxScrollY() {
-             return Math.max(0, getContentsHeight() - this.height);
-         }
+        @Override
+        protected int getMaxScrollY() {
+            return Math.max(0, getContentsHeight() - this.height);
+        }
 
-         @Override
+        @Override
         protected int getContentsHeight() {
             return getRows() * Offer.SIZE;
         }
@@ -379,27 +435,9 @@ public class MemberBuyScreen extends MemberSubScreen {
             return (int) (Math.ceil(1f * entries.size() / entriesPerRow));
         }
 
-         @Override
-         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-             boolean isClicked = active;
-             isClicked &= visible;
-             isClicked &= mouseX >= x && mouseX <= x + width;
-             isClicked &= mouseY >= y && mouseY <= y + height;
-             if (!isClicked) {
-                 return false;
-             }
-             int predictedX = (int) ((mouseX - x) / Offer.SIZE);
-             int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
-             int predictedIndex = predictedX + predictedY * entriesPerRow;
-             if (entries.size() > predictedIndex) {
-                 if (entries.get(predictedIndex).mouseClicked(mouseX, mouseY, button)) {
-                     return true;
-                 }
-             }
-             return super.mouseClicked(mouseX, mouseY, button);
-         }
 
-         @Override
+
+        @Override
         protected boolean overflows() {
             return false;
         }
@@ -410,66 +448,100 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         private int getContentsHeightWithPadding() {
-             return this.getContentsHeight();
-         }
+            return this.getContentsHeight();
+        }
 
-         private int getScrollbarThumbHeight() {
-             return MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
-         }
+        private int getScrollbarThumbHeight() {
+            return MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
+        }
 
-         @Override
-         protected void renderOverlay(MatrixStack matrices) {
-             int i = this.getScrollbarThumbHeight();
-             int x0 = this.x + this.width - 4;
-             int x1 = this.x + this.width;
-             int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
-             int y1 = y0 + i;
-             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-             Tessellator tessellator = Tessellator.getInstance();
-             BufferBuilder bufferBuilder = tessellator.getBuffer();
-             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-             int color1 = 0xffbb8f1b;
-             int color2 = 0xff4b2f00;
-             bufferBuilder.vertex(x0, y1, 0).color(color2).next();
-             bufferBuilder.vertex(x1, y1, 0).color(color2).next();
-             bufferBuilder.vertex(x1, y0, 0).color(color2).next();
-             bufferBuilder.vertex(x0, y0, 0).color(color2).next();
-             bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
-             bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
-             bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
-             bufferBuilder.vertex(x0, y0, 0).color(color1).next();
-             tessellator.draw();
-         }
+        @Override
+        protected void renderOverlay(MatrixStack matrices) {
+            int i = this.getScrollbarThumbHeight();
+            int x0 = this.x + this.width - 4;
+            int x1 = this.x + this.width;
+            int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
+            int y1 = y0 + i;
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            int color1 = 0xffbb8f1b;
+            int color2 = 0xff4b2f00;
+            bufferBuilder.vertex(x0, y1, 0).color(color2).next();
+            bufferBuilder.vertex(x1, y1, 0).color(color2).next();
+            bufferBuilder.vertex(x1, y0, 0).color(color2).next();
+            bufferBuilder.vertex(x0, y0, 0).color(color2).next();
+            bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
+            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
+            bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
+            bufferBuilder.vertex(x0, y0, 0).color(color1).next();
+            tessellator.draw();
+        }
 
-         @Override
-         public boolean isFocused() {
-             return super.isFocused() || isHovered();
-         }
+        @Override
+        public boolean isFocused() {
+            return super.isFocused() || isHovered();
+        }
 
-         @Override
-         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-             if (this.visible) {
-                 this.drawBox(matrices);
-                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                 matrices.push();
-                 matrices.translate(0, -this.getScrollY(), 0);
-                 this.renderContents(matrices, mouseX, mouseY, delta);
-                 matrices.pop();
-                 disableScissor();
-                 this.renderOverlay(matrices);
-             }
-         }
+        @Override
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            if (this.visible) {
+                this.drawBox(matrices);
+                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
+                matrices.push();
+                matrices.translate(0, -this.getScrollY(), 0);
+                this.renderContents(matrices, mouseX, mouseY, delta);
+                matrices.pop();
+                disableScissor();
+                this.renderOverlay(matrices);
+            }
+        }
 
-         private void drawBox(MatrixStack matrices) {
-             fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff272946);
-         }
+        private void drawBox(MatrixStack matrices) {
+            fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff272946);
+        }
 
-         @Override
-         protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-             super.renderBackground(matrices, client, mouseX, mouseY);
-         }
 
-         @Override
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            boolean isClicked = active;
+            isClicked &= visible;
+            isClicked &= mouseX >= x && mouseX <= x + width;
+            isClicked &= mouseY >= y && mouseY <= y + height;
+            if (!isClicked) {
+                return false;
+            }
+            int predictedX = (int) ((mouseX - x) / Offer.SIZE);
+            int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
+            int predictedIndex = predictedX + predictedY * entriesPerRow;
+            if (entries.size() > predictedIndex) {
+                if (entries.get(predictedIndex).mouseClicked(mouseX, mouseY, button)) {
+                    return true;
+                }
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        private OfferGrid.Offer offerAtMouse(double mouseX, double mouseY) {
+            int predictedX = (int) ((mouseX - x) / Offer.SIZE);
+            int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
+            int predictedIndex = predictedX + predictedY * entriesPerRow;
+            if (predictedIndex >= 0 && predictedIndex < entries.size()) {
+                return entries.get(predictedIndex);
+            }
+            return null;
+        }
+
+        @Override
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            if (isHovered()) {
+                focusedOffer = offerAtMouse(mouseX, mouseY);
+            }
+            super.render(matrices, mouseX, mouseY, delta);
+        }
+
+        @Override
         protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             int offerY = y;
             int rows = getRows();
