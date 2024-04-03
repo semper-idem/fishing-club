@@ -42,6 +42,16 @@ public class MemberScreenHandler extends ScreenHandler {
         this.minCapePrice = minCapePrice;
     }
 
+    public int getSlotsLeft() {
+        int slotsLeft = 0;
+        for(int i = 0; i < this.player.getInventory().main.size(); ++i) {
+            if (this.player.getInventory().main.get(i).isEmpty()) {
+                slotsLeft++;
+            }
+        }
+        return slotsLeft;
+    }
+
     public int getMinCapePrice(){
         return minCapePrice;
     }

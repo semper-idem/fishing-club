@@ -55,6 +55,7 @@ public class ClientPacketSender {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SLOT_SELL, PacketByteBufs.empty());
     }
 
+
     public static void unlockPerk(String perkName){
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(perkName);
@@ -62,11 +63,11 @@ public class ClientPacketSender {
     }
 
 
-    public static void buyShopContainer(int containerValue, ArrayList<ItemStack> basket) {
+    public static void checkout(ArrayList<ItemStack> cart, int total) {
         PacketByteBuf  buf = PacketByteBufs.create();
-        buf.writeInt(containerValue);
-        buf.writeInt(basket.size());
-        for (ItemStack itemStack : basket) {
+        buf.writeInt(total);
+        buf.writeInt(cart.size());
+        for (ItemStack itemStack : cart) {
             buf.writeItemStack(itemStack);
         }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_BUY, buf);

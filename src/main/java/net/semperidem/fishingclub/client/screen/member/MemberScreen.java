@@ -158,7 +158,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY) {
     }
 
-    static final Texture TEXTURE = new Texture(
+    public static final Texture TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/member_screen.png"),
             420,
             120

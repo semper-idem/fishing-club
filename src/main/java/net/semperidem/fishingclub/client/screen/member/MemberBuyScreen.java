@@ -6,8 +6,10 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -15,11 +17,13 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fisher.shop.MemberStock;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import static net.minecraft.client.gui.DrawableHelper.fill;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
 
 
@@ -50,7 +54,7 @@ public class MemberBuyScreen extends MemberSubScreen {
     Category currentCategory;
 
     ButtonWidget buyButton;
-    ButtonWidget sellButton;
+    ButtonWidget clearButton;
 
     OfferGrid offerGrid;
     CartWidget cartWidget;
@@ -86,9 +90,51 @@ public class MemberBuyScreen extends MemberSubScreen {
         offerGridY = baseY;
 
         offerGrid = new OfferGrid(offerGridX, offerGridY, TILE_SIZE * 25, parent.height - baseY - TILE_SIZE);
-        cartWidget = new CartWidget(offerGridX + offerGrid.getWidth() + TILE_SIZE * 4, offerGridY, CART_ITEM_TEXTURE.renderWidth, parent.height - baseY - TILE_SIZE);
+        cartWidget = new CartWidget(offerGridX + offerGrid.getWidth() + TILE_SIZE * 3, offerGridY + 3 * TILE_SIZE, CART_ITEM_TEXTURE.renderWidth + TILE_SIZE, parent.height - baseY - TILE_SIZE * 5);
         setCategory(fisherCategoryButton.category);
+
+
+        int buyButtonX = parent.x + MemberScreen.TEXTURE.renderWidth - 42 * TILE_SIZE;
+        int buttonY = parent.y + MemberScreen.TEXTURE.renderHeight - 20 - TILE_SIZE * 2;
+        //int x, int y, int width, int height, Text message, PressAction onPress
+        buyButton = new MemberButton(buyButtonX, buttonY, TILE_SIZE  * 18 , 20, Text.literal("Buy"),button -> {
+            ArrayList<ItemStack> cart = new ArrayList<>();
+
+            for(OfferGrid.Offer offer : cartWidget.cartItems.keySet()) {
+                ItemStack offerStack = offer.stockEntry.item.getDefaultStack();
+                offerStack.setCount(cartWidget.cartItems.get(offer));
+                cart.add(offerStack);
+            }
+            ClientPacketSender.checkout(cart, cartWidget.getCartTotalAmount());
+            cartWidget.cartItems.clear();
+        });
+        components.add(buyButton);
+
+        clearButton = new MemberButton(buyButtonX - 20, buttonY, 20, 20, Text.literal("x"),button -> {
+            cartWidget.cartItems.clear();
+        });
+        components.add(clearButton);
     }
+
+
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        int boxX = clearButton.x;
+        int boxX1 = buyButton.x + buyButton.getWidth();
+        int boxY = clearButton.y - client.textRenderer.fontHeight - TILE_SIZE - 1;
+        int boxY1 = clearButton.y + clearButton.getHeight();
+
+        int color1 = 0xff272946;
+        int color2 = 0xff061319;
+        fill(matrixStack, boxX, boxY, boxX1, boxY1, color2);
+        fill(matrixStack, boxX + 1, boxY + 1, boxX1 - 1, boxY1 - 1, color1);
+       // fill(matrixStack, boxX + 1, boxY1 - client.textRenderer.fontHeight - 4, boxX1 - 1, boxY1 - client.textRenderer.fontHeight - 5, color2);
+        client.textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
+        String cartPrice = cartWidget.getCartTotal();
+        client.textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - client.textRenderer.getWidth(cartPrice) -  2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
+        super.render(matrixStack, mouseX, mouseY, delta);
+    }
+
 
     private void addItem(OfferGrid.Offer offer) {
         cartWidget.addItem(offer);
@@ -102,100 +148,121 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         HashMap<OfferGrid.Offer, Integer> cartItems = new HashMap<>();
 
+        private int getStacksInCart() {
+            int stacksInCart = 0;
+            for(OfferGrid.Offer offer : cartItems.keySet()) {
+                stacksInCart += (int) Math.ceil(cartItems.get(offer) / 64f);
+            }
+            return stacksInCart;
+        }
+
+        public String getCartTotal() {
+            return getCartTotalAmount() + "$";
+        }
+        public int getCartTotalAmount() {
+            int total = 0;
+            for(OfferGrid.Offer offer : cartItems.keySet()) {
+                total += offer.stockEntry.getPriceFor(cartItems.get(offer));
+            }
+            return total;
+        }
+
         public CartWidget(int x, int y, int width, int height) {
             super(x, y, width, height, Text.empty());
             components.add(this);
         }
-
-
         private void addItem(OfferGrid.Offer offer) {
-            cartItems.put(offer, cartItems.getOrDefault(offer, 0) + 1);
+            int count = 1;
+            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
+            cartItems.put(offer, Math.min(999, cartItems.getOrDefault(offer, 0) + (count)));
         }
-
         private void removeItem(OfferGrid.Offer offer) {
-            cartItems.put(offer, cartItems.get(offer) - 1);
+            int count = 1;
+            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
+            cartItems.put(offer, cartItems.get(offer) - count);
+            HashMap<OfferGrid.Offer, Integer> updatedCartItem = new HashMap<>();
             for(OfferGrid.Offer off : cartItems.keySet()) {
-                if (cartItems.get(off) <=0 ) {
-                    cartItems.remove(off);
+                int newCount = cartItems.get(off);
+                if (newCount > 0 ) {
+                    updatedCartItem.put(off, newCount);
                 }
             }
+            cartItems = updatedCartItem;
         }
         @Override
         protected int getContentsHeight() {
             return cartItems.size() * OfferGrid.Offer.SIZE;
         }
-
         @Override
         protected boolean overflows() {
             return false;
         }
-
         @Override
         protected double getDeltaYPerScroll() {
             return OfferGrid.Offer.SIZE;
         }
-
         @Override
         protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             int index = 0;
             for (OfferGrid.Offer offer : cartItems.keySet()) {
                 CART_ITEM_TEXTURE.render(matrices, x, y + index * OfferGrid.Offer.SIZE);
+                ItemStack stackToRender = offer.stockEntry.item.getDefaultStack();
+                stackToRender.setCount(cartItems.get(offer));
                 client.getItemRenderer().renderInGui(
-                        offer.stockEntry.item.getDefaultStack(),
+                        stackToRender,
                         x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
-                        y + index * OfferGrid.Offer.SIZE );
+                        (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
+                client.getItemRenderer().renderGuiItemOverlay(client.textRenderer,
+                        stackToRender,
+                        x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
+                        (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
                 index++;
                 //next add to components
             }
         }
-
         @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {
-
-        }
-
+        public void appendNarrations(NarrationMessageBuilder builder) {}
         private int getContentsHeightWithPadding() {
             return this.getContentsHeight();
         }
-
         private int getScrollbarThumbHeight() {
             return MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
         }
 
         @Override
         protected void renderOverlay(MatrixStack matrices) {
-            if (overflows()) {
-                return;
-            }
             int i = this.getScrollbarThumbHeight();
-            int x0 = this.x + this.width - 4;
+            int x0 = this.x + this.width - TILE_SIZE;
             int x1 = this.x + this.width;
             int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
             int y1 = y0 + i;
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
+            int color1 = 0xffbb8f1b;
+            int color2 = 0xff4b2f00;
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(x0, y1, 0).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(x1, y1, 0).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(x1, y0, 0).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(x0, y0, 0).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(x0, (y1 - 1), 0).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex((x1 - 1), y0, 0).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(x0, y0, 0).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(x0, y1, 0).color(color2).next();
+            bufferBuilder.vertex(x1, y1, 0).color(color2).next();
+            bufferBuilder.vertex(x1, y0, 0).color(color2).next();
+            bufferBuilder.vertex(x0, y0, 0).color(color2).next();
+            bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
+            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
+            bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
+            bufferBuilder.vertex(x0, y0, 0).color(color1).next();
             tessellator.draw();
         }
-
         @Override
         public boolean isFocused() {
             return super.isFocused() || isHovered();
         }
-
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                //this.drawBox(matrices);
+                this.drawBox(matrices);
+                client.textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , MemberScreen.BEIGE_TEXT_COLOR);
                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                 matrices.push();
                 matrices.translate(0, -this.getScrollY(), 0);
@@ -205,17 +272,47 @@ public class MemberBuyScreen extends MemberSubScreen {
                 this.renderOverlay(matrices);
             }
         }
-
-
         private void drawBox(MatrixStack matrices) {
-           // fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff00223c);
+            int color1 = 0xff272946;
+            int color2 = 0xff061319;
+            fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, color2);
+            fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, color1);
+        }
+        @Override
+        protected int getMaxScrollY() {
+            return Math.max(0, getContentsHeight() - this.height);
         }
 
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            boolean isClicked = active;
+            isClicked &= visible;
+            isClicked &= mouseX >= x && mouseX <= x + width;
+            isClicked &= mouseY >= y && mouseY <= y + height;
+            if (!isClicked) {
+                return false;
+            }
+            int predictedIndex = (int) ((mouseY + getScrollY() - y) / OfferGrid.Offer.SIZE);
+            if (cartItems.size() > predictedIndex) {
+                int clickSize = 16;
+                boolean isLeftSide = mouseX >= x && mouseX <= x + clickSize;
+                boolean isRightSide = mouseX >= x + CART_ITEM_TEXTURE.renderWidth - clickSize && mouseX <= x + CART_ITEM_TEXTURE.renderWidth;
+                ArrayList<OfferGrid.Offer> offers = new ArrayList<>(cartItems.keySet());
+                OfferGrid.Offer predictedOffer = offers.get(predictedIndex);
+                if (isLeftSide) {
+                    removeItem(predictedOffer);
+                }
+                if (isRightSide) {
+                    addItem(predictedOffer);
+                }
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
     }
 
 
      class OfferGrid extends ScrollableWidget {
-        private static final int SCROLL_WIDTH = 4;
+        private static final int SCROLL_WIDTH = 5;
         private final int entriesPerRow;
         ArrayList<Offer> entries = new ArrayList<>();
 
@@ -256,7 +353,10 @@ public class MemberBuyScreen extends MemberSubScreen {
             }
 
             public boolean mouseClicked(double mouseX, double mouseY, int button){
-                addItem(this);
+                switch (button) {
+                    case 0 -> addItem(this);
+                    case 1 -> removeItem(this);
+                }
                 return true;
             }
         }
@@ -264,7 +364,7 @@ public class MemberBuyScreen extends MemberSubScreen {
 
          @Override
          protected int getMaxScrollY() {
-             return getContentsHeight() - this.height;
+             return Math.max(0, getContentsHeight() - this.height);
          }
 
          @Override
@@ -328,14 +428,16 @@ public class MemberBuyScreen extends MemberSubScreen {
              Tessellator tessellator = Tessellator.getInstance();
              BufferBuilder bufferBuilder = tessellator.getBuffer();
              bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-             bufferBuilder.vertex(x0, y1, 0).color(128, 128, 128, 255).next();
-             bufferBuilder.vertex(x1, y1, 0).color(128, 128, 128, 255).next();
-             bufferBuilder.vertex(x1, y0, 0).color(128, 128, 128, 255).next();
-             bufferBuilder.vertex(x0, y0, 0).color(128, 128, 128, 255).next();
-             bufferBuilder.vertex(x0, (y1 - 1), 0).color(192, 192, 192, 255).next();
-             bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(192, 192, 192, 255).next();
-             bufferBuilder.vertex((x1 - 1), y0, 0).color(192, 192, 192, 255).next();
-             bufferBuilder.vertex(x0, y0, 0).color(192, 192, 192, 255).next();
+             int color1 = 0xffbb8f1b;
+             int color2 = 0xff4b2f00;
+             bufferBuilder.vertex(x0, y1, 0).color(color2).next();
+             bufferBuilder.vertex(x1, y1, 0).color(color2).next();
+             bufferBuilder.vertex(x1, y0, 0).color(color2).next();
+             bufferBuilder.vertex(x0, y0, 0).color(color2).next();
+             bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
+             bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
+             bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
+             bufferBuilder.vertex(x0, y0, 0).color(color1).next();
              tessellator.draw();
          }
 
@@ -359,7 +461,7 @@ public class MemberBuyScreen extends MemberSubScreen {
          }
 
          private void drawBox(MatrixStack matrices) {
-             fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff00223c);
+             fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff272946);
          }
 
          @Override

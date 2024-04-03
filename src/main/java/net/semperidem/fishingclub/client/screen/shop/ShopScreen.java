@@ -17,7 +17,6 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -596,7 +595,7 @@ public class ShopScreen extends HandledScreen<ShopScreenHandler> implements Scre
             int currentCredit =  handler.fishingCard.getCredit();
             if (cost <= currentCredit) {
                 lastBalanceChange = cost * -1;
-                ClientPacketSender.buyShopContainer(cost, getBasket());
+                //ClientPacketSender.checkout(cost, getBasket());
                 clear();
                 return true;
             }

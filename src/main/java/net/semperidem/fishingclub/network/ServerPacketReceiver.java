@@ -13,7 +13,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_OPEN_MEMBER_SCREEN, ServerPacketHandlers::handleMemberScreenOpenRequest);
             registerReceiver(handler, C2S_F_INFO_OPEN, ServerPacketHandlers::handleFishingInfoOpenRequest);
             registerReceiver(handler, C2S_F_SHOP_SELL, ServerPacketHandlers::handleFishingShopSellContainer);
-            registerReceiver(handler, C2S_F_SHOP_BUY, ServerPacketHandlers::handleFishingShopBuyBasket);
+            registerReceiver(handler, C2S_F_SHOP_BUY, ServerPacketHandlers::handleCheckout);
             registerReceiver(handler, C2S_F_DATA_PERK_ADD, ServerPacketHandlers::handlePerkAdd);
             registerReceiver(handler, C2S_CAST_SPELL, ServerPacketHandlers::handleSpellCast);
             registerReceiver(handler, C2S_F_SLOT_SELL, ServerPacketHandlers::handleFishingCardInstantSell);

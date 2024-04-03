@@ -7,6 +7,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
@@ -87,17 +89,25 @@ public class ServerPacketHandlers {
                 .ifPresent(screenHandler -> screenHandler.soldContainer(player, creditGained)));
     }
 
-    public static void handleFishingShopBuyBasket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int cost = buf.readInt();
-        int basketSize = buf.readInt();
-        ArrayList<ItemStack> basket = new ArrayList<>();
-        for(int i = 0; i < basketSize; i++) {
-            basket.add(buf.readItemStack());
+    public static void handleCheckout(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        int total = buf.readInt();
+        int cartSize = buf.readInt();
+        ArrayList<ItemStack> cart = new ArrayList<>();
+        for(int i = 0; i < cartSize; i++) {
+            cart.add(buf.readItemStack());
         }
-        server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
-                .filter(ShopScreenHandler.class::isInstance)
-                .map(ShopScreenHandler.class::cast)
-                .ifPresent(screenHandler -> screenHandler.boughtContainer(player, basket, cost)));
+        server.execute(() -> {
+            FishingCard playerCard = FishingCard.getPlayerCard(player);
+            if (playerCard.getCredit() < total) {
+                return;
+            }
+            playerCard.addCredit(-total);
+            for(ItemStack stack : cart) {
+                player.giveItemStack(stack);
+            }
+            player.playSound(SoundEvents.ENTITY_VILLAGER_TRADE, SoundCategory.PLAYERS, 1f , 1f);
+            ServerPacketSender.sendCardUpdate(player, playerCard);
+        });
     }
 
 

@@ -21,4 +21,10 @@ public class StockEntry {
         this.item = item;
         this.price = price;
     }
+
+    public double getPriceFor(int count) {
+        double totalDiscount = count == 1 || discountPer == 0 ? 0 : count / discountPer * discount;
+        double discountedPrice = Math.max(minPrice,price - totalDiscount);
+        return discountedPrice * count;
+    }
 }
