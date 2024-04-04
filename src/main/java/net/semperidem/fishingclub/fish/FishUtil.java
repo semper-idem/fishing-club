@@ -141,6 +141,19 @@ public class FishUtil {
         }
     }
 
+    public static boolean isFish(ItemStack fish) {
+        return fish.isOf(FISH_ITEM);
+    }
+
+    public static boolean areEqual(ItemStack left, ItemStack right) {
+        if (isFish(left) && isFish(right) ) {
+            Fish leftFish = getFishFromStack(left);
+            Fish rightFish = getFishFromStack(right);
+            return leftFish != null && rightFish != null  && leftFish.isEqual(rightFish);
+        }
+        return false;
+    }
+
     private static Text getValueText(int value){
         return Text.of("§3Value: §6" + value + "$");
     }

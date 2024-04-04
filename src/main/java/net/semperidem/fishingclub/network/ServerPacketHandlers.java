@@ -12,7 +12,6 @@ import net.minecraft.sound.SoundEvents;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
-import net.semperidem.fishingclub.client.screen.shop.ShopScreenHandler;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -45,6 +44,7 @@ public class ServerPacketHandlers {
                 FishUtil.fishCaught(player, fish);
                 FishUtil.giveReward(player, rewards);
             });
+            player.closeHandledScreen();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -71,6 +71,7 @@ public class ServerPacketHandlers {
             ItemStack fishingRod = player.getStackInHand(player.getActiveHand());
             if (!(fishingRod.getItem() instanceof FishingRodPartItem)) return;
             ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
+            player.closeHandledScreen();
         });
     }
 
@@ -82,11 +83,26 @@ public class ServerPacketHandlers {
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int creditGained = buf.readInt();
-        server.execute(() -> Optional.ofNullable(player.currentScreenHandler)
-                .filter(ShopScreenHandler.class::isInstance)
-                .map(ShopScreenHandler.class::cast)
-                .ifPresent(screenHandler -> screenHandler.soldContainer(player, creditGained)));
+        int fishToSellCount = buf.readInt();
+        ArrayList<ItemStack> fishToSell = new ArrayList<>();
+        for(int i = 0; i < fishToSellCount; i++) {
+            fishToSell.add(buf.readItemStack());
+        }
+        server.execute(() -> {
+            int credit = 0;
+            for(ItemStack fish : fishToSell) {
+                for(ItemStack inventoryStack : player.getInventory().main) {
+                    if (FishUtil.areEqual(fish, inventoryStack)) {
+                        credit += FishUtil.getFishValue(fish);
+                        inventoryStack.setCount(0);
+                    }
+                }
+
+            }
+            FishingCard fishingCard = FishingCard.getPlayerCard(player);
+            fishingCard.addCredit(credit);
+            ServerPacketSender.sendCardUpdate(player, fishingCard);
+        });
     }
 
     public static void handleCheckout(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {

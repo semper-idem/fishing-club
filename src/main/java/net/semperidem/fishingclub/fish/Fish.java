@@ -11,6 +11,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Fish {
@@ -41,6 +42,8 @@ public class Fish {
 
     public boolean consumeGradeBuff;
 
+    public String id;
+
     public Fish(Species species, FishingCard fishingCard, IHookEntity hookedWith) {
         this.species = species;
         this.name = species.name;
@@ -61,6 +64,7 @@ public class Fish {
         this.experience = calculateExperience(caughtBy);
         this.caughtByUUID = caughtBy.getUuid();
         this.consumeGradeBuff = caughtBy.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
+        this.id =  (System.currentTimeMillis()) + "" + Math.abs(caughtByUUID.hashCode());
     }
 
     public Fish(NbtCompound nbt){
@@ -74,6 +78,7 @@ public class Fish {
         this.length = nbt.getFloat("length");
         this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
         this.caughtByUUID = nbt.getUuid("caughtBy");
+        this.id = nbt.getString("id");
     }
 
      public NbtCompound getNbt(){
@@ -87,6 +92,7 @@ public class Fish {
          nbt.putFloat("length", length);
          nbt.put("caughtUsing", caughtUsing.writeNbt(new NbtCompound()));
          nbt.putUuid("caughtBy", caughtByUUID);
+         nbt.putString("id", id);
          return nbt;
     }
 
@@ -179,5 +185,20 @@ public class Fish {
         fValue *= levelMultiplier;
         fValue *= weightMultiplier;
         return (int) fValue;
+    }
+
+    public boolean isEqual(Fish other) {
+        boolean isEqual = (Objects.equals(this.name, other.name));
+        isEqual &= (this.species == other.species);
+        isEqual &= (this.level == other.level);
+        isEqual &= (this.experience == other.experience);
+        isEqual &= (this.grade == other.grade);
+        isEqual &= (this.value == other.value);
+        isEqual &= (this.weight == other.weight);
+        isEqual &= (this.length == other.length);
+        //isEqual &= (this.caughtUsing == other.caughtUsing);
+        isEqual &= (this.caughtByUUID.compareTo(other.caughtByUUID) == 0);
+        isEqual &= (Objects.equals(this.id, other.id));
+        return isEqual;
     }
 }

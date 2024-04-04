@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.game;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -165,21 +164,13 @@ public class FishingGameController {
     }
 
     public void winGame() {
-        ClientPacketSender.sendFishGameWon(treasureGameController.getRewards());
-        endGame();
+        ClientPacketSender.sendFishGameWon(hookedFish, treasureGameController.getRewards());
     }
 
     public void loseGame() {
         ClientPacketSender.sendFishGameLost();
-        endGame();
     }
 
-    public void endGame() {
-        if (MinecraftClient.getInstance().currentScreen == null) {
-            return;
-        }
-        MinecraftClient.getInstance().currentScreen.close();
-    }
 
     FishComponent fishComponent;
     BobberComponent bobberComponent;

@@ -49,7 +49,7 @@ public class LevelReward {
 
     public void grant(FishingCard fishingCard){
         int fisherLevel = fishingCard.getLevel();
-        int resultAmount = amount.get(fisherLevel);
+        int resultAmount = amount == null ? 1 : amount.get(fisherLevel);
         switch (rewardType) {
             case ITEM -> fishingCard.addUnclaimedReward(grantItemReward(resultAmount));
             case CREDIT -> fishingCard.addCredit(resultAmount);

@@ -11,6 +11,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
@@ -50,6 +51,17 @@ public class MemberScreenHandler extends ScreenHandler {
             }
         }
         return slotsLeft;
+    }
+
+    public ArrayList<ItemStack> getFishes() {
+        ArrayList<ItemStack> fishes = new ArrayList<>();
+        for(ItemStack itemStack : player.getInventory().main) {
+            if (itemStack.isEmpty()) {
+                continue;
+            }
+            fishes.add(itemStack);
+        }
+        return fishes;
     }
 
     public int getMinCapePrice(){

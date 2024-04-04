@@ -31,7 +31,7 @@ import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_
 
 public class MemberBuyScreen extends MemberSubScreen {
 
-    static final Texture OFFER_TEXTURE = new Texture(
+    public static final Texture OFFER_TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/offer_background.png"),
             16,
             16

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -73,6 +74,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     private float targetYaw;
     private float targetBodyYaw;
     private float targetPitch;
+    private boolean swayTracked = false;
     PlayerEntity clientPlayer;
 
     public FishingGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
@@ -154,6 +156,11 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     private void updateCameraTarget() {
+        if (MinecraftClient.getInstance().options.getPerspective() != Perspective.THIRD_PERSON_BACK) {
+            swayTracked = false;
+            return;
+        }
+        swayTracked = true;
         targetYaw = startingYaw + this.handler.fishGameLogic.reelForce * 800;
         targetBodyYaw = startingYaw + this.handler.fishGameLogic.reelForce * 6000;
         targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.fishGameLogic.reelForce )) * 1000) * 4));
@@ -174,6 +181,9 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     private void updateCamera(){
+        if (!swayTracked) {
+            return;
+        }
         clientPlayer.setPitch(getNextFramePitch());
         clientPlayer.setYaw(getNextFrameYaw());
         clientPlayer.setHeadYaw(getNextFrameYaw());

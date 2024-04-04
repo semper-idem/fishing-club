@@ -4,17 +4,28 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.semperidem.fishingclub.fish.Fish;
 
 import java.util.ArrayList;
 
 public class ClientPacketSender {
-    public static void sendFishGameWon(ArrayList<ItemStack> treasureRewards) {
+    public static void sendFishGameWon(Fish fish, ArrayList<ItemStack> treasureRewards) {
         PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeNbt(fish.getNbt());
         buf.writeInt(treasureRewards.size());
         for(ItemStack reward : treasureRewards) {
             buf.writeItemStack(reward);
         }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
+    }
+
+    public static void sendFishToSell(ArrayList<ItemStack> fishToSell) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeInt(fishToSell.size());
+        for(ItemStack fishStack : fishToSell) {
+            buf.writeItemStack(fishStack);
+        }
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
     }
 
     public static void sendCoinTossRequest(int amount, String playerChoice) {
@@ -45,12 +56,7 @@ public class ClientPacketSender {
     public static void sendOpenFisherInfoScreen() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_INFO_OPEN, PacketByteBufs.empty());
     }
-    public static void sellShopContainer(int containerValue) {
-        if (containerValue <= 0 ) return;
-        PacketByteBuf  buf = PacketByteBufs.create();
-        buf.writeInt(containerValue);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
-    }
+
     public static void instantSellSlot() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SLOT_SELL, PacketByteBufs.empty());
     }
