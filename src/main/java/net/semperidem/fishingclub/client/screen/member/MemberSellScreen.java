@@ -1,14 +1,9 @@
 package net.semperidem.fishingclub.client.screen.member;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ScrollableWidget;
-import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -19,7 +14,8 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberBuyScreen.OFFER_TEXTURE;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.BEIGE_TEXT_COLOR;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
 
 public class MemberSellScreen extends MemberSubScreen{
     private static final int SLOT_SIZE = 16;
@@ -150,15 +146,14 @@ public class MemberSellScreen extends MemberSubScreen{
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
-    private class EntriesGridWidget extends ScrollableWidget {
+    private class EntriesGridWidget extends MemberScrollableWidget {
         private static final int SLOTS_IN_ROW = 9;
         final ArrayList<GridEntry> entries = new ArrayList<>();
         int lastTotalSelected = 0;
         int lastTotal = 0;
 
-
         public EntriesGridWidget(int x, int y) {
-            super(x, y, SLOT_SIZE * 9, SLOT_SIZE * 6, Text.empty());
+            super(x, y, SLOT_SIZE * 9, SLOT_SIZE * 6);
             parent.getScreenHandler().getFishes().forEach(f -> {
                 if (FishUtil.isFish(f)) {
                     entries.add(new GridEntry(f));
@@ -216,11 +211,6 @@ public class MemberSellScreen extends MemberSubScreen{
             return Math.max(1, getRows()) * TILE_SIZE;
         }
 
-        @Override
-        protected boolean overflows() {
-            return false;
-        }
-
         private int getRows() {
             return (int) Math.ceil((double) entries.size() / SLOTS_IN_ROW);
         }
@@ -254,39 +244,10 @@ public class MemberSellScreen extends MemberSubScreen{
         }
 
         @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {}
-        private int getContentsHeightWithPadding() {
-            return this.getContentsHeight();
-        }
-        private int getScrollbarThumbHeight() {
-            return MathHelper.clamp((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding()), 32, this.height);
-        }
-
-        @Override
-        protected void renderOverlay(MatrixStack matrices) {
-            int i = this.getScrollbarThumbHeight();
-            int x0 = this.x + this.width - TILE_SIZE;
-            int x1 = this.x + this.width;
-            int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
-            int y1 = y0 + i;
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(x0, y1, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex(x1, y1, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex(x1, y0, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex(x0, y0, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex(x0, (y1 - 1), 0).color(PRIMARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(PRIMARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex((x1 - 1), y0, 0).color(PRIMARY_SCROLLBAR_COLOR).next();
-            bufferBuilder.vertex(x0, y0, 0).color(PRIMARY_SCROLLBAR_COLOR).next();
-            tessellator.draw();
-        }
-        @Override
         public boolean isFocused() {
             return super.isFocused() || isHovered();
         }
+
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
@@ -299,11 +260,6 @@ public class MemberSellScreen extends MemberSubScreen{
                 disableScissor();
                 this.renderOverlay(matrices);
             }
-        }
-
-        @Override
-        protected int getMaxScrollY() {
-            return Math.max(0, getContentsHeight() - this.height);
         }
 
 

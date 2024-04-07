@@ -1,20 +1,14 @@
 package net.semperidem.fishingclub.client.screen.member;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ScrollableWidget;
-import net.minecraft.client.render.*;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
-import net.semperidem.fishingclub.fisher.shop.MemberStock;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
@@ -24,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
-
+import static net.semperidem.fishingclub.fisher.shop.MemberStock.*;
 
 
 public class MemberBuyScreen extends MemberSubScreen {
@@ -44,6 +38,9 @@ public class MemberBuyScreen extends MemberSubScreen {
     private int categoryButtonX, categoryButtonY;
     private int categoryButtonCount;
     private int offerGridX, offerGridY;
+
+    int buttonBoxX0, buttonBoxX1, buttonBoxY0, buttonBoxY1;
+
     CategoryButton fisherCategoryButton;
     CategoryButton minerCategoryButton;
     CategoryButton lumberjackCategoryButton;
@@ -79,14 +76,15 @@ public class MemberBuyScreen extends MemberSubScreen {
         categoryButtonX = baseX;
         categoryButtonY = baseY;
         categoryButtonCount = 0;
-        fisherCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.FISHING_ROD, 0));
-        minerCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.IRON_PICKAXE, 10));
-        lumberjackCategoryButton = new CategoryButton(new Category(MemberStock.LUMBERJACK_STOCK_KEY, Items.IRON_AXE, 0));
-        alchemistCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.BREWING_STAND, 20));
-        librarianCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.ENCHANTED_BOOK, 30));
-        adventurerCategoryButton = new CategoryButton(new Category(MemberStock.FISHER_STOCK_KEY, Items.FILLED_MAP, 30));
+        fisherCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.FISHING_ROD, 0));
+        minerCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.IRON_PICKAXE, 10));
+        lumberjackCategoryButton = new CategoryButton(new Category(LUMBERJACK_STOCK_KEY, Items.IRON_AXE, 0));
+        alchemistCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.BREWING_STAND, 20));
+        librarianCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.ENCHANTED_BOOK, 30));
+        adventurerCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.FILLED_MAP, 30));
         offerGridX = baseX + CategoryButton.SIZE + TILE_SIZE;
         offerGridY = baseY;
+
 
         offerGrid = new OfferGrid(offerGridX, offerGridY, TILE_SIZE * 25, parent.height - baseY - TILE_SIZE);
         cartWidget = new CartWidget(offerGridX + offerGrid.getWidth() + TILE_SIZE * 3, offerGridY + 3 * TILE_SIZE, CART_ITEM_TEXTURE.renderWidth + TILE_SIZE, parent.height - baseY - TILE_SIZE * 5);
@@ -112,19 +110,22 @@ public class MemberBuyScreen extends MemberSubScreen {
             cartWidget.cartItems.clear();
         });
         components.add(clearButton);
+
+
+        buttonBoxX0 = clearButton.x;
+        buttonBoxX1 = buyButton.x + buyButton.getWidth();
+        buttonBoxY0 = clearButton.y - 2 - 12;
+        buttonBoxY1 = clearButton.y + clearButton.getHeight();
+
     }
 
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        int boxX = clearButton.x;
-        int boxX1 = buyButton.x + buyButton.getWidth();
-        int boxY = clearButton.y - 2 - 12;
-        int boxY1 = clearButton.y + clearButton.getHeight();
-        parent.drawContainerBox(matrixStack, boxX, boxY, boxX1, boxY1, false);
-        textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 3, boxY + 4, BEIGE_TEXT_COLOR);
+        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, false);
+        textRenderer.drawWithShadow(matrixStack, "Total:", buttonBoxX0 + 3, buttonBoxY0 + 4, BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
-        textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - textRenderer.getWidth(cartPrice) -  3, boxY + 4, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, buttonBoxY0 + 4, BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
         if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
             this.focusedOffer = null;
@@ -156,31 +157,12 @@ public class MemberBuyScreen extends MemberSubScreen {
         cartWidget.removeItem(offer);
     }
 
-    private class CartWidget extends ScrollableWidget {
+    private class CartWidget extends MemberScrollableWidget {
 
         HashMap<OfferGrid.Offer, Integer> cartItems = new HashMap<>();
 
-        private int getStacksInCart() {
-            int stacksInCart = 0;
-            for(OfferGrid.Offer offer : cartItems.keySet()) {
-                stacksInCart += (int) Math.ceil(cartItems.get(offer) / 64f);
-            }
-            return stacksInCart;
-        }
-
-        public String getCartTotal() {
-            return getCartTotalAmount() + "$";
-        }
-        public int getCartTotalAmount() {
-            int total = 0;
-            for(OfferGrid.Offer offer : cartItems.keySet()) {
-                total += offer.stockEntry.getPriceFor(cartItems.get(offer));
-            }
-            return total;
-        }
-
         public CartWidget(int x, int y, int width, int height) {
-            super(x, y, width, height, Text.empty());
+            super(x, y, width, height);
             components.add(this);
         }
         private void addItem(OfferGrid.Offer offer) {
@@ -207,10 +189,6 @@ public class MemberBuyScreen extends MemberSubScreen {
         protected int getContentsHeight() {
             return cartItems.size() * OfferGrid.Offer.SIZE;
         }
-        @Override
-        protected boolean overflows() {
-            return false;
-        }
 
         @Override
         public boolean isHovered() {
@@ -221,6 +199,26 @@ public class MemberBuyScreen extends MemberSubScreen {
         protected double getDeltaYPerScroll() {
             return OfferGrid.Offer.SIZE;
         }
+
+        private int getStacksInCart() {
+            int stacksInCart = 0;
+            for(OfferGrid.Offer offer : cartItems.keySet()) {
+                stacksInCart += (int) Math.ceil(cartItems.get(offer) / 64f);
+            }
+            return stacksInCart;
+        }
+
+        public String getCartTotal() {
+            return getCartTotalAmount() + "$";
+        }
+        public int getCartTotalAmount() {
+            int total = 0;
+            for(OfferGrid.Offer offer : cartItems.keySet()) {
+                total += offer.stockEntry.getPriceFor(cartItems.get(offer));
+            }
+            return total;
+        }
+
         @Override
         protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             int index = 0;
@@ -241,45 +239,13 @@ public class MemberBuyScreen extends MemberSubScreen {
             }
         }
         @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {}
-        private int getContentsHeightWithPadding() {
-            return this.getContentsHeight();
-        }
-        private int getScrollbarThumbHeight() {
-            return MathHelper.clamp((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding()), 32, this.height);
-        }
-
-        @Override
-        protected void renderOverlay(MatrixStack matrices) {
-            int i = this.getScrollbarThumbHeight();
-            int x0 = this.x + this.width - TILE_SIZE;
-            int x1 = this.x + this.width;
-            int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
-            int y1 = y0 + i;
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            int color1 = 0xffbb8f1b;
-            int color2 = 0xff4b2f00;
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(x0, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color1).next();
-            tessellator.draw();
-        }
-        @Override
         public boolean isFocused() {
             return super.isFocused() || isHovered();
         }
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                this.drawBox(matrices);
+                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, true);
                 textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                 matrices.push();
@@ -289,16 +255,6 @@ public class MemberBuyScreen extends MemberSubScreen {
                 disableScissor();
                 this.renderOverlay(matrices);
             }
-        }
-        private void drawBox(MatrixStack matrices) {
-            int color1 = 0xff272946;
-            int color2 = 0xff061319;
-            fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, color2);
-            fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, color1);
-        }
-        @Override
-        protected int getMaxScrollY() {
-            return Math.max(0, getContentsHeight() - this.height);
         }
 
         @Override
@@ -352,13 +308,12 @@ public class MemberBuyScreen extends MemberSubScreen {
     }
 
 
-    class OfferGrid extends ScrollableWidget {
-        private static final int SCROLL_WIDTH = 5;
+    class OfferGrid extends MemberScrollableWidget {
         private final int entriesPerRow;
         ArrayList<Offer> entries = new ArrayList<>();
 
         public OfferGrid(int x, int y, int width, int height) {
-            super(x, y, width, height, Text.empty());
+            super(x, y, width, height);
             entriesPerRow = width / Offer.SIZE;
             components.add(this);
         }
@@ -366,12 +321,12 @@ public class MemberBuyScreen extends MemberSubScreen {
         public void loadOffers(Category category) {
             entries.clear();
             int currentLevel = parent.getScreenHandler().getCard().getLevel();
-            for(StockEntry stockEntry : MemberStock.STOCK.get(category.name)) {
+            for(StockEntry stockEntry : STOCK.get(category.name)) {
                 //  if (currentLevel > stockEntry.requiredLevel) {//TODO uncomment when finished with member screen
                 entries.add(new Offer(stockEntry));
                 //  }
 
-            }for(StockEntry stockEntry : MemberStock.STOCK.get(MemberStock.LUMBERJACK_STOCK_KEY)) {
+            }for(StockEntry stockEntry : STOCK.get(LUMBERJACK_STOCK_KEY)) {
                 //  if (currentLevel > stockEntry.requiredLevel) {//TODO uncomment when finished with member screen
                 entries.add(new Offer(stockEntry));
                 //  }
@@ -385,33 +340,7 @@ public class MemberBuyScreen extends MemberSubScreen {
             return hovered;
         }
 
-        private class Offer {
-            static int SIZE = 16;
-            StockEntry stockEntry;
-            Offer(StockEntry stockEntry) {
-                this.stockEntry = stockEntry;
-            }
 
-            //(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model) {
-            void render(MatrixStack matrixStack, int x, int y) {
-                OFFER_TEXTURE.render(matrixStack, x, y);
-                itemRenderer.renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
-            }
-
-            public boolean mouseClicked(double mouseX, double mouseY, int button){
-                switch (button) {
-                    case 0 -> addItem(this);
-                    case 1 -> removeItem(this);
-                }
-                return true;
-            }
-        }
-
-
-        @Override
-        protected int getMaxScrollY() {
-            return Math.max(0, getContentsHeight() - this.height);
-        }
 
         @Override
         protected int getContentsHeight() {
@@ -425,49 +354,12 @@ public class MemberBuyScreen extends MemberSubScreen {
             return (int) (Math.ceil(1f * entries.size() / entriesPerRow));
         }
 
-
-
-        @Override
-        protected boolean overflows() {
-            return false;
-        }
-
         @Override
         protected double getDeltaYPerScroll() {
             return Offer.SIZE;
         }
 
-        private int getContentsHeightWithPadding() {
-            return this.getContentsHeight();
-        }
 
-        private int getScrollbarThumbHeight() {
-            return MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
-        }
-
-        @Override
-        protected void renderOverlay(MatrixStack matrices) {
-            int i = this.getScrollbarThumbHeight();
-            int x0 = this.x + this.width - 4;
-            int x1 = this.x + this.width;
-            int y0 = Math.max(this.y, this.getMaxScrollY() == 0 ? this.y : (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
-            int y1 = y0 + i;
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            int color1 = 0xffbb8f1b;
-            int color2 = 0xff4b2f00;
-            bufferBuilder.vertex(x0, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color1).next();
-            tessellator.draw();
-        }
 
         @Override
         public boolean isFocused() {
@@ -477,7 +369,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                this.drawBox(matrices);
+                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, false);
                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                 matrices.push();
                 matrices.translate(0, -this.getScrollY(), 0);
@@ -487,11 +379,6 @@ public class MemberBuyScreen extends MemberSubScreen {
                 this.renderOverlay(matrices);
             }
         }
-
-        private void drawBox(MatrixStack matrices) {
-            fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, 0xff272946);
-        }
-
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -506,7 +393,7 @@ public class MemberBuyScreen extends MemberSubScreen {
             int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
             int predictedIndex = predictedX + predictedY * entriesPerRow;
             if (entries.size() > predictedIndex) {
-                if (entries.get(predictedIndex).mouseClicked(mouseX, mouseY, button)) {
+                if (entries.get(predictedIndex).mouseClicked(button)) {
                     return true;
                 }
             }
@@ -550,9 +437,25 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         }
 
-        @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {
+        private class Offer {
+            static int SIZE = 16;
+            StockEntry stockEntry;
+            Offer(StockEntry stockEntry) {
+                this.stockEntry = stockEntry;
+            }
 
+            void render(MatrixStack matrixStack, int x, int y) {
+                OFFER_TEXTURE.render(matrixStack, x, y);
+                itemRenderer.renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
+            }
+
+            public boolean mouseClicked(int button){
+                switch (button) {
+                    case 0 -> addItem(this);
+                    case 1 -> removeItem(this);
+                }
+                return true;
+            }
         }
     }
 
