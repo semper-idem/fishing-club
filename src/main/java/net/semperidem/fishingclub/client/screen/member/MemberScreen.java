@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -44,7 +45,9 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     public MemberScreen(MemberScreenHandler memberScreenHandler, PlayerInventory playerInventory, Text title) {
         super(memberScreenHandler, playerInventory, title);
-        textRenderer = MinecraftClient.getInstance().textRenderer;
+        this.client = MinecraftClient.getInstance();
+        this.textRenderer = client.textRenderer;
+        this.itemRenderer = client.getItemRenderer();
         this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
         this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
         this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
@@ -58,10 +61,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         return currentView;
     }
 
-    public TextRenderer getTextRenderer() {
-        return textRenderer;
-    }
-
     public void setCurrentView(MemberSubScreen memberSubScreen) {
         memberSubScreen.init();
         this.currentView = memberSubScreen;
@@ -69,7 +68,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
-                MinecraftClient.getInstance().player.getSkinTexture(),
+                client.player.getSkinTexture(),
                 x + TILE_SIZE,
                 y + TEXTURE.renderHeight - TILE_SIZE * 9
         ));
@@ -168,6 +167,21 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         }
         fill(matrices, x, y, x0, y0, BOX_COLOR);
     }
+
+    public MinecraftClient getClient() {
+        if (client == null) {
+            client = MinecraftClient.getInstance();
+        }
+        return client;
+    }
+    public TextRenderer getTextRenderer() {
+        return textRenderer;
+    }
+
+    public ItemRenderer getItemRenderer() {
+        return itemRenderer;
+    }
+
 
     public static final Texture TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/member_screen.png"),

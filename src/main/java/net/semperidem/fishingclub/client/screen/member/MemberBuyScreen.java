@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableWidget;
@@ -24,8 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import static net.minecraft.client.gui.DrawableHelper.fill;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
 
 
 
@@ -60,13 +58,11 @@ public class MemberBuyScreen extends MemberSubScreen {
     OfferGrid offerGrid;
     CartWidget cartWidget;
 
-    MinecraftClient client;
 
     OfferGrid.Offer focusedOffer;
 
     public MemberBuyScreen(MemberScreen parent, Text title) {
         super(parent, title);
-        client = MinecraftClient.getInstance();
     }
 
 
@@ -97,8 +93,8 @@ public class MemberBuyScreen extends MemberSubScreen {
         setCategory(fisherCategoryButton.category);
 
 
-        int buyButtonX = parent.x + MemberScreen.TEXTURE.renderWidth - 42 * TILE_SIZE;
-        int buttonY = parent.y + MemberScreen.TEXTURE.renderHeight - 20 - TILE_SIZE * 2;
+        int buyButtonX = parent.x + TEXTURE.renderWidth - 42 * TILE_SIZE;
+        int buttonY = parent.y + TEXTURE.renderHeight - 20 - TILE_SIZE * 2;
         buyButton = new MemberButton(buyButtonX, buttonY, TILE_SIZE  * 18 , 20, Text.literal("Buy"),button -> {
             ArrayList<ItemStack> cart = new ArrayList<>();
 
@@ -125,14 +121,10 @@ public class MemberBuyScreen extends MemberSubScreen {
         int boxX1 = buyButton.x + buyButton.getWidth();
         int boxY = clearButton.y - 2 - 12;
         int boxY1 = clearButton.y + clearButton.getHeight();
-
-        int color1 = 0xff272946;
-        int color2 = 0xff061319;
-        fill(matrixStack, boxX, boxY, boxX1, boxY1, color2);
-        fill(matrixStack, boxX + 1, boxY + 1, boxX1 - 1, boxY1 - 1, color1);
-        client.textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 3, boxY + 4, MemberScreen.BEIGE_TEXT_COLOR);
+        parent.drawContainerBox(matrixStack, boxX, boxY, boxX1, boxY1, false);
+        textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 3, boxY + 4, BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
-        client.textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - client.textRenderer.getWidth(cartPrice) -  3, boxY + 4, MemberScreen.BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - textRenderer.getWidth(cartPrice) -  3, boxY + 4, BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
         if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
             this.focusedOffer = null;
@@ -193,14 +185,14 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
         private void addItem(OfferGrid.Offer offer) {
             int count = 1;
-            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
-            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
             cartItems.put(offer, Math.min(999, cartItems.getOrDefault(offer, 0) + (count)));
         }
         private void removeItem(OfferGrid.Offer offer) {
             int count = 1;
-            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
-            count *= InputUtil.isKeyPressed(client.getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
+            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
             cartItems.put(offer, cartItems.get(offer) - count);
             HashMap<OfferGrid.Offer, Integer> updatedCartItem = new HashMap<>();
             for(OfferGrid.Offer off : cartItems.keySet()) {
@@ -236,11 +228,11 @@ public class MemberBuyScreen extends MemberSubScreen {
                 CART_ITEM_TEXTURE.render(matrices, x, y + index * OfferGrid.Offer.SIZE);
                 ItemStack stackToRender = offer.stockEntry.item.getDefaultStack();
                 stackToRender.setCount(cartItems.get(offer));
-                client.getItemRenderer().renderInGui(
+                itemRenderer.renderInGui(
                         stackToRender,
                         x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
                         (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
-                client.getItemRenderer().renderGuiItemOverlay(client.textRenderer,
+                itemRenderer.renderGuiItemOverlay(textRenderer,
                         stackToRender,
                         x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
                         (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
@@ -288,7 +280,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
                 this.drawBox(matrices);
-                client.textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , MemberScreen.BEIGE_TEXT_COLOR);
+                textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                 matrices.push();
                 matrices.translate(0, -this.getScrollY(), 0);
@@ -403,7 +395,7 @@ public class MemberBuyScreen extends MemberSubScreen {
             //(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model) {
             void render(MatrixStack matrixStack, int x, int y) {
                 OFFER_TEXTURE.render(matrixStack, x, y);
-                client.getItemRenderer().renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
+                itemRenderer.renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
             }
 
             public boolean mouseClicked(double mouseX, double mouseY, int button){
@@ -610,8 +602,8 @@ public class MemberBuyScreen extends MemberSubScreen {
                 textureIndex = 2;
             }
             CATEGORY_BUTTON.render(matrices, x, y, 0, SIZE * textureIndex, width, height);
-            MinecraftClient.getInstance().getItemRenderer().renderInGui(category.itemIcon.getDefaultStack(), x, y);
-            MinecraftClient.getInstance().getItemRenderer().renderInGui(active ? Items.GLASS_PANE.getDefaultStack() : Items.GRAY_STAINED_GLASS_PANE.getDefaultStack(), x, y);
+            itemRenderer.renderInGui(category.itemIcon.getDefaultStack(), x, y);
+            itemRenderer.renderInGui(active ? Items.GLASS_PANE.getDefaultStack() : Items.GRAY_STAINED_GLASS_PANE.getDefaultStack(), x, y);
         }
     }
 /*

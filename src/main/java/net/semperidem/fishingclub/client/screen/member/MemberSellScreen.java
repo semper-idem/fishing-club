@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ScrollableWidget;
@@ -39,13 +38,14 @@ public class MemberSellScreen extends MemberSubScreen{
             16
     );
 
-    int baseX, baseY;
 
     private static final int BUTTON_WIDTH = TILE_SIZE * 14;
     private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
     private static final int GRID_WIDGET_WIDTH = SLOT_SIZE * 9;
     private static final int GRID_WIDGET_HEIGHT = SLOT_SIZE * 6;
     private static final int TEXT_LINE_HEIGHT = 12;
+
+    int baseX, baseY;
     int sellButtonX, sellButtonY;
     int sellAllButtonX, sellAllButtonY;
     int gridWidgetX, gridWidgetY;
@@ -137,15 +137,15 @@ public class MemberSellScreen extends MemberSubScreen{
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         parent.drawContainerBox(matrixStack, buttonBoxX0 + 1, buttonBoxY0 + 1, buttonBoxX1 - 1, buttonBoxY1 - 1, true);
-        parent.getTextRenderer().drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
-        parent.getTextRenderer().drawWithShadow(matrixStack, SELECTED_TEXT, totalTextX, selectedTextY, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, SELECTED_TEXT, totalTextX, selectedTextY, BEIGE_TEXT_COLOR);
 
         String totalPrice = fishGridWidget.lastTotal + "$";
         String selectedPrice = fishGridWidget.lastTotalSelected + "$";
-        int totalTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  3;
-        int selectedTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  3;
-        parent.getTextRenderer().drawWithShadow(matrixStack, totalPrice, totalTextValueX, totalTextY, BEIGE_TEXT_COLOR);
-        parent.getTextRenderer().drawWithShadow(matrixStack, selectedPrice, selectedTextValueX, selectedTextY, BEIGE_TEXT_COLOR);
+        int totalTextValueX = buttonBoxX1 - textRenderer.getWidth(totalPrice) -  3;
+        int selectedTextValueX = buttonBoxX1 - textRenderer.getWidth(totalPrice) -  3;
+        textRenderer.drawWithShadow(matrixStack, totalPrice, totalTextValueX, totalTextY, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, selectedPrice, selectedTextValueX, selectedTextY, BEIGE_TEXT_COLOR);
 
         super.render(matrixStack, mouseX, mouseY, delta);
     }
@@ -228,7 +228,7 @@ public class MemberSellScreen extends MemberSubScreen{
         @Override
         protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (entries.isEmpty()) {
-                drawCenteredText(matrices, parent.getTextRenderer(), NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
+                drawCenteredText(matrices, textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
                 return;
             }
 
@@ -307,7 +307,7 @@ public class MemberSellScreen extends MemberSubScreen{
         }
 
 
-        private static class GridEntry {
+        private class GridEntry {
             ItemStack itemStack;
             boolean isSelected;
 
@@ -318,7 +318,7 @@ public class MemberSellScreen extends MemberSubScreen{
 
             public void render(MatrixStack matrixStack, int x, int y){
                 OFFER_TEXTURE.render(matrixStack, x, y);
-                MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(itemStack, x, y);
+                itemRenderer.renderGuiItemIcon(itemStack, x, y);
                 if (isSelected) {
                     SELECTION_TEXTURE.render(matrixStack, x, y);
                 }

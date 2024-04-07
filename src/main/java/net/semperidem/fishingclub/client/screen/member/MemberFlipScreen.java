@@ -62,7 +62,7 @@ public class MemberFlipScreen extends MemberSubScreen {
 
         tailsX = headsX + buttonWidth + 2;
         tailsY = headsY;
-        flipAmountField = new ClampedFieldWidget(parent.getTextRenderer(), amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
+        flipAmountField = new ClampedFieldWidget(textRenderer, amountFieldX,amountFieldY,amountFieldWidth,buttonHeight, Text.of("Toss Amount:"), parent);
 
         tailsButton = new MemberButton(tailsX,tailsY,buttonWidth,buttonHeight, Text.of("Tails"), tossCoin());
         headsButton = new MemberButton(headsX,headsY,buttonWidth,buttonHeight, Text.of("Heads"), tossCoin());
@@ -87,7 +87,7 @@ public class MemberFlipScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
         int historyEntryY = historyY;
         HashMap<Integer, String> tossHistory = parent.getScreenHandler().getTossHistory();
         for(int i = tossHistory.size(); i > 0; i--) {
@@ -99,10 +99,10 @@ public class MemberFlipScreen extends MemberSubScreen {
             if (parts.length != 4) {
                 continue;
             }
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
-            parent.getTextRenderer().drawWithShadow(matrixStack,  Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
-            TextUtil.drawOutlinedTextRightAlignedTo(parent.getTextRenderer(), matrixStack, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
+            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
+            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
+            TextUtil.drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
             historyEntryY -= TEXT_HEIGHT;
 
         }

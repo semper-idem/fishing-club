@@ -1,19 +1,27 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 
 public class MemberSubScreen implements IMemberSubScreen{
-    MemberScreen parent;
-    ArrayList<Drawable> components = new ArrayList<>();
-    Text title = Text.empty();
+    final MemberScreen parent;
+    final TextRenderer textRenderer;
+    final ItemRenderer itemRenderer;
+    final ArrayList<Drawable> components;
+    final Text title;
 
     public MemberSubScreen(MemberScreen parent, Text title) {
         this.parent = parent;
         this.title = title;
+        this.textRenderer = parent.getTextRenderer();
+        this.itemRenderer = parent.getItemRenderer();
+        this.components = new ArrayList<>();
+
     }
 
     public MemberScreen getParent() {

@@ -80,7 +80,7 @@ public class MemberMiscScreen extends MemberSubScreen {
             }
         }, () -> parent.getScreenHandler().getCard().canResetPerks());
 
-        claimField = new ClampedFieldWidget(parent.getTextRenderer(), claimFieldX, claimFieldY, claimFieldWidth, BUTTON_HEIGHT, Text.literal(""), parent);
+        claimField = new ClampedFieldWidget(textRenderer, claimFieldX, claimFieldY, claimFieldWidth, BUTTON_HEIGHT, Text.literal(""), parent);
         claimField.setMaxLength(10);
         claimField.setText("0");
 
@@ -116,11 +116,11 @@ public class MemberMiscScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
-        drawOutlinedTextCenteredAt(parent.getTextRenderer(), matrixStack, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
-        drawTextCenteredAt(parent.getTextRenderer(), matrixStack, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(textRenderer, matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(textRenderer, matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(textRenderer, matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
+        drawOutlinedTextCenteredAt(textRenderer, matrixStack, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+        drawTextCenteredAt(textRenderer, matrixStack, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
 
         super.render(matrixStack, mouseX, mouseY, delta);
     }
