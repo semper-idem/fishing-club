@@ -99,7 +99,6 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         int buyButtonX = parent.x + MemberScreen.TEXTURE.renderWidth - 42 * TILE_SIZE;
         int buttonY = parent.y + MemberScreen.TEXTURE.renderHeight - 20 - TILE_SIZE * 2;
-        //int x, int y, int width, int height, Text message, PressAction onPress
         buyButton = new MemberButton(buyButtonX, buttonY, TILE_SIZE  * 18 , 20, Text.literal("Buy"),button -> {
             ArrayList<ItemStack> cart = new ArrayList<>();
 
@@ -124,17 +123,16 @@ public class MemberBuyScreen extends MemberSubScreen {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         int boxX = clearButton.x;
         int boxX1 = buyButton.x + buyButton.getWidth();
-        int boxY = clearButton.y - client.textRenderer.fontHeight - TILE_SIZE - 1;
+        int boxY = clearButton.y - 2 - 12;
         int boxY1 = clearButton.y + clearButton.getHeight();
 
         int color1 = 0xff272946;
         int color2 = 0xff061319;
         fill(matrixStack, boxX, boxY, boxX1, boxY1, color2);
         fill(matrixStack, boxX + 1, boxY + 1, boxX1 - 1, boxY1 - 1, color1);
-        // fill(matrixStack, boxX + 1, boxY1 - client.textRenderer.fontHeight - 4, boxX1 - 1, boxY1 - client.textRenderer.fontHeight - 5, color2);
-        client.textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
+        client.textRenderer.drawWithShadow(matrixStack, "Total:", boxX + 3, boxY + 4, MemberScreen.BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
-        client.textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - client.textRenderer.getWidth(cartPrice) -  2, boxY + 3, MemberScreen.BEIGE_TEXT_COLOR);
+        client.textRenderer.drawWithShadow(matrixStack, cartPrice, boxX1 - client.textRenderer.getWidth(cartPrice) -  3, boxY + 4, MemberScreen.BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
         if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
             this.focusedOffer = null;
@@ -256,7 +254,7 @@ public class MemberBuyScreen extends MemberSubScreen {
             return this.getContentsHeight();
         }
         private int getScrollbarThumbHeight() {
-            return MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
+            return MathHelper.clamp((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding()), 32, this.height);
         }
 
         @Override

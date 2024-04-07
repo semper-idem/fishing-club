@@ -20,8 +20,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberBuyScreen.OFFER_TEXTURE;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.BEIGE_TEXT_COLOR;
-import static net.semperidem.fishingclub.client.screen.member.MemberScreen.TILE_SIZE;
+import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
 
 public class MemberSellScreen extends MemberSubScreen{
     private static final int SLOT_SIZE = 16;
@@ -42,7 +41,7 @@ public class MemberSellScreen extends MemberSubScreen{
 
     int baseX, baseY;
 
-    private static final int BUTTON_WIDTH = TILE_SIZE * 15;
+    private static final int BUTTON_WIDTH = TILE_SIZE * 14;
     private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
     private static final int GRID_WIDGET_WIDTH = SLOT_SIZE * 9;
     private static final int GRID_WIDGET_HEIGHT = SLOT_SIZE * 6;
@@ -80,25 +79,25 @@ public class MemberSellScreen extends MemberSubScreen{
         baseX = parent.x + TILE_SIZE * 10;
         baseY = parent.y + TILE_SIZE * 5;
 
-        gridWidgetX = baseX + 5 * TILE_SIZE;
+        gridWidgetX = baseX;
         gridWidgetY = baseY;
 
         noFishTextX = (int) (gridWidgetX + GRID_WIDGET_WIDTH * 0.5f);
         noFishTextY = (int) (gridWidgetY + GRID_WIDGET_HEIGHT * 0.5f - TILE_SIZE);
 
-        sellButtonX = baseX + GRID_WIDGET_WIDTH + 6 * TILE_SIZE;
+        sellButtonX = baseX + GRID_WIDGET_WIDTH + TILE_SIZE * 7;
         sellButtonY = baseY + GRID_WIDGET_HEIGHT - TILE_SIZE * 6;
 
-        sellAllButtonX = sellButtonX + TILE_SIZE * 15;
+        sellAllButtonX = sellButtonX + BUTTON_WIDTH;
         sellAllButtonY = sellButtonY;
 
-        buttonBoxX0 = sellButton.x;
-        buttonBoxX1 = sellAllButton.x + BUTTON_WIDTH;
-        buttonBoxY0 = sellButton.y - TILE_SIZE - 2 * TEXT_LINE_HEIGHT;
-        buttonBoxY1 = sellAllButton.y + BUTTON_HEIGHT;
+        buttonBoxX0 = sellButtonX;
+        buttonBoxX1 = sellAllButtonX + BUTTON_WIDTH;
+        buttonBoxY0 = sellButtonY - 2 - 2 * TEXT_LINE_HEIGHT;
+        buttonBoxY1 = sellAllButtonY + BUTTON_HEIGHT;
 
-        totalTextX = buttonBoxX0 + 2;
-        totalTextY = buttonBoxY0 + 3;
+        totalTextX = buttonBoxX0 + 3;
+        totalTextY = buttonBoxY0 + TILE_SIZE;
         selectedTextY = totalTextY + TEXT_LINE_HEIGHT;
 
     }
@@ -137,14 +136,14 @@ public class MemberSellScreen extends MemberSubScreen{
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0 + 1, buttonBoxY0 + 1, buttonBoxX1 - 1, buttonBoxY1 - 1);
+        parent.drawContainerBox(matrixStack, buttonBoxX0 + 1, buttonBoxY0 + 1, buttonBoxX1 - 1, buttonBoxY1 - 1, true);
         parent.getTextRenderer().drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
         parent.getTextRenderer().drawWithShadow(matrixStack, SELECTED_TEXT, totalTextX, selectedTextY, BEIGE_TEXT_COLOR);
 
         String totalPrice = fishGridWidget.lastTotal + "$";
         String selectedPrice = fishGridWidget.lastTotalSelected + "$";
-        int totalTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  2;
-        int selectedTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  2;
+        int totalTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  3;
+        int selectedTextValueX = buttonBoxX1 - parent.getTextRenderer().getWidth(totalPrice) -  3;
         parent.getTextRenderer().drawWithShadow(matrixStack, totalPrice, totalTextValueX, totalTextY, BEIGE_TEXT_COLOR);
         parent.getTextRenderer().drawWithShadow(matrixStack, selectedPrice, selectedTextValueX, selectedTextY, BEIGE_TEXT_COLOR);
 
@@ -273,17 +272,15 @@ public class MemberSellScreen extends MemberSubScreen{
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
-            int color1 = 0xffbb8f1b;
-            int color2 = 0xff4b2f00;
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(x0, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y1, 0).color(color2).next();
-            bufferBuilder.vertex(x1, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color2).next();
-            bufferBuilder.vertex(x0, (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(color1).next();
-            bufferBuilder.vertex((x1 - 1), y0, 0).color(color1).next();
-            bufferBuilder.vertex(x0, y0, 0).color(color1).next();
+            bufferBuilder.vertex(x0, y1, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex(x1, y1, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex(x1, y0, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex(x0, y0, 0).color(SECONDARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex(x0, (y1 - 1), 0).color(PRIMARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex((x1 - 1), (y1 - 1), 0).color(PRIMARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex((x1 - 1), y0, 0).color(PRIMARY_SCROLLBAR_COLOR).next();
+            bufferBuilder.vertex(x0, y0, 0).color(PRIMARY_SCROLLBAR_COLOR).next();
             tessellator.draw();
         }
         @Override
@@ -293,7 +290,7 @@ public class MemberSellScreen extends MemberSubScreen{
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height + 1);
+                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, false);
                 enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
                 matrices.push();
                 matrices.translate(0, -this.getScrollY(), 0);

@@ -28,6 +28,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private final MemberSubScreen flipView;
     public static final int CREDIT_COLOR = 0xffcf51;
     public static final int CREDIT_OUTLINE_COLOR = 0x4b2f00;
+    public static final int PRIMARY_SCROLLBAR_COLOR = 0xffbb8f1b;
+    public static final int SECONDARY_SCROLLBAR_COLOR = 0xff4b2f00;
     public static final int BEIGE_TEXT_COLOR = 0xffeace;
     public static final int WHITE_TEXT_COLOR = 0xdfe0df;
     private static final int BOX_COLOR = 0xff272946;
@@ -160,8 +162,10 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
 
-    public void drawContainerBox(MatrixStack matrices, int x, int y, int x0, int y0) {
-        fill(matrices, x - 1, y - 1, x0 + 1, y0 + 1, OUTLINE_BOX_COLOR);
+    public void drawContainerBox(MatrixStack matrices, int x, int y, int x0, int y0, boolean outline) {
+        if (outline) {
+            fill(matrices, x - 1, y - 1, x0 + 1, y0 + 1, OUTLINE_BOX_COLOR);
+        }
         fill(matrices, x, y, x0, y0, BOX_COLOR);
     }
 
