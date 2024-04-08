@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.String.format;
+import static net.minecraft.text.Text.literal;
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
 import static net.semperidem.fishingclub.fisher.shop.MemberStock.*;
 
@@ -34,12 +36,36 @@ public class MemberBuyScreen extends MemberSubScreen {
             16
     );
 
+    private static final Text BUY_BUTTON_TEXT = literal("Buy");;
+    private static final Text CLEAR_BUTTON_TEXT = literal("x");
+    private static final Text TOTAL_TEXT = literal("Total:");
+
+    //TODO Change to String literally when updating to 1.21(where min java is 21)
+    private static final String TOOLTIP_TOTAL_STRING = "Total: §6%s$";
+    private static final String TOOLTIP_PRICE_STRING = "Price: §6%.0f$";
+    private static final String TOOLTIP_DISCOUNT_STRING = "Discount: -§6%.0f$§r for every §3%o";
+    private static final String TOOLTIP_MIN_PRICE_STRING = "Min Price: §6%.0f$";
+
+    private static final int CART_WIDGET_WIDTH = CART_ITEM_TEXTURE.renderWidth + TILE_SIZE;
+    private static final int CART_WIDGET_HEIGHT = TILE_SIZE * 20;
+    private static final int OFFER_GRID_WIDTH = TILE_SIZE * 25;
+    private static final int OFFER_GRID_HEIGHT = TILE_SIZE * 24;
+    private static final int BUY_BUTTON_WIDTH = TILE_SIZE  * 18;
+    private static final int CLEAR_BUTTON_WIDTH = TILE_SIZE  * 5;
+    private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
+    private static final int TEXT_LINE_HEIGHT = 12;
+
     private int baseX, baseY;
     private int categoryButtonX, categoryButtonY;
     private int categoryButtonCount;
     private int offerGridX, offerGridY;
+    private int cartWidgetX, cartWidgetY;
+    private int buyButtonX;
+    private int clearButtonX;
+    private int buttonY;
 
     int buttonBoxX0, buttonBoxX1, buttonBoxY0, buttonBoxY1;
+    int totalTextX, totalTextY;
 
     CategoryButton fisherCategoryButton;
     CategoryButton minerCategoryButton;
@@ -58,6 +84,19 @@ public class MemberBuyScreen extends MemberSubScreen {
 
     OfferGrid.Offer focusedOffer;
 
+
+    /*
+    *
+                int total = (int) entry.getPriceFor(cartWidget.cartItems.get(this.focusedOffer));
+                tooltip.add(Text.literal("Total: §6" + total + "$"));
+            }
+            tooltip.add(Text.literal("Price: §6" + (int)entry.price + "$"));
+            if (entry.discount != 0) {
+                tooltip.add(Text.literal("Discount: -§6" + (int)this.focusedOffer.stockEntry.discount + "$§r for every §3" + this.focusedOffer.stockEntry.discountPer));
+                tooltip.add(Text.literal("Min Price: §6" + (int)this.focusedOffer.stockEntry.minPrice + "$"));
+            }
+    * */
+
     public MemberBuyScreen(MemberScreen parent, Text title) {
         super(parent, title);
     }
@@ -68,13 +107,32 @@ public class MemberBuyScreen extends MemberSubScreen {
         offerGrid.loadOffers(this.currentCategory);
     }
 
-    public void init() {
-        super.init();
-
+    public void setupElementPosition() {
         baseX = parent.x + TILE_SIZE * 10;
         baseY = parent.y + TILE_SIZE * 5;
         categoryButtonX = baseX;
         categoryButtonY = baseY;
+
+        offerGridX = baseX + CategoryButton.SIZE + TILE_SIZE;
+        offerGridY = baseY;
+        cartWidgetX = offerGridX + OFFER_GRID_WIDTH + TILE_SIZE * 3;
+        cartWidgetY = offerGridY + TILE_SIZE * 3;
+
+        buyButtonX = parent.x + TEXTURE.renderWidth - 42 * TILE_SIZE;
+        buttonY = parent.y + TEXTURE.renderHeight - BUTTON_HEIGHT - TILE_SIZE * 2;
+        clearButtonX = buyButtonX - CLEAR_BUTTON_WIDTH;
+
+        buttonBoxX0 = clearButtonX;
+        buttonBoxX1 = buyButtonX + BUY_BUTTON_WIDTH;
+        buttonBoxY0 = buttonY - TEXT_LINE_HEIGHT - 2;
+        buttonBoxY1 = buttonY + BUTTON_HEIGHT;
+
+        totalTextX =  buttonBoxX0 + 3;
+        totalTextY = buttonBoxY0 + 4;
+    }
+
+
+    private void initCategoryButtons() {
         categoryButtonCount = 0;
         fisherCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.FISHING_ROD, 0));
         minerCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.IRON_PICKAXE, 10));
@@ -82,70 +140,93 @@ public class MemberBuyScreen extends MemberSubScreen {
         alchemistCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.BREWING_STAND, 20));
         librarianCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.ENCHANTED_BOOK, 30));
         adventurerCategoryButton = new CategoryButton(new Category(FISHER_STOCK_KEY, Items.FILLED_MAP, 30));
-        offerGridX = baseX + CategoryButton.SIZE + TILE_SIZE;
-        offerGridY = baseY;
+    }
 
+    private void initOfferGrid() {
+        offerGrid = new OfferGrid(offerGridX, offerGridY, OFFER_GRID_WIDTH, OFFER_GRID_HEIGHT);
+        components.add(offerGrid);
+    }
 
-        offerGrid = new OfferGrid(offerGridX, offerGridY, TILE_SIZE * 25, parent.height - baseY - TILE_SIZE);
-        cartWidget = new CartWidget(offerGridX + offerGrid.getWidth() + TILE_SIZE * 3, offerGridY + 3 * TILE_SIZE, CART_ITEM_TEXTURE.renderWidth + TILE_SIZE, parent.height - baseY - TILE_SIZE * 5);
+    private void initCartWidget() {
+        cartWidget = new CartWidget(cartWidgetX, cartWidgetY, CART_WIDGET_WIDTH, CART_WIDGET_HEIGHT);
+        components.add(cartWidget);
+    }
+
+    private void initButtons() {
+        buyButton = new MemberButton(buyButtonX, buttonY, BUY_BUTTON_WIDTH , BUTTON_HEIGHT, BUY_BUTTON_TEXT, onBuy());
+        components.add(buyButton);
+
+        clearButton = new MemberButton(buyButtonX - CLEAR_BUTTON_WIDTH, buttonY, CLEAR_BUTTON_WIDTH, BUTTON_HEIGHT, CLEAR_BUTTON_TEXT, onClear());
+        components.add(clearButton);
+    }
+
+    public void init() {
+        super.init();
+        setupElementPosition();
+
+        initCategoryButtons();
+        initOfferGrid();
+        initCartWidget();
+        initButtons();
+
         setCategory(fisherCategoryButton.category);
+    }
 
-
-        int buyButtonX = parent.x + TEXTURE.renderWidth - 42 * TILE_SIZE;
-        int buttonY = parent.y + TEXTURE.renderHeight - 20 - TILE_SIZE * 2;
-        buyButton = new MemberButton(buyButtonX, buttonY, TILE_SIZE  * 18 , 20, Text.literal("Buy"),button -> {
+    private ButtonWidget.PressAction onBuy() {
+        return button -> {
             ArrayList<ItemStack> cart = new ArrayList<>();
-
             for(OfferGrid.Offer offer : cartWidget.cartItems.keySet()) {
                 ItemStack offerStack = offer.stockEntry.item.getDefaultStack();
                 offerStack.setCount(cartWidget.cartItems.get(offer));
                 cart.add(offerStack);
             }
             ClientPacketSender.checkout(cart, cartWidget.getCartTotalAmount());
-            cartWidget.cartItems.clear();
-        });
-        components.add(buyButton);
+            clearCart();
+        };
+    }
 
-        clearButton = new MemberButton(buyButtonX - 20, buttonY, 20, 20, Text.literal("x"),button -> {
-            cartWidget.cartItems.clear();
-        });
-        components.add(clearButton);
+    private ButtonWidget.PressAction onClear() {
+        return button -> {
+            clearCart();
+        };
+    }
 
-
-        buttonBoxX0 = clearButton.x;
-        buttonBoxX1 = buyButton.x + buyButton.getWidth();
-        buttonBoxY0 = clearButton.y - 2 - 12;
-        buttonBoxY1 = clearButton.y + clearButton.getHeight();
-
+    private void clearCart() {
+        cartWidget.cartItems.clear();
     }
 
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, false);
-        textRenderer.drawWithShadow(matrixStack, "Total:", buttonBoxX0 + 3, buttonBoxY0 + 4, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
-        textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, buttonBoxY0 + 4, BEIGE_TEXT_COLOR);
+        textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, totalTextY, BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
         if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
             this.focusedOffer = null;
         }
+
+        renderTooltip(matrixStack, mouseX, mouseY);
+
+    }
+
+    private void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
         if (this.focusedOffer != null) {
             StockEntry entry = this.focusedOffer.stockEntry;
             List<Text> tooltip = parent.getTooltipFromItem(entry.item.getDefaultStack());
             if (cartWidget.cartItems.containsKey(this.focusedOffer)) {
                 int total = (int) entry.getPriceFor(cartWidget.cartItems.get(this.focusedOffer));
-                tooltip.add(Text.literal("Total: §6" + total + "$"));
+                tooltip.add(literal(format(TOOLTIP_TOTAL_STRING, total)));
             }
-            tooltip.add(Text.literal("Price: §6" + (int)entry.price + "$"));
+            tooltip.add(literal(format(TOOLTIP_PRICE_STRING, entry.price)));
             if (entry.discount != 0) {
-                tooltip.add(Text.literal("Discount: -§6" + (int)this.focusedOffer.stockEntry.discount + "$§r for every §3" + this.focusedOffer.stockEntry.discountPer));
-                tooltip.add(Text.literal("Min Price: §6" + (int)this.focusedOffer.stockEntry.minPrice + "$"));
+                tooltip.add(literal(format(TOOLTIP_DISCOUNT_STRING, entry.discount, entry.discountPer)));
+                tooltip.add(literal(format(TOOLTIP_MIN_PRICE_STRING, entry.minPrice)));
             }
             parent.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
 
         }
-
     }
 
 
@@ -163,7 +244,6 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         public CartWidget(int x, int y, int width, int height) {
             super(x, y, width, height);
-            components.add(this);
         }
         private void addItem(OfferGrid.Offer offer) {
             int count = 1;
@@ -315,7 +395,6 @@ public class MemberBuyScreen extends MemberSubScreen {
         public OfferGrid(int x, int y, int width, int height) {
             super(x, y, width, height);
             entriesPerRow = width / Offer.SIZE;
-            components.add(this);
         }
 
         public void loadOffers(Category category) {

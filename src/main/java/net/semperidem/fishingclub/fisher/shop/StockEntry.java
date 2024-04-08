@@ -27,4 +27,5 @@ public class StockEntry {
         double discountedPrice = Math.max(minPrice,price - totalDiscount);
         return discountedPrice * count;
     }
+
 }
