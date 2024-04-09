@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,6 +10,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.registry.KeybindingRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +55,7 @@ public class MemberBuyScreen extends MemberSubScreen {
     private static final int BUTTON_HEIGHT = TILE_SIZE * 5;
     private static final int TEXT_LINE_HEIGHT = 12;
 
+
     private int baseX, baseY;
     private int categoryButtonX, categoryButtonY;
     private int categoryButtonCount;
@@ -83,19 +84,6 @@ public class MemberBuyScreen extends MemberSubScreen {
 
 
     OfferGrid.Offer focusedOffer;
-
-
-    /*
-    *
-                int total = (int) entry.getPriceFor(cartWidget.cartItems.get(this.focusedOffer));
-                tooltip.add(Text.literal("Total: §6" + total + "$"));
-            }
-            tooltip.add(Text.literal("Price: §6" + (int)entry.price + "$"));
-            if (entry.discount != 0) {
-                tooltip.add(Text.literal("Discount: -§6" + (int)this.focusedOffer.stockEntry.discount + "$§r for every §3" + this.focusedOffer.stockEntry.discountPer));
-                tooltip.add(Text.literal("Min Price: §6" + (int)this.focusedOffer.stockEntry.minPrice + "$"));
-            }
-    * */
 
     public MemberBuyScreen(MemberScreen parent, Text title) {
         super(parent, title);
@@ -186,9 +174,7 @@ public class MemberBuyScreen extends MemberSubScreen {
     }
 
     private ButtonWidget.PressAction onClear() {
-        return button -> {
-            clearCart();
-        };
+        return button -> clearCart();
     }
 
     private void clearCart() {
@@ -246,16 +232,10 @@ public class MemberBuyScreen extends MemberSubScreen {
             super(x, y, width, height);
         }
         private void addItem(OfferGrid.Offer offer) {
-            int count = 1;
-            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
-            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
-            cartItems.put(offer, Math.min(999, cartItems.getOrDefault(offer, 0) + (count)));
+            cartItems.put(offer, Math.min(999, cartItems.getOrDefault(offer, 0) + (getActionCount())));
         }
         private void removeItem(OfferGrid.Offer offer) {
-            int count = 1;
-            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT) ? 4 : 1;
-            count *= InputUtil.isKeyPressed(parent.getClient().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_ALT) ? 4 : 1;
-            cartItems.put(offer, cartItems.get(offer) - count);
+            cartItems.put(offer, cartItems.get(offer) - (getActionCount()));
             HashMap<OfferGrid.Offer, Integer> updatedCartItem = new HashMap<>();
             for(OfferGrid.Offer off : cartItems.keySet()) {
                 int newCount = cartItems.get(off);
@@ -264,6 +244,11 @@ public class MemberBuyScreen extends MemberSubScreen {
                 }
             }
             cartItems = updatedCartItem;
+        }
+        private int getActionCount() {
+            int count = KeybindingRegistry.MULTIPLY_CART_ACTION_1.isPressed() ? 4 : 1;
+            count *= KeybindingRegistry.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
+            return count;
         }
         @Override
         protected int getContentsHeight() {
