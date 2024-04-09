@@ -23,10 +23,10 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private MemberSubScreen currentView;
     private final MemberSubScreen buyView;
     private final MemberSubScreen sellView;
-    private final MemberSubScreen fireworksView;
     private final MemberSubScreen boxesView;
     private final MemberSubScreen miscView;
     private final MemberSubScreen flipView;
+    private final MemberSubScreen fireworksView;
     public static final int CREDIT_COLOR = 0xffcf51;
     public static final int CREDIT_OUTLINE_COLOR = 0x4b2f00;
     public static final int PRIMARY_SCROLLBAR_COLOR = 0xffbb8f1b;
@@ -50,10 +50,10 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.itemRenderer = client.getItemRenderer();
         this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
         this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
-        this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
         this.boxesView = new MemberIllegalScreen(this, Text.literal("Contraband"));
         this.miscView = new MemberMiscScreen(this, Text.literal("Services"));
         this.flipView = new MemberFlipScreen(this, Text.literal("Coin Toss"));
+        this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
         this.currentView = buyView;
     }
 
@@ -106,10 +106,10 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
         addTabButton(buyView);
         addTabButton(sellView);
-        addTabButton(fireworksView);
         addTabButton(boxesView);
         addTabButton(miscView);
         addTabButton(flipView);
+        addTabButton(fireworksView);
         currentView.init();
     }
     @Override
