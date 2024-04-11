@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.item;
 
 import com.google.common.collect.Lists;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.Enchantments;
@@ -56,6 +57,10 @@ public class IllegalGoodsItem extends Item {
     }
 
 
+    public static HashMap<Integer, ArrayList<Item>> getPossibleLoot() {
+        return new HashMap<>(tieredLootItems);
+    }
+
     @Override
     public ItemStack getDefaultStack() {
         ItemStack defaultStack = new ItemStack(this);
@@ -80,7 +85,7 @@ public class IllegalGoodsItem extends Item {
         int tier = itemStack.getOrCreateNbt().getInt("tier");
         if (!world.isClient){
             ItemStack lootStack = generateLoot(tier);
-            forbiddenEnchant(world.random, lootStack, (int) ((0.5f + Math.random()) * 8 * tier), true);
+            forbiddenEnchant(world.random, lootStack, tier * 6, true);
             if (EnchantmentHelper.getLevel(Enchantments.MENDING, lootStack) > 0) {
                 removeMending(lootStack);
             }
@@ -138,6 +143,9 @@ public class IllegalGoodsItem extends Item {
             }
             target.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
         }
+        if (EnchantmentHelper.getLevel(Enchantments.UNBREAKING, target) == 0) {
+            target.addEnchantment(Enchantments.UNBREAKING, level > 50 ? 3 : level > 25 ? 2 : 1);
+        }
         return target;
     }
 
@@ -150,20 +158,30 @@ public class IllegalGoodsItem extends Item {
         }
         level += 1 + random.nextInt(i / 4 + 1) + random.nextInt(i / 4 + 1);
         float f = (random.nextFloat() + random.nextFloat() - 1.0f) * 0.15f;
-        List<EnchantmentLevelEntry> list2 = EnchantmentHelper.getPossibleEntries(level = MathHelper.clamp(Math.round((float) level + (float) level * f), 1, Integer.MAX_VALUE), stack, treasureAllowed);
-        if (!list2.isEmpty()) {
-            Weighting.getRandom(random, list2).ifPresent(list::add);
-            while (random.nextInt(50) <= level) {
-                if (!list.isEmpty()) {
-                    removeDuplicates(list2, Util.getLast(list));
-                }
-
-                if (list2.isEmpty()) break;
+        for(int j = 0; j < 3; j++) {
+            int clampedLevel = MathHelper.clamp(Math.round((float) level + (float) level * f), 1, Integer.MAX_VALUE);
+            List<EnchantmentLevelEntry> list2 = EnchantmentHelper.getPossibleEntries(clampedLevel, stack, treasureAllowed);
+            if (!list2.isEmpty()) {
                 Weighting.getRandom(random, list2).ifPresent(list::add);
-                level /= 2;
+                while (random.nextInt(50) <= clampedLevel) {
+                    if (!list.isEmpty()) {
+                        removeDuplicates(list2, Util.getLast(list));
+                    }
+
+                    if (list2.isEmpty()) break;
+                    Weighting.getRandom(random, list2).ifPresent(list::add);
+                    clampedLevel /= 2;
+                }
             }
         }
-        return list;
+        HashMap<Enchantment, EnchantmentLevelEntry> enchantmentMap = new HashMap<>();
+        for(EnchantmentLevelEntry enchantmentLevelEntry : list) {
+            if (!enchantmentMap.containsKey(enchantmentLevelEntry.enchantment) || enchantmentLevelEntry.level > enchantmentMap.get(enchantmentLevelEntry.enchantment).level) {
+                enchantmentMap.put(enchantmentLevelEntry.enchantment, enchantmentLevelEntry);
+            }
+        }
+
+        return new ArrayList<>(enchantmentMap.values());
     }
 
 

@@ -53,6 +53,10 @@ public class MemberScreenHandler extends ScreenHandler {
         return slotsLeft;
     }
 
+    public int getMoonPhaseDiscount() {
+        return player.world.getMoonPhase();
+    }
+
     public ArrayList<ItemStack> getFishes() {
         ArrayList<ItemStack> fishes = new ArrayList<>();
         for(ItemStack itemStack : player.getInventory().main) {

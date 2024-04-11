@@ -14,4 +14,10 @@ public class CurseOfMortality extends VanishingCurseEnchantment {
         if (other == Enchantments.MENDING) return false;
         return super.canAccept(other);
     }
+
+    @Override
+    public int getMinPower(int level) {
+        return 50;
+    }
+
 }

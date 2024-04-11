@@ -142,7 +142,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         super.render(matrixStack, mouseX, mouseY, delta);
         currentView.render(matrixStack, mouseX, mouseY, delta);
-        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditValue, creditX, creditY, 0xffcf51 , 0x4b2f00);//separate text and value
+        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditValue, creditX, creditY, CREDIT_COLOR , CREDIT_OUTLINE_COLOR);//separate text and value
         drawTextRightAlignedTo(textRenderer, matrixStack, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
     }
 

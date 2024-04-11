@@ -99,7 +99,7 @@ public class FishingCard extends FishingCardInventory {
     }
 
     public boolean canResetPerks() {
-        return getResetCost() <= getCredit() && progressionManager.getPerkPoints() > 0;
+        return getResetCost() <= getCredit() && !progressionManager.getPerks().isEmpty();
     }
 
     public int getResetCost() {

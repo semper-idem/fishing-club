@@ -184,7 +184,7 @@ public class MemberBuyScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, false);
+        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
         textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
         textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, totalTextY, BEIGE_TEXT_COLOR);

@@ -28,6 +28,7 @@ public class MemberFlipScreen extends MemberSubScreen {
     int headsX, headsY;
     int tailsX, tailsY;
     int amountFieldX, amountFieldY;
+    int buttonBoxX0, buttonBoxX1, buttonBoxY0, buttonBoxY1;
 
 
     MemberFlipScreen(MemberScreen parent, Text title) {
@@ -74,6 +75,11 @@ public class MemberFlipScreen extends MemberSubScreen {
         components.add(headsButton);
         components.add(flipAmountField);
         components.add(maxAmountButton);
+
+        buttonBoxX0 = amountFieldX - 1;
+        buttonBoxX1 = amountFieldX + amountFieldWidth + 1;
+        buttonBoxY0 = headsY;
+        buttonBoxY1 = amountFieldY + buttonHeight + 1;
     }
 
     public ButtonWidget.PressAction tossCoin() {
@@ -87,6 +93,8 @@ public class MemberFlipScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+        parent.drawContainerBox(matrixStack, historyXLeft - 2, historyMaxY + 1, historyXRight + 3, historyY + 10, true);
         textRenderer.drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
         int historyEntryY = historyY;
         HashMap<Integer, String> tossHistory = parent.getScreenHandler().getTossHistory();

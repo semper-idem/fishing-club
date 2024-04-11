@@ -77,6 +77,7 @@ public class MemberMiscScreen extends MemberSubScreen {
         resetPerksButton = new DemandingButtonWidget(resetButtonX, resetButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, Text.literal("Reset"), button -> {
             if (parent.getScreenHandler().getCard().canResetPerks()) {
                 ClientPacketSender.sendResetPerk();
+                button.active = false;
             }
         }, () -> parent.getScreenHandler().getCard().canResetPerks());
 
@@ -116,6 +117,8 @@ public class MemberMiscScreen extends MemberSubScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(matrixStack, claimFieldX - 1, kingTitleY - 2, claimFieldX + claimFieldWidth + 1, claimButtonY + BUTTON_HEIGHT + 1, true);
+        parent.drawContainerBox(matrixStack, resetButtonX - 1, resetY - 2, resetButtonX + BUTTON_WIDTH + 1, resetButtonY + BUTTON_HEIGHT + 1, true);
         drawTextCenteredAt(textRenderer, matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(textRenderer, matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(textRenderer, matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
