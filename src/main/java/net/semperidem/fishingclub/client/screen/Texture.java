@@ -12,57 +12,65 @@ public class Texture {
     public final int textureHeight;
     public final int renderWidth;
     public final int renderHeight;
+    public final int segmentsX;
+    public final int segmentsY;
 
     public Texture(Identifier identifier, int textureWidth, int textureHeight) {
-        this(identifier, textureWidth, textureHeight, textureWidth, textureHeight);
+        this(identifier, textureWidth, textureHeight, textureWidth, textureHeight, 1, 1);
     }
 
-    Texture(Identifier identifier, int textureWidth, int textureHeight, int renderWidth, int renderHeight) {
+    public Texture(Identifier identifier, int textureWidth, int textureHeight, int renderWidth, int renderHeight, int segmentsX, int segmentsY) {
         this.identifier = identifier;
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.renderWidth = renderWidth;
         this.renderHeight = renderHeight;
+        this.segmentsX = segmentsX;
+        this.segmentsY = segmentsY;
     }
 
     public void render(MatrixStack matrixStack, int x, int y) {
+        render(matrixStack, x, y, (int) ((float) renderWidth / segmentsX), (int) ((float) renderHeight / segmentsY));
+    }
+
+    public void render(MatrixStack matrixStack, int x, int y, int segmentX, int segmentY) {
         setTexture(identifier);
         DrawableHelper.drawTexture(
                 matrixStack,
                 x, y,
-                0, 0,
-                renderWidth, renderHeight,
+                ((float) renderWidth / segmentsX) * segmentX, ((float) renderHeight / segmentsY) * segmentY,
+                renderWidth / segmentsX, renderHeight / segmentsY,
                 textureWidth, textureHeight
         );
     }
 
-    public void render(MatrixStack matrixStack, int x, int y, int u, int v,  int renderWidth, int renderHeight) {
+    public void render(MatrixStack matrixStack, int x, int y, int segmentX, int segmentY,  int renderWidth, int renderHeight) {
         setTexture(identifier);
         DrawableHelper.drawTexture(
                 matrixStack,
                 x, y,
-                u, v,
+                segmentX, segmentY,
                 renderWidth / 2, renderHeight / 2,
                 textureWidth, textureHeight
         );
         DrawableHelper.drawTexture(
                 matrixStack,
                 (int) (x + (renderWidth / 2f)), y,
-                u + textureWidth - (renderWidth / 2f), v,
+                segmentX + textureWidth - (renderWidth / 2f), segmentY,
                 renderWidth / 2, renderHeight / 2,
                 textureWidth, textureHeight
         );
         DrawableHelper.drawTexture(
                 matrixStack,
                 x, (int) (y + (renderHeight / 2f)),
-                u, v + (renderHeight / 2f),
+                segmentX, segmentY + (renderHeight / 2f),
                 renderWidth / 2, renderHeight / 2,
                 textureWidth, textureHeight
         );
         DrawableHelper.drawTexture(
                 matrixStack,
                 (int) (x + (renderWidth / 2f)), (int) (y + (renderHeight / 2f)),
-                u + textureWidth - (renderWidth / 2f), v + (renderHeight / 2f),
+                segmentX + textureWidth - (renderWidth / 2f), segmentY + (renderHeight / 2f),
                 renderWidth / 2, renderHeight / 2,
                 textureWidth, textureHeight
         );

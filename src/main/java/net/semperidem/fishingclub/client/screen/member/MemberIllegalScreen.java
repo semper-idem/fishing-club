@@ -61,6 +61,12 @@ public class MemberIllegalScreen extends MemberSubScreen {
             improves your odds
             """;
     private static final Text PRICE_TEXT = literal("Price:");
+
+
+    @Override
+    public int unlockLevel() {
+        return 15;
+    }
     @Override
     public void init() {
         super.init();

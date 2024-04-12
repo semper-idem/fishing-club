@@ -33,7 +33,11 @@ public class MemberBuyScreen extends MemberSubScreen {
     static final Texture CART_ITEM_TEXTURE = new Texture(
             FishingClub.getIdentifier("textures/gui/cart_item.png"),
             48,
-            16
+            64,
+            48,
+            64,
+            1,
+            4
     );
 
     private static final Text BUY_BUTTON_TEXT = literal("Buy");;
@@ -224,7 +228,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         cartWidget.removeItem(offer);
     }
 
-    private class CartWidget extends MemberScrollableWidget {
+    class CartWidget extends MemberScrollableWidget {
 
         HashMap<OfferGrid.Offer, Integer> cartItems = new HashMap<>();
 

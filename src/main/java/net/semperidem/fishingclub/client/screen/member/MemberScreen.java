@@ -23,8 +23,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private MemberSubScreen currentView;
     private final MemberSubScreen buyView;
     private final MemberSubScreen sellView;
-    private final MemberSubScreen boxesView;
     private final MemberSubScreen miscView;
+    private final MemberSubScreen boxesView;
     private final MemberSubScreen flipView;
     private final MemberSubScreen fireworksView;
     public static final int CREDIT_COLOR = 0xffcf51;
@@ -50,8 +50,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         this.itemRenderer = client.getItemRenderer();
         this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
         this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
-        this.boxesView = new MemberIllegalScreen(this, Text.literal("Contraband"));
         this.miscView = new MemberMiscScreen(this, Text.literal("Services"));
+        this.boxesView = new MemberIllegalScreen(this, Text.literal("Contraband"));
         this.flipView = new MemberFlipScreen(this, Text.literal("Coin Toss"));
         this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
         this.currentView = buyView;
@@ -76,15 +76,21 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
 
     private void addTabButton(MemberSubScreen subScreen) {
-        addDrawableChild(
-                new TabButtonWidget(
-                        subScreenButtonX,
-                        lastSubScreenButtonY,
-                        BUTTON_WIDTH,
-                        BUTTON_HEIGHT,
-                        subScreen
-                )
+        TabButtonWidget tabButtonWidget = new TabButtonWidget(
+                subScreenButtonX,
+                lastSubScreenButtonY,
+                BUTTON_WIDTH,
+                BUTTON_HEIGHT,
+                subScreen
         );
+        if (getScreenHandler().getCard().getLevel() < subScreen.unlockLevel()) {
+            tabButtonWidget.active = false;
+            tabButtonWidget.setMessage(Text.literal("Unlocks at " + (subScreen.unlockLevel() < 10 ? " " : "") + subScreen.unlockLevel()));
+        }
+        addDrawableChild(
+                tabButtonWidget
+        );
+
         lastSubScreenButtonY += BUTTON_HEIGHT;
     }
     @Override
@@ -106,8 +112,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
         addTabButton(buyView);
         addTabButton(sellView);
-        addTabButton(boxesView);
         addTabButton(miscView);
+        addTabButton(boxesView);
         addTabButton(flipView);
         addTabButton(fireworksView);
         currentView.init();

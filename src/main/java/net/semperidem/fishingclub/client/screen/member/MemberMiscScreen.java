@@ -115,6 +115,12 @@ public class MemberMiscScreen extends MemberSubScreen {
         Optional.ofNullable(submitClaimButton).ifPresent(DemandingButtonWidget::tick);
     }
 
+
+    @Override
+    public int unlockLevel() {
+        return 5;
+    }
+
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         parent.drawContainerBox(matrixStack, claimFieldX - 1, kingTitleY - 2, claimFieldX + claimFieldWidth + 1, claimButtonY + BUTTON_HEIGHT + 1, true);

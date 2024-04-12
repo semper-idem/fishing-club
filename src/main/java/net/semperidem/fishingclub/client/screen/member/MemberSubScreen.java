@@ -24,6 +24,11 @@ public class MemberSubScreen implements IMemberSubScreen{
 
     }
 
+    @Override
+    public int unlockLevel() {
+        return 0;
+    }
+
     public MemberScreen getParent() {
         return this.parent;
     }

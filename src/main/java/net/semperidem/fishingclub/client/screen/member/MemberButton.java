@@ -11,6 +11,7 @@ import net.semperidem.fishingclub.client.screen.Texture;
 public class MemberButton extends ButtonWidget {
 
     private Texture texture = BUTTON_TEXTURE;
+    int buttonHeight = texture.renderHeight / 3;
 
 
 
@@ -21,10 +22,18 @@ public class MemberButton extends ButtonWidget {
     );
 
 
-    static final Texture SLIM_BUTTON_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/member_button_slim.png"),
-            80,
-            60
+    public static final Texture SMALL_BUTTON_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/member_button_small.png"),
+            64,
+            48
+    );
+
+
+
+    public static final Texture SMALL_WIDE_BUTTON_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/member_button_small_wide.png"),
+            128,
+            48
     );
 
 
@@ -34,12 +43,13 @@ public class MemberButton extends ButtonWidget {
 
     public void setTexture(Texture texture){
         this.texture = texture;
+        this.buttonHeight = texture.renderHeight / 3;
     }
 
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        texture.render(matrices, x, y, 0, 20 * (active ? hovered ? 2 : 1 : 0), width, height);
+        texture.render(matrices, x, y, 0, this.buttonHeight * (active ? hovered ? 2 : 1 : 0), width, height);
         int j = this.active ? MemberScreen.BEIGE_TEXT_COLOR : 10526880;
         drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 

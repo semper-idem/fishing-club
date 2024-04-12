@@ -53,6 +53,11 @@ public class Commands {
             return 0;
         }));
     }
+    public static void registerTestFirework(){
+        rootCommand.then(literal("firework").executes(context -> {
+            return 0;
+        }));
+    }
     public static void registerGiveAdvancedRod(){
         rootCommand.then(literal("advanced_rod").executes(context -> {
             context.getSource().getPlayer().giveItemStack(FishingRodUtil.getAdvancedRod());
@@ -155,6 +160,7 @@ public class Commands {
             registerIllegalGoods();
             registerGiveStarterRod();
             registerGiveAdvancedRod();
+            registerTestFirework();
             dispatcher.register(rootCommand);
         });
     }

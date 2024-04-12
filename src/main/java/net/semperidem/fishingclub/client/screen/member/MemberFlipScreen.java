@@ -82,6 +82,12 @@ public class MemberFlipScreen extends MemberSubScreen {
         buttonBoxY1 = amountFieldY + buttonHeight + 1;
     }
 
+
+    @Override
+    public int unlockLevel() {
+        return 15;
+    }
+
     public ButtonWidget.PressAction tossCoin() {
         return button -> {
             playerChoice = button.getMessage().getString();

@@ -27,6 +27,7 @@ public interface IMemberSubScreen {
         }
         return false;
     }
+    int unlockLevel();
 
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Drawable component : Lists.reverse(getComponents())) {
