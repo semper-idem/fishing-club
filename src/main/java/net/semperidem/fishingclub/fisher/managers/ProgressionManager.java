@@ -57,6 +57,11 @@ public class ProgressionManager extends DataManager{
         return level;
     }
 
+    public void setLevel(int level) {
+        int currentLevel = this.level;
+        this.level = level;
+        this.perkPoints += (level - currentLevel);
+    }
     public int getExp() {
         return exp;
     }

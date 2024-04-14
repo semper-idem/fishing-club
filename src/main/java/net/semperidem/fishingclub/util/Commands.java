@@ -142,6 +142,11 @@ public class Commands {
                         .then(argument("target", word()).then(argument("amount", integer()).executes(context -> setCredit(context, getString(context, getString(context, "target"))))))
                 ).then(literal("skill_point")
                         .then(argument("amount", integer()).executes(context -> addSkillPoints(context, context.getSource().getName())))
+                ).then(literal("level")
+                        .then(argument("amount", integer()).executes(context -> {
+                            FishingCard.getPlayerCard(context.getSource().getPlayer()).setLevel(getInteger(context, "amount"));
+                            return 0;
+                        }))
                 )
         );
     }

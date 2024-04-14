@@ -88,6 +88,10 @@ public class FishingCard extends FishingCardInventory {
         return progressionManager.hasRequiredPerk(perk);
     }
 
+    public void setLevel(int level) {
+        progressionManager.setLevel(level);
+    }
+
     public void addSkillPoints(int amount){
         progressionManager.addPerkPoints(amount);
     }
