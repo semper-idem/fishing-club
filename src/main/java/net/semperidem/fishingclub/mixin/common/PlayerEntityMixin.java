@@ -3,16 +3,28 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEntity {
@@ -24,6 +36,33 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void tick(CallbackInfo ci) {
+        if (!(world.getLevelProperties() instanceof FishingLevelProperties fishingLevelProperties)) {
+            return;
+        }
+        UUID kingUUID = fishingLevelProperties.getFishingKingUUID();
+        if (!this.uuid.equals(kingUUID)) {
+            return;
+        }
+        //Add aoe effect
+        Box aoeBox = new Box(getBlockPos());
+        aoeBox.expand(5);
+        List<ServerPlayerEntity> nearPlayers = getEntityWorld()
+                .getOtherEntities(null, aoeBox)
+                .stream()
+                .filter(ServerPlayerEntity.class::isInstance)
+                .map(ServerPlayerEntity.class::cast)
+                .toList();
+
+        for(ServerPlayerEntity otherPlayer : nearPlayers) {
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.EXP_BUFF, 200));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF, 200));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 200));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.FREQUENCY_BUFF, 200));
+        }
     }
 
     @Override

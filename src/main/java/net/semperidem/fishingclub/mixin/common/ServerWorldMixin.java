@@ -17,17 +17,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
@@ -43,6 +46,13 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
     }
 
     @Shadow public abstract boolean spawnEntity(Entity entity);
+
+    @Inject(method = "onPlayerConnected", at = @At("TAIL"))
+    private void onPlayerConnected(ServerPlayerEntity entity, CallbackInfo ci) {
+        if (getLevelProperties() instanceof FishingLevelProperties fishingLevelProperties) {
+            ServerPacketSender.sendCapeDetails( entity, fishingLevelProperties.getFishingKingUUID(), fishingLevelProperties.getFishingKingName(), fishingLevelProperties.getClaimPrice());
+        }
+    }
 
     @Inject(method = "createExplosion", at = @At("TAIL"))
     private void onCreateExplosion(Entity entity, DamageSource damageSource, ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType, CallbackInfoReturnable<Explosion> cir){
@@ -66,6 +76,8 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
             catchFishWithTnt(causingEntity, explosionPos);
         }
     }
+
+
 
 
     @Unique
@@ -106,6 +118,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
         }
         return derek;
     }
+
 
     @Unique
     @Override

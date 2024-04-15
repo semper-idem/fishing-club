@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
@@ -17,6 +18,8 @@ import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
+import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.ItemRegistry;
@@ -229,15 +232,18 @@ public class ServerPacketHandlers {
             if ((playerManager = server.getPlayerManager()) == null) {
                 return;
             }
+            LevelUpEffect.RARE_EFFECT.execute(player.getWorld(), player.getX(), player.getY(), player.getZ());
             playerManager.getPlayerList().forEach(serverPlayer -> {
                 if (serverPlayer.currentScreenHandler instanceof MemberScreenHandler) {
                     ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
-                    ServerPacketSender.sendCapeDetails(
-                            serverPlayer,
-                            fishingLevelProperties.getFishingKingName(),
-                            fishingLevelProperties.getMinFishingKingClaimPrice()
-                    );
                 }
+                serverPlayer.sendMessageToClient(Text.literal(player.getDisplayName().getString() + " claimed Fishing King Cape"), true);
+                ServerPacketSender.sendCapeDetails(
+                        serverPlayer,
+                        fishingLevelProperties.getFishingKingUUID(),
+                        fishingLevelProperties.getFishingKingName(),
+                        fishingLevelProperties.getMinFishingKingClaimPrice()
+                );
             });
         });
     }
@@ -247,6 +253,7 @@ public class ServerPacketHandlers {
             if (server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties) {
                 ServerPacketSender.sendCapeDetails(
                         player,
+                        fishingLevelProperties.getFishingKingUUID(),
                         fishingLevelProperties.getFishingKingName(),
                         fishingLevelProperties.getMinFishingKingClaimPrice()
                 );

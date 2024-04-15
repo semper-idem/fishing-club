@@ -6,8 +6,10 @@ import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.registry.FishingClubRegistry;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class FishingClubClient implements ClientModInitializer {
+    public static UUID FISHING_KING_UUID;
     private static HashMap<FishingPerk, SpellInstance> AVAILABLE_SPELLS = new HashMap<>();
     private static HashMap<String, FishingPerk> PERKS = new HashMap<>();
 

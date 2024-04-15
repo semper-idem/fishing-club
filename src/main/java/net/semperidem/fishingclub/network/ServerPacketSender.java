@@ -8,6 +8,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.game.FishingGameController;
 
+import java.util.UUID;
+
 public class ServerPacketSender {
 
     public static void sendShopScreenInventorySyncPacket(ServerPlayerEntity player){
@@ -45,8 +47,9 @@ public class ServerPacketSender {
         cardPacket.writeNbt(fishingCard.toNbt());
         ServerPlayNetworking.send(player, PacketIdentifiers.S2C_UPDATE_CARD, cardPacket);
     }
-    public static void sendCapeDetails(ServerPlayerEntity player, String capeHolder, int minCapePrice) {
+    public static void sendCapeDetails(ServerPlayerEntity player, UUID capeHolderUUID, String capeHolder, int minCapePrice) {
         PacketByteBuf capeDetailsPacket = PacketByteBufs.create();
+        capeDetailsPacket.writeUuid(capeHolderUUID);
         capeDetailsPacket.writeString(capeHolder);
         capeDetailsPacket.writeInt(minCapePrice);
         ServerPlayNetworking.send(player, PacketIdentifiers.S2C_SET_CAPE_DETAILS, capeDetailsPacket);

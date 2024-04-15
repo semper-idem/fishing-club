@@ -1,8 +1,6 @@
-package net.semperidem.fishingclub.mixin.client;
+package net.semperidem.fishingclub.mixin.common;
 
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -26,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.semperidem.fishingclub.registry.ItemRegistry.CUSTOM_FISHING_ROD;
 
-@Environment(EnvType.CLIENT)
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
 

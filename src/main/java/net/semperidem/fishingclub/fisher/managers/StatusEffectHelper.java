@@ -54,6 +54,7 @@ public class StatusEffectHelper {
 
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, Fish fish) {
         return
+                fish != null &&
                 fish.grade >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
                 !holder.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF) &&

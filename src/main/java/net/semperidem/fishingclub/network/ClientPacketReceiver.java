@@ -3,9 +3,12 @@ package net.semperidem.fishingclub.network;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.fisher.FishingCard;
+
+import java.util.UUID;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
@@ -46,9 +49,11 @@ public class ClientPacketReceiver {
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SET_CAPE_DETAILS, (client, handler, buf, responseSender) -> {
+            UUID capeHolderUUID = buf.readUuid();
             String capeHolder = buf.readString();
             int minCapePrice = buf.readInt();
             client.execute(() -> {
+                FishingClubClient.FISHING_KING_UUID = capeHolderUUID;
                 if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
                     return;
                 }

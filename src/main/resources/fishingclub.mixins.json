@@ -10,11 +10,12 @@
     "common.ItemEntityMixin",
     "common.LevelPropertiesMixin",
     "common.PlayerEntityMixin",
+    "common.LivingEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [
     "client.InGameHudMixin",
-    "client.LivingEntityMixin",
+    "client.PlayerListEntryMixin",
     "client.MouseMixin"
   ],
   "server": [
