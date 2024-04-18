@@ -64,7 +64,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
     private void addInstantSellSlot(){
         instantSellSlot = new InstantSellSlot(
-                fishingCard, 4, 328, 223,
+                fishingCard, 4, 341, 226,
                 this, Path.GENERAL,
                 fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT),
                 FishUtil.FISH_ITEM);
@@ -76,22 +76,22 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addFishingCardSlot(0, 310, 163, fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT), Items.FISHING_ROD);
-        addFishingCardSlot(1, 328, 163, fishingCard.hasPerk(FishingPerks.BOAT_SLOT), Items.OAK_BOAT);
-        addFishingCardSlot(2, 310, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
-        addFishingCardSlot(3, 328, 181, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
+        addFishingCardSlot(0, 323, 166, fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT), Items.FISHING_ROD);
+        addFishingCardSlot(1, 341, 166, fishingCard.hasPerk(FishingPerks.BOAT_SLOT), Items.OAK_BOAT);
+        addFishingCardSlot(2, 323, 184, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
+        addFishingCardSlot(3, 341, 184, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), ItemRegistry.FISHING_NET);
     }
 
     public void addPlayerInventorySlots(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addSlot(new TabSlot(playerInventory, x, 112 + x * SLOT_SIZE, 223, this, Path.GENERAL));
+            addSlot(new TabSlot(playerInventory, x, 143 + x * SLOT_SIZE, 226, this, Path.GENERAL));
         }
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 9; ++x) {
                 addSlot(new TabSlot(playerInventory,
                         x + (y * SLOTS_PER_ROW) + SLOTS_PER_ROW,
-                        112 + x * SLOT_SIZE,
-                        163 + y * SLOT_SIZE,
+                        143 + x * SLOT_SIZE,
+                        166 + y * SLOT_SIZE,
                         this, Path.GENERAL
                 ));
             }

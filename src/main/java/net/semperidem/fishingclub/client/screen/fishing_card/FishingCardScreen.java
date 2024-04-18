@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.fishing_card;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -8,10 +7,12 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.CacheAwareButtonWidget;
 import net.semperidem.fishingclub.client.screen.Cacheable;
+import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.client.screen.member.MemberButton;
+import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
@@ -22,20 +23,21 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> implements ScreenHandlerProvider<FishingCardScreenHandler>, Cacheable {
-    private static final Identifier BACKGROUND_GENERAL_TAB = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info_inv.png");
-    private static final Identifier BACKGROUND_PERK_TAB = new Identifier(FishingClub.MOD_ID, "textures/gui/fisher_info.png");
 
-    private static final int TEXT_COLOR = Color.WHITE.getRGB();
+    private static final int BACKGROUND_TEXTURE_WIDTH = 400;
+    private static final int BACKGROUND_TEXTURE_HEIGHT = 280;
 
-    private static final int BACKGROUND_TEXTURE_WIDTH = 384;
-    private static final int BACKGROUND_TEXTURE_HEIGHT = 264;
-    private static final int TAB_WIDTH = 69;
-    private static final int TAB_HEIGHT = 20;
-    private static final int BANNER_WIDTH = 96;
-    private static final int BORDER_THICKNESS = 6;
-    private static final int TABS_WIDTH = 4 * TAB_WIDTH;
+    private static final Texture BACKGROUND_GENERAL = new Texture(FishingClub.getIdentifier("textures/gui/fishing_card_inv.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+    private static final Texture BACKGROUND_PERK = new Texture(FishingClub.getIdentifier("textures/gui/fishing_card.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+    private static final int TEXT_COLOR = 0xffeace;
 
-    private static final String sFishingCard = "Fishing Card:";
+    private static final int TILE_SIZE = 4;
+    private static final int TEXT_LINE_HEIGHT = 12;
+
+    private static final int BANNER_WIDTH = TILE_SIZE * 26;
+    private static final int TAB_WIDTH = (int) ((BACKGROUND_TEXTURE_WIDTH - BANNER_WIDTH - TILE_SIZE) * 0.25f);
+    private static final int TAB_HEIGHT = 16;
+
     private static final String sUnlock = "Unlock";
     private static final String sPerkPoint = "Perk points:";
     private static final String sLevel = "Lvl.";
@@ -51,29 +53,31 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private String perkPoints;
     private boolean hasPerkPoints;
 
-    private Identifier backgroundTexture = BACKGROUND_GENERAL_TAB;
+    private Texture background = BACKGROUND_GENERAL;
 
     private FishingPerk selectedPerk;
     private PerkButtonWidget selectedPerkButton;
 
-    private ButtonWidget generalButton;
-    private ButtonWidget hobbyistButton;
-    private ButtonWidget opportunistButton;
-    private ButtonWidget socialistButton;
+    private MemberButton generalButton;
+    private MemberButton hobbyistButton;
+    private MemberButton opportunistButton;
+    private MemberButton socialistButton;
     private ButtonWidget activeTabButton;
-    private ButtonWidget unlockButton;
-    public ButtonWidget instantSellSlotButton;
+    private MemberButton unlockButton;
+    public InstantSellButtonWidget instantSellSlotButton;
+    private MemberButton leaderboardButton;
     private final ArrayList<PerkButtonWidget> perkButtons = new ArrayList<>();
 
     private int buttonsX;
     private int buttonsY;
+    private int detailsLeftX, detailsY, detailsRightX;
     private int nextButtonX;
 
     private int perksX;
     private int perksY;
 
-    public FishingCardScreen(FishingCardScreenHandler fishingCardScreenHandler, PlayerInventory playerInventory, Text text) {
-        super(fishingCardScreenHandler, playerInventory, text);
+    public FishingCardScreen(FishingCardScreenHandler fishingCardScreenHandler, PlayerInventory playerInventory, Text title) {
+        super(fishingCardScreenHandler, playerInventory, Text.literal("Fishing Card"));
         updateCache();
     }
 
@@ -93,12 +97,17 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         backgroundWidth = BACKGROUND_TEXTURE_WIDTH;
         backgroundHeight = BACKGROUND_TEXTURE_HEIGHT;
 
-        buttonsX = x + BANNER_WIDTH + (BACKGROUND_TEXTURE_WIDTH - BANNER_WIDTH - TABS_WIDTH - BORDER_THICKNESS) / 2;
-        buttonsY = y + BORDER_THICKNESS + 1;
-        nextButtonX = buttonsX;
+        buttonsX = x + BANNER_WIDTH;
+        buttonsY = y + 2;
 
-        perksX = x + BANNER_WIDTH + BORDER_THICKNESS + 4;
-        perksY = buttonsY + TAB_HEIGHT + 6;
+        perksX = x + BANNER_WIDTH + TILE_SIZE * 2;
+        perksY = buttonsY + TAB_HEIGHT + TILE_SIZE * 2;
+        titleX = x + TILE_SIZE  + 2;
+        titleY = y + TILE_SIZE + 2;
+        detailsLeftX = titleX;
+        detailsRightX = detailsLeftX + BANNER_WIDTH - TILE_SIZE * 3;
+        detailsY = y + TILE_SIZE * 5 + 2 ;
+
 
         initButtons();
         generalButton.onPress();
@@ -122,6 +131,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
 
     private void initTabButton(){
+        nextButtonX = buttonsX;
         generalButton = getButtonForTab(Path.GENERAL);
         hobbyistButton = getButtonForTab(Path.HOBBYIST);
         opportunistButton = getButtonForTab(Path.OPPORTUNIST);
@@ -154,8 +164,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         unlockButton.visible = false;
     }
 
-    private ButtonWidget getButtonForTab(Path tab) {
-        ButtonWidget tabButton = new ButtonWidget(
+    private MemberButton getButtonForTab(Path tab) {
+        MemberButton tabButton = new MemberButton(
                 nextButtonX,
                 buttonsY,
                 TAB_WIDTH,
@@ -163,6 +173,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
                 Text.of(tab.name),
                 tabButtonAction(tab)
         );
+        tabButton.setTexture(MemberButton.SMALL_WIDE_BUTTON_TEXTURE);
         nextButtonX += TAB_WIDTH;
         return tabButton;
     }
@@ -182,10 +193,12 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     }
 
     private void setTab(ButtonWidget button, Path tab){
-        backgroundTexture = tab == Path.GENERAL ? BACKGROUND_GENERAL_TAB : BACKGROUND_PERK_TAB;
+        background = tab == Path.GENERAL ? BACKGROUND_GENERAL : BACKGROUND_PERK;
         if (activeTabButton != null) {
             activeTabButton.active = true;
         }
+        unlockButton.visible = false;
+        selectedPerk = null;
         activeTabButton = button;
         button.active = false;
         handler.setActiveTab(tab);
@@ -210,47 +223,31 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     @Override
     public void renderBackground(MatrixStack matrices) {
-        RenderSystem.setShaderTexture(0, backgroundTexture);
-        drawTexture(
-                matrices,
-                x,
-                y,
-                0,
-                0,
-                BACKGROUND_TEXTURE_WIDTH,
-                BACKGROUND_TEXTURE_HEIGHT,
-                BACKGROUND_TEXTURE_WIDTH,
-                BACKGROUND_TEXTURE_HEIGHT)
-        ;
+        background.render(matrices, x,y);
     }
 
-    private void renderInfoLine(MatrixStack matrices, int x, int y, String left, String right, int lineWidth){
-        textRenderer.drawWithShadow(matrices,left, x, y, TEXT_COLOR);
-        int rightLength = textRenderer.getWidth(right);
-        int rightX = x + lineWidth - rightLength;
-        textRenderer.drawWithShadow(matrices,right, rightX, y, TEXT_COLOR);
-
+    private void renderDetailLine(MatrixStack matrices, int x, int y, String l, String r){
+        textRenderer.drawWithShadow(matrices,l, x, y, TEXT_COLOR);
+        textRenderer.drawWithShadow(matrices,r, detailsRightX - textRenderer.getWidth(r), y, TEXT_COLOR);
     }
 
-    public void renderFisherInfo(MatrixStack matrices){
-        int dividerWidth = textRenderer.getWidth(sDiv);
-        int infoLineX = x + (BANNER_WIDTH - dividerWidth) / 2;
-        int infoLineY = y + 8;
-        textRenderer.drawWithShadow(matrices, sFishingCard, infoLineX, infoLineY, TEXT_COLOR);
-        renderInfoLine(matrices, infoLineX, infoLineY + 11, "", name, dividerWidth);
-        textRenderer.drawWithShadow(matrices,sDiv, infoLineX  , infoLineY + 14 , TEXT_COLOR);
-        renderInfoLine(matrices, infoLineX, infoLineY + 26, sLevel, level, dividerWidth);
-        renderInfoLine(matrices, infoLineX, infoLineY + 37, sExp, exp, dividerWidth);
-        renderInfoLine(matrices, infoLineX, infoLineY + 48, sCredit, credit, dividerWidth);
-        if (hasPerkPoints) {
-            renderInfoLine(matrices, infoLineX, infoLineY + 59, sPerkPoint, perkPoints, dividerWidth);
-        }
-
+    public void renderDetails(MatrixStack matrices){
+        int lastDetailY = detailsY;
+        renderDetailLine(matrices, detailsLeftX, lastDetailY, "", name);
+        lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
+        renderDetailLine(matrices, detailsLeftX, lastDetailY, sLevel, level);
+        lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
+        renderDetailLine(matrices, detailsLeftX, lastDetailY, sExp, exp);
+        lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
+        renderDetailLine(matrices, detailsLeftX, lastDetailY, sCredit, credit);
+        lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
+        renderDetailLine(matrices, detailsLeftX, lastDetailY, sPerkPoint, perkPoints);
     }
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
-        renderFisherInfo(matrices);
+        renderDetails(matrices);
         renderSelectedPerkDescription(matrices);
         renderTooltip(matrices, mouseX, mouseY);
     }
@@ -259,6 +256,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         renderBackground(matrices);
+        textRenderer.drawWithShadow(matrices, title, titleX, titleY, TEXT_COLOR);
     }
 
     @Override

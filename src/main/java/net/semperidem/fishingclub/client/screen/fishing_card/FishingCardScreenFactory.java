@@ -19,7 +19,7 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory {
     }
     @Override
     public Text getDisplayName() {
-        return Text.empty();
+        return Text.literal("Fishing Club");
     }
 
     @Nullable
