@@ -13,6 +13,7 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
+import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
@@ -261,4 +262,9 @@ public class ServerPacketHandlers {
             }
         });
     }
+
+    public static void handleOpenLeaderboardScreen(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        server.execute(() -> player.openHandledScreen(new LeaderboardScreenFactory(FishingCard.getPlayerCard(player))));
+    }
+
 }

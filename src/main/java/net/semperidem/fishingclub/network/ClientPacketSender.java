@@ -56,6 +56,9 @@ public class ClientPacketSender {
     public static void sendOpenFisherInfoScreen() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_INFO_OPEN, PacketByteBufs.empty());
     }
+    public static void openLeaderboardScreen() {
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_OPEN_LEADERBOARD_SCREEN, PacketByteBufs.empty());
+    }
 
     public static void instantSellSlot() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SLOT_SELL, PacketByteBufs.empty());

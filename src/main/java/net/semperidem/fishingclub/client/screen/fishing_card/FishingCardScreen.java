@@ -43,7 +43,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private static final String sLevel = "Lvl.";
     private static final String sCredit = "$";
     private static final String sExp = "Exp.";
-    private static final String sDiv = "_____________";
     private static final String labelFormatter = "§6§l";
 
     private String name;
@@ -51,7 +50,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private String exp;
     private String credit;
     private String perkPoints;
-    private boolean hasPerkPoints;
 
     private Texture background = BACKGROUND_GENERAL;
 
@@ -72,6 +70,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private int buttonsY;
     private int detailsLeftX, detailsY, detailsRightX;
     private int nextButtonX;
+    private int leaderBoardButtonX,leaderBoardButtonY;
 
     private int perksX;
     private int perksY;
@@ -86,7 +85,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         level = String.valueOf(handler.fishingCard.getLevel());
         exp = handler.fishingCard.getExp() + "/" + handler.fishingCard.nextLevelXP();
         credit = String.valueOf(handler.fishingCard.getCredit());
-        hasPerkPoints = handler.fishingCard.hasPerkPoints();
         perkPoints = String.valueOf(handler.fishingCard.getPerkPoints());
     }
 
@@ -108,6 +106,13 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         detailsRightX = detailsLeftX + BANNER_WIDTH - TILE_SIZE * 3;
         detailsY = y + TILE_SIZE * 5 + 2 ;
 
+
+        leaderBoardButtonX = x + TILE_SIZE;
+        leaderBoardButtonY = y + BACKGROUND_TEXTURE_HEIGHT - TILE_SIZE * 6;
+        leaderboardButton = new MemberButton(leaderBoardButtonX, leaderBoardButtonY, BANNER_WIDTH - TILE_SIZE * 2, TILE_SIZE * 5, Text.literal("Leaderboard"), button -> {
+            ClientPacketSender.openLeaderboardScreen();
+        });
+        addDrawableChild(leaderboardButton);
 
         initButtons();
         generalButton.onPress();

@@ -26,6 +26,7 @@ public class ServerPacketReceiver {
             registerReceiver(handler, C2S_RESET_PERKS, ServerPacketHandlers::handleResetPerk);
             registerReceiver(handler, C2S_CLAIM_CAPE, ServerPacketHandlers::handleClaimCape);
             registerReceiver(handler, C2S_GET_CAPE_DETAILS, ServerPacketHandlers::handleCapeDetailsRequest);
+            registerReceiver(handler, C2S_OPEN_LEADERBOARD_SCREEN, ServerPacketHandlers::handleOpenLeaderboardScreen);
         });
     }
 }

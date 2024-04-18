@@ -12,6 +12,7 @@ public class PacketIdentifiers {
     public static final Identifier C2S_F_GAME_WON = getIdentifier("c2s_f_game_won");
     public static final Identifier C2S_F_GAME_LOST = getIdentifier("c2s_f_game_lost");
     public static final Identifier C2S_OPEN_MEMBER_SCREEN = getIdentifier("c2s_open_member_screen");
+    public static final Identifier C2S_OPEN_LEADERBOARD_SCREEN = getIdentifier("c2s_open_leaderboard_screen");
     public static final Identifier C2S_F_INFO_OPEN = getIdentifier("c2s_f_info_open");
     public static final Identifier C2S_F_SHOP_SELL = getIdentifier("c2s_f_shop_sell");
     public static final Identifier C2S_F_SHOP_BUY = getIdentifier("c2s_f_shop_buy");
