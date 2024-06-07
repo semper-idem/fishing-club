@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FireworkRocketItem;
@@ -18,7 +19,10 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 
 import java.util.ArrayList;
 
@@ -64,36 +68,6 @@ public class MemberFishingRodItem extends FishingRodItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        try {
-
-            ItemStack fireworkStack = Items.FIREWORK_ROCKET.getDefaultStack();
-            NbtCompound nbt = fireworkStack.getOrCreateNbt();
-            NbtList explosionsNbt = new NbtList();
-            NbtCompound explosionNbt = new NbtCompound();
-            explosionNbt.putByte("Type", (byte) FireworkRocketItem.Type.valueOf("SMALL_BALL").getId());
-            NbtList colors = new NbtList();
-            colors.add(NbtInt.of(0xF9FFFE));
-            NbtList fadeColors = new NbtList();
-            int color = DyeColor.WHITE.getFireworkColor();
-            fadeColors.add(NbtInt.of(color));
-            explosionNbt.putIntArray(FireworkRocketItem.COLORS_KEY, new int[]{color});
-            explosionNbt.putIntArray(FireworkRocketItem.FADE_COLORS_KEY,  new int[]{color});
-            explosionNbt.putBoolean(FireworkRocketItem.FLICKER_KEY, true);
-            explosionNbt.putBoolean(FireworkRocketItem.TRAIL_KEY, true);
-            explosionsNbt.add(explosionNbt);
-            NbtCompound fireworkNbt = new NbtCompound();
-            fireworkNbt.put(FireworkRocketItem.EXPLOSIONS_KEY, explosionsNbt);
-            fireworkNbt.putByte(FireworkRocketItem.FLIGHT_KEY, (byte)2);
-            nbt.put(FireworkRocketItem.FIREWORKS_KEY, fireworkNbt);
-            fireworkStack.setNbt(nbt);
-            Items.FIREWORK_ROCKET.appendTooltip(fireworkStack, world, new ArrayList<>(), null);
-            System.out.println(fireworkNbt);
-            user.giveItemStack(fireworkStack);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return TypedActionResult.consume(user.getStackInHand(hand));
-        /*
         ItemStack fishingRod = user.getStackInHand(hand);
 
         if (isCasting(user)) {
@@ -120,8 +94,6 @@ public class MemberFishingRodItem extends FishingRodItem {
 
         user.setCurrentHand(hand); //Logic continues in onStoppedUsing
         return TypedActionResult.consume(user.getStackInHand(hand));
-
-         */
     }
 
     private boolean isCasting(PlayerEntity user){

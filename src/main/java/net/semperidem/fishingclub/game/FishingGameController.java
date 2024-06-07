@@ -75,6 +75,7 @@ public class FishingGameController {
         if (player instanceof ServerPlayerEntity serverPlayerEntity) {
             ServerPacketSender.sendFishingGameData(serverPlayerEntity,this);
         }
+        winGame();
     }
 
     private void tickInner(){

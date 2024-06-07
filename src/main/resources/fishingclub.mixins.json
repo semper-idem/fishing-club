@@ -9,14 +9,15 @@
     "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
     "common.LevelPropertiesMixin",
-    "common.PlayerEntityMixin",
     "common.LivingEntityMixin",
+    "common.MinecraftServerMixin",
+    "common.PlayerEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [
     "client.InGameHudMixin",
-    "client.PlayerListEntryMixin",
-    "client.MouseMixin"
+    "client.MouseMixin",
+    "client.PlayerListEntryMixin"
   ],
   "server": [
   ],

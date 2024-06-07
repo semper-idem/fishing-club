@@ -23,6 +23,7 @@ import net.semperidem.fishingclub.fisher.level_reward.LevelReward;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
+import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
@@ -47,6 +48,7 @@ public class ServerPacketHandlers {
             server.execute(() -> {
                 FishUtil.fishCaught(player, fish);
                 FishUtil.giveReward(player, rewards);
+                LeaderboardManager.record(LeaderboardManager.LFC, player.getUuid(), fish.length);
             });
             player.closeHandledScreen();
         } catch (Exception e) {
