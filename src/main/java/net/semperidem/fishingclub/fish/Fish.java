@@ -11,6 +11,8 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -42,6 +44,8 @@ public class Fish {
 
     public boolean consumeGradeBuff;
 
+    private final HashMap<String, String> attributeMap = new HashMap<>();
+
     public String id;
 
     public Fish(Species species, FishingCard fishingCard, IHookEntity hookedWith) {
@@ -65,6 +69,8 @@ public class Fish {
         this.caughtByUUID = caughtBy.getUuid();
         this.consumeGradeBuff = caughtBy.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         this.id =  (System.currentTimeMillis()) + "" + Math.abs(caughtByUUID.hashCode());
+        applyMultiplier(hookedWith.getFishMultiplier());
+        updateAttributeMap();
     }
 
     public Fish(NbtCompound nbt){
@@ -79,6 +85,16 @@ public class Fish {
         this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
         this.caughtByUUID = nbt.getUuid("caughtBy");
         this.id = nbt.getString("id");
+        updateAttributeMap();
+    }
+
+    private void updateAttributeMap() {
+        attributeMap.put("level", String.valueOf(level));
+        attributeMap.put("grade", String.valueOf(grade));
+        attributeMap.put("value", String.valueOf(value));
+        attributeMap.put("weight", String.valueOf(weight));
+        attributeMap.put("length", String.valueOf(length));
+        attributeMap.put("damage", String.valueOf(damage));
     }
 
      public NbtCompound getNbt(){
@@ -168,7 +184,7 @@ public class Fish {
         return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
     }
 
-    public void applyMultiplier(float multiplier){
+    private void applyMultiplier(float multiplier){
         this.experience = (int) (this.experience * multiplier);
         this.weight = Math.max(this.species.fishMinWeight, (this.weight * multiplier));
         this.length = Math.max(this.species.fishMinLength, (this.length * multiplier));
@@ -200,5 +216,9 @@ public class Fish {
         isEqual &= (this.caughtByUUID.compareTo(other.caughtByUUID) == 0);
         isEqual &= (Objects.equals(this.id, other.id));
         return isEqual;
+    }
+
+    public Map<String, String> getAttributeMap() {
+        return attributeMap;
     }
 }

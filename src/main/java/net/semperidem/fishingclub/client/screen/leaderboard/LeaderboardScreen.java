@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.leaderboard;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -9,7 +8,7 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
-import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
+import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.leaderboard.LeaderboardScreenHandler;
 
 import java.awt.*;
@@ -35,12 +34,12 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
-        Leaderboard lfc = LeaderboardManager.getLeaderboard(LeaderboardManager.LFC);
-        int entryOffset = 0;
-        for(Leaderboard.Entry entry : lfc.standings) {
-            textRenderer.drawWithShadow(matrices, entry.holderName + ": " + entry.value, mainBoardX, mainBoardY + entryOffset, TITLE_COLOR);
-            entryOffset += 20;
-        }
+//        Leaderboard lfc = handler.getLeaderboards().values().iterator().next();
+//        int entryOffset = 0;
+//        for(Leaderboard.Entry entry : lfc.standings) {
+//            textRenderer.drawWithShadow(matrices, entry.holderName + ": " + entry.value, mainBoardX, mainBoardY + entryOffset, TITLE_COLOR);
+//            entryOffset += 20;
+//        }
     }
 
     @Override

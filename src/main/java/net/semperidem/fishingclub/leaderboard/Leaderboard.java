@@ -1,10 +1,7 @@
 package net.semperidem.fishingclub.leaderboard;
 
-
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
+import net.semperidem.fishingclub.fish.Fish;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,17 +10,35 @@ import java.util.UUID;
 
 public class Leaderboard implements Serializable {
     private final String name;
-    private final boolean startFromHighest;
+    private long resetInterval = 0;
+    private long lastResetTick = 0;
+    private final boolean descending;
     public final ArrayList<Entry> standings = new ArrayList<>();
 
 
-    public Leaderboard(String name, boolean startFromHighest) {
+
+    public Leaderboard(String name, boolean descending, long resetInterval, long lastResetTick) {
         this.name = name;
-        this.startFromHighest = startFromHighest;
+        this.descending = descending;
+        this.resetInterval = resetInterval;
+        this.lastResetTick = lastResetTick;
     }
 
-    public String getName() {
-        return name;
+    public Leaderboard(String name, boolean descending, long resetInterval) {
+        this (
+                name,
+                descending,
+                resetInterval,
+                0
+        );
+    }
+
+    public Leaderboard(String name, boolean descending) {
+        this (
+                name,
+                descending,
+                0
+        );
     }
 
     public Leaderboard(String name) {
@@ -33,14 +48,29 @@ public class Leaderboard implements Serializable {
         );
     }
 
-    public void consume(UUID holder, String holderName, double value) {
+    public String getName() {
+        return name;
+    }
+
+    public Entry getCurrentRecord(UUID uuid) {
+        for(Entry entry : standings) {
+            if (entry.holder.compareTo(uuid) == 0) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+
+    void consume(UUID holder, String holderName, LeaderboardAttribute attribute, Fish fish) {
         int place = 0;
         int previousPlace = getIndexOf(holder);
-        if (previousPlace >= 0 && (getHolderValue(holder) >= value & startFromHighest)) {
+        double value = Double.parseDouble(attribute.getValue(fish, this));
+        if (previousPlace >= 0 && (getHolderValue(holder) >= value & descending)) {
             return;
         }
         for(Entry entry : standings) {
-            if (value > entry.value & startFromHighest) {
+            if (value > entry.value & descending) {
                 break;
             }
             place++;
@@ -77,7 +107,9 @@ public class Leaderboard implements Serializable {
     //TODO Test leaderboard with 1000 records
     public static void writeToPacket(PacketByteBuf packet, Leaderboard leaderboard) {
         packet.writeString(leaderboard.name);
-        packet.writeBoolean(leaderboard.startFromHighest);
+        packet.writeBoolean(leaderboard.descending);
+        packet.writeLong(leaderboard.resetInterval);
+        packet.writeLong(leaderboard.lastResetTick);
         packet.writeInt(leaderboard.standings.size());
         for(Entry entry : leaderboard.standings) {
             packet.writeUuid(entry.holder);
@@ -89,7 +121,10 @@ public class Leaderboard implements Serializable {
     public static Leaderboard fromPacket(PacketByteBuf packet) {
         Leaderboard leaderboard = new Leaderboard(
                 packet.readString(),
-                packet.readBoolean()
+                packet.readBoolean(),
+                packet.readLong(),
+                packet.readLong()
+
         );
         int size = packet.readInt();
         for(int i = 0; i < size; i++) {
