@@ -48,7 +48,6 @@ public class ServerPacketHandlers {
             server.execute(() -> {
                 FishUtil.fishCaught(player, fish);
                 FishUtil.giveReward(player, rewards);
-                LeaderboardManager.record(LeaderboardManager.LFC, player.getUuid(), fish.length);
             });
             player.closeHandledScreen();
         } catch (Exception e) {
@@ -266,7 +265,7 @@ public class ServerPacketHandlers {
     }
 
     public static void handleOpenLeaderboardScreen(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> player.openHandledScreen(new LeaderboardScreenFactory(FishingCard.getPlayerCard(player))));
+        server.execute(() -> player.openHandledScreen(new LeaderboardScreenFactory()));
     }
 
 }

@@ -12,6 +12,7 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
 import java.util.ArrayList;
@@ -183,6 +184,8 @@ public class FishingCard extends FishingCardInventory {
         progressionManager.grantExperience(expGained);
         historyManager.fishCaught();
         statusEffectHelper.fishCaught(progressionManager, fish);
+
+        LeaderboardManager.record(holder, fish);
     }
 
     public void addPerk(String perkName){

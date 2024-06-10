@@ -7,17 +7,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.screen.leaderboard.LeaderboardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class LeaderboardScreenFactory implements ExtendedScreenHandlerFactory {
-    FishingCard fishingCard;
 
-    public LeaderboardScreenFactory(FishingCard fishingCard) {
-        this.fishingCard = fishingCard;
-    }
     @Override
     public Text getDisplayName() {
         return Text.literal("Leaderboard");
@@ -26,11 +21,11 @@ public class LeaderboardScreenFactory implements ExtendedScreenHandlerFactory {
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new LeaderboardScreenHandler(syncId, inv, fishingCard);
+        return new LeaderboardScreenHandler(syncId, inv);
     }
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(fishingCard.toNbt());
+        LeaderboardManager.writePacket(buf);
     }
 }
