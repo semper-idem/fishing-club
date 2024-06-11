@@ -10,21 +10,39 @@ import net.semperidem.fishingclub.leaderboard.LeaderboardSerializer;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 public class LeaderboardScreenHandler extends ScreenHandler {
     LeaderboardTracker tracker = new LeaderboardTracker();
+    ArrayList<Leaderboard> leaderboards;
+    int leaderboardIndex = 0;
 
     public LeaderboardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         super(ScreenHandlerRegistry.LEADERBOARD_SCREEN, syncId);
         LeaderboardSerializer.readPacket(tracker, buf);
+        leaderboards = new ArrayList<>(tracker.getLeaderboards().values());
     }
     public LeaderboardScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(ScreenHandlerRegistry.LEADERBOARD_SCREEN, syncId);
     }
 
-    public Map<String, Leaderboard> getLeaderboards() {
-        return tracker.getLeaderboards();
+    public ArrayList<Leaderboard> getLeaderboards() {
+        return leaderboards;
+    }
+
+    public Leaderboard getNextLeaderboard() {
+        leaderboardIndex++;
+        if (leaderboardIndex >= leaderboards.size()) {
+            leaderboardIndex = 0;
+        }
+        return leaderboards.get(leaderboardIndex);
+    }
+    public Leaderboard getPreviousLeaderboard() {
+        leaderboardIndex--;
+        if (leaderboardIndex < 0) {
+            leaderboardIndex = leaderboards.size() - 1;
+        }
+        return leaderboards.get(leaderboardIndex);
     }
 
     @Override

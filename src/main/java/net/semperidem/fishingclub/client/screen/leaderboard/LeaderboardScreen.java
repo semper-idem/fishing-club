@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.client.screen.leaderboard;
 
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -17,6 +18,9 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     private static final Texture BACKGROUND = new Texture(FishingClub.getIdentifier("textures/gui/leaderboard.png"), 400, 280);
     private static final int TITLE_COLOR = Color.WHITE.getRGB();
     private int mainBoardX, mainBoardY;
+    Leaderboard currentLeaderboard;
+    ButtonWidget nextButton;
+    ButtonWidget previousButton;
 
     public LeaderboardScreen(LeaderboardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -27,19 +31,28 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
         x = (int) ((width - BACKGROUND.renderWidth) * 0.5f);
         y = (int) ((height - BACKGROUND.renderHeight) * 0.5f);
         titleX = (int) ((BACKGROUND.renderHeight + textRenderer.getWidth(title)) * 0.5f);
-        mainBoardX = x;
-        mainBoardY = y;
+        mainBoardX = x + 20;
+        mainBoardY = y + 30;
+
+        currentLeaderboard = handler.getNextLeaderboard();
+        nextButton = new ButtonWidget(x,y,100,20,Text.literal("Next"), button -> currentLeaderboard = handler.getNextLeaderboard());
+        previousButton = new ButtonWidget(x + BACKGROUND.renderWidth - 100,y,100,20,Text.literal("Previous"), button -> currentLeaderboard = handler.getPreviousLeaderboard());
+        addDrawableChild(nextButton);
+        addDrawableChild(previousButton);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
-//        Leaderboard lfc = handler.getLeaderboards().values().iterator().next();
-//        int entryOffset = 0;
-//        for(Leaderboard.Entry entry : lfc.standings) {
-//            textRenderer.drawWithShadow(matrices, entry.holderName + ": " + entry.value, mainBoardX, mainBoardY + entryOffset, TITLE_COLOR);
-//            entryOffset += 20;
-//        }
+        if (currentLeaderboard == null) {
+            return;
+        }
+        textRenderer.drawWithShadow(matrices, Text.literal(currentLeaderboard.getName()), mainBoardX, mainBoardY, TITLE_COLOR);
+        int entryOffset = 0;
+        for(Leaderboard.Entry entry : currentLeaderboard.standings) {
+            textRenderer.drawWithShadow(matrices, entry.holderName + ": " + entry.value, mainBoardX, mainBoardY + entryOffset + 20, TITLE_COLOR);
+            entryOffset += 20;
+        }
     }
 
     @Override
