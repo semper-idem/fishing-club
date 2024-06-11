@@ -20,7 +20,7 @@ public class LeaderboardScreenHandler extends ScreenHandler {
     public LeaderboardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
         super(ScreenHandlerRegistry.LEADERBOARD_SCREEN, syncId);
         LeaderboardSerializer.readPacket(tracker, buf);
-        leaderboards = new ArrayList<>(tracker.getLeaderboards().values());
+        leaderboards = new ArrayList<>(tracker.getLeaderboards());
     }
     public LeaderboardScreenHandler(int syncId, PlayerInventory playerInventory) {
         super(ScreenHandlerRegistry.LEADERBOARD_SCREEN, syncId);
@@ -30,6 +30,9 @@ public class LeaderboardScreenHandler extends ScreenHandler {
         return leaderboards;
     }
 
+    public Leaderboard getCurrentLeaderboard() {
+        return leaderboards.get(leaderboardIndex);
+    }
     public Leaderboard getNextLeaderboard() {
         leaderboardIndex++;
         if (leaderboardIndex >= leaderboards.size()) {

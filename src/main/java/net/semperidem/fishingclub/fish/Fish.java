@@ -227,4 +227,9 @@ public class Fish {
     public Map<String, Float> getAttributeMap() {
         return attributeMap;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

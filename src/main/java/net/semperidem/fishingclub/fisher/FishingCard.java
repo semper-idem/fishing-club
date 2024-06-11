@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
 import java.util.ArrayList;
@@ -186,8 +187,10 @@ public class FishingCard extends FishingCardInventory {
         statusEffectHelper.fishCaught(progressionManager, fish);
 
         if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
-            leaderboardTrackingServer.getLeaderboardTracker().record(holder, fish);
-            leaderboardTrackingServer.getLeaderboardTracker().record(holder, this);
+            LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
+            tracker.record(holder, fish);
+            tracker.record(holder, this, tracker.highestLevel);
+            tracker.record(holder, this, tracker.longestCapeClaimTotal);
         }
     }
 
@@ -207,6 +210,15 @@ public class FishingCard extends FishingCardInventory {
         linkingManager.linkTarget(target);
     }
 
+    @Override
+    public boolean addCredit(int credit) {
+        if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
+            LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
+            tracker.record(holder, this, tracker.highestCredit);
+        }
+        return super.addCredit(credit);
+    }
+
     public void requestSummon(){
         linkingManager.requestSummon();
     }
@@ -221,5 +233,10 @@ public class FishingCard extends FishingCardInventory {
 
     public void shareBait() {
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
+    }
+
+    @Override
+    public String toString() {
+        return "";
     }
 }

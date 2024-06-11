@@ -1,14 +1,74 @@
 package net.semperidem.fishingclub.leaderboard;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.world.SaveProperties;
+import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class LeaderboardTracker {
+    public final Leaderboard<Fish> bestWeight;
+    public final Leaderboard<Fish> worstWeight;
+    public final Leaderboard<Fish> bestLength;
+    public final Leaderboard<Fish> worstLength;
+    public final Leaderboard<FishingCard> highestCredit;
+    public final Leaderboard<FishingCard> highestLevel;
+    public final Leaderboard<FishingCard> longestCapeClaimTotal;
+    public LeaderboardTracker() {
+        bestWeight = new Leaderboard<>("weight+", Text.literal("Heaviest Fish"), "kg", false, fish -> fish.weight);
+        worstWeight = new Leaderboard<>("weight-", Text.literal("Lightest Fish"), "kg", true, fish -> fish.weight);
+        bestLength = new Leaderboard<>("length+", Text.literal("Longest Fish"), "cm", false, fish -> fish.length);
+        worstLength = new Leaderboard<>("length-", Text.literal("Shortest Fish"), "cm", true, fish -> fish.length);
+        highestCredit = new Leaderboard<>("_credit+", Text.literal("Most Credit"), "$", false, card -> (float) card.getCredit());
+        highestLevel = new Leaderboard<>("_level+", Text.literal("Highest Level"), "", false, card -> (float) card.getLevel());
+        longestCapeClaimTotal = new Leaderboard<>("_capeClaim", Text.literal("Total Crowned Time"), " ticks", false, card -> {
+            float capeTotal = card.getCapeTime();
+            SaveProperties saveProperties = Objects.requireNonNull(card.getHolder().getServer()).getSaveProperties();
+            if (!(saveProperties instanceof FishingLevelProperties fishingLevelProperties)) {
+                return capeTotal;
+            }
+
+            if (fishingLevelProperties.getFishingKingUUID().compareTo(card.getHolder().getUuid()) != 0) {
+                return capeTotal;
+            }
+
+            return capeTotal + fishingLevelProperties.getCurrentClaimTime();
+        });
+    }
+
+
+    public void record(PlayerEntity caughtBy, Fish fish) {
+        bestWeight.consume(caughtBy, fish);
+        worstWeight.consume(caughtBy, fish);
+        bestLength.consume(caughtBy, fish);
+        worstLength.consume(caughtBy, fish);
+    }
+
+    public void record(PlayerEntity caughtBy, FishingCard fishingCard, Leaderboard<FishingCard> leaderboard) {
+        leaderboard.consume(caughtBy, fishingCard);
+    }
+
+    public ArrayList<Leaderboard<?>> getLeaderboards() {
+        return new ArrayList<>(Arrays.asList(
+                longestCapeClaimTotal,
+                bestWeight,
+                worstWeight,
+                bestLength,
+                worstLength,
+                highestCredit,
+                highestLevel
+        ));
+    }
+    public static void tick() {
+
+    }
+
+
     private static final long MC_DAILY = 24000;
     private static final long MC_WEEKLY = MC_DAILY * 7;
     private static final long MC_YEARLY = (long) (MC_WEEKLY * 52.1775);
@@ -18,64 +78,4 @@ public class LeaderboardTracker {
     private static final long HOURLY = 3600 * TICKS_IN_SECOND;
     private static final long DAILY = HOURLY * 24;
     private static final long WEEKLY = DAILY * 7;//TODO IMPLEMENT TIMED LEADERBOARDS
-
-    final Map<String, Leaderboard> leaderboards = new HashMap<>();
-
-
-    public LeaderboardTracker() {
-        for(String attribute : LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.keySet()) {
-            if (LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.get(attribute).isSum) {
-                String name = attribute + "#";
-                leaderboards.put(name, new Leaderboard(name, true));
-                continue;
-            }
-            String descendingName = attribute + "+";
-            leaderboards.put(descendingName, new Leaderboard(descendingName, true));
-            String ascendingName = attribute + "-";
-            leaderboards.put(ascendingName, new Leaderboard(ascendingName));
-        }
-    }
-
-    public Map<String, Leaderboard> getLeaderboards() {
-        return leaderboards;
-    }
-
-    public void record(PlayerEntity caughtBy, Fish fish) {
-        String holderName = caughtBy.getName().getString();
-        record(holderName, LeaderboardAttributes.LENGTH, fish);
-        record(holderName, LeaderboardAttributes.WEIGHT, fish);
-        record(holderName, LeaderboardAttributes.GRADE, fish);
-        record(holderName, LeaderboardAttributes.VALUE, fish);
-        record(holderName, LeaderboardAttributes.LEVEL, fish);
-        record(holderName, LeaderboardAttributes.DAMAGE, fish);
-        record(holderName, LeaderboardAttributes.COUNT, fish);
-    }
-
-    public void record(PlayerEntity caughtBy, FishingCard fishingCard) {
-        String holderName = caughtBy.getName().getString();
-        UUID holderUUID = caughtBy.getUuid();
-
-        Leaderboard lbPlayerLevel = leaderboards.get(LeaderboardAttributes.PLAYER_LEVEL.attributeName + '#');
-        lbPlayerLevel.consume(holderUUID, holderName, LeaderboardAttributes.PLAYER_LEVEL.getValue(fishingCard, lbPlayerLevel));
-
-        Leaderboard lbCapeTime = leaderboards.get(LeaderboardAttributes.CAPE_TIME.attributeName + '#');
-        lbCapeTime.consume(holderUUID, holderName, LeaderboardAttributes.CAPE_TIME.getValue(fishingCard, lbCapeTime));
-
-        Leaderboard lbCredit = leaderboards.get(LeaderboardAttributes.CREDIT.attributeName + '#');
-        lbCredit.consume(holderUUID, holderName, LeaderboardAttributes.CREDIT.getValue(fishingCard, lbCredit));
-
-    }
-
-    private void record(String holderName, LeaderboardAttribute attribute, Fish fish) {
-        if (attribute.isSum) {
-            leaderboards.get(attribute.attributeName + '#').consume(fish.caughtByUUID, holderName, attribute, fish);
-            return;
-        }
-        leaderboards.get(attribute.attributeName + '-').consume(fish.caughtByUUID, holderName, attribute, fish);
-        leaderboards.get(attribute.attributeName + '+').consume(fish.caughtByUUID, holderName, attribute, fish);
-    }
-
-    public static void tick() {
-
-    }
 }

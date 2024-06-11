@@ -1,52 +1,40 @@
 package net.semperidem.fishingclub.leaderboard;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.fish.Fish;
+import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.function.Function;
 
-public class Leaderboard implements Serializable {
-    private final String name;
-    private long resetInterval = 0;
-    private long lastResetTick = 0;
-    private final boolean descending;
-    public final ArrayList<Entry> standings = new ArrayList<>();
+public class Leaderboard<T> {
+    public final String name;
+    public final Text label;
+    public final boolean ascending;
+    private final TreeSet<Entry> standings;
+    private final HashMap<UUID, Entry> unorderedStandings;
+    public final String unit;
+    private final Function<T, Float> valueGetter;
 
-
-
-    public Leaderboard(String name, boolean descending, long resetInterval, long lastResetTick) {
+    public Leaderboard(String name, Text label, String unit, boolean ascending, Function<T, Float> valueGetter) {
         this.name = name;
-        this.descending = descending;
-        this.resetInterval = resetInterval;
-        this.lastResetTick = lastResetTick;
-    }
+        this.label = label;
+        this.unit = unit;
+        this.ascending = ascending;
+        this.valueGetter = valueGetter;
+        this.standings = new TreeSet<>();
+        this.unorderedStandings = new HashMap<>();
 
-    public Leaderboard(String name, boolean descending, long resetInterval) {
-        this (
-                name,
-                descending,
-                resetInterval,
-                0
-        );
-    }
-
-    public Leaderboard(String name, boolean descending) {
-        this (
-                name,
-                descending,
-                0
-        );
-    }
-
-    public Leaderboard(String name) {
-        this(
-                name,
-                false
-        );
     }
 
     public String getName() {
@@ -55,118 +43,143 @@ public class Leaderboard implements Serializable {
 
     public Entry getCurrentRecord(UUID uuid) {
         for(Entry entry : standings) {
-            if (entry.holder.compareTo(uuid) == 0) {
+            if (entry.key.compareTo(uuid) == 0) {
                 return entry;
             }
         }
         return null;
     }
 
+    void consume(PlayerEntity player, T valueHolder) {
+        UUID key = player.getUuid();
+        Float value = valueGetter.apply(valueHolder);
 
-    void consume(UUID holder, String holderName, double value) {
-        int place = 0;
-        int previousPlace = getIndexOf(holder);
-        if (previousPlace >= 0) {
-            if ((getHolderValue(holder) >= value && descending) || (getHolderValue(holder) <= value && !descending)) {
-                return;
+        Entry presentEntry = unorderedStandings.get(key);
+        if (presentEntry != null && presentEntry.value > value ^ ascending) {
+            return;
+        }
+        if (presentEntry != null) {
+            standings.remove(presentEntry);
+        }
+        Entry newEntry = new Entry(
+                key,
+                value,
+                player.getName().getString(),
+                valueHolder.toString()
+        );
+        standings.add(newEntry);
+        unorderedStandings.put(key, newEntry);
+    }
+
+
+    public int getIndexOf(UUID playerUUID) {
+        int indexOf = -1;
+        Iterator<Entry> entries = ascending ? standings.iterator() : standings.descendingIterator();
+        Entry e;
+        while (entries.hasNext()) {
+            indexOf++;
+            e = entries.next();
+            if (e.key.compareTo(playerUUID) == 0) {
+                return indexOf;
             }
         }
-        for(Entry entry : standings) {
-            if ((value > entry.value && descending) || (value < entry.value && !descending)) {
-                break;
-            }
-            place++;
-        }
-        if (previousPlace >= 0) {
-            standings.remove(previousPlace);
-        }
-        standings.add(place, new Entry(
-                holder,
-                holderName,
-                value
-        ));
-    }
-
-
-    void consume(UUID holder, String holderName, LeaderboardAttribute<Fish> attribute, Fish fish) {
-        double value = attribute.getValue(fish, this);
-        consume(holder, holderName, value);
-    }
-
-    private boolean hasHolderRecord(UUID holder) {
-        return getIndexOf(holder) >= 0;
-    }
-
-    private double getHolderValue(UUID holder) {
-        return standings.get(getIndexOf(holder)).value;
-    }
-
-    private int getIndexOf(UUID playerUUID) {
-        int place = 0;
-        for(Entry entry : standings) {
-            if (entry.holder.equals(playerUUID)) {
-                return place;
-            }
-            place++;
-        }
-        return -1;
+        return standings.size();
     }
 
     //TODO Test leaderboard with 1000 records
-    public static void writeToPacket(PacketByteBuf packet, Leaderboard leaderboard) {
-        packet.writeString(leaderboard.name);
-        packet.writeBoolean(leaderboard.descending);
-        packet.writeLong(leaderboard.resetInterval);
-        packet.writeLong(leaderboard.lastResetTick);
+    public static void writeToPacket(PacketByteBuf packet, Leaderboard<?> leaderboard) {
         packet.writeInt(leaderboard.standings.size());
-        for(Entry entry : leaderboard.standings) {
-            packet.writeUuid(entry.holder);
-            packet.writeString(entry.holderName);
-            packet.writeDouble(entry.value);
+        for(Iterator<Entry> i = leaderboard.getIterator(); i.hasNext();) {
+            i.next().toPacket(packet);
         }
     }
 
-    public static Leaderboard fromPacket(PacketByteBuf packet) {
-        Leaderboard leaderboard = new Leaderboard(
-                packet.readString(),
-                packet.readBoolean(),
-                packet.readLong(),
-                packet.readLong()
-
-        );
+    public static void readStandings(PacketByteBuf packet, Leaderboard<?> leaderboard) {
         int size = packet.readInt();
         for(int i = 0; i < size; i++) {
-            leaderboard.standings.add(
-                    new Entry(
-                            packet.readUuid(),
-                            packet.readString(),
-                            packet.readDouble()
-                    )
-            );
+            Entry e = new Entry(packet);
+            leaderboard.standings.add(e);
+            leaderboard.unorderedStandings.put(e.key, e);
         }
-        return leaderboard;
     }
 
-    private ArrayList<Entry> getStandings() {
-        ArrayList<Entry> copiedStandings = new ArrayList<>();
-        Collections.copy(standings, copiedStandings);
-        return copiedStandings;
+    private String getFilePath(String path) {
+        return path + name + ".json";
     }
 
-    public static class Entry implements Serializable{
-        public String holderName;
-        public final double value;
-        private final UUID holder;
+    public Iterator<Entry> getIterator(){
+        return ascending ? standings.iterator() : standings.descendingIterator();
+    }
 
-        private Entry(UUID holder, String holderName, double value) {
-            this.holderName = holderName;
-            this.holder = holder;
+    public void loadFromPath(String path) {
+        try {
+            if (!Files.exists(Path.of(path))) {
+                return;
+            }
+            //TODO Possible performance hit on game load
+            Gson gson = new GsonBuilder().create();
+            FileReader fileReader = new FileReader(getFilePath(path));
+            JsonReader jsonReader = new JsonReader(fileReader);
+            Entry[] entries = gson.fromJson(jsonReader, Entry[].class);
+            for(Entry entry : entries) {
+                standings.add(entry);
+                unorderedStandings.put(entry.key, entry);
+            }
+            fileReader.close();
+            jsonReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveToPath(String path) {
+        try {
+            Gson gson = new Gson();
+            Files.createDirectories(Path.of(path));
+            FileWriter fileWriter = new FileWriter(getFilePath(path));
+            gson.toJson(standings, fileWriter);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static class Entry implements Comparable<Entry> {
+        public final UUID key;
+        public final Float value;
+        public final String playerName;
+        public final String context;
+
+        private Entry(PacketByteBuf packet) {
+            this.key = packet.readUuid();
+            this.value = packet.readFloat();
+            this.playerName = packet.readString();
+            this.context = packet.readString();
+        }
+
+        void toPacket(PacketByteBuf packet) {
+            packet.writeUuid(this.key);
+            packet.writeFloat(this.value);
+            packet.writeString(this.playerName);
+            packet.writeString(this.context);
+        }
+
+        private Entry(UUID key, float value, String playerName, String context) {
+            this.key = key;
             this.value = value;
+            this.playerName = playerName;
+            this.context = context;
         }
 
         @Override
         public String toString() {
-            return this.holder.toString() + " " + String.format("%.2f", this.value);
+            return this.key.toString() + " " + String.format("%.2f", this.value);
+        }
+
+        @Override
+        public int compareTo(@NotNull Entry o) {
+            return (int) (value - o.value);
         }
     }
 }

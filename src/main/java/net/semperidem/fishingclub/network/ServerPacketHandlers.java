@@ -105,9 +105,6 @@ public class ServerPacketHandlers {
             }
             FishingCard fishingCard = FishingCard.getPlayerCard(player);
             fishingCard.addCredit(credit);
-            if (server instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
-                leaderboardTrackingServer.getLeaderboardTracker().record(player, fishingCard);
-            }
             ServerPacketSender.sendCardUpdate(player, fishingCard);
         });
     }
