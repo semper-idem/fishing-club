@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.leaderboard;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +23,10 @@ public class LeaderboardTracker {
 
 
     public LeaderboardTracker() {
-        for(String attribute : LeaderboardAttribute.LEADERBOARD_ATTRIBUTES.keySet()) {
-            if (LeaderboardAttribute.LEADERBOARD_ATTRIBUTES.get(attribute).isSum) {
-                String descendingName = attribute + "#";
-                leaderboards.put(descendingName, new Leaderboard(descendingName, true));
+        for(String attribute : LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.keySet()) {
+            if (LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.get(attribute).isSum) {
+                String name = attribute + "#";
+                leaderboards.put(name, new Leaderboard(name, true));
                 continue;
             }
             String descendingName = attribute + "+";
@@ -40,13 +41,29 @@ public class LeaderboardTracker {
     }
 
     public void record(PlayerEntity caughtBy, Fish fish) {
-        for(String attributeName : fish.getAttributeMap().keySet()) {
-            record(
-                    caughtBy.getName().getString(),
-                    LeaderboardAttribute.get(attributeName),
-                    fish
-            );
-        }
+        String holderName = caughtBy.getName().getString();
+        record(holderName, LeaderboardAttributes.LENGTH, fish);
+        record(holderName, LeaderboardAttributes.WEIGHT, fish);
+        record(holderName, LeaderboardAttributes.GRADE, fish);
+        record(holderName, LeaderboardAttributes.VALUE, fish);
+        record(holderName, LeaderboardAttributes.LEVEL, fish);
+        record(holderName, LeaderboardAttributes.DAMAGE, fish);
+        record(holderName, LeaderboardAttributes.COUNT, fish);
+    }
+
+    public void record(PlayerEntity caughtBy, FishingCard fishingCard) {
+        String holderName = caughtBy.getName().getString();
+        UUID holderUUID = caughtBy.getUuid();
+
+        Leaderboard lbPlayerLevel = leaderboards.get(LeaderboardAttributes.PLAYER_LEVEL.attributeName + '#');
+        lbPlayerLevel.consume(holderUUID, holderName, LeaderboardAttributes.PLAYER_LEVEL.getValue(fishingCard, lbPlayerLevel));
+
+        Leaderboard lbCapeTime = leaderboards.get(LeaderboardAttributes.CAPE_TIME.attributeName + '#');
+        lbCapeTime.consume(holderUUID, holderName, LeaderboardAttributes.CAPE_TIME.getValue(fishingCard, lbCapeTime));
+
+        Leaderboard lbCredit = leaderboards.get(LeaderboardAttributes.CREDIT.attributeName + '#');
+        lbCredit.consume(holderUUID, holderName, LeaderboardAttributes.CREDIT.getValue(fishingCard, lbCredit));
+
     }
 
     private void record(String holderName, LeaderboardAttribute attribute, Fish fish) {

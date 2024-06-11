@@ -2,47 +2,42 @@ package net.semperidem.fishingclub.leaderboard;
 
 import net.semperidem.fishingclub.fish.Fish;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
-public class LeaderboardAttribute {
-    public static final HashMap<String,LeaderboardAttribute> LEADERBOARD_ATTRIBUTES = new HashMap<>();
-
-    public static final LeaderboardAttribute WEIGHT = new LeaderboardAttribute("weight");
-    public static final LeaderboardAttribute LENGTH = new LeaderboardAttribute("length");
-    public static final LeaderboardAttribute VALUE = new LeaderboardAttribute("value");
-    public static final LeaderboardAttribute LEVEL = new LeaderboardAttribute("level");
-    public static final LeaderboardAttribute DAMAGE = new LeaderboardAttribute("damage");
-    public static final LeaderboardAttribute GRADE = new LeaderboardAttribute("grade", true, (fish, leaderboard) -> {
-        Leaderboard.Entry currentEntry = leaderboard.getCurrentRecord(fish.caughtByUUID);
-        return String.valueOf(currentEntry.value + 1);
-    });
+public class LeaderboardAttribute<T> {
 
     String attributeName;
-    private BiFunction<Fish, Leaderboard, String> valueGetter;
+    private BiFunction<T, Leaderboard, Float> valueGetter;
     boolean isSum = false;
 
 
 
-    LeaderboardAttribute(String attributeName, boolean isSum, BiFunction<Fish, Leaderboard, String> valueGetter) {
+    LeaderboardAttribute(String attributeName, boolean isSum, BiFunction<T, Leaderboard, Float> valueGetter) {
         this.attributeName = attributeName;
         this.valueGetter = valueGetter;
         this.isSum = isSum;
-        LEADERBOARD_ATTRIBUTES.put(attributeName, this);
+        LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.put(attributeName, this);
+    }
+
+    LeaderboardAttribute(String attributeName, BiFunction<T, Leaderboard, Float> valueGetter) {
+        this(attributeName, false, valueGetter);
     }
     LeaderboardAttribute(String attributeName) {
         this.attributeName = attributeName;
-        this.valueGetter = (fish, leaderboard) -> fish.getAttributeMap().get(attributeName);
-        LEADERBOARD_ATTRIBUTES.put(attributeName, this);
+        this.valueGetter = (possiblyFish, leaderboard) -> {
+            if (possiblyFish instanceof Fish fish) {
+                return fish.getAttributeMap().get(attributeName);
+            }
+            return 0f;
+        };
+        LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.put(attributeName, this);
     }
 
-    public String getValue(Fish fish, Leaderboard leaderboard) {
-        return valueGetter.apply(fish, leaderboard);
+    public Float getValue(T t, Leaderboard leaderboard) {
+        return valueGetter.apply(t, leaderboard);
     }
 
     public static LeaderboardAttribute get(String attributeName) {
-        return LEADERBOARD_ATTRIBUTES.get(attributeName);
+        return LeaderboardAttributes.LEADERBOARD_ATTRIBUTES.get(attributeName);
     }
 }

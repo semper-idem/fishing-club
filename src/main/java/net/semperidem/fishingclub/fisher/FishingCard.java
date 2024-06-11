@@ -187,6 +187,7 @@ public class FishingCard extends FishingCardInventory {
 
         if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
             leaderboardTrackingServer.getLeaderboardTracker().record(holder, fish);
+            leaderboardTrackingServer.getLeaderboardTracker().record(holder, this);
         }
     }
 
@@ -208,6 +209,14 @@ public class FishingCard extends FishingCardInventory {
 
     public void requestSummon(){
         linkingManager.requestSummon();
+    }
+
+    public void addCapeTime(long timeToAdd) {
+        historyManager.addCapeTime(timeToAdd);
+    }
+
+    public float getCapeTime() {
+        return historyManager.getTotalCapeTime();
     }
 
     public void shareBait() {

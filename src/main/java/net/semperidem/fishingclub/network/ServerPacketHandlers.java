@@ -12,6 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
+import net.semperidem.fishingclub.LeaderboardTrackingServer;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
@@ -104,6 +105,9 @@ public class ServerPacketHandlers {
             }
             FishingCard fishingCard = FishingCard.getPlayerCard(player);
             fishingCard.addCredit(credit);
+            if (server instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
+                leaderboardTrackingServer.getLeaderboardTracker().record(player, fishingCard);
+            }
             ServerPacketSender.sendCardUpdate(player, fishingCard);
         });
     }
@@ -223,7 +227,7 @@ public class ServerPacketHandlers {
             if (!(server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties)) {
                 return;
             }
-            success = fishingLevelProperties.claimCape(player.getUuid(), player.getName().getString(), claimPrice);
+            success = fishingLevelProperties.claimCape(player, claimPrice);
             if (!success) {
                 return;
             }

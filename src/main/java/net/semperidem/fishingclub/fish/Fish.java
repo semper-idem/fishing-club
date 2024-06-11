@@ -44,7 +44,7 @@ public class Fish {
 
     public boolean consumeGradeBuff;
 
-    private final HashMap<String, String> attributeMap = new HashMap<>();
+    private final HashMap<String, Float> attributeMap = new HashMap<>();
 
     public String id;
 
@@ -88,13 +88,19 @@ public class Fish {
         updateAttributeMap();
     }
 
+    public float compareAttribute(Fish otherFish, String attributeName) {
+        float otherValue = otherFish.attributeMap.get(attributeName);
+        float selfValue = attributeMap.get(attributeName);
+        return selfValue - otherValue;
+    }
+
     private void updateAttributeMap() {
-        attributeMap.put("level", String.valueOf(level));
-        attributeMap.put("grade", String.valueOf(grade));
-        attributeMap.put("value", String.valueOf(value));
-        attributeMap.put("weight", String.valueOf(weight));
-        attributeMap.put("length", String.valueOf(length));
-        attributeMap.put("damage", String.valueOf(damage));
+        attributeMap.put("level", (float) level);
+        attributeMap.put("grade", (float) grade);
+        attributeMap.put("value", (float) value);
+        attributeMap.put("weight", weight);
+        attributeMap.put("length", length);
+        attributeMap.put("damage", damage);
     }
 
      public NbtCompound getNbt(){
@@ -218,7 +224,7 @@ public class Fish {
         return isEqual;
     }
 
-    public Map<String, String> getAttributeMap() {
+    public Map<String, Float> getAttributeMap() {
         return attributeMap;
     }
 }

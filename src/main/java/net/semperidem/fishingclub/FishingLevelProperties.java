@@ -1,5 +1,8 @@
 package net.semperidem.fishingclub;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.semperidem.fishingclub.fisher.cape.Claim;
+
 import java.util.UUID;
 
 public interface FishingLevelProperties {
@@ -11,6 +14,9 @@ public interface FishingLevelProperties {
     int getMinFishingKingClaimPrice();
     void setFishingKing(UUID playerUUID, String playerName);
 
-    boolean claimCape(UUID claimedBy, String claimedByName, int claimPrice);
+    boolean claimCape(PlayerEntity claimedBy, int claimPrice);
     void setClaimPrice(int claimPrice);
+    void clearClaimTimestamps();
+    void addClaimTimestamp(Claim claim);
+    long getCurrentClaimTime();
 }

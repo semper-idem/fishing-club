@@ -6,8 +6,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
+import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
@@ -15,7 +18,9 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HistoryManager extends DataManager {
     private static final long DAY_LENGTH = 24000;
@@ -29,6 +34,7 @@ public class HistoryManager extends DataManager {
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
+    private long totalCapeTime = 0;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -36,6 +42,14 @@ public class HistoryManager extends DataManager {
 
     public void meetDerek(FishermanEntity.SummonType summonType) {
         derekMet.add(summonType.name());
+    }
+
+    public void addCapeTime(long time) {
+        totalCapeTime += time;
+    }
+
+    public long getTotalCapeTime(){
+        return totalCapeTime;
     }
 
     public void giveDerekFish(){
@@ -143,6 +157,7 @@ public class HistoryManager extends DataManager {
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
+        totalCapeTime = historyTag.getLong(TOTAL_CAPE_TIME_TAG);
         NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
         unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt((NbtCompound) rewardTag)));
     }
@@ -158,6 +173,7 @@ public class HistoryManager extends DataManager {
         historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
+        historyTag.putLong(TOTAL_CAPE_TIME_TAG, totalCapeTime);
         NbtList unclaimedRewardsTag = new NbtList();
         unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.writeNbt(new NbtCompound())));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
@@ -203,6 +219,7 @@ public class HistoryManager extends DataManager {
     }
 
 
+
     private static final String TAG = "history";
     private static final String USED_CHUNKS_TAG = "used_chunks";
     private static final String UNCLAIMED_REWARDS_TAG = "unclaimed_rewards";
@@ -213,4 +230,5 @@ public class HistoryManager extends DataManager {
     private static final String Z_TAG = "z";
     private static final String DEREK_MET_TAG = "derek_met";
     private static final String WELCOMED_DEREK_TAG = "welcomed_derek";
+    private static final String TOTAL_CAPE_TIME_TAG = "total_cape_time_tag";
 }

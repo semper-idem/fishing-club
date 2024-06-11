@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.leaderboard;
 
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -62,15 +63,16 @@ public class Leaderboard implements Serializable {
     }
 
 
-    void consume(UUID holder, String holderName, LeaderboardAttribute attribute, Fish fish) {
+    void consume(UUID holder, String holderName, double value) {
         int place = 0;
         int previousPlace = getIndexOf(holder);
-        double value = Double.parseDouble(attribute.getValue(fish, this));
-        if (previousPlace >= 0 && (getHolderValue(holder) >= value & descending)) {
-            return;
+        if (previousPlace >= 0) {
+            if ((getHolderValue(holder) >= value && descending) || (getHolderValue(holder) <= value && !descending)) {
+                return;
+            }
         }
         for(Entry entry : standings) {
-            if (value > entry.value & descending) {
+            if ((value > entry.value && descending) || (value < entry.value && !descending)) {
                 break;
             }
             place++;
@@ -83,6 +85,12 @@ public class Leaderboard implements Serializable {
                 holderName,
                 value
         ));
+    }
+
+
+    void consume(UUID holder, String holderName, LeaderboardAttribute<Fish> attribute, Fish fish) {
+        double value = attribute.getValue(fish, this);
+        consume(holder, holderName, value);
     }
 
     private boolean hasHolderRecord(UUID holder) {
