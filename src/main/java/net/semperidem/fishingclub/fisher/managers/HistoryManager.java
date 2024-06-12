@@ -92,6 +92,7 @@ public class HistoryManager extends DataManager {
             speciesStatistics = fishAtlas.get(fish.name);
         }
         speciesStatistics.record(fish);
+        fishAtlas.put(fish.name, speciesStatistics);
     }
 
     public void fishCaught(Fish fish) {

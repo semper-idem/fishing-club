@@ -7,9 +7,9 @@ public class SpeciesStatistics {
     private final String name;
     private int count;
     private int topGradeCount;
-    private float bestLength;
-    private float worstLength;
-    private float bestWeight;
+    private float bestLength = 0;
+    private float worstLength = 0;
+    private float bestWeight = 0;
     private float worstWeight;
 
     SpeciesStatistics(String name) {
@@ -34,13 +34,13 @@ public class SpeciesStatistics {
         if (fish.length > bestLength) {
             bestLength = fish.length;
         }
-        if (fish.length < worstLength) {
+        if (fish.length < worstLength || worstLength == 0) {
             worstLength = fish.length;
         }
         if (fish.weight > bestWeight) {
             bestWeight = fish.weight;
         }
-        if (fish.weight < worstWeight) {
+        if (fish.weight < worstWeight || worstWeight == 0) {
             worstWeight = fish.weight;
         }
     }
