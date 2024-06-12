@@ -17,6 +17,7 @@ import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 
@@ -183,7 +184,7 @@ public class FishingCard extends FishingCardInventory {
         expGained = (int)(expGained * passiveExpMultiplier);
 
         progressionManager.grantExperience(expGained);
-        historyManager.fishCaught();
+        historyManager.fishCaught(fish);
         statusEffectHelper.fishCaught(progressionManager, fish);
 
         if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
@@ -192,6 +193,10 @@ public class FishingCard extends FishingCardInventory {
             tracker.record(holder, this, tracker.highestLevel);
             tracker.record(holder, this, tracker.longestCapeClaimTotal);
         }
+    }
+
+    public HashMap<String, SpeciesStatistics> getFishAtlas() {
+        return historyManager.getFishAtlas();
     }
 
     public void addPerk(String perkName){
