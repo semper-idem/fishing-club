@@ -20,6 +20,11 @@ public class MemberButton extends ButtonWidget {
             80,
             60
     );
+    public static final Texture BUTTON_EXIT_TEXTURE = new Texture(
+            FishingClub.getIdentifier("textures/gui/member_button_exit.png"),
+            16,
+            48
+    );
 
 
     public static final Texture SMALL_BUTTON_TEXTURE = new Texture(

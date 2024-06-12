@@ -2,12 +2,19 @@ package net.semperidem.fishingclub;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.semperidem.fishingclub.registry.FishingClubRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.util.Commands;
+
+import java.util.function.Function;
 
 public class FishingClub implements ModInitializer {
     public static final String MOD_ID = "fishing-club";
@@ -31,4 +38,5 @@ public class FishingClub implements ModInitializer {
     public static Identifier getIdentifier(String resource){
         return new Identifier(MOD_ID, resource);
     }
+
 }

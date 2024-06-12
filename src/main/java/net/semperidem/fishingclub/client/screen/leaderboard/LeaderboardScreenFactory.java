@@ -31,4 +31,9 @@ public class LeaderboardScreenFactory implements ExtendedScreenHandlerFactory {
             LeaderboardSerializer.writePacket(leaderboardTrackingServer.getLeaderboardTracker(), buf);
         }
     }
+
+    @Override
+    public boolean shouldCloseCurrentScreen() {
+        return false;
+    }
 }

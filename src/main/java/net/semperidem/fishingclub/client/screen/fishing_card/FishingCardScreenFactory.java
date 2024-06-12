@@ -32,4 +32,9 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory {
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeNbt(fishingCard.toNbt());
     }
+
+    @Override
+    public boolean shouldCloseCurrentScreen() {
+        return false;
+    }
 }

@@ -1,10 +1,8 @@
 package net.semperidem.fishingclub.client.screen.leaderboard;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -12,11 +10,10 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
-import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.screen.leaderboard.LeaderboardScreenHandler;
 
 import java.awt.*;
-import java.math.BigDecimal;
 import java.util.Iterator;
 
 public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> implements ScreenHandlerProvider<LeaderboardScreenHandler> {
@@ -27,23 +24,44 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     Leaderboard<?> currentLeaderboard;
     MemberButton nextButton;
     MemberButton previousButton;
+    MemberButton exitButton;
+    private int exitButtonX, exitButtonY;
     private int leaderboardTitleX, leaderboardTitleY;
     private int nextButtonX, nextButtonY;
     private int previousButtonX, previousButtonY;
     private int boardBottomY;
     private static final int RECORD_PADDING = 60;
-    private int firstColor = 0xffc30b;
+    private int firstColor = 0xffaa00;
     private int secondColor = 0xbbb9bd;
     private int thirdColor = 0x7d3f11;
     private int otherColor = 0x808080;
     private int dividerColor = 0x33777777;
     private int dividerColor2 = 0x33444444;
     private static final int MAX_RECORDS_SHOWS = 10;
+    private int[] firstColorGradient = new int[80];
+    static final int CYCLE = 1600;
+    int timer = CYCLE;
 
     public LeaderboardScreen(LeaderboardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        populateGradient();
     }
 
+    private void populateGradient() {
+        Color gradientColor = new Color(firstColor);
+        for(int i = 39; i >= 0; i--) {
+            firstColorGradient[i] = gradientColor.getRGB();
+
+            int r = gradientColor.getRed();
+            int g = gradientColor.getGreen();
+            int b = gradientColor.getBlue();
+            gradientColor = new Color(
+                    r,
+                    (int) Math.min(222, g * 1.0125f),
+                    b
+            );
+        }
+    }
     @Override
     protected void init() {
         x = (int) ((width - BACKGROUND.renderWidth) * 0.5f);
@@ -57,14 +75,21 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
         previousButtonX = x + 8;
         previousButtonY = nextButtonY;
         leftRecordX = mainBoardX;
-        middleRecordX = leftRecordX + 100;
         rightRecordX = x + BACKGROUND.renderWidth - RECORD_PADDING;
+        middleRecordX = rightRecordX - 60;
         boardBottomY = y + BACKGROUND.renderHeight - 32;
+        exitButtonX = x + 14;
+        exitButtonY =  y + BACKGROUND.renderHeight - 28;
 
         currentLeaderboard = handler.getCurrentLeaderboard();
+        exitButton = new MemberButton(exitButtonX,exitButtonY,16,16, Text.empty(), button -> {
+            ClientPacketSender.sendOpenFisherInfoScreen();
+        });
+        exitButton.setTexture(MemberButton.BUTTON_EXIT_TEXTURE);
         nextButton = new MemberButton(nextButtonX,nextButtonY,24,20,Text.literal(">>"), button -> currentLeaderboard = handler.getNextLeaderboard());
         previousButton = new MemberButton(previousButtonX,previousButtonY,24,20,Text.literal("<<"), button -> currentLeaderboard = handler.getPreviousLeaderboard());
         addDrawableChild(nextButton);
+        addDrawableChild(exitButton);
         addDrawableChild(previousButton);
     }
 
@@ -78,14 +103,24 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     }
     public String getRecordFormatting(int recordNumber) {
         return switch (recordNumber) {
-            case 0 -> "§l";
-            case 1,2 -> "";
+            case 0 -> "";
             default -> "";
         };
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if (timer < -1600) {
+            timer = CYCLE;
+        }
+        timer--;
+        int gradientNumber = (int) Math.sqrt(Math.abs(timer));
+        int st = firstColor;
+        if (gradientNumber < 40) {
+            st = firstColorGradient[gradientNumber];
+        }
+
+        textRenderer.drawWithShadow(matrices, String.valueOf(gradientNumber), 5, 5, TITLE_COLOR);
         drawHorizontalLine(matrices, 0, 100, 150, 0xffeace);
         super.render(matrices, mouseX, mouseY, delta);
         if (currentLeaderboard == null) {
@@ -101,12 +136,12 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
             }
             Leaderboard.Entry entry = it.next();
             String leftString = getRecordFormatting(index) + (index + 1) + ") " + entry.playerName;
-            int color = getRecordColor(index);
+            int color = index == 0 ? st : getRecordColor(index);
 
             String middleString = getRecordFormatting(index) + (!entry.context.isEmpty() ? "["+ entry.context +"]" : "");
             String rightString = getRecordFormatting(index) + String.format(currentLeaderboard.name.startsWith("_") ? "%.0f" : "%.2f", entry.value) + currentLeaderboard.unit;
             textRenderer.drawWithShadow(matrices, leftString, leftRecordX, mainBoardY + entryOffset, color);
-            textRenderer.drawWithShadow(matrices, middleString, middleRecordX, mainBoardY + entryOffset, color);
+            textRenderer.drawWithShadow(matrices, middleString, middleRecordX - textRenderer.getWidth(middleString), mainBoardY + entryOffset, color);
             textRenderer.drawWithShadow(matrices, rightString, rightRecordX - textRenderer.getWidth(rightString), mainBoardY + entryOffset, color);
             fill(matrices, leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 13, dividerColor2);
             fill(matrices, leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 12, dividerColor);

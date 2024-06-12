@@ -20,13 +20,13 @@ public class LeaderboardTracker {
     public final Leaderboard<FishingCard> highestLevel;
     public final Leaderboard<FishingCard> longestCapeClaimTotal;
     public LeaderboardTracker() {
-        bestWeight = new Leaderboard<>("weight+", Text.literal("Heaviest Fish"), "kg", false, fish -> fish.weight);
-        worstWeight = new Leaderboard<>("weight-", Text.literal("Lightest Fish"), "kg", true, fish -> fish.weight);
-        bestLength = new Leaderboard<>("length+", Text.literal("Longest Fish"), "cm", false, fish -> fish.length);
-        worstLength = new Leaderboard<>("length-", Text.literal("Shortest Fish"), "cm", true, fish -> fish.length);
-        highestCredit = new Leaderboard<>("_credit+", Text.literal("Most Credit"), "$", false, card -> (float) card.getCredit());
-        highestLevel = new Leaderboard<>("_level+", Text.literal("Highest Level"), "", false, card -> (float) card.getLevel());
-        longestCapeClaimTotal = new Leaderboard<>("_capeClaim", Text.literal("Total Crowned Time"), " ticks", false, card -> {
+        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, fish -> fish.weight);
+        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, fish -> fish.weight);
+        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, fish -> fish.length);
+        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, fish -> fish.length);
+        highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
+        highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
+        longestCapeClaimTotal = new Leaderboard<>("_capeClaim", Text.literal("§lTotal Crowned Time"), " ticks", false, card -> {
             float capeTotal = card.getCapeTime();
             SaveProperties saveProperties = Objects.requireNonNull(card.getHolder().getServer()).getSaveProperties();
             if (!(saveProperties instanceof FishingLevelProperties fishingLevelProperties)) {

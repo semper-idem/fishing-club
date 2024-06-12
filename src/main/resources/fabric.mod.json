@@ -26,5 +26,6 @@
   },
   "mixins": [
     "fishingclub.mixins.json"
-    ]
+  ],
+  "accessWidener": "fishing-club.accesswidener"
 }
