@@ -10,6 +10,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.UUID;
 
 public class LeaderboardTracker {
     public final Leaderboard<Fish> bestWeight;

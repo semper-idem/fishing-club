@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class LeaderboardScreenHandler extends ScreenHandler {
     LeaderboardTracker tracker = new LeaderboardTracker();
-    ArrayList<Leaderboard> leaderboards;
+    ArrayList<Leaderboard<?>> leaderboards;
     int leaderboardIndex = 0;
 
     public LeaderboardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
@@ -26,21 +26,21 @@ public class LeaderboardScreenHandler extends ScreenHandler {
         super(ScreenHandlerRegistry.LEADERBOARD_SCREEN, syncId);
     }
 
-    public ArrayList<Leaderboard> getLeaderboards() {
+    public ArrayList<Leaderboard<?>> getLeaderboards() {
         return leaderboards;
     }
 
-    public Leaderboard getCurrentLeaderboard() {
+    public Leaderboard<?> getCurrentLeaderboard() {
         return leaderboards.get(leaderboardIndex);
     }
-    public Leaderboard getNextLeaderboard() {
+    public Leaderboard<?> getNextLeaderboard() {
         leaderboardIndex++;
         if (leaderboardIndex >= leaderboards.size()) {
             leaderboardIndex = 0;
         }
         return leaderboards.get(leaderboardIndex);
     }
-    public Leaderboard getPreviousLeaderboard() {
+    public Leaderboard<?> getPreviousLeaderboard() {
         leaderboardIndex--;
         if (leaderboardIndex < 0) {
             leaderboardIndex = leaderboards.size() - 1;

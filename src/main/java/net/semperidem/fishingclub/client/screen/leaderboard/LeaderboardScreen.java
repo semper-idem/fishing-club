@@ -7,6 +7,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
@@ -135,7 +136,8 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
                 return;
             }
             Leaderboard.Entry entry = it.next();
-            String leftString = getRecordFormatting(index) + (index + 1) + ") " + entry.playerName;
+            boolean isKing = FishingClubClient.FISHING_KING_UUID.compareTo(entry.key) == 0;
+            String leftString =(isKing ? "*" : "") + getRecordFormatting(index) + (index + 1) + ") " + entry.playerName;
             int color = index == 0 ? st : getRecordColor(index);
 
             String middleString = getRecordFormatting(index) + (!entry.context.isEmpty() ? "["+ entry.context +"]" : "");

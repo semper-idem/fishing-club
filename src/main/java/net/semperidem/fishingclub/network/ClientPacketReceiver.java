@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
+import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
@@ -54,10 +55,9 @@ public class ClientPacketReceiver {
             int minCapePrice = buf.readInt();
             client.execute(() -> {
                 FishingClubClient.FISHING_KING_UUID = capeHolderUUID;
-                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
-                    return;
+                if ((client.currentScreen instanceof MemberScreen memberScreen)) {
+                    memberScreen.getScreenHandler().setCapeHolder(capeHolder, minCapePrice);
                 }
-                memberScreen.getScreenHandler().setCapeHolder(capeHolder, minCapePrice);
             });
         });
     }
