@@ -67,7 +67,7 @@ public class StatusEffectHelper {
         box.expand(SPREAD_EFFECT_RANGE);
 
         List<ServerPlayerEntity> nearPlayers = holder.getEntityWorld()
-                .getOtherEntities(null, box)
+                .getOtherEntities(holder, box)
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)

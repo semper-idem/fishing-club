@@ -32,6 +32,10 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
     public FishingCard fishingCard = new FishingCard((PlayerEntity) (Object)this);
     @Unique
     private static final String FISHING_CARD_TAG = "fishing_card";
+    @Unique
+    int refreshTimer = 0;
+    @Unique
+    private static final int REFRESH_RATE = 100;
 
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
@@ -47,21 +51,27 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
         if (!this.uuid.equals(kingUUID)) {
             return;
         }
+
+        if (this.refreshTimer > 0) {
+            this.refreshTimer--;
+            return;
+        }
+        this.refreshTimer = REFRESH_RATE;
         //Add aoe effect
         Box aoeBox = new Box(getBlockPos());
         aoeBox.expand(5);
         List<ServerPlayerEntity> nearPlayers = getEntityWorld()
-                .getOtherEntities(null, aoeBox)
+                .getOtherEntities(this, aoeBox)
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .toList();
 
         for(ServerPlayerEntity otherPlayer : nearPlayers) {
-            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.EXP_BUFF, 200));
-            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF, 200));
-            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 200));
-            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.FREQUENCY_BUFF, 200));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.EXP_BUFF, 600));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF, 600));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 600));
+            otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.FREQUENCY_BUFF, 600));
         }
     }
 

@@ -137,7 +137,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
             }
             Leaderboard.Entry entry = it.next();
             boolean isKing = FishingClubClient.FISHING_KING_UUID.compareTo(entry.key) == 0;
-            String leftString =(isKing ? "*" : "") + getRecordFormatting(index) + (index + 1) + ") " + entry.playerName;
+            String leftString =getRecordFormatting(index) + (index + 1) + ") "  + entry.playerName+ (isKing ? " [♚]" : "");
             int color = index == 0 ? st : getRecordColor(index);
 
             String middleString = getRecordFormatting(index) + (!entry.context.isEmpty() ? "["+ entry.context +"]" : "");
@@ -162,7 +162,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
             rightString = getRecordFormatting(place) + String.format(currentLeaderboard.name.startsWith("_") ? "%.0f" : "%.2f", entry.value) + currentLeaderboard.unit;
         }
         textRenderer.drawWithShadow(matrices, leftString, leftRecordX, boardBottomY, color);
-        textRenderer.drawWithShadow(matrices, middleString, middleRecordX, boardBottomY, color);
+        textRenderer.drawWithShadow(matrices, middleString, middleRecordX - textRenderer.getWidth(middleString), boardBottomY, color);
         textRenderer.drawWithShadow(matrices, rightString, rightRecordX - textRenderer.getWidth(rightString), boardBottomY, color);
 
     }
