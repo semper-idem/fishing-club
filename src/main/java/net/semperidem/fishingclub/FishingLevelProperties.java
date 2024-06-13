@@ -11,7 +11,7 @@ public interface FishingLevelProperties {
     String getFishingKingName();
 
     int getClaimPrice();
-    int getMinFishingKingClaimPrice();
+    int getMinFishingKingClaimPrice(PlayerEntity player);
     void setFishingKing(UUID playerUUID, String playerName);
 
     boolean claimCape(PlayerEntity claimedBy, int claimPrice);

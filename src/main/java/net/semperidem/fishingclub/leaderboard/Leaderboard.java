@@ -50,6 +50,10 @@ public class Leaderboard<T> {
         return null;
     }
 
+    public boolean isFirst(PlayerEntity player) {
+        return standings.first().key.compareTo(player.getUuid()) == 0;
+    }
+
     void consume(PlayerEntity player, T valueHolder) {
         UUID key = player.getUuid();
         Float value = valueGetter.apply(valueHolder);

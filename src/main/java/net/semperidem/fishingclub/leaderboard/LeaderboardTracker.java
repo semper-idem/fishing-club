@@ -10,9 +10,9 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 public class LeaderboardTracker {
+    private static final float DISCOUNT_PER_TITLE = 0.1f;
     public final Leaderboard<Fish> bestWeight;
     public final Leaderboard<Fish> worstWeight;
     public final Leaderboard<Fish> bestLength;
@@ -40,6 +40,26 @@ public class LeaderboardTracker {
 
             return capeTotal + fishingLevelProperties.getCurrentClaimTime();
         });
+    }
+
+    public float getDiscount(PlayerEntity player) {
+        float discount = 0;
+        if (bestWeight.isFirst(player)) {
+            discount += DISCOUNT_PER_TITLE;
+        }
+        if (worstWeight.isFirst(player)) {
+            discount += DISCOUNT_PER_TITLE;
+        }
+        if (bestLength.isFirst(player)) {
+            discount += DISCOUNT_PER_TITLE;
+        }
+        if (worstLength.isFirst(player)) {
+            discount += DISCOUNT_PER_TITLE;
+        }
+        if (highestLevel.isFirst(player)) {
+            discount += DISCOUNT_PER_TITLE;
+        }
+        return discount;
     }
 
 

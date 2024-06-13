@@ -243,7 +243,7 @@ public class ServerPacketHandlers {
                         serverPlayer,
                         fishingLevelProperties.getFishingKingUUID(),
                         fishingLevelProperties.getFishingKingName(),
-                        fishingLevelProperties.getMinFishingKingClaimPrice()
+                        fishingLevelProperties.getMinFishingKingClaimPrice(serverPlayer)
                 );
             });
         });
@@ -256,7 +256,7 @@ public class ServerPacketHandlers {
                         player,
                         fishingLevelProperties.getFishingKingUUID(),
                         fishingLevelProperties.getFishingKingName(),
-                        fishingLevelProperties.getMinFishingKingClaimPrice()
+                        fishingLevelProperties.getMinFishingKingClaimPrice(player)
                 );
                 ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
             }

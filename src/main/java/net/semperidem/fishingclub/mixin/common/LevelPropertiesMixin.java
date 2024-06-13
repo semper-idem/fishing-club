@@ -9,12 +9,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.semperidem.fishingclub.FishingLevelProperties;
+import net.semperidem.fishingclub.LeaderboardTrackingServer;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.cape.Claim;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +35,9 @@ import java.util.UUID;
 
 @Mixin(LevelProperties.class)
 public class LevelPropertiesMixin implements FishingLevelProperties {
+    @Unique
+    private static final float CLAIM_MULTIPLIER = 1.5f;
+
     @Shadow private long time;
     @Unique
     private static final String FISHING_KING_UUID_TAG = "FishingKingUUID";
@@ -110,11 +115,16 @@ public class LevelPropertiesMixin implements FishingLevelProperties {
     }
 
     @Override
-    public int getMinFishingKingClaimPrice() {
+    public int getMinFishingKingClaimPrice(PlayerEntity player) {
         if (getClaimPrice() <= MIN_CLAIM_PRICE) {
             return MIN_CLAIM_PRICE;
         }
-        return (int) (getClaimPrice() * 1.1f);
+        float discount = 0;
+        boolean hasCape = this.fishingKingUUID.compareTo(player.getUuid()) == 0;
+        if (!hasCape && player.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
+            discount = leaderboardTrackingServer.getLeaderboardTracker().getDiscount(player);
+        }
+        return (int) (getClaimPrice() * (CLAIM_MULTIPLIER - discount));
     }
 
     @Override
@@ -126,7 +136,7 @@ public class LevelPropertiesMixin implements FishingLevelProperties {
 
     @Override
     public boolean claimCape(PlayerEntity claimedBy, int claimPrice) {
-        if (claimPrice < getMinFishingKingClaimPrice()) {
+        if (claimPrice < getMinFishingKingClaimPrice(claimedBy)) {
             return false;
         }
         this.fishingKingUUID = claimedBy.getUuid();
