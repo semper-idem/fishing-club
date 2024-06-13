@@ -44,6 +44,9 @@ public class LeaderboardTracker {
 
     public float getDiscount(PlayerEntity player) {
         float discount = 0;
+        if (longestCapeClaimTotal.isFirst(player)) {
+                return 0;
+        }
         if (bestWeight.isFirst(player)) {
             discount += DISCOUNT_PER_TITLE;
         }
