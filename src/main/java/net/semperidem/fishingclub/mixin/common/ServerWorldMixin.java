@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,6 +21,7 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.entity.FishermanEntity;
+import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -72,41 +74,14 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
             return;
         }
         int fishCount = (int) (Math.random() * power);
+        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity, getWorldChunk(explosionPos).getPos());
         for(int i = 0; i < fishCount; i++) {
-            catchFishWithTnt(causingEntity, explosionPos);
+            FishUtil.fishCaughtAt(
+                    causingEntity,
+                    FishUtil.getFishOnHook(fee),
+                    explosionPos
+            );
         }
-    }
-
-
-
-
-    @Unique
-    private void catchFishWithTnt(ServerPlayerEntity causingEntity, BlockPos explosionPos){
-        ChunkPos chunkPos = getWorldChunk(explosionPos).getPos();
-        FishUtil.fishCaughtAt(
-                causingEntity,
-                FishUtil.getFishOnHook(new IHookEntity() {
-                    @Override
-                    public FishingCard getFishingCard() {
-                        return FishingCard.getPlayerCard(causingEntity);
-                    }
-
-                    @Override
-                    public ItemStack getCaughtUsing() {
-                        return Items.TNT.getDefaultStack();
-                    }
-
-                    @Override
-                    public ChunkPos getFishedInChunk() {
-                        return chunkPos;
-                    }
-                    @Override
-                    public float getFishMultiplier() {
-                        return 0.35f;
-                    }
-                }),
-                explosionPos
-        );
     }
 
 
@@ -131,4 +106,5 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
     public void setDerek(FishermanEntity derek) {
         this.derek = derek;
     }
+
 }

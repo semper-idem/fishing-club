@@ -44,6 +44,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private int removalTimer;
     private int hookCountdown;
     private int waitCountdown;
+    private int lastWaitCountdown;
     private int fishTravelCountdown;
     private float fishAngle;
     private boolean inOpenWater = true;
@@ -348,6 +349,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         int minWait = (int) (MIN_WAIT * catchRate);
         int maxWait = minWait * 2;
         this.waitCountdown = 20;//MathHelper.nextInt(this.random, minWait, maxWait);
+        this.lastWaitCountdown = this.waitCountdown;
     }
 
 
@@ -460,8 +462,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     }
 
     @Override
-    public float getFishMultiplier() {
+    public float getFishMethodDebuff() {
         return 1;
+    }
+
+    @Override
+    public float getWaitTime() {
+        return this.lastWaitCountdown;
     }
 
     enum State {

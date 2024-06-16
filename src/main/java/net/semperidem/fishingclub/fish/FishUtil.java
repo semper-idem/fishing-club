@@ -159,7 +159,18 @@ public class FishUtil {
     }
 
     private static Text getGradeText(int grade){
-        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + MathUtil.integerToRoman(grade));
+        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + getGradeString(grade));
+    }
+
+    private static String getGradeString(int grade) {
+        return switch(grade) {
+            case 1 -> "Defect";
+            case 2 -> "Poor";
+            case 3 -> "Standard";
+            case 4 -> "Good";
+            case 5 -> "Excellent";
+            default -> "Unidentifiable";
+        };
     }
 
     private static Text getWeightText(float weight, int grade){
@@ -258,8 +269,8 @@ public class FishUtil {
 
         public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
         float skewPercentage = 0.5f;
-        skew = (float) Math.sqrt(skew) * 0.7f; //This deliberately lefts top 15% of randomAdjustments "unused" so we leave space for future bonuses
-        double skewPart = randomAdjustment * skew * skewPercentage;
+        skew = MathHelper.clamp(skew, 0.01f, 1);
+        double skewPart = randomAdjustment * (float) Math.sqrt(skew) * 0.8f * skewPercentage;
         double nextG = Math.max(-3, Math.min( 3, RANDOM.nextGaussian()));
         double mappedG = (nextG + 3) / 6;
         double randomPart = randomAdjustment * mappedG * (1 - skewPercentage);

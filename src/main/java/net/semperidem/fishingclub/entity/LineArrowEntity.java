@@ -115,7 +115,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     }
 
     @Override
-    public float getFishMultiplier() {
+    public float getFishMethodDebuff() {
         return (float) (1 - MathHelper.clamp(range * 0.0078125f + 0.25, 0.25f, 0.75f)); //Between 0.25 and 0.75 based no range(Max at 64blocks)
     }
 }

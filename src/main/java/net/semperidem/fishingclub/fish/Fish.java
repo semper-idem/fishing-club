@@ -16,13 +16,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static net.semperidem.fishingclub.fish.FishUtil.getPseudoRandomValue;
+
 public class Fish {
     private static final float FISHER_VEST_EXP_BONUS = 0.3f;
 
     private static final int MIN_LEVEL = 1;
     private static final int MAX_LEVEL = 99;
 
-    private static final int MIN_EXP = 5;
+    private static final int MIN_EXP = 3;
     private static final int MAX_EXP = 99999;
 
     private final Species species;
@@ -40,11 +42,12 @@ public class Fish {
     public float length;
 
     public ItemStack caughtUsing;
+    private IHookEntity hookedWith;
+    private FishingCard hookedBy;
     public UUID caughtByUUID;
 
     public boolean consumeGradeBuff;
 
-    private final HashMap<String, Float> attributeMap = new HashMap<>();
 
     public String id;
 
@@ -52,14 +55,16 @@ public class Fish {
         this.species = species;
         this.name = species.name;
 
+        this.hookedBy = fishingCard;
+        this.hookedWith = hookedWith;
         this.caughtUsing = hookedWith.getCaughtUsing();
+
 
         int fisherLevel = fishingCard.getLevel();
         boolean hasBoatBoostedHealth = fishingCard.isFishingFromBoat() && fishingCard.hasPerk(FishingPerks.LINE_HEALTH_BOAT);
-        int minGrade = fishingCard.getMinGrade();
         this.level = calculateLevel(fisherLevel);
-        this.weight = calculateWeight(minGrade);
-        this.length = calculateLength(minGrade);
+        this.weight = getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f);
+        this.length = getPseudoRandomValue(species.fishMinLength, species.fishRandomLength, level * 0.01f);
         this.grade = calculateGrade();
         this.damage = calculateDamage(fisherLevel, hasBoatBoostedHealth);
         this.value = calculateValue();
@@ -69,8 +74,7 @@ public class Fish {
         this.caughtByUUID = caughtBy.getUuid();
         this.consumeGradeBuff = caughtBy.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
         this.id =  (System.currentTimeMillis()) + "" + Math.abs(caughtByUUID.hashCode());
-        applyMultiplier(hookedWith.getFishMultiplier());
-        updateAttributeMap();
+        applyMethodDebuff(hookedWith.getFishMethodDebuff());
     }
 
     public Fish(NbtCompound nbt){
@@ -85,23 +89,9 @@ public class Fish {
         this.caughtUsing = ItemStack.fromNbt(nbt.getCompound("caughtUsing"));
         this.caughtByUUID = nbt.getUuid("caughtBy");
         this.id = nbt.getString("id");
-        updateAttributeMap();
     }
 
-    public float compareAttribute(Fish otherFish, String attributeName) {
-        float otherValue = otherFish.attributeMap.get(attributeName);
-        float selfValue = attributeMap.get(attributeName);
-        return selfValue - otherValue;
-    }
 
-    private void updateAttributeMap() {
-        attributeMap.put("level", (float) level);
-        attributeMap.put("grade", (float) grade);
-        attributeMap.put("value", (float) value);
-        attributeMap.put("weight", weight);
-        attributeMap.put("length", length);
-        attributeMap.put("damage", damage);
-    }
 
      public NbtCompound getNbt(){
          NbtCompound nbt = new NbtCompound();
@@ -148,30 +138,13 @@ public class Fish {
     }
 
     private int calculateLevel(int fisherLevel){
-        int adjustedFishLevel = FishUtil.getPseudoRandomValue(
+        int adjustedFishLevel = getPseudoRandomValue(
                 species.minLevel,
                 Math.min(99 - species.minLevel, fisherLevel),
                 Math.min(1, (float) (Math.min(0.5, (fisherLevel / 200f)) +
                                 (Math.sqrt(fisherLevel) / 50f)))
         );
         return MathHelper.clamp(adjustedFishLevel, MIN_LEVEL, MAX_LEVEL);
-    }
-
-
-    private float calculateWeight(int minGrade){
-        float weightMultiplier = Math.max(1, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_MAX_WEIGHT_MULTIPLIER));
-        float minGradeBuff = minGrade / 5f;
-        float minWeight = species.fishMinWeight + species.fishRandomWeight * minGradeBuff;
-        float weightRange = species.fishRandomWeight * weightMultiplier * (1 - minGradeBuff);
-        return FishUtil.getPseudoRandomValue(minWeight, weightRange, level / 100f);
-    }
-
-    private float calculateLength(int minGrade){
-        float lengthMultiplier = Math.max(1, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_MAX_LENGTH_MULTIPLIER));
-        float minGradeBuff = minGrade / 5f;
-        float minLength = species.fishMinLength + species.fishRandomLength * minGradeBuff;
-        float lengthRange = species.fishRandomLength * lengthMultiplier * (1 - minGradeBuff);
-        return FishUtil.getPseudoRandomValue(minLength, lengthRange, level / 100f);
     }
 
     private int calculateExperience(PlayerEntity caughtBy){
@@ -184,48 +157,42 @@ public class Fish {
     }
 
     private int calculateGrade(){
-        int weightGrade = FishUtil.getWeightGrade(this);
-        int lengthGrade = FishUtil.getLengthGrade(this);
-        float oneUpChance = Math.max(0, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_RARITY_BONUS));
-        return Math.min(5, Math.max(weightGrade, lengthGrade) + (Math.random() < oneUpChance ? 1 : 0));
+        float qualityIncrease = Math.max(0, FishingRodPartController.getStat(caughtUsing, FishingRodStatType.FISH_RARITY_BONUS));
+        float levelSkew = level * 0.0025f;
+        float rodSkew = 0.25f * qualityIncrease;
+        float chunkSkew = 0.25f;//0.25 for best chunk  TODO CHUNK QUALITY
+        float waitSkew = 0.25f * (hookedWith.getWaitTime() / 1200); //make waiting over 60s STILL improve quality (intended)
+        float skew = levelSkew + rodSkew + chunkSkew + waitSkew;
+        return MathHelper.clamp(getPseudoRandomValue(1, 4, skew),hookedBy.getMinGrade(), 5);
     }
 
-    private void applyMultiplier(float multiplier){
-        this.experience = (int) (this.experience * multiplier);
-        this.weight = Math.max(this.species.fishMinWeight, (this.weight * multiplier));
-        this.length = Math.max(this.species.fishMinLength, (this.length * multiplier));
-        this.grade = Math.max(1, (int) (this.grade * multiplier));
-        this.value = Math.max(1, (int) (this.value * multiplier));
+    private void applyMethodDebuff(float multiplier){
+        this.experience = (int) (this.experience * Math.pow(multiplier, 2));
+        this.grade = Math.max(1, (int) (this.grade * Math.pow(multiplier, 2)));
+        this.value = calculateValue();
     }
 
     private int calculateValue() {
         float gradeMultiplier = (float) (grade <= 3 ? (0.5 + (grade / 3f)) : Math.pow(2, (grade - 2)));
-        float levelMultiplier = 1 + (float) Math.pow(2, level / 50f);
-        float weightMultiplier = 1 + weight / 100;
+        float weightMultiplier = 1 +(weight < 100 ? (float) Math.sqrt(weight / 0.01f) : weight * 0.01f);
         float fValue = 1 + ((125 - species.fishRarity) / 100) * 0.5f;
         fValue *= gradeMultiplier;
-        fValue *= levelMultiplier;
         fValue *= weightMultiplier;
         return (int) fValue;
     }
 
     public boolean isEqual(Fish other) {
         boolean isEqual = (Objects.equals(this.name, other.name));
-        isEqual &= (this.species == other.species);
+        isEqual &= (Objects.equals(this.species.name, other.species.name));
         isEqual &= (this.level == other.level);
         isEqual &= (this.experience == other.experience);
         isEqual &= (this.grade == other.grade);
         isEqual &= (this.value == other.value);
         isEqual &= (this.weight == other.weight);
         isEqual &= (this.length == other.length);
-        //isEqual &= (this.caughtUsing == other.caughtUsing);
         isEqual &= (this.caughtByUUID.compareTo(other.caughtByUUID) == 0);
         isEqual &= (Objects.equals(this.id, other.id));
         return isEqual;
-    }
-
-    public Map<String, Float> getAttributeMap() {
-        return attributeMap;
     }
 
     @Override

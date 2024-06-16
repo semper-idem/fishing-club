@@ -11,5 +11,9 @@ public interface IHookEntity {
 
     ChunkPos getFishedInChunk();
 
-    float getFishMultiplier();
+    float getFishMethodDebuff();
+
+    default float getWaitTime() {
+        return 0;
+    }
 }

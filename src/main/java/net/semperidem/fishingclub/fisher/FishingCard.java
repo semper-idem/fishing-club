@@ -167,10 +167,10 @@ public class FishingCard extends FishingCardInventory {
         return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
     }
     public int getMinGrade(){
-        int minGrade = 0;
+        int minGrade = 1;
         minGrade += historyManager.getMinGrade(progressionManager);
         minGrade += statusEffectHelper.getMinGrade();
-        return Math.min(4, minGrade);
+        return Math.min(5, minGrade);
     }
 
     public void fishHooked(IHookEntity hookEntity){;
