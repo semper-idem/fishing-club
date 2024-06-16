@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.registry.ItemRegistry.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
@@ -42,7 +42,7 @@ public abstract class LivingEntityMixin extends Entity{
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
         int power;
-        if (activeStack.isOf(CUSTOM_FISHING_ROD)){
+        if (activeStack.isOf(MEMBER_FISHING_ROD)){
             power = FishingRodUtil.getFishingRodChargePower(getItemUseTime());
             tickPullPower(power);
         } else if (activeStack.isOf(ItemRegistry.HARPOON_ROD)) {

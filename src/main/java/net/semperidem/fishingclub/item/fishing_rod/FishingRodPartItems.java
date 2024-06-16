@@ -1,6 +1,9 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
 import net.minecraft.item.Item;
+import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.CoreComponentItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.LineComponentItem;
 
 import static net.minecraft.util.Rarity.*;
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType.*;
@@ -30,6 +33,30 @@ public class FishingRodPartItems {
     public static FishingRodPartItem BAIT_FEATHER;
     public static FishingRodPartItem BAIT_CRAFTED;
     public static FishingRodPartItem BAIT_MAGNET;
+
+
+    public static final ComponentItem EMPTY_COMPONENT = new ComponentItem(new Item.Settings());
+
+
+    public static final CoreComponentItem CORE_WOODEN_OAK = new CoreComponentItem(new Item.Settings().rarity(COMMON))
+            .weightCapacity(10)
+            .castPowerMultiplier(0.9f);
+
+    public static final CoreComponentItem CORE_IRON = new CoreComponentItem(new Item.Settings().rarity(COMMON))
+            .weightCapacity(15)
+            .castPowerMultiplier(0.9f);
+
+
+
+    public static final LineComponentItem LINE_SPIDER = new LineComponentItem(new Item.Settings().rarity(COMMON))
+            .weightCapacity(15)
+            .castRangeLimit(32);
+
+    public static final LineComponentItem LINE_WOOL = new LineComponentItem(new Item.Settings().rarity(COMMON))
+            .weightCapacity(10)
+            .castRangeLimit(64);
+
+
 
     static {
         CORE_BAMBOO = createCorePart(new Item.Settings(),
@@ -97,6 +124,12 @@ public class FishingRodPartItems {
         registerItem("core_composite",       CORE_COMPOSITE);
         registerItem("core_golden",          CORE_GOLDEN);
         registerItem("core_netherite",       CORE_NETHERITE);
+
+        registerItem("empty_component", EMPTY_COMPONENT);
+        registerItem("core_wooden_oak", CORE_WOODEN_OAK);
+        registerItem("core_iron", CORE_IRON);
+        registerItem("line_spider", LINE_SPIDER);
+        registerItem("line_wool", LINE_WOOL);
 
     }
 

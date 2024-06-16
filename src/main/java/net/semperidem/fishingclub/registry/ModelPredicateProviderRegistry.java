@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 public class ModelPredicateProviderRegistry {
 
     public static void registerClient(){
-        net.minecraft.client.item.ModelPredicateProviderRegistry.register(ItemRegistry.CUSTOM_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
+        net.minecraft.client.item.ModelPredicateProviderRegistry.register(ItemRegistry.MEMBER_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }

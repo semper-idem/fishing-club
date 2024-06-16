@@ -55,7 +55,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         matrixStack.pop();
         int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
-        if (!itemStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD)) {
+        if (!itemStack.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
             j = -j;
         }
         float h = playerEntity.getHandSwingProgress(g);

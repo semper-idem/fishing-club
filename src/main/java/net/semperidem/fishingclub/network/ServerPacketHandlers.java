@@ -12,7 +12,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
-import net.semperidem.fishingclub.LeaderboardTrackingServer;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
@@ -74,7 +73,7 @@ public class ServerPacketHandlers {
         server.execute(() -> {
             ItemStack fishingRod = player.getStackInHand(player.getActiveHand());
             if (!(fishingRod.getItem() instanceof FishingRodPartItem)) return;
-            ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
+            ItemRegistry.MEMBER_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
             player.closeHandledScreen();
         });
     }

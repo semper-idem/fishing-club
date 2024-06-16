@@ -50,14 +50,14 @@ public class FishingRodUtil {
     }
 
     public static ItemStack getBasicRod(){
-        ItemStack starterStack = new ItemStack(ItemRegistry.CUSTOM_FISHING_ROD);
+        ItemStack starterStack = new ItemStack(ItemRegistry.MEMBER_FISHING_ROD);
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack());
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.LINE_WOOL_THREAD.getDefaultStack());
         return starterStack;
     }
 
     public static ItemStack getStarterRod(){
-        ItemStack starterStack = new ItemStack(ItemRegistry.CUSTOM_FISHING_ROD);
+        ItemStack starterStack = new ItemStack(ItemRegistry.MEMBER_FISHING_ROD);
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.CORE_BAMBOO.getDefaultStack());
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.HOOK_COPPER.getDefaultStack());
         FishingRodPartController.putPart(starterStack, FishingRodPartItems.LINE_FIBER_THREAD.getDefaultStack());
@@ -65,7 +65,7 @@ public class FishingRodUtil {
     }
 
     public static ItemStack getAdvancedRod(){
-        ItemStack advancedStack = new ItemStack(ItemRegistry.CUSTOM_FISHING_ROD);
+        ItemStack advancedStack = new ItemStack(ItemRegistry.MEMBER_FISHING_ROD);
         FishingRodPartController.putPart(advancedStack, FishingRodPartItems.CORE_COMPOSITE.getDefaultStack());
         FishingRodPartController.putPart(advancedStack, FishingRodPartItems.HOOK_IRON.getDefaultStack());
         FishingRodPartController.putPart(advancedStack, FishingRodPartItems.LINE_SPIDER_SILK.getDefaultStack());

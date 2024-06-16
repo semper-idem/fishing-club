@@ -16,7 +16,7 @@ public class ItemRegistry {
     public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build( FishingClub.getIdentifier("fishing_club_group"), () -> new ItemStack(Items.COD));
 
     public static final DoubleFishingNetItem DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final MemberFishingRodItem CUSTOM_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
+    public static final MemberFishingRodItem MEMBER_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
     public static final Item FISHER_WORKBENCH = new BlockItem(BlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final FishingNetItem FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item FISH_COIN_BUNDLE = new FishCoinBundleItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
@@ -35,11 +35,14 @@ public class ItemRegistry {
         }
     };
 
+    public static final Item DEBUG = new DebugItem(new Item.Settings().group(FISHING_CLUB_GROUP));
+
+
     public static void register(){
         registerItem(("fisher_workbench"), FISHER_WORKBENCH);
         registerItem(("fishing_net"), FISHING_NET);
         registerItem(("double_fishing_net"), DOUBLE_FISHING_NET);
-        registerItem(("custom_fishing_rod"), CUSTOM_FISHING_ROD);
+        registerItem(("custom_fishing_rod"), MEMBER_FISHING_ROD);
         registerItem(("fish_coin_bundle"), FISH_COIN_BUNDLE);
         registerItem(("fisher_hat"), FISHER_HAT);
         registerItem(("fisher_vest"), FISHER_VEST);
@@ -48,6 +51,7 @@ public class ItemRegistry {
         registerItem(("cloned_rod"), CLONED_ROD);
         registerItem(("illegal_goods"), ILLEGAL_GOODS);
         registerItem(("gold_fish"), GOLD_FISH);
+        registerItem("debug", DEBUG);
         FishingRodPartItems.registerParts();
     }
 

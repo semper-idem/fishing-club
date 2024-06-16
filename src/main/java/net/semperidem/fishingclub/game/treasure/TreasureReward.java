@@ -32,8 +32,8 @@ public class TreasureReward {
 
     ItemStack roll(){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD)) {
-            return ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
+        if (rewardStack.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
+            return ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {

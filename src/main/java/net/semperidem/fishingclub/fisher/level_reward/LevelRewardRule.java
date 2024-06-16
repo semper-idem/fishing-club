@@ -45,6 +45,7 @@ public class LevelRewardRule {
         LEVEL_REWARD_RULES.add(rule);
     }
 
+    //TODO DONT INIT BEOFRE ITS NEEDED (server loaded)
     public static void initDefaultRewards() {//TODO READ FROM CONFIGURED REWARDS HERE
         //SKILL POINTS
         addRule(create(1,5).withRewards(skillPointReward(1))); //5
@@ -60,8 +61,8 @@ public class LevelRewardRule {
         //ITEMS
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
-        addRule(create(5, 0, 0).withRewards(itemReward(ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
-        addRule(create(50, 0, 0).withRewards(itemReward(ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack(), 1)));
+        addRule(create(5, 0, 0).withRewards(itemReward(ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack(), 1)));
+        addRule(create(50, 0, 0).withRewards(itemReward(ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack(), 1)));
 
         //Trophy //TODO ADD TROPHY, CHANGE PER PRESTIGE
         addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));

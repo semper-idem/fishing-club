@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 
-import static net.semperidem.fishingclub.registry.ItemRegistry.CUSTOM_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 public class FishingRodSlot extends Slot {
     FisherWorkbenchScreenHandler parent;
@@ -20,7 +20,7 @@ public class FishingRodSlot extends Slot {
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.isOf(CUSTOM_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);
+        return stack.isOf(MEMBER_FISHING_ROD) || stack.isOf(Items.FISHING_ROD);
     }
 
     @Override

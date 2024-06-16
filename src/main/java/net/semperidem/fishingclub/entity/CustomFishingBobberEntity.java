@@ -1,14 +1,16 @@
 package net.semperidem.fishingclub.entity;
 
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -20,26 +22,30 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRenderer;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.*;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
+import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
+import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 import net.semperidem.fishingclub.screen.fishing_game.FishGameScreenFactory;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+
+import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity implements IHookEntity{
     private static final int MIN_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
-    private final Random velocityRandom = Random.create();
     private int outOfOpenWaterTicks;
     private int removalTimer;
     private int hookCountdown;
@@ -50,30 +56,55 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private boolean inOpenWater = true;
     private State state = State.FLYING;
     private ItemStack fishingRod;
+    private FishingRodConfiguration configuration;
     private Fish caughtFish;
     private int lastHookCountdown;
+    private boolean limitReached = false;
 
 
-    private int power;
-    private float throwDistance;
+    private float power;
     private FishingCard fishingCard;
     private Identifier texture = CustomFishingBobberEntityRenderer.DEFAULT;
 
 
+    @Override
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        if (packet instanceof BobberEntitySpawnPacketS2C bobberEntitySpawnPacketS2C) {
+            this.fishingRod = bobberEntitySpawnPacketS2C.fishingRod;
+            if (!fishingRod.isOf(MEMBER_FISHING_ROD)) {
+                return;
+            }
+            this.configuration = MEMBER_FISHING_ROD.getRodConfiguration(fishingRod);
+            this.power = MEMBER_FISHING_ROD.getPower(fishingRod);
+        }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        Entity entity = this.getOwner();
+        if (entity instanceof  ServerPlayerEntity serverPlayerEntity) {
+            ServerPacketSender.sendCardUpdate(serverPlayerEntity, fishingCard);
+        }
+        return new BobberEntitySpawnPacketS2C(this, entity == null ? this.getId() : entity.getId(), fishingRod);
+    }
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
         setTexture(MinecraftClient.getInstance().player);
     }
 
-    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod, int power) {
+    public CustomFishingBobberEntity(PlayerEntity owner, World world, ItemStack fishingRod) {
         this(EntityTypeRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
         this.fishingRod = fishingRod;
-        this.fishingCard = FishingCard.getPlayerCard((ServerPlayerEntity) owner);
-        System.out.println(((FishingPlayerEntity)owner).getCard());
-        this.power = power;
-        setThrowDirection();
+        if (!fishingRod.isOf(MEMBER_FISHING_ROD)) {
+            return;
+        }
+        this.configuration = MEMBER_FISHING_ROD.getRodConfiguration(fishingRod);
+        this.fishingCard = FishingCard.getPlayerCard(owner);
+        this.power = MEMBER_FISHING_ROD.getPower(fishingRod);
+        setThrowDirection(owner);
         setTexture(getPlayerOwner());
     }
 
@@ -92,8 +123,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         return texture;
     }
 
-    private void setThrowDirection(){
-        PlayerEntity owner = getPlayerOwner();
+    private void setThrowDirection(PlayerEntity owner){
         float playerPitch = owner.getPitch();
         float playerYaw = owner.getYaw();
         float h = MathHelper.cos(-playerYaw * ((float)Math.PI / 180) - (float)Math.PI);
@@ -115,9 +145,17 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.prevPitch = this.getPitch();
     }
 
+
+    private void updateHookedEntityId(@Nullable Entity entity) {
+        ((FishingBobberEntityAccessor) this).setHookedEntity(entity);
+        this.getDataTracker().set(FishingBobberEntityAccessor.getHookedEntityId(), entity == null ? 0 : entity.getId() + 1);
+    }
+
+
     @Override
     public void tick() {
-        this.velocityRandom.setSeed(this.getUuid().getLeastSignificantBits() ^ this.world.getTime());
+        getPlayerOwner().sendMessage(Text.of(String.valueOf(configuration.getWeightCapacity())));
+        super.tick();
         PlayerEntity owner = this.getPlayerOwner();
         if (owner == null) {
             this.discard();
@@ -141,16 +179,37 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (fluidState.isIn(FluidTags.WATER)) {
             waterHeight = fluidState.getHeight(this.world, blockPos);
         }
-        boolean isBobbing = waterHeight > 0.0f;
-        if (this.state == State.FLYING && isBobbing) {
-            this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
-            this.state = State.BOBBING;
-            this.throwDistance = distanceTo(this.getOwner());
-            if (this.world.isClient) {
-                MinecraftClient.getInstance().player.sendMessage(Text.of("Distance: " + String.format("%.2f", this.throwDistance)), true);
+        boolean shouldBeBobbing = waterHeight > 0.0f;//isnt this "in water" and not bobbing?
+        if (this.state == State.FLYING) {
+            if (this.getHookedEntity() != null) {
+                this.setVelocity(Vec3d.ZERO);
+                this.state = State.HOOKED_IN_ENTITY;
+                return;
             }
-            return;
+            if (shouldBeBobbing) {
+                this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
+                this.state = State.BOBBING;
+                getPlayerOwner().sendMessage(Text.of("Distance: " + String.format("%.2f", distanceFromCaster())), false);
+                return;
+            }
+            if (!limitReached && distanceFromCaster() > configuration.getCastRangeLimit()) {
+                limitReached = true;
+                double pullDownForce = (Math.abs(this.getVelocity().getX()) + Math.abs(this.getVelocity().getZ())) * -0.2;
+                this.setVelocity(this.getVelocity().getX() * -0.2, pullDownForce, this.getVelocity().getZ() * -0.2);
+            }
+            this.checkForCollision();
         } else {
+            if (this.state == State.HOOKED_IN_ENTITY) {
+                if (getHookedEntity() != null) {
+                    if (getHookedEntity().isRemoved() || getHookedEntity().world.getRegistryKey() != this.world.getRegistryKey()) {
+                        this.updateHookedEntityId(null);
+                        this.state = State.FLYING;
+                    } else {
+                        this.setPosition(getHookedEntity().getX(), getHookedEntity().getBodyY(0.8), getHookedEntity().getZ());
+                    }
+                }
+                return;
+            }
             if (this.state == State.BOBBING) {
                 Vec3d vec3d = this.getVelocity();
                 double d = this.getY() + vec3d.y - (double)blockPos.getY() - (double)waterHeight;
@@ -159,10 +218,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 }
                 this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
                 this.inOpenWater = this.hookCountdown <= 0 && this.fishTravelCountdown <= 0 || this.inOpenWater && this.outOfOpenWaterTicks < 10 && this.isOpenOrWaterAround(blockPos);
-                if (isBobbing) {
+                if (shouldBeBobbing) {
                     this.outOfOpenWaterTicks = Math.max(0, this.outOfOpenWaterTicks - 1);
                     if (!this.world.isClient) {
-                        this.tickFishingLogic(blockPos);
+                        //this.tickFishingLogic(blockPos);
                     }
                 } else {
                     this.outOfOpenWaterTicks = Math.min(10, this.outOfOpenWaterTicks + 1);
@@ -179,6 +238,10 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         }
         this.setVelocity(this.getVelocity().multiply(0.92));
         this.refreshPosition();
+    }
+
+    private float distanceFromCaster() {
+        return distanceTo(this.getOwner());
     }
 
 
@@ -205,7 +268,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             this.caughtFish = null;
             if (Math.random() < 0.1) {
                 //TODO Message on parts broken
-                ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.HOOK);
+                MEMBER_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.HOOK);
             }
         }
     }
@@ -248,7 +311,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 fishingCard.setSharedBait(ItemStack.EMPTY);//todo fix ugly
             }
         } else if (FishingRodPartController.hasBait(fishingRod)) {
-            ItemRegistry.CUSTOM_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
+            MEMBER_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.BAIT);
         }
     }
 
@@ -397,8 +460,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private boolean removeIfInvalid(PlayerEntity playerEntity) {
         ItemStack itemStack = playerEntity.getMainHandStack();
         ItemStack itemStack2 = playerEntity.getOffHandStack();
-        boolean bl = itemStack.isOf(ItemRegistry.CUSTOM_FISHING_ROD);
-        boolean bl2 = itemStack2.isOf(ItemRegistry.CUSTOM_FISHING_ROD);
+        boolean bl = itemStack.isOf(MEMBER_FISHING_ROD);
+        boolean bl2 = itemStack2.isOf(MEMBER_FISHING_ROD);
         if (playerEntity.isRemoved() || !playerEntity.isAlive() || !bl && !bl2) {
             this.discard();
             return true;
@@ -412,8 +475,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (this.world.isClient || playerEntity == null) {
             return 0;
         }
-        int i = 0;
-        if ((hookCountdown > 0)){
+        int i = 0;if (getHookedEntity() != null) {
+            this.pullHookedEntity(getHookedEntity());
+            Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, itemStack, this, Collections.emptyList());
+            this.world.sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
+            i = getHookedEntity() instanceof ItemEntity ? 3 : 5;
+        } else if ((hookCountdown > 0)){
             int reactionBonus = calculateReactionBonus();
             caughtFish.experience += reactionBonus;
             if (reactionBonus > 0) this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
@@ -471,8 +538,20 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         return this.lastWaitCountdown;
     }
 
+    @Override
+    protected void pullHookedEntity(Entity entity) {
+        Entity entity2 = this.getOwner();
+        if (entity2 == null) {
+            return;
+        }
+        Vec3d vec3d = new Vec3d(entity2.getX() - this.getX(), entity2.getY() - this.getY(), entity2.getZ() - this.getZ()).multiply(0.1f * configuration.getCastPower());
+        entity.setVelocity(entity.getVelocity().add(vec3d));
+    }
+
+
     enum State {
         FLYING,
+        HOOKED_IN_ENTITY,
         BOBBING;
 
     }

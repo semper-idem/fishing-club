@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FishingBobberEntity.class)
@@ -25,5 +27,13 @@ public abstract class FishingBobberEntityMixin{
             return;
         }
         FishUtil.putCaughtBy(fishedItemStack, this.getPlayerOwner().getUuid());
+    }
+
+
+    @Inject(method = "tick", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/FishingBobberEntity;getPlayerOwner()Lnet/minecraft/entity/player/PlayerEntity;"))
+    private void onTick(CallbackInfo ci) {
+        if ((Object)this instanceof CustomFishingBobberEntity){
+            ci.cancel();
+        }
     }
 }

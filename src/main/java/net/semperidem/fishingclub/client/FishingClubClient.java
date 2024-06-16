@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
 import net.semperidem.fishingclub.registry.FishingClubRegistry;
 
 import java.util.HashMap;

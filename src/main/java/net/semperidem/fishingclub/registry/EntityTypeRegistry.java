@@ -38,7 +38,8 @@ public class EntityTypeRegistry {
                     .disableSummon()
                     .disableSaving()
                     .trackRangeBlocks(128)
-                    .trackedUpdateRate(5)
+                    .forceTrackedVelocityUpdates(true)
+                    .trackedUpdateRate(20)
                     .build()
     );
 

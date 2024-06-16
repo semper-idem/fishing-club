@@ -93,8 +93,8 @@ public class Spells {
             @Override
             public void cast(ServerPlayerEntity source){
                 ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
-                ItemStack rodStack = ItemRegistry.CUSTOM_FISHING_ROD.getDefaultStack();
-                if (mainHand.getItem().equals(ItemRegistry.CUSTOM_FISHING_ROD)) {
+                ItemStack rodStack = ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack();
+                if (mainHand.getItem().equals(ItemRegistry.MEMBER_FISHING_ROD)) {
                     rodStack = source.getStackInHand(Hand.MAIN_HAND);
                 }
                 ItemStack clonedStack = ItemRegistry.CLONED_ROD.getDefaultStack();
