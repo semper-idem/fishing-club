@@ -16,6 +16,8 @@
     "common.ServerWorldMixin"
   ],
   "client": [
+    "client.BipedEntityModelMixin",
+    "client.HeldItemRendererMixin",
     "client.InGameHudMixin",
     "client.MouseMixin",
     "client.PlayerListEntryMixin"

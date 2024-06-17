@@ -154,7 +154,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     @Override
     public void tick() {
-        getPlayerOwner().sendMessage(Text.of(String.valueOf(configuration.getWeightCapacity())));
         super.tick();
         PlayerEntity owner = this.getPlayerOwner();
         if (owner == null) {

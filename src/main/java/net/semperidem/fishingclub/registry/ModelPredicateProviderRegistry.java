@@ -3,10 +3,12 @@ package net.semperidem.fishingclub.registry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
+import static net.minecraft.client.item.ModelPredicateProviderRegistry.*;
+
 public class ModelPredicateProviderRegistry {
 
     public static void registerClient(){
-        net.minecraft.client.item.ModelPredicateProviderRegistry.register(ItemRegistry.MEMBER_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
+        register(ItemRegistry.MEMBER_FISHING_ROD, new Identifier("cast"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }
@@ -14,6 +16,12 @@ public class ModelPredicateProviderRegistry {
                 return 0.0F;
             }
             return ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
+        });
+        register(ItemRegistry.MEMBER_FISHING_ROD, new Identifier("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
+            if (livingEntity == null) {
+                return 0.0F;
+            }
+            return livingEntity.isUsingItem() ? 1.0F : 0.0F;
         });
     }
 }

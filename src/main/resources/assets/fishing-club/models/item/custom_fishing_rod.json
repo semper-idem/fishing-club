@@ -6,9 +6,15 @@
     "overrides": [
         {
             "predicate": {
-                "casting": 1
+                "cast": 1
             },
             "model": "fishing-club:item/custom_fishing_rod_cast"
+        },
+        {
+            "predicate": {
+                "casting": 1
+            },
+            "model": "fishing-club:item/custom_fishing_rod_casting"
         }
     ]
 }
