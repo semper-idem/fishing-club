@@ -8,11 +8,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.LeaderboardTrackingServer;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 
@@ -30,6 +32,15 @@ public class FishingCard extends FishingCardInventory {
     private final LinkingManager linkingManager;
 
     private final StatusEffectHelper statusEffectHelper;
+
+
+    public static FishingCard getPlayerCard(PlayerEntity user){
+        return ((FishingPlayerEntity)user).getCard();
+    }
+
+    public static boolean hasPerk(PlayerEntity user, FishingPerk perk) {
+        return getPlayerCard(user).hasPerk(perk);
+    }
 
 
     public FishingCard(PlayerEntity playerEntity) {
@@ -79,9 +90,6 @@ public class FishingCard extends FishingCardInventory {
         historyManager.meetDerek(summonType);
     }
 
-    public static FishingCard getPlayerCard(PlayerEntity user){
-        return ((FishingPlayerEntity)user).getCard();
-    }
 
     public void resetCooldown(){
         progressionManager.resetCooldown();

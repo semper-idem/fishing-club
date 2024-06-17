@@ -16,7 +16,7 @@ public class ItemRegistry {
     public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build( FishingClub.getIdentifier("fishing_club_group"), () -> new ItemStack(Items.COD));
 
     public static final DoubleFishingNetItem DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final MemberFishingRodItem MEMBER_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
+    public static final MemberFishingRodItem MEMBER_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(100));
     public static final Item FISHER_WORKBENCH = new BlockItem(BlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
     public static final FishingNetItem FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
     public static final Item FISH_COIN_BUNDLE = new FishCoinBundleItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
@@ -30,7 +30,6 @@ public class ItemRegistry {
     public static final Item GOLD_FISH = new Item(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1)){
         @Override
         public ItemStack getDefaultStack() {
-            System.out.println("is using default stack");
             return super.getDefaultStack();
         }
     };

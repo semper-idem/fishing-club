@@ -26,7 +26,6 @@ import java.util.UUID;
 public class FishingClubClient implements ClientModInitializer {
     public static UUID FISHING_KING_UUID;
     private static HashMap<FishingPerk, SpellInstance> AVAILABLE_SPELLS = new HashMap<>();
-    private static HashMap<String, FishingPerk> PERKS = new HashMap<>();
 
     public static HashMap<FishingPerk, SpellInstance> getAvailableSpells() {
         return AVAILABLE_SPELLS;
@@ -34,13 +33,6 @@ public class FishingClubClient implements ClientModInitializer {
 
     public static void updateAvailableSpells(HashMap<FishingPerk, SpellInstance> availableSpells) {
         AVAILABLE_SPELLS = availableSpells;
-    }
-    public static HashMap<String, FishingPerk> getPerks() {
-        return PERKS;
-    }
-
-    public static void updatePerks(HashMap<String, FishingPerk> perksMap) {
-        PERKS = perksMap;
     }
 
     public static void onPosition3rd(ModelPart arm, BipedEntityModel.ArmPose armPose, LivingEntity entity) {

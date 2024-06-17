@@ -6,9 +6,6 @@ import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class FishingRodUtil {
 
-    public static int getFishingRodChargePower(int usageTick){
-        return Math.max(1, Math.min(5, (usageTick + 40) / 40));
-    }
 
     public static float getDamageChance(ItemStack fishingRod) {
         float coreDamageChance = FishingRodUtil.getRodDamageChance(fishingRod);

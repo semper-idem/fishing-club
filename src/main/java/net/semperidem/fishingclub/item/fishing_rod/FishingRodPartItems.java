@@ -38,21 +38,21 @@ public class FishingRodPartItems {
     public static final ComponentItem EMPTY_COMPONENT = new ComponentItem(new Item.Settings());
 
 
-    public static final CoreComponentItem CORE_WOODEN_OAK = new CoreComponentItem(new Item.Settings().rarity(COMMON))
+    public static final CoreComponentItem CORE_WOODEN_OAK = new CoreComponentItem(new Item.Settings().maxDamage(64).rarity(COMMON))
             .weightCapacity(10)
             .castPowerMultiplier(0.9f);
 
-    public static final CoreComponentItem CORE_IRON = new CoreComponentItem(new Item.Settings().rarity(COMMON))
+    public static final CoreComponentItem CORE_IRON = new CoreComponentItem(new Item.Settings().maxDamage(128).rarity(COMMON))
             .weightCapacity(15)
             .castPowerMultiplier(0.9f);
 
 
 
-    public static final LineComponentItem LINE_SPIDER = new LineComponentItem(new Item.Settings().rarity(COMMON))
+    public static final LineComponentItem LINE_SPIDER = new LineComponentItem(new Item.Settings().maxDamage(32).rarity(COMMON))
             .weightCapacity(15)
-            .castRangeLimit(32);
+            .castRangeLimit(8);
 
-    public static final LineComponentItem LINE_WOOL = new LineComponentItem(new Item.Settings().rarity(COMMON))
+    public static final LineComponentItem LINE_WOOL = new LineComponentItem(new Item.Settings().maxDamage(32).rarity(COMMON))
             .weightCapacity(10)
             .castRangeLimit(64);
 

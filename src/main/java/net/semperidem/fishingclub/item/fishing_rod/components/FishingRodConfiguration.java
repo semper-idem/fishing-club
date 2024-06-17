@@ -1,13 +1,11 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
-import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems.*;
 
@@ -18,27 +16,28 @@ public class FishingRodConfiguration {
     final ConfigurationAttribute<Float> castPower = new ConfigurationAttribute<>(1f);
 
     final HashSet<Component> components = new HashSet<>();
+    final ItemStack fishingRod;
+    boolean canCast = true;
     final Component coreComponent = createComponent("core", CORE_WOODEN_OAK);
     final Component lineComponent = createComponent("line", LINE_SPIDER);
 
     static final String CONFIGURATION_TAG = "configuration";
 
-    public FishingRodConfiguration(ItemStack rodStack) {
-        NbtCompound configurationTag = rodStack.getOrCreateSubNbt(CONFIGURATION_TAG);
-        components.forEach(component -> component.set(ItemStack.fromNbt((NbtCompound) configurationTag.get(component.tag))));
+    public FishingRodConfiguration(ItemStack fishingRod) {
+        this.fishingRod = fishingRod;
+        NbtCompound configurationTag = fishingRod.getOrCreateSubNbt(CONFIGURATION_TAG);
+        for(Component component : components) {
+            component.set(ItemStack.fromNbt((NbtCompound) configurationTag.get(component.tag)));
+        }
         recalculateAttributes();
     }
 
-    public FishingRodConfiguration() {}
+    public ItemStack getFishingRod() {
+        return this.fishingRod;
+    }
 
     public int getWeightCapacity(){
         return weightCapacity.value;
-    }
-
-    public void setNbt(ItemStack itemStack) {
-        NbtCompound configurationTag = itemStack.getOrCreateSubNbt(CONFIGURATION_TAG);
-        coreComponent.toNbt(configurationTag);
-        lineComponent.toNbt(configurationTag);
     }
 
     private Component createComponent(String tag, ComponentItem componentItem) {
@@ -47,15 +46,9 @@ public class FishingRodConfiguration {
         return component;
     }
 
-    public static FishingRodConfiguration getDefault() {
-        return new FishingRodConfiguration();
-    }
-
-
     public float getCastPower(){
         return castPower.value;
     }
-
 
     public int getCastRangeLimit() {
         return castRangeLimit.value;
@@ -73,15 +66,47 @@ public class FishingRodConfiguration {
         equipComponent(lineComponent, EMPTY_COMPONENT.getDefaultStack());
     }
 
-
     private void equipComponent(Component component, ItemStack stack) {
         component.set(stack);
         recalculateAttributes();
+        component.toNbt(fishingRod.getOrCreateSubNbt(CONFIGURATION_TAG));
     }
 
     public void recalculateAttributes() {
         configurationAttributes.iterator().forEachRemaining(ConfigurationAttribute::reset);
-        components.forEach(component -> component.type.equipComponent(this));
+        float averageDamage = 0;
+        int componentCount = 0;
+        for(Component component : components) {
+            if (component.type == EMPTY_COMPONENT) {
+                continue;
+            }
+            component.type.applyComponent(this, component.componentStack);
+            averageDamage += component.getDamagePercentInt();
+            componentCount++;
+        }
+        averageDamage /= componentCount;
+        averageDamage /= 100f;
+        fishingRod.setDamage((int) (fishingRod.getMaxDamage() * averageDamage));
+    }
+
+    public <T extends LivingEntity> void damage(int amount, ComponentItem.DamageSource damageSource, T entity, Consumer<T> breakCallback) {
+        float averageDamage = 0;
+        int componentCount = 0;
+        for(Component component : components) {
+            if (component.type == EMPTY_COMPONENT) {
+                continue;
+            }
+            component.damage(amount, damageSource, entity, breakCallback);
+            averageDamage += component.getDamagePercentInt();
+            componentCount++;
+        }
+        averageDamage /= componentCount;
+        averageDamage /= 100f;
+        fishingRod.setDamage((int) (fishingRod.getMaxDamage() * averageDamage));
+    }
+
+    public void onComponentBroken(LivingEntity e) {
+        recalculateAttributes();
     }
 
 
@@ -102,31 +127,37 @@ public class FishingRodConfiguration {
 
     static class Component{
         final String tag;
-        ComponentItem type;
-        Optional<ItemStack> optionalStack;
+        private ComponentItem type;
+        private ItemStack componentStack;
 
         public Component(String tag, ComponentItem type){
             this.tag = tag;
             this.type = type;
-            this.optionalStack = Optional.of(type.getDefaultStack());
+            this.componentStack = type.getDefaultStack();
         }
 
         public ItemStack get() {
-            return optionalStack.orElse(EMPTY_COMPONENT.getDefaultStack());
+            return componentStack;
+        }
+
+        <T extends LivingEntity> void damage(int amount, ComponentItem.DamageSource damageSource, T entity, Consumer<T> breakCallback) {
+            type.damage(componentStack, amount, damageSource, entity, breakCallback);
+        }
+
+        public int getDamagePercentInt() {
+            return (int) ((componentStack.getDamage()) * 1f / componentStack.getMaxDamage() * 100);
         }
 
         public void set(ItemStack itemStack) {
             if (!(itemStack.getItem() instanceof ComponentItem)) {
-                optionalStack = Optional.of(EMPTY_COMPONENT.getDefaultStack());
-                type = EMPTY_COMPONENT;
                 return;
             }
-            optionalStack = Optional.of(itemStack);
+            componentStack = itemStack;
             type = (ComponentItem) itemStack.getItem();
         }
 
         void toNbt(NbtCompound nbtCompound) {
-            nbtCompound.put(tag, get().writeNbt(new NbtCompound()));
+            nbtCompound.put(tag, componentStack.writeNbt(new NbtCompound()));
         }
     }
 }

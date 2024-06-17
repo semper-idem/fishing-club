@@ -12,23 +12,45 @@ import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfigur
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class DebugItem extends Item {
+    private static int mode = 0;
     public DebugItem(Settings settings) {
         super(settings);
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
-            user.sendMessage(Text.literal("[DEBUG]"));
+        if (world.isClient) {
+            return super.use(world, user, hand);
+        }
+        if (user.isSneaking()) {
+            mode++;
+            if (mode > 5) {
+                mode = 0;
+            }
+            user.sendMessage(Text.literal("[DEBUG MODE]" + mode));
+            return super.use(world, user, hand);
         }
         ItemStack rod = user.getInventory().getStack(0);
         if (!rod.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
             return super.use(world, user, hand);
         }
-        ItemRegistry.MEMBER_FISHING_ROD.invalidateCache();
-        FishingRodConfiguration rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
-        //rodConfiguration.equipLineComponent(FishingRodPartItems.LINE_WOOL.getDefaultStack());
-        rodConfiguration.equipCoreComponent(FishingRodPartItems.CORE_WOODEN_OAK.getDefaultStack());
+        if (mode == 2) {
+            user.sendMessage(Text.literal("[DEBUG MODE]" + "CORE_WOODEN_OAK"));
+            FishingRodConfiguration rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
+            rodConfiguration.equipCoreComponent(FishingRodPartItems.CORE_WOODEN_OAK.getDefaultStack());
+
+        }
+        if (mode == 1) {
+            user.sendMessage(Text.literal("[DEBUG MODE]" + "LINE_WOOL"));
+            FishingRodConfiguration rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
+            rodConfiguration.equipLineComponent(FishingRodPartItems.LINE_SPIDER.getDefaultStack());
+
+        }
+        if (mode == 0) {
+            user.sendMessage(Text.literal("[DEBUG MODE]" + "invalidateCache"));
+            System.out.println(rod.getNbt());
+
+        }
         return super.use(world, user, hand);
     }
 }

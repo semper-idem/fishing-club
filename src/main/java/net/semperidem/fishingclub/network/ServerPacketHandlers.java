@@ -22,6 +22,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
+import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 public class ServerPacketHandlers {
 
@@ -72,8 +75,7 @@ public class ServerPacketHandlers {
     public static void handleFishingGameLost(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
             ItemStack fishingRod = player.getStackInHand(player.getActiveHand());
-            if (!(fishingRod.getItem() instanceof FishingRodPartItem)) return;
-            ItemRegistry.MEMBER_FISHING_ROD.damageRodPart(fishingRod, FishingRodPartType.LINE);
+            MEMBER_FISHING_ROD.damageComponents(fishingRod, 4, ComponentItem.DamageSource.BITE, player);
             player.closeHandledScreen();
         });
     }
