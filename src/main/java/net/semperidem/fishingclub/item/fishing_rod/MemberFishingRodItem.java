@@ -65,7 +65,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         }
         if (!world.isClient) {
             FishingRodConfiguration configuration = getRodConfiguration(fishingRod);
-            float power = getChargePower(user.getItemUseTime()) * configuration.getCastPower();
+            float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
             setPower(fishingRod, power);
             damageComponents(configuration, 2, ComponentItem.DamageSource.CAST, user);
             world.spawnEntity(new CustomFishingBobberEntity(user, world, configuration));

@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.entity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
@@ -44,10 +43,10 @@ import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_RO
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity implements IHookEntity{
-    int tick = 0;
     private static final int MIN_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
+
     private int outOfOpenWaterTicks;
     private int removalTimer;
     private int hookCountdown;
@@ -57,19 +56,36 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private float fishAngle;
     private boolean inOpenWater = true;
     private State state = State.FLYING;
-    private ItemStack fishingRod;
-    private FishingRodConfiguration configuration;
-    private Fish caughtFish;
     private int lastHookCountdown;
     private boolean limitReached = false;
     private boolean distanceRecorded = false;
-    private boolean hasSetThrowDirection = false;
 
+    private float power = 1;
+    private float airResistance;
 
-    private float power;
     private FishingCard fishingCard;
-    private Identifier texture = CustomFishingBobberEntityRenderer.DEFAULT;
+    private ItemStack fishingRod;
+    private FishingRodConfiguration configuration;
     private PlayerEntity playerOwner;
+
+    private Fish caughtFish;
+
+    private Identifier texture = CustomFishingBobberEntityRenderer.DEFAULT;
+
+
+    private void init(PlayerEntity owner, FishingRodConfiguration fishingRodConfiguration) {
+        this.configuration = fishingRodConfiguration;
+        this.fishingRod = this.configuration.getFishingRod();
+        this.fishingCard = FishingCard.getPlayerCard(owner);
+        this.power = MEMBER_FISHING_ROD.getPower(this.fishingRod);
+        this.airResistance = getAirResistanceBonus(this.configuration.getCastPower());
+        setTexture(this.playerOwner);
+        setThrowDirection(owner);
+    }
+
+    private float getAirResistanceBonus(float castPower){
+        return (float) (0.87f + (Math.sqrt((castPower - 0.5f) * 0.5f) * 0.11f));
+    }
 
 
     @Override
@@ -80,13 +96,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             if (!fishingRod.isOf(MEMBER_FISHING_ROD)) {
                 return;
             }
-            this.configuration = MEMBER_FISHING_ROD.getRodConfiguration(fishingRod);
-            this.power = 2;//MEMBER_FISHING_ROD.getPower(fishingRod);
-            setThrowDirection(this.playerOwner);
-            //System.out.println("client velX " + packet.getVelocityX());
-            //System.out.println("client velY " + packet.getVelocityY());
-            //System.out.println("client velZ " + packet.getVelocityZ());
-            //System.out.println(getVelocity());
+            init(playerOwner, MEMBER_FISHING_ROD.getRodConfiguration(fishingRod));
         }
     }
 
@@ -110,19 +120,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     public CustomFishingBobberEntity(EntityType<? extends CustomFishingBobberEntity> entityEntityType, World world) {
         super(entityEntityType, world);
-        this.playerOwner = MinecraftClient.getInstance().player;
-        setTexture(MinecraftClient.getInstance().player);
     }
 
     public CustomFishingBobberEntity(PlayerEntity owner, World world, FishingRodConfiguration configuration) {
         this(EntityTypeRegistry.CUSTOM_FISHING_BOBBER, world);
         this.setOwner(owner);
-        this.configuration = configuration;
-        this.fishingRod = configuration.getFishingRod();
-        this.fishingCard = FishingCard.getPlayerCard(owner);
-        this.power = 2;//MEMBER_FISHING_ROD.getPower(fishingRod);
-        setThrowDirection(owner);
-        setTexture(this.playerOwner);
+        init(owner, configuration);
     }
 
     private void setTexture(PlayerEntity playerOwner) {
@@ -174,8 +177,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     @Override
     public void tick() {
-        tick++;
-        //System.out.println(getPos()+ " " + getVelocity() + " " + tick);
         super.tick();
         if (this.playerOwner == null) {
             this.discard();
@@ -267,7 +268,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (this.state == State.FLYING && (this.onGround || this.horizontalCollision)) {
             this.setVelocity(Vec3d.ZERO);
         }
-        this.setVelocity(this.getVelocity().multiply(0.92));//
+        this.setVelocity(this.getVelocity().multiply(airResistance));//
         this.refreshPosition();
     }
 

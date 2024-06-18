@@ -46,6 +46,8 @@ public class FishingRodConfiguration {
         return component;
     }
 
+    //Should be coupled with castCharge and max out at 3.3
+    //e.g max 2 here and max 1.6 on full charge cast
     public float getCastPower(){
         return castPower.value;
     }
