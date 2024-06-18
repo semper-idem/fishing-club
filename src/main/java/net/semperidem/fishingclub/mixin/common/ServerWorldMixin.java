@@ -51,7 +51,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
 
     @Inject(method = "onPlayerConnected", at = @At("TAIL"))
     private void onPlayerConnected(ServerPlayerEntity entity, CallbackInfo ci) {
-        if (getLevelProperties() instanceof FishingLevelProperties fishingLevelProperties) {
+        if (getLevelProperties() instanceof FishingLevelProperties fishingLevelProperties && fishingLevelProperties.getFishingKingUUID() != null) {
             ServerPacketSender.sendCapeDetails( entity, fishingLevelProperties.getFishingKingUUID(), fishingLevelProperties.getFishingKingName(), fishingLevelProperties.getClaimPrice());
         }
     }

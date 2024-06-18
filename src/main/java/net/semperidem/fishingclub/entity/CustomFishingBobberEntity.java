@@ -44,6 +44,7 @@ import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_RO
 
 
 public class CustomFishingBobberEntity extends FishingBobberEntity implements IHookEntity{
+    int tick = 0;
     private static final int MIN_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
@@ -61,8 +62,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private Fish caughtFish;
     private int lastHookCountdown;
     private boolean limitReached = false;
-    private float previousDistance = 0f;
-    private float currentDistance = 0f;
+    private boolean distanceRecorded = false;
+    private boolean hasSetThrowDirection = false;
 
 
     private float power;
@@ -80,7 +81,12 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 return;
             }
             this.configuration = MEMBER_FISHING_ROD.getRodConfiguration(fishingRod);
-            this.power = MEMBER_FISHING_ROD.getPower(fishingRod);
+            this.power = 2;//MEMBER_FISHING_ROD.getPower(fishingRod);
+            setThrowDirection(this.playerOwner);
+            //System.out.println("client velX " + packet.getVelocityX());
+            //System.out.println("client velY " + packet.getVelocityY());
+            //System.out.println("client velZ " + packet.getVelocityZ());
+            //System.out.println(getVelocity());
         }
     }
 
@@ -114,7 +120,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.configuration = configuration;
         this.fishingRod = configuration.getFishingRod();
         this.fishingCard = FishingCard.getPlayerCard(owner);
-        this.power = MEMBER_FISHING_ROD.getPower(fishingRod);
+        this.power = 2;//MEMBER_FISHING_ROD.getPower(fishingRod);
         setThrowDirection(owner);
         setTexture(this.playerOwner);
     }
@@ -147,13 +153,16 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.refreshPositionAndAngles(d, e, n, playerYaw, playerPitch);
         Vec3d vec3d = new Vec3d(-k, MathHelper.clamp(-(m / l), -5.0f, 5.0f), -h);
         double o = vec3d.length();
-        vec3d = vec3d.multiply(0.6 / o + this.random.nextTriangular(0.5, 0.0103365), 0.6 / o + this.random.nextTriangular(0.5, 0.0103365), 0.6 / o + this.random.nextTriangular(0.5, 0.0103365));
+        vec3d = vec3d.multiply(0.6 / o + 0.5, 0.6 / o + 0.5, 0.6 / o + 0.5);
         vec3d = vec3d.multiply(power);
         this.setVelocity(vec3d);
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 57.2957763671875));
         this.prevYaw = this.getYaw();
         this.prevPitch = this.getPitch();
+        //System.out.println(getVelocity());
+        //System.out.println(getYaw());
+        //System.out.println(getPitch());
     }
 
 
@@ -165,6 +174,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     @Override
     public void tick() {
+        tick++;
+        //System.out.println(getPos()+ " " + getVelocity() + " " + tick);
         super.tick();
         if (this.playerOwner == null) {
             this.discard();
@@ -196,16 +207,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 return;
             }
             if (shouldBeBobbing) {
-                this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
+                //this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
                 this.state = State.BOBBING;
-                this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", distanceFromCaster())), false);
                 return;
-            }
-
-            if (!limitReached && distanceFromCaster() > configuration.getCastRangeLimit()) {
-                limitReached = true;
-                double pullDownForce = (Math.abs(this.getVelocity().getX()) + Math.abs(this.getVelocity().getZ())) * -0.2;
-                this.setVelocity(this.getVelocity().getX() * -0.2, pullDownForce, this.getVelocity().getZ() * -0.2);
             }
             this.checkForCollision();
         } else {
@@ -222,6 +226,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             }
             if (this.state == State.BOBBING) {
                 Vec3d vec3d = this.getVelocity();
+                if (Math.abs(vec3d.x) + Math.abs(vec3d.z) < 0.005 && !distanceRecorded) {
+                    distanceRecorded = true;
+                    distanceTraveled = distanceFromCaster();
+                    System.out.println("world is client: " + world.isClient + " " + distanceFromCaster());
+                    System.out.println("world is client: " + world.isClient + " " + getPos());
+                    //this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", distanceFromCaster())), false);
+                }
                 double d = this.getY() + vec3d.y - (double)blockPos.getY() - (double)waterHeight;
                 if (Math.abs(d) < 0.01) {
                     d += Math.signum(d) * 0.1;
@@ -241,12 +252,22 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (!fluidState.isIn(FluidTags.WATER)) {
             this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
         }
+        Vec3d beforeMovePos = getSyncedPos();
         this.move(MovementType.SELF, this.getVelocity());
+        if (distanceFromCaster() > 999) {
+            setPosition(beforeMovePos);
+            if (!limitReached) {
+                limitReached = true;
+                double pullDownForce = (Math.abs(this.getVelocity().getX()) + Math.abs(this.getVelocity().getZ())) * -0.2;
+                this.setVelocity(this.getVelocity().getX() * -0.2, pullDownForce, this.getVelocity().getZ() * -0.2);
+                this.move(MovementType.SELF, this.getVelocity());
+            }
+        }
         this.updateRotation();
         if (this.state == State.FLYING && (this.onGround || this.horizontalCollision)) {
             this.setVelocity(Vec3d.ZERO);
         }
-        this.setVelocity(this.getVelocity().multiply(0.92));
+        this.setVelocity(this.getVelocity().multiply(0.92));//
         this.refreshPosition();
     }
 
@@ -356,6 +377,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             this.fishTravelCountdown = 1;
         }
     }
+
+
 
     private void splashWater(ServerWorld serverWorld){
         if (this.random.nextFloat() < 0.05f) {
