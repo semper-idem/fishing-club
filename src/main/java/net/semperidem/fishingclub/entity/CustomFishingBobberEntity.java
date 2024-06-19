@@ -6,7 +6,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -44,22 +43,21 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
 
-    private int outOfOpenWaterTicks;
-    private int removalTimer;
     private int hookCountdown;
     private int waitCountdown;
     private int lastWaitCountdown;
     private int fishTravelCountdown;
     private float fishAngle;
-    private boolean inOpenWater = true;
-    private State state = State.FLYING;
     private int lastHookCountdown;
-    private boolean limitReached = false;
-    private boolean distanceRecorded = false;
+    private boolean isInWater;
 
+    private final float tensionDamp = 0.1f;
     private float castCharge = 1;
     private float airResistance;
+    private float groundResistance;
+    private float waterResistance;
     private int lineLength = 8;
+    private Vec3d ownerVector;
 
     private FishingCard fishingCard;
     private ItemStack fishingRod;
@@ -83,13 +81,15 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.fishingRod = configuration.getFishingRod();
         this.fishingCard = FishingCard.getPlayerCard(this.playerOwner);
         this.castCharge = MEMBER_FISHING_ROD.getCastCharge(this.fishingRod);
-        this.airResistance = getAirResistanceBonus(configuration.getCastPower());
+        this.calculateResistance(configuration.getCastPower());
         this.lineLength = configuration.getLineLength();
         this.setCastDirection();
     }
 
-    private float getAirResistanceBonus(float castPower){
-        return (float) (0.87f + (Math.sqrt((castPower - 0.5f) * 0.5f) * 0.11f));
+    private void calculateResistance(float castPower){
+        this.airResistance = (float) (0.87f + (Math.sqrt((castPower - 0.5f) * 0.5f) * 0.11f));
+        this.waterResistance = this.airResistance * 0.6f;
+        this.groundResistance = this.waterResistance * 0.6f;
     }
 
 
@@ -155,126 +155,71 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     @Override
     public void tick() {
         super.tick();
-        if (this.playerOwner == null) {
+        if ((!this.world.isClient && this.isInvalid(this.playerOwner))) {
             this.discard();
             return;
         }
-        if (!this.world.isClient && this.removeIfInvalid(this.playerOwner)) {
-            return;
-        }
+        this.isInWater = this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
+        tickEntityCollision();
+        tickFishingLogic();
+        tickTension();
+        tickMotion();
+    }
 
-        float waterHeight = 0.0f;
-        BlockPos blockPos = this.getBlockPos();
-        FluidState fluidState = this.world.getFluidState(blockPos);
-        if (fluidState.isIn(FluidTags.WATER)) {
-            waterHeight = fluidState.getHeight(this.world, blockPos);
-        }
-        boolean isInWater = waterHeight > 0.0f;
-        if (this.state == State.FLYING) {
-            if (this.getHookedEntity() != null) {
-                this.setVelocity(Vec3d.ZERO);
-                this.state = State.HOOKED_IN_ENTITY;
-                return;
-            }
-            if (isInWater) {
-                this.setVelocity(this.getVelocity().multiply(0.5));
-                this.state = State.BOBBING;
-                return;
-            }
-        } else {
-            if (this.state == State.HOOKED_IN_ENTITY) {
-                if (getHookedEntity() != null) {
-                    if (getHookedEntity().isRemoved() || getHookedEntity().world.getRegistryKey() != this.world.getRegistryKey()) {
-                        ((FishingBobberEntityAccessor)this).invokeUpdateHookedEntityId(null);
-                        this.state = State.FLYING;
-                    } else {
-                        this.setPosition(getHookedEntity().getX(), getHookedEntity().getBodyY(0.8), getHookedEntity().getZ());
-                    }
-                }
-                //return;
-            }
-            if (this.state == State.BOBBING) {
-                Vec3d vec3d = this.getVelocity();
-                if (Math.abs(vec3d.x) + Math.abs(vec3d.z) < 0.005 && this.distanceTraveled == 0) {
-                    this.distanceTraveled = distanceFromCaster();
-                    if (world.isClient) {
-                        this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", this.distanceTraveled)), true);
-                    }
-                }
-                double d = this.getY() + vec3d.y - (double)blockPos.getY() - (double)waterHeight;
-                if (Math.abs(d) < 0.01) {
-                    d += Math.signum(d) * 0.1;
-                }
-                this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
-                if (isInWater && !this.world.isClient) {
-                    //this.tickFishingLogic();
-                }
-            }
-        }
-        if (!fluidState.isIn(FluidTags.WATER)) {//Gravity
-            this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
-        }
-        if (state != State.HOOKED_IN_ENTITY) {
+    private boolean isHookedEntityInvalid() {
+        return this.getHookedEntity() != null && (this.getHookedEntity().isRemoved() || this.getHookedEntity().world.getRegistryKey() != this.world.getRegistryKey());
+    }
+
+    private void tickEntityCollision() {
+        if (this.getHookedEntity() == null) {
             this.checkForCollision();
         }
-        Vec3d beforeMove = getPos();
-        float ratio = 0.0025f; //bobber is 0.25% of player
-        Vec3d ownerPos = this.playerOwner.getEyePos();
-        Vec3d currentPos = this.getPos();
-        Vec3d allowedMove = this.getVelocity();
-        Vec3d allowedPlayerMove = this.playerOwner.getVelocity();
-        Vec3d initialPlayerVelocity = allowedPlayerMove;
-        Vec3d initialVelocity = this.getVelocity();
-        Vec3d residualVelocity = Vec3d.ZERO;
-        Vec3d residualPlayerVelocity = Vec3d.ZERO;
-        while (ownerPos.add(allowedPlayerMove).subtract(currentPos).length() > 8f  && allowedPlayerMove.length() > 0.01f) {
-            allowedPlayerMove = allowedPlayerMove.multiply(0.87);
-            if (ownerPos.add(allowedPlayerMove).subtract(currentPos).length() > 8f  && allowedPlayerMove.length() > 0.01f) {
-                residualPlayerVelocity = initialPlayerVelocity.relativize(allowedPlayerMove);
-                break;
-            }
+        if (this.isHookedEntityInvalid()) {
+            ((FishingBobberEntityAccessor)this).invokeUpdateHookedEntityId(null);
         }
-        while (currentPos.add(allowedMove).subtract(ownerPos).length() > 8f  && allowedMove.length() > 0.01f) {
-            allowedMove = allowedMove.multiply(0.87);
-            if (currentPos.add(allowedMove).subtract(ownerPos).length() > 8f  && allowedMove.length() > 0.01f) {
-                residualVelocity = initialVelocity.relativize(allowedMove);
-                break;
-            }
+        if (this.getHookedEntity() != null){
+            this.setVelocity(Vec3d.ZERO);
+            this.setPosition(this.getHookedEntity().getX(), this.getHookedEntity().getBodyY(0.8), this.getHookedEntity().getZ());
         }
-        if (residualVelocity.length() > 0 || residualPlayerVelocity.length() > 0) {
-            double tension = Math.pow(ownerPos.add(allowedPlayerMove).subtract(currentPos).length() - 8, 2);
-            Vec3d ownerVector = ownerPos.subtract(currentPos);
-            Vec3d bobberVector = ownerPos.relativize(currentPos);
-            double x =  (initialVelocity.length() + tension) / (ownerVector.length() + tension) ;
-            double y =  (initialVelocity.length() + tension) / (bobberVector.length() + tension) ;
-            double x1 =  (initialPlayerVelocity.length() + tension) / (ownerVector.length() + tension) ;
-            double y1 =  (initialPlayerVelocity.length() + tension) / (bobberVector.length() + tension) ;
-            Vec3d result = ownerVector.add(residualVelocity).multiply(x);
-            Vec3d oppositeResult = bobberVector.add(residualVelocity).multiply(y).multiply(0.001f);
-            Vec3d result1 = ownerVector.add(residualPlayerVelocity).multiply(x1);
-            Vec3d oppositeResult1 = bobberVector.add(residualPlayerVelocity).multiply(y1).multiply(0.01);
-            this.playerOwner.setVelocity(this.playerOwner.getVelocity().add(oppositeResult).add(oppositeResult1));
-            Entity hookedEntity = getHookedEntity();
-            if (hookedEntity != null) {
-                 hookedEntity.setVelocity(hookedEntity.getVelocity().add(ownerVector.multiply(0.01f)));
-            }
-            allowedMove = allowedMove.add(result).add(result1);
+    }
 
-        }
+    private boolean isValidFishing() {
+        return this.getHookedEntity() == null && this.isInWater && !this.world.isClient && this.getVelocity().length() < 0.01f;
+    }
 
-        this.setVelocity(allowedMove);
-//        if (distanceFromCaster() > lineLength) {
-//            Vec3d expectedPos = this.getPos().add(getVelocity());
-//            Vec3d force = expectedPos.subtract(beforeMove);
-//            Vec3d consumedForce = this.getPos().subtract(beforeMove);
-//            Vec3d resultForce = force.subtract(consumedForce);
-//            Vec3d tensionForce = this.playerOwner.getPos().subtract(getPos());
-//            this.setVelocity(this.getVelocity().add(tensionForce.multiply(0.8,0,0.8)));
-//            this.move(MovementType.SELF, this.getVelocity());
-//            this.playerOwner.setVelocity(this.playerOwner.getVelocity().add(tensionForce.multiply(-0.12)));
-//        }
+    private void tickMotion() {
+        this.setVelocity(this.getVelocity().add(0.0, this.isInWater ? 0.005f : -0.03f, 0.0));
         this.move(MovementType.SELF, this.getVelocity());
-        this.setVelocity(this.getVelocity().multiply(airResistance));//
+        this.setVelocity(this.getVelocity().multiply(getResistance()));
+    }
+
+    private void tickTension() {
+        this.ownerVector = this.playerOwner.getEyePos().relativize(this.getPos());
+        float tension = (float) (this.ownerVector.length() - this.lineLength);
+        if (tension < 0) {
+            return;
+        }
+        float weightRatio = this.getHookedEntity() == null ? 0.1f : 0.03f;
+        Entity hookEntity = this.getHookedEntity() == null ? this : this.getHookedEntity();
+        Vec3d tensionVector = this.ownerVector.multiply(tension * this.tensionDamp);
+        this.playerOwner.setVelocity(
+                this.playerOwner
+                        .getVelocity()
+                        .add(tensionVector
+                                .multiply(weightRatio)
+                        )
+        );
+        hookEntity.setVelocity(
+                hookEntity.getVelocity()
+                        .add(tensionVector
+                                .multiply(-1 / weightRatio)
+                                .multiply(weightRatio)
+                        )
+        );
+    }
+
+    private float getResistance() {
+        return this.isInWater ? this.waterResistance : this.onGround ? this.groundResistance : this.airResistance;
     }
 
     @Override
@@ -284,12 +229,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.refreshPosition();
     }
 
-    private float distanceFromCaster() {
-        return distanceTo(this.getOwner());
-    }
-
 
     private void tickFishingLogic() {
+        if (!isValidFishing()) {
+            return;
+        }
+        //this.distanceTraveled = distanceFromCaster();
+        this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", this.ownerVector.length())), true);
         ServerWorld serverWorld = (ServerWorld)this.world;
 
         if (this.hookCountdown > 0) {
@@ -439,12 +385,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.lastWaitCountdown = this.waitCountdown;
     }
 
-    private boolean removeIfInvalid(PlayerEntity playerEntity) {
-        if (playerEntity.isRemoved() || !playerEntity.isAlive() || !MEMBER_FISHING_ROD.holdsFishingRod(playerEntity)) {
-            this.discard();
-            return true;
-        }
-        return false;
+    private boolean isInvalid(PlayerEntity playerEntity) {
+        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || !MEMBER_FISHING_ROD.holdsFishingRod(playerEntity);
     }
     
     private void reelFish() {
@@ -560,18 +502,5 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
                 this.playerOwner.getZ() - this.getZ()
         ).multiply(0.1f * configuration.getCastPower())));
         MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, ComponentItem.DamageSource.REEL_FISH, this.playerOwner);
-    }
-
-    enum State {
-        FLYING,
-        HOOKED_IN_ENTITY,
-        BOBBING;
-    }
-
-    enum PositionType {
-        ABOVE_WATER,
-        INSIDE_WATER,
-        INVALID;
-
     }
 }
