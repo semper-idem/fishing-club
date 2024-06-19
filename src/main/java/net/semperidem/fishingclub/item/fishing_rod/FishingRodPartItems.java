@@ -50,11 +50,11 @@ public class FishingRodPartItems {
 
     public static final LineComponentItem LINE_SPIDER = new LineComponentItem(new Item.Settings().maxDamage(32).rarity(COMMON))
             .weightCapacity(15)
-            .castRangeLimit(8);
+            .lineLength(8);
 
     public static final LineComponentItem LINE_WOOL = new LineComponentItem(new Item.Settings().maxDamage(32).rarity(COMMON))
             .weightCapacity(10)
-            .castRangeLimit(64);
+            .lineLength(64);
 
 
 

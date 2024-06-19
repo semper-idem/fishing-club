@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 import net.minecraft.item.ItemStack;
 
 public class LineComponentItem extends ComponentItem{
-    int castRangeLimit;
+    int lineLength;
     public LineComponentItem(Settings settings) {
         super(settings);
         this.destroyOnBreak = true;
@@ -17,14 +17,14 @@ public class LineComponentItem extends ComponentItem{
         return this;
     }
 
-    public LineComponentItem castRangeLimit(int castRangeLimit) {
-        this.castRangeLimit = castRangeLimit;
+    public LineComponentItem lineLength(int lineLength) {
+        this.lineLength = lineLength;
         return this;
     }
 
     @Override
     void applyComponent(FishingRodConfiguration configuration, ItemStack componentStack) {
         super.applyComponent(configuration, componentStack);
-        configuration.castRangeLimit.value = this.castRangeLimit;
+        configuration.lineLength.value = this.lineLength;
     }
 }

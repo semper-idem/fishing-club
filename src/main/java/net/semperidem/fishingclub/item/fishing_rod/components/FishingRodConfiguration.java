@@ -12,7 +12,7 @@ import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems.*;
 public class FishingRodConfiguration {
     private final HashSet<ConfigurationAttribute<?>> configurationAttributes = new HashSet<>();
     final ConfigurationAttribute<Integer> weightCapacity = new ConfigurationAttribute<>(0);
-    final ConfigurationAttribute<Integer> castRangeLimit = new ConfigurationAttribute<>(8);
+    final ConfigurationAttribute<Integer> lineLength = new ConfigurationAttribute<>(8);
     final ConfigurationAttribute<Float> castPower = new ConfigurationAttribute<>(1f);
 
     final HashSet<Component> components = new HashSet<>();
@@ -52,8 +52,8 @@ public class FishingRodConfiguration {
         return castPower.value;
     }
 
-    public int getCastRangeLimit() {
-        return castRangeLimit.value;
+    public int getLineLength() {
+        return lineLength.value;
     }
 
     public void equipCoreComponent(ItemStack coreStack){

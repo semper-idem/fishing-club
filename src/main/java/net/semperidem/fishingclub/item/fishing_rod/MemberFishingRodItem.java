@@ -20,7 +20,7 @@ import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
 
 public class MemberFishingRodItem extends FishingRodItem {
-    public final String CAST_POWER_TAG = "lastCastPower";
+    private final String CAST_CHARGE_TAG = "lastCastCharge";
 
     public MemberFishingRodItem(Settings settings) {
         super(settings);
@@ -102,12 +102,12 @@ public class MemberFishingRodItem extends FishingRodItem {
         return fishingRod.getMaxDamage() - fishingRod.getDamage() > 1;
     }
 
-    public float getPower(ItemStack itemStack) {
-        return itemStack.getOrCreateNbt().getFloat(CAST_POWER_TAG);
+    public float getCastCharge(ItemStack itemStack) {
+        return itemStack.getOrCreateNbt().getFloat(CAST_CHARGE_TAG);
     }
 
     public void setPower(ItemStack itemStack, float power) {
-        itemStack.getOrCreateNbt().putFloat(CAST_POWER_TAG, power);
+        itemStack.getOrCreateNbt().putFloat(CAST_CHARGE_TAG, power);
     }
 
 
@@ -135,6 +135,10 @@ public class MemberFishingRodItem extends FishingRodItem {
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.SPEAR;
+    }
+
+    public boolean holdsFishingRod(PlayerEntity playerEntity) {
+        return playerEntity.getMainHandStack().isOf(this) || playerEntity.getOffHandStack().isOf(this);
     }
 
 }

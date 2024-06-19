@@ -47,7 +47,7 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getPositionMatrix();
         Matrix3f matrix3f = entry.getNormalMatrix();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(getTexture((CustomFishingBobberEntity) fishingBobberEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(DEFAULT));
         vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
         vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
@@ -111,9 +111,5 @@ public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRender
         float p = h * j - m;
         float q = MathHelper.sqrt(n * n + o * o + p * p);
         vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
-    }
-
-    public Identifier getTexture(CustomFishingBobberEntity fishingBobberEntity) {
-        return fishingBobberEntity.getTexture();
     }
 }
