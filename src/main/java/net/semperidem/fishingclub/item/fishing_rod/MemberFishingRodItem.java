@@ -11,6 +11,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
@@ -21,6 +22,7 @@ import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfigur
 
 public class MemberFishingRodItem extends FishingRodItem {
     private final String CAST_CHARGE_TAG = "lastCastCharge";
+    private final String LINE_LENGTH = "lineLenght";
 
     public MemberFishingRodItem(Settings settings) {
         super(settings);
@@ -66,7 +68,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         if (!world.isClient) {
             FishingRodConfiguration configuration = getRodConfiguration(fishingRod);
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
-            setPower(fishingRod, power);
+            setCastCharge(fishingRod, power);
             damageComponents(configuration, 2, ComponentItem.DamageSource.CAST, user);
             world.spawnEntity(new CustomFishingBobberEntity(user, world, configuration));
         }
@@ -77,9 +79,7 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
     private void serverReelRod(World world, PlayerEntity user, Hand hand, ItemStack itemStack){
-        if (!world.isClient) {
-            user.fishHook.use(itemStack);
-        }
+        user.fishHook.use(itemStack);
     }
 
     public void damageComponents(FishingRodConfiguration configuration, int amount, ComponentItem.DamageSource damageSource, LivingEntity entity){
@@ -106,8 +106,20 @@ public class MemberFishingRodItem extends FishingRodItem {
         return itemStack.getOrCreateNbt().getFloat(CAST_CHARGE_TAG);
     }
 
-    public void setPower(ItemStack itemStack, float power) {
+    public void setCastCharge(ItemStack itemStack, float power) {
         itemStack.getOrCreateNbt().putFloat(CAST_CHARGE_TAG, power);
+    }
+
+    public float getLineLength(ItemStack itemStack) {
+        return itemStack.getOrCreateNbt().getFloat(LINE_LENGTH);
+    }
+
+    public float setLineLength(ItemStack itemStack, float lineLength) {
+        FishingRodConfiguration configuration = getRodConfiguration(itemStack);
+        float maxLineLength = configuration.getMaxLineLength();
+        float setLineLength = MathHelper.clamp(lineLength, 0.5f, maxLineLength);
+        itemStack.getOrCreateNbt().putFloat(LINE_LENGTH, setLineLength);
+        return setLineLength;
     }
 
 

@@ -15,6 +15,7 @@ import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -37,6 +38,39 @@ import java.util.UUID;
 import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 public class ServerPacketHandlers {
+
+    public static void handleLineScroll(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        try {
+            float amount = buf.readFloat();
+            server.execute(() -> {
+                ItemStack mainHand = player.getMainHandStack();
+                ItemStack offHand = player.getOffHandStack();
+                ItemStack fishingRod = null;
+                if (mainHand.isOf(MEMBER_FISHING_ROD)) {
+                    fishingRod = mainHand;
+                }
+                if (offHand.isOf(MEMBER_FISHING_ROD)) {
+                    fishingRod = offHand;
+
+                }
+                if (fishingRod == null) {
+                    return;
+                }
+
+                if (player.fishHook instanceof CustomFishingBobberEntity bobberEntity) {
+                    bobberEntity.scrollLine(amount);
+                    return;
+                }
+
+                float currentLineLength = MEMBER_FISHING_ROD.getLineLength(fishingRod);
+                float newLineLength = MEMBER_FISHING_ROD.setLineLength(fishingRod, currentLineLength + amount);
+                player.sendMessage(Text.literal("Line length: " + newLineLength), true);
+
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         try {

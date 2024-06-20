@@ -34,7 +34,7 @@ public class LeaderboardTracker {
                 return capeTotal;
             }
 
-            if (fishingLevelProperties.getFishingKingUUID().compareTo(card.getHolder().getUuid()) != 0) {
+            if (fishingLevelProperties.getFishingKingUUID() == null || fishingLevelProperties.getFishingKingUUID().compareTo(card.getHolder().getUuid()) != 0) {
                 return capeTotal;
             }
 

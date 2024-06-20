@@ -5,6 +5,7 @@ import net.minecraft.util.Identifier;
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
 
 public class PacketIdentifiers {
+    public static final Identifier C2S_LINE_SCROLL = getIdentifier("c2s_line_scroll");
     public static final Identifier C2S_F_DATA_PERK_ADD = getIdentifier("c2s_f_data_perk_add");
     public static final Identifier C2S_REPAIR_ROD = getIdentifier("c2s_repair_rod");
     public static final Identifier C2S_ACCEPT_DEREK = getIdentifier("c2s_accept_derek");

@@ -9,6 +9,13 @@ import net.semperidem.fishingclub.fish.Fish;
 import java.util.ArrayList;
 
 public class ClientPacketSender {
+
+    public static void sendLineScroll(float amount) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeFloat(amount);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_LINE_SCROLL, buf);
+    }
+
     public static void sendFishGameWon(Fish fish, ArrayList<ItemStack> treasureRewards) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeNbt(fish.getNbt());

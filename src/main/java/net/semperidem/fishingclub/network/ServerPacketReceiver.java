@@ -8,6 +8,7 @@ import static net.semperidem.fishingclub.network.PacketIdentifiers.*;
 public class ServerPacketReceiver {
     public static void registerServerPacketHandlers() {
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
+            registerReceiver(handler, C2S_LINE_SCROLL, ServerPacketHandlers::handleLineScroll);
             registerReceiver(handler, C2S_F_GAME_WON, ServerPacketHandlers::handleFishingGameFished);
             registerReceiver(handler, C2S_F_GAME_LOST, ServerPacketHandlers::handleFishingGameLost);
             registerReceiver(handler, C2S_OPEN_MEMBER_SCREEN, ServerPacketHandlers::handleMemberScreenOpenRequest);

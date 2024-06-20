@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 import net.minecraft.item.ItemStack;
 
 public class LineComponentItem extends ComponentItem{
-    int lineLength;
+    int maxLineLength;
     public LineComponentItem(Settings settings) {
         super(settings);
         this.destroyOnBreak = true;
@@ -17,14 +17,15 @@ public class LineComponentItem extends ComponentItem{
         return this;
     }
 
-    public LineComponentItem lineLength(int lineLength) {
-        this.lineLength = lineLength;
+    public LineComponentItem maxLineLength(int maxLineLength) {
+        this.maxLineLength = maxLineLength;
+
         return this;
     }
 
     @Override
     void applyComponent(FishingRodConfiguration configuration, ItemStack componentStack) {
         super.applyComponent(configuration, componentStack);
-        configuration.lineLength.value = this.lineLength;
+        configuration.maxLineLength.value = this.maxLineLength;
     }
 }

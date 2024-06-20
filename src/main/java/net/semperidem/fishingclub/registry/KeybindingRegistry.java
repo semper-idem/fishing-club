@@ -37,6 +37,7 @@ public class KeybindingRegistry {
         );
     }
 
+
     private static ClientTickEvents.EndTick openFisherInfoScreen(){
         return client -> {
             while (FISHER_INFO_SCREEN_KB.wasPressed()) {
