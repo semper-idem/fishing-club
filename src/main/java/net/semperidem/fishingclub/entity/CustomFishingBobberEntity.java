@@ -190,8 +190,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.isInWater = this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
         tickEntityCollision();
         tickFishingLogic();
-        tickTension();
         tickMotion();
+        tickTension();
     }
 
     private boolean isHookedEntityInvalid() {
@@ -219,7 +219,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     }
 
     private void tickMotion() {
-        this.setVelocity(this.getVelocity().add(0.0, this.isInWater ? 0.005f : -0.03f, 0.0));
+        this.setVelocity(this.getVelocity().add(0.0, this.isInWater ? 0.005f : this.onGround ? 0.0f : -0.08f, 0.0));
         this.move(MovementType.SELF, this.getVelocity());
         this.setVelocity(this.getVelocity().multiply(getResistance()));
     }
@@ -230,20 +230,32 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         if (tension < 0) {
             return;
         }
-        calculateTensionVelocity(MathHelper.clamp(tension, 0, 2f));
+        calculateTensionVelocity(MathHelper.clamp(tension, 0, 4f));
     }
 
+
+
     private void calculateTensionVelocity(float force) {
-        Vec3d tensionVector = this.ownerVector.multiply(Math.pow(force, 2) * this.tensionDamp);
-        this.playerOwner.setVelocity(this.playerOwner.getVelocity()
-                .add(tensionVector.multiply(this.weightRatio)
-                )
-        );
-        this.hookEntity.setVelocity(this.hookEntity.getVelocity()
-                .add(tensionVector.multiply(this.weightRatio).multiply(this.inverseWeightRatio)
-                )
-        );
+        float maxTension = force / 4f;
+        Vec3d playerTension = this.playerOwner.getVelocity().multiply(-maxTension).add(this.ownerVector.multiply(force * tensionDamp));
+        Vec3d playerVelocity = this.playerOwner.getVelocity().multiply(maxTension);
+        Vec3d hookTension = this.hookEntity.getVelocity().multiply(-maxTension).add(this.ownerVector.multiply(-force * tensionDamp));
+        Vec3d hookVelocity = this.hookEntity.getVelocity().multiply(maxTension);
+        this.playerOwner.setVelocity(this.playerOwner.getVelocity().add(playerTension).add(hookVelocity));
+        this.hookEntity.setVelocity(this.hookEntity.getVelocity().add(hookTension).add(playerVelocity));
     }
+//
+//    private void calculateTensionVelocity(float force) {
+//        Vec3d tensionVector = this.ownerVector.multiply(Math.pow(force, 2) * this.tensionDamp);
+//        this.playerOwner.setVelocity(this.playerOwner.getVelocity()
+//                .add(tensionVector.multiply(this.weightRatio)
+//                )
+//        );
+//        this.hookEntity.setVelocity(this.hookEntity.getVelocity()
+//                .add(tensionVector.multiply(this.weightRatio).multiply(this.inverseWeightRatio)
+//                )
+//        );
+//    }
 
     private float getResistance() {
         return this.isInWater ? this.waterResistance : this.onGround ? this.groundResistance : this.airResistance;
