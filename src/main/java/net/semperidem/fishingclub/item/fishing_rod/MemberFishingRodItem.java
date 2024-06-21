@@ -79,6 +79,7 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
     private void serverReelRod(World world, PlayerEntity user, Hand hand, ItemStack itemStack){
+
         user.fishHook.use(itemStack);
     }
 
