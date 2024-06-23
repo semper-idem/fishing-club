@@ -1,3 +1,4 @@
 accessWidener	v1 named
 accessible class net/minecraft/client/font/TextRenderer$Drawer
 accessible method net/minecraft/entity/projectile/FishingBobberEntity checkForCollision ()V
+accessible method net/minecraft/entity/Entity calculateBoundingBox ()Lnet/minecraft/util/math/Box;

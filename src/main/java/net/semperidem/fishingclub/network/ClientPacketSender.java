@@ -7,6 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.fish.Fish;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ClientPacketSender {
 
@@ -14,6 +15,12 @@ public class ClientPacketSender {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeFloat(amount);
         ClientPlayNetworking.send(PacketIdentifiers.C2S_LINE_SCROLL, buf);
+    }
+
+    public static void requestFishingRod(int entityId) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeVarInt(entityId);
+        ClientPlayNetworking.send(PacketIdentifiers.C2S_GET_FISHING_ROD, buf);
     }
 
     public static void sendFishGameWon(Fish fish, ArrayList<ItemStack> treasureRewards) {

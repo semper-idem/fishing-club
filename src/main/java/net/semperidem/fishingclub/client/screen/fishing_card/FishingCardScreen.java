@@ -251,10 +251,10 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
-        renderDetails(matrices);
-        renderSelectedPerkDescription(matrices);
-        renderTooltip(matrices, mouseX, mouseY);
+//        super.render(matrices, mouseX, mouseY, delta);
+//        renderDetails(matrices);
+//        renderSelectedPerkDescription(matrices);
+//        renderTooltip(matrices, mouseX, mouseY);
     }
 
 

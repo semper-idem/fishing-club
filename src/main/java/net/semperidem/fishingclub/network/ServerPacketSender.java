@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -11,6 +12,18 @@ import net.semperidem.fishingclub.game.FishingGameController;
 import java.util.UUID;
 
 public class ServerPacketSender {
+
+
+    public static void sendFishingRod(ServerPlayerEntity serverPlayer, int entityId, ItemStack fishingRod) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeInt(entityId);
+        buf.writeItemStack(fishingRod);
+        ServerPlayNetworking.send(
+                serverPlayer,
+                PacketIdentifiers.S2C_SET_FISHING_ROD,
+                buf
+        );
+    }
 
     public static void sendShopScreenInventorySyncPacket(ServerPlayerEntity player){
         player.networkHandler.sendPacket(

@@ -5,17 +5,21 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingLevelProperties;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.PlayerSwingController;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,6 +32,7 @@ import java.util.UUID;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEntity {
+    @Shadow @Nullable public FishingBobberEntity fishHook;
     @Unique
     public FishingCard fishingCard = new FishingCard((PlayerEntity) (Object)this);
     @Unique
@@ -72,6 +77,24 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
             otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF, 600));
             otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 600));
             otherPlayer.addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.FREQUENCY_BUFF, 600));
+        }
+    }
+
+
+    @Inject(method = "tickMovement", at = @At("RETURN"))
+    private void afterTickMovement(CallbackInfo ci) {
+        if (this.fishHook instanceof CustomFishingBobberEntity bobberEntity) {
+            this.onLanding();
+           // if (this.isLogicalSideForUpdatingMovement()) { //this might backfire when testing multipl
+                Vec3d vec3d = bobberEntity.getPos().subtract(this.getEyePos());
+                float g = bobberEntity.lineLength * 0.7f;
+                double d = vec3d.length();
+                if (d > (double)g) {
+                    double e = d / (double)g * 0.1;
+                    Vec3d appliedMotion = vec3d.multiply(1.0 / d).multiply(e, e * 1.1, e);
+                    this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
+                }
+        //    }
         }
     }
 

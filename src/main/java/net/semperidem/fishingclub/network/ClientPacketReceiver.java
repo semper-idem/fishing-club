@@ -2,26 +2,32 @@ package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
-import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
+import net.semperidem.fishingclub.entity.BobberEntitySpawnPacketS2C;
+import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.util.UUID;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_FISH_GAME_UPDATE, (client, handler, buf, responseSender) -> {
-            PacketByteBuf copy = PacketByteBufs.copy(buf);
+        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SET_FISHING_ROD, (client, handler, buf, responseSender) -> {
+            int entityId = buf.readInt();
+            ItemStack fishingRod = buf.readItemStack();
             client.execute(() -> {
-                if (!(client.currentScreen instanceof FishingGameScreen fishGameScreen)) {
+                if (client.world == null) {
                     return;
                 }
-                fishGameScreen.sync(copy);
+                if (client.world.getEntityById(entityId) instanceof CustomFishingBobberEntity customFishingBobberEntity) {
+                    customFishingBobberEntity.initClient(fishingRod);
+                }
             });
         });
+
         ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_FISH_GAME_INITIAL, (client, handler, buf, responseSender) -> {
             PacketByteBuf copy = PacketByteBufs.copy(buf);
             client.execute(() -> {

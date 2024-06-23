@@ -33,6 +33,7 @@ import net.semperidem.fishingclub.item.fishing_rod.*;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
+import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.network.ServerPacketSender;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
@@ -62,11 +63,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private float groundResistance;
     private float waterResistance;
     private float maxLineLength = 8;
-    private float lineLength = maxLineLength;
+    public float lineLength = 8;
     private Vec3d ownerVector;
 
     private FishingCard fishingCard;
-    private ItemStack fishingRod;
+    public ItemStack fishingRod;
     private FishingRodConfiguration configuration;
     private PlayerEntity playerOwner;
 
@@ -90,6 +91,16 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.playerOwner.sendMessage(Text.literal("Line length: " + lineLength), true);
     }
 
+    public void initClient(ItemStack fishingRod) {
+        this.init(MEMBER_FISHING_ROD.getRodConfiguration(fishingRod));
+    }
+
+    @Override
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        ClientPacketSender.requestFishingRod(packet.getId());
+    }
+
     private void init(FishingRodConfiguration configuration) {
         this.configuration = configuration;
         this.fishingRod = configuration.getFishingRod();
@@ -102,6 +113,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.setCastDirection();
         this.updateHookEntity(this);
     }
+
+
 
     private void calculateResistance(float castPower){
         this.airResistance = (float) (0.87f + (Math.sqrt((castPower - 0.5f) * 0.5f) * 0.11f));
@@ -124,23 +137,13 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.inverseWeightRatio = -1 / this.weightRatio;
     }
 
-
-    @Override
-    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
-        super.onSpawnPacket(packet);
-        if (!(packet instanceof BobberEntitySpawnPacketS2C bobberPacket)) {//todo use custom packet instead of this
-            return;
-        }
-        this.init(MEMBER_FISHING_ROD.getRodConfiguration(bobberPacket.fishingRod));
-    }
-
     @Override
     public Packet<?> createSpawnPacket() {
         Entity entity = this.getOwner();
         if (entity instanceof  ServerPlayerEntity serverPlayerEntity) {
             ServerPacketSender.sendCardUpdate(serverPlayerEntity, fishingCard);
         }
-        return new BobberEntitySpawnPacketS2C(this, entity == null ? this.getId() : entity.getId(), fishingRod);
+        return super.createSpawnPacket();
     }
 
     @Override
@@ -192,9 +195,9 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
             return;
         }
         this.isInWater = this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
-        tickEntityCollision();
+        //tickEntityCollision();
         tickFishingLogic();
-        tickMotion();
+        //tickMotion();
         tickTension();
     }
 
@@ -230,73 +233,57 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     private void tickTension() {
         this.ownerVector = this.playerOwner.getPos().relativize(this.getPos());
-        float tension = (float) (this.ownerVector.length());
+        float tension = (float) (this.ownerVector.length()) - lineLength;
+        //playerOwner.sendMessage(Text.literal(("Distance to bobber: " + this.ownerVector.length())), true);
+
+        Vec3d gravity = new Vec3d(0, -0.098, 0);
+//        world.addParticle(
+//                ParticleTypes.SCULK_CHARGE_POP,
+//                playerOwner.getPos().x,
+//                playerOwner.getPos().y,
+//                playerOwner.getPos().z,
+//                gravity.x * 2,
+//                gravity.y * 2,
+//                gravity.z * 2
+//        );
         if (tension < 0) {
             return;
         }
-        calculateTensionVelocity(tension);
+
+        if (this.ownerVector.length() > 16) {
+//            this.playerOwner.setVelocity(Vec3d.ZERO);
+//            this.playerOwner.setPosition(this.getPos());
+            return;
+        }
+        //calculateTensionVelocity(tension);
+
     }
 
 
 
     private void calculateTensionVelocity(float force) {
-        float maxTension = force;
-        playerOwner.sendMessage(Text.literal(String.format("Distance to bobber: %.2f", force)), true);
-        Vec3d playerTension = this.playerOwner.getVelocity().multiply(-maxTension).add(this.ownerVector.multiply(force * tensionDamp));
-        Vec3d playerVelocity = this.playerOwner.getVelocity();
-        Vec3d hookTension = this.hookEntity.getVelocity().multiply(-maxTension).add(this.ownerVector.multiply(-force * tensionDamp));
-        double cross = this.ownerVector.normalize().crossProduct(new Vec3d(0, -1, 0)).length();
-        double dot = this.ownerVector.normalize().dotProduct(new Vec3d(0, -1, 0));
         Vec3d zeroPos = this.getPos().add(0, -lineLength, 0);
-        Vec3d playerPos = this.playerOwner.getPos();
-        Vec3d swingDirection = zeroPos.subtract(playerPos);
-        double antiGravity = MathHelper.clamp((force - lineLength) , 0, 1.5);
-        Vec3d gravity = new Vec3d(0, 0.098, 0);
-        double adj =  MathHelper.clamp(swingDirection.horizontalLength(), 0, lineLength);
-        double hyp =  MathHelper.clamp(this.ownerVector.length(), 0, lineLength);
-        double opp = MathHelper.clamp(lineLength - (zeroPos.y - playerPos.y), 0, lineLength);
-        double sin = adj / hyp;
-        double cos = opp / hyp;
-        double currentEnergy = swingDirection.multiply(sin * antiGravity * 0.1).length();
-        if (currentEnergy > 0.098) {
-            swingDirection.normalize().multiply(0.098);
+        Vec3d swingDirection = playerOwner.getPos().relativize(zeroPos);
+        double adj = this.getPos().y - this.playerOwner.getPos().y;//MathHelper.clamp(lineLength - (playerPos.y - zeroPos.y), 0, lineLength);
+        double opp =  swingDirection.horizontalLength();//MathHelper.clamp(swingDirection.horizontalLength(), 0, lineLength);
+        double hyp =  this.ownerVector.length();//MathHelper.clamp(this.ownerVector.length(), 0, lineLength);
+        double sin = opp / hyp;
+        double cos = adj / hyp;
+        swingDirection = swingDirection.normalize().multiply(0.1f, 0, 0.1f).add(0,0.098 * cos, 0);
+        if (this.ownerVector.length() > 8) {
+         //   this.playerOwner.setVelocity(0,0,0);
         }
-        System.out.println("Current Energy: "  +  currentEnergy);
-        if (antiGravity > 0) {
-            Vec3d swingVector = swingDirection.multiply(sin * antiGravity * 0.1).add(gravity.multiply(antiGravity));
-            this.playerOwner.setVelocity(playerVelocity.add(swingVector));
-            if (world.isClient) {
-//                System.out.println("====================================================");
-//                System.out.println(this.playerOwner.getPos());
-//                System.out.println("Sin: " + sin);
-//                System.out.println("Cos: " + cos);
-//                System.out.println("Validation: " + (Math.pow(cos, 2) + Math.pow(sin, 2)) + " = " + 1);
-//                System.out.println("Hyp:" + hyp);
-//                System.out.println("opp:" + opp);
-//                System.out.println("Anti Gravity: " + antiGravity);
-//                System.out.println("swingVector: " + swingVector);
-//                System.out.println("playerVelocityBefore: " + playerVelocity);
-//                System.out.println("playerVelocityAfter: " + this.playerOwner.getVelocity());
-                world.addParticle(ParticleTypes.ELECTRIC_SPARK, playerPos.x, playerPos.y, playerPos.z,swingDirection.x,swingDirection.y,swingDirection.z);
-            }
-        }
-   //     System.out.println(swingDirection);
-        Vec3d hookVelocity = this.hookEntity.getVelocity().multiply(maxTension);
-        //this.playerOwner.setVelocity(this.playerOwner.getVelocity().add(swingDirection).add(0, 0.08f * force, 0));
-        //this.hookEntity.setVelocity(this.hookEntity.getVelocity().add(playerVelocity));
+//       // this.playerOwner.setVelocity(this.playerOwner.getVelocity().add(0,-0.098 + 0.098 * MathHelper.clamp(this.ownerVector.length() / lineLength, 0, 1), 0));
+//        world.addParticle(
+//                ParticleTypes.SCULK_CHARGE_POP,
+//                playerOwner.getPos().x + .5,
+//                playerOwner.getPos().y,
+//                playerOwner.getPos().z + .5,
+//                swingDirection.x * 2,
+//                swingDirection.y * 2,
+//                swingDirection.z * 2
+//        );
     }
-//
-//    private void calculateTensionVelocity(float force) {
-//        Vec3d tensionVector = this.ownerVector.multiply(Math.pow(force, 2) * this.tensionDamp);
-//        this.playerOwner.setVelocity(this.playerOwner.getVelocity()
-//                .add(tensionVector.multiply(this.weightRatio)
-//                )
-//        );
-//        this.hookEntity.setVelocity(this.hookEntity.getVelocity()
-//                .add(tensionVector.multiply(this.weightRatio).multiply(this.inverseWeightRatio)
-//                )
-//        );
-//    }
 
     private float getResistance() {
         return this.isInWater ? this.waterResistance : this.onGround ? this.groundResistance : this.airResistance;

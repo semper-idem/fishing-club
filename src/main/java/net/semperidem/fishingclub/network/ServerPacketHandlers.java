@@ -39,6 +39,14 @@ import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_RO
 
 public class ServerPacketHandlers {
 
+    public static void handleFishingRodRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        int entityId = buf.readVarInt();
+        server.execute(() -> {
+            if (player.world.getEntityById(entityId) instanceof CustomFishingBobberEntity customFishingBobberEntity) {
+                ServerPacketSender.sendFishingRod(player, entityId, customFishingBobberEntity.fishingRod);
+            }
+        });
+    }
     public static void handleLineScroll(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         try {
             float amount = buf.readFloat();
