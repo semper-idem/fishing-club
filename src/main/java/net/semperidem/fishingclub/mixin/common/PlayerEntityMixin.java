@@ -85,16 +85,14 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
     private void afterTickMovement(CallbackInfo ci) {
         if (this.fishHook instanceof CustomFishingBobberEntity bobberEntity) {
             this.onLanding();
-           // if (this.isLogicalSideForUpdatingMovement()) { //this might backfire when testing multipl
-                Vec3d vec3d = bobberEntity.getPos().subtract(this.getEyePos());
-                float g = bobberEntity.lineLength * 0.7f;
-                double d = vec3d.length();
-                if (d > (double)g) {
-                    double e = d / (double)g * 0.1;
-                    Vec3d appliedMotion = vec3d.multiply(1.0 / d).multiply(e, e * 1.1, e);
-                    this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
-                }
-        //    }
+            Vec3d vec3d = bobberEntity.getPos().subtract(this.getEyePos());
+            double d = vec3d.length();
+            if (d > bobberEntity.lineLength) {
+                double e = d / bobberEntity.lineLength * 0.1;
+                Vec3d appliedMotion = vec3d.multiply(1.0 / d).multiply(e, e * 1.2, e);
+                this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
+                bobberEntity.applyTension(appliedMotion.multiply(-1));
+            }
         }
     }
 
