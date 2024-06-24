@@ -10,11 +10,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.LineArrowEntity;
-import net.semperidem.fishingclub.entity.renderer.CustomFishingBobberEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
@@ -23,17 +23,17 @@ import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 
 public class EntityTypeRegistry {
 
-    public static final EntityType<FishermanEntity> FISHERMAN = Registry.register(
+    public static final EntityType<FishermanEntity> DEREK_ENTITY = Registry.register(
             Registry.ENTITY_TYPE,
-            FishingClub.getIdentifier("fisherman"),
+            FishingClub.getIdentifier("derek_entity"),
             FabricEntityTypeBuilder.<FishermanEntity>create(SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world))
                     .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                     .build()
     );
-    public static final EntityType<CustomFishingBobberEntity> CUSTOM_FISHING_BOBBER = Registry.register(
+    public static final EntityType<HookEntity> HOOK_ENTITY = Registry.register(
             Registry.ENTITY_TYPE,
-            FishingClub.getIdentifier("custom_fishing_bobber"),
-            FabricEntityTypeBuilder.<CustomFishingBobberEntity>create(SpawnGroup.MISC, CustomFishingBobberEntity::new)
+            FishingClub.getIdentifier("hook_entity"),
+            FabricEntityTypeBuilder.<HookEntity>create(SpawnGroup.MISC, HookEntity::new)
                     .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
                     .disableSummon()
                     .disableSaving()
@@ -73,10 +73,10 @@ public class EntityTypeRegistry {
         EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
         EntityModelLayerRegistry.registerModelLayer(MODEL_FISHERMAN_LAYER, FishermanEntityModel::getTextureModelData);
 
-        FabricDefaultAttributeRegistry.register(FISHERMAN, FishermanEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(DEREK_ENTITY, FishermanEntity.createMobAttributes());
 
-        EntityRendererRegistry.register(FISHERMAN, FishermanEntityRenderer::new);
-        EntityRendererRegistry.register(CUSTOM_FISHING_BOBBER, CustomFishingBobberEntityRenderer::new);
+        EntityRendererRegistry.register(DEREK_ENTITY, FishermanEntityRenderer::new);
+        EntityRendererRegistry.register(HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
         EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
 

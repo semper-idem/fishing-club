@@ -2,11 +2,9 @@ package net.semperidem.fishingclub.mixin.common;
 
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,10 +13,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.HarpoonRodItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,10 +24,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
@@ -82,7 +77,7 @@ public abstract class LivingEntityMixin extends Entity{
             @Local(ordinal = 1) Vec3d vec3d6
     ) {
         if ((LivingEntity)(Object)this instanceof PlayerEntity player) {
-            if (player.fishHook instanceof CustomFishingBobberEntity bobber) {
+            if (player.fishHook instanceof HookEntity bobber) {
                 if (!this.isOnGround()) {
                     double reverseGravity = 1.015f * y;
                     float g = 0.95F;

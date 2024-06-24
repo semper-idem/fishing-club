@@ -15,16 +15,13 @@ import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
-import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
@@ -42,8 +39,8 @@ public class ServerPacketHandlers {
     public static void handleFishingRodRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         int entityId = buf.readVarInt();
         server.execute(() -> {
-            if (player.world.getEntityById(entityId) instanceof CustomFishingBobberEntity customFishingBobberEntity) {
-                ServerPacketSender.sendFishingRod(player, entityId, customFishingBobberEntity.fishingRod);
+            if (player.world.getEntityById(entityId) instanceof HookEntity hookEntity) {
+                ServerPacketSender.sendFishingRod(player, entityId, hookEntity.getFishingRod());
             }
         });
     }
@@ -65,7 +62,7 @@ public class ServerPacketHandlers {
                     return;
                 }
 
-                if (player.fishHook instanceof CustomFishingBobberEntity bobberEntity) {
+                if (player.fishHook instanceof HookEntity bobberEntity) {
                     bobberEntity.scrollLine(amount);
                     return;
                 }

@@ -7,8 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
-import net.semperidem.fishingclub.entity.BobberEntitySpawnPacketS2C;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.util.UUID;
@@ -22,8 +21,8 @@ public class ClientPacketReceiver {
                 if (client.world == null) {
                     return;
                 }
-                if (client.world.getEntityById(entityId) instanceof CustomFishingBobberEntity customFishingBobberEntity) {
-                    customFishingBobberEntity.initClient(fishingRod);
+                if (client.world.getEntityById(entityId) instanceof HookEntity hookEntity) {
+                    hookEntity.initClient(fishingRod);
                 }
             });
         });

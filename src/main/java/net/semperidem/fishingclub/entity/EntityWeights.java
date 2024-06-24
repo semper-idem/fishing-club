@@ -4,7 +4,7 @@ import net.minecraft.entity.*;
 import java.util.HashMap;
 
 import static net.minecraft.entity.EntityType.*;
-import static net.semperidem.fishingclub.registry.EntityTypeRegistry.CUSTOM_FISHING_BOBBER;
+import static net.semperidem.fishingclub.registry.EntityTypeRegistry.HOOK_ENTITY;
 
 public class EntityWeights {
     private static final HashMap<EntityType<?>, Integer> ENTITY_TYPE_TO_MAGNITUDE = new HashMap<>();
@@ -71,6 +71,6 @@ public class EntityWeights {
         ENTITY_TYPE_TO_MAGNITUDE.put(ZOGLIN, -2);
         ENTITY_TYPE_TO_MAGNITUDE.put(ZOMBIE_HORSE, -1);
         ENTITY_TYPE_TO_MAGNITUDE.put(FISHING_BOBBER, 3);
-        ENTITY_TYPE_TO_MAGNITUDE.put(CUSTOM_FISHING_BOBBER, 3);
+        ENTITY_TYPE_TO_MAGNITUDE.put(HOOK_ENTITY, 3);
     }
 }

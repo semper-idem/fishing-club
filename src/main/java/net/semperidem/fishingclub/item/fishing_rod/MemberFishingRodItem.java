@@ -14,7 +14,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
@@ -70,7 +70,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
             setCastCharge(fishingRod, power);
             damageComponents(configuration, 2, ComponentItem.DamageSource.CAST, user);
-            world.spawnEntity(new CustomFishingBobberEntity(user, world, configuration));
+            world.spawnEntity(new HookEntity(user, world, configuration));
         }
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
         user.incrementStat(Stats.USED.getOrCreateStat(this));

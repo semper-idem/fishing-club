@@ -15,17 +15,16 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
-public class CustomFishingBobberEntityRenderer extends FishingBobberEntityRenderer {
+public class HookEntityRenderer extends FishingBobberEntityRenderer {
     public static final Identifier DEFAULT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber.png");
     public static final Identifier ANCIENT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_ancient.png");
     public static final Identifier PLANT = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_plant.png");
     public static final Identifier WOODEN = new Identifier(FishingClub.MOD_ID, "textures/entity/bobber_wooden.png");
     private static final RenderLayer LAYER = RenderLayer.getEntityCutout(ANCIENT);
 
-    public CustomFishingBobberEntityRenderer(EntityRendererFactory.Context context) {
+    public HookEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
     }
 

@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public abstract class FishingBobberEntityMixin{
 
     @Inject(method = "tick", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/FishingBobberEntity;getPlayerOwner()Lnet/minecraft/entity/player/PlayerEntity;"))
     private void onTick(CallbackInfo ci) {
-        if ((Object)this instanceof CustomFishingBobberEntity){
+        if ((Object)this instanceof HookEntity){
             ci.cancel();
         }
     }

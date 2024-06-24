@@ -109,7 +109,7 @@ public class Spells {
                 //TODO Make only on Derek per world
                 //TODO Add condition to spawn only in water or near water
                 //ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-                EntityTypeRegistry.FISHERMAN.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
+                EntityTypeRegistry.DEREK_ENTITY.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
             }
         });
     }

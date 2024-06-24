@@ -60,7 +60,7 @@ public class FishermanEntity extends PassiveEntity {
     private int despawnTimer;
 
     public FishermanEntity(World world) {
-        super(EntityTypeRegistry.FISHERMAN, world);
+        super(EntityTypeRegistry.DEREK_ENTITY, world);
         this.setCustomName(Text.of("Derek ol'Stinker"));
         this.intersectionChecked = true;
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);

@@ -3,9 +3,8 @@ package net.semperidem.fishingclub.mixin.client;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.KeybindingRegistry;
@@ -42,8 +41,8 @@ public class MouseMixin {
             return;
         }
         ClientPacketSender.sendLineScroll((int)vertical);
-        if (this.client.player.fishHook instanceof CustomFishingBobberEntity customFishingBobberEntity) {
-            customFishingBobberEntity.scrollLine((int)vertical);
+        if (this.client.player.fishHook instanceof HookEntity hookEntity) {
+            hookEntity.scrollLine((int)vertical);
         }
         ci.cancel();
     }

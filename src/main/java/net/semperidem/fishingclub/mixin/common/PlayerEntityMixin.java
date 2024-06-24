@@ -14,8 +14,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.FishingLevelProperties;
-import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
-import net.semperidem.fishingclub.entity.PlayerSwingController;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.FishingPlayerEntity;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
@@ -83,15 +82,21 @@ public class PlayerEntityMixin extends LivingEntity implements FishingPlayerEnti
 
     @Inject(method = "tickMovement", at = @At("RETURN"))
     private void afterTickMovement(CallbackInfo ci) {
-        if (this.fishHook instanceof CustomFishingBobberEntity bobberEntity) {
+        if (this.fishHook instanceof HookEntity hookEntity) {
             this.onLanding();
-            Vec3d vec3d = bobberEntity.getPos().subtract(this.getEyePos());
-            double d = vec3d.length();
-            if (d > bobberEntity.lineLength) {
-                double e = d / bobberEntity.lineLength * 0.1;
-                Vec3d appliedMotion = vec3d.multiply(1.0 / d).multiply(e, e * 1.2, e);
+            Vec3d lineVector = hookEntity.getPos().subtract(this.getEyePos());
+            double currentLineLength = lineVector.length();
+            if (currentLineLength > hookEntity.getLineLength()) {
+                double tensionForce = currentLineLength / hookEntity.getLineLength() * 0.1;
+                Vec3d appliedMotion = lineVector
+                        .multiply(1.0 / currentLineLength)
+                        .multiply(
+                                tensionForce,
+                                tensionForce * 1.2,
+                                tensionForce
+                        );
                 this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
-                bobberEntity.applyTension(appliedMotion.multiply(-1));
+                hookEntity.applyTensionFromOwner(appliedMotion);
             }
         }
     }
