@@ -42,6 +42,19 @@ public class FishingRodConfiguration {
         return weightCapacity.value;
     }
 
+    public int getWeightMagnitude() {
+        if (weightCapacity.value < 25) {
+            return 1;
+        }
+        if (weightCapacity.value < 100) {
+            return 0;
+        }
+        if (weightCapacity.value < 250) {
+            return -1;
+        }
+        return -4;
+    }
+
     private Component createComponent(String tag, ComponentItem componentItem) {
         Component component = new Component(tag, componentItem);
         components.add(component);

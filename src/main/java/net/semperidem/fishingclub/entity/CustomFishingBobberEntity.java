@@ -57,8 +57,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     private float castCharge = 1;
     private Vec3d airResistance;
-    private Vec3d groundResistance;
     private Vec3d waterResistance;
+    private int maxEntityMagnitude;
     private float maxLineLength = 8;
     public float lineLength = 8;
     private Vec3d ownerVector;
@@ -81,10 +81,11 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.init(configuration);
     }
 
-
     public void scrollLine(float amount) {
-        this.lineLength = MathHelper.clamp(lineLength + amount, 0.5f, maxLineLength);
-        this.playerOwner.sendMessage(Text.literal("Line length: " + lineLength), true);
+        this.lineLength = MathHelper.clamp(lineLength + amount, 4, maxLineLength);
+        if (this.world.isClient) {
+            this.playerOwner.sendMessage(Text.literal(String.format("Line length: %.2f", lineLength)), true);
+        }
     }
 
     public void initClient(ItemStack fishingRod) {
@@ -102,6 +103,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.configuration = configuration;
         this.fishingRod = configuration.getFishingRod();
         this.maxLineLength = configuration.getMaxLineLength();
+        this.maxEntityMagnitude = configuration.getWeightMagnitude();
         this.lineLength = MEMBER_FISHING_ROD.getLineLength(this.fishingRod);
         this.castCharge = MEMBER_FISHING_ROD.getCastCharge(this.fishingRod);
         this.calculateResistance();
@@ -206,7 +208,6 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     private void calculateResistance(){
         this.airResistance = new Vec3d(0.95, 0.99, 0.95);
         this.waterResistance = new Vec3d(0.85, 0.6, 0.85);
-        this.groundResistance = new Vec3d(0.6, 0.6, 0.6);
     }
 
     private void tickMotion() {
@@ -228,13 +229,23 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
         this.setVelocity(this.getVelocity().multiply(resistance));
     }
 
+    private float getTension() {
+        return (float) MathHelper.clamp(this.ownerVector.length()- this.lineLength * (2 - weightRatio), 0 ,2);
+
+    }
+
     private void tickTension() {
         this.ownerVector = this.playerOwner.getEyePos().relativize(this.getPos());
-        float tension = (float) (this.ownerVector.length()- this.lineLength * (2 - weightRatio));
+        float tension = getTension();
         if (tension < 0) {
             return;
         }
         calculateTensionVelocity(MathHelper.clamp(tension, 0, 1f));
+
+        if (tension > 1 && this.maxEntityMagnitude >= this.weightRatio) {
+            MEMBER_FISHING_ROD.damageComponents(fishingRod, 10, ComponentItem.DamageSource.REEL_ENTITY, this.playerOwner);
+            this.discard();
+        }
     }
 
 
@@ -440,7 +451,7 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
 
     private void reelEntity() {
         if (this.hookEntity != this.playerOwner) {
-            Vec3d pullVec = this.ownerVector.normalize().multiply(-configuration.getCastPower() * 0.6);
+            Vec3d pullVec = this.ownerVector.normalize().multiply(-configuration.getCastPower() * getTension());
             this.hookEntity.addVelocity(pullVec.x, pullVec.y, pullVec.z);
             MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, ComponentItem.DamageSource.REEL_FISH, this.playerOwner);
             if (this.playerOwner instanceof ServerPlayerEntity)
@@ -453,10 +464,8 @@ public class CustomFishingBobberEntity extends FishingBobberEntity implements IH
     }
 
     private void reelGround() {
-        if (this.verticalCollision) {
-            Vec3d pullVec = this.ownerVector.normalize().multiply(configuration.getCastPower() * 0.6);
-            this.playerOwner.addVelocity(pullVec.x, pullVec.y, pullVec.z);
-      }
+        Vec3d pullVec = this.ownerVector.normalize().multiply(configuration.getCastPower() * getTension());
+        this.playerOwner.addVelocity(pullVec.x, pullVec.y, pullVec.z);
         MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, ComponentItem.DamageSource.REEL_GROUND, this.playerOwner);
         this.discard();
     }

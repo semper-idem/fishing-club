@@ -112,13 +112,15 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
     public float getLineLength(ItemStack itemStack) {
-        return itemStack.getOrCreateNbt().getFloat(LINE_LENGTH);
+        if (itemStack.getOrCreateNbt().contains(LINE_LENGTH)) {
+            return itemStack.getOrCreateNbt().getFloat(LINE_LENGTH);
+        }
+        return this.getRodConfiguration(itemStack).getMaxLineLength();
     }
 
     public float setLineLength(ItemStack itemStack, float lineLength) {
-        FishingRodConfiguration configuration = getRodConfiguration(itemStack);
-        float maxLineLength = configuration.getMaxLineLength();
-        float setLineLength = MathHelper.clamp(lineLength, 0.5f, maxLineLength);
+        float maxLineLength = this.getRodConfiguration(itemStack).getMaxLineLength();
+        float setLineLength = MathHelper.clamp(lineLength, 4f, maxLineLength);
         itemStack.getOrCreateNbt().putFloat(LINE_LENGTH, setLineLength);
         return setLineLength;
     }

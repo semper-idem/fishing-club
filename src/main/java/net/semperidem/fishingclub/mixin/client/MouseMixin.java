@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.mixin.client;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.item.ItemStack;
+import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.CustomFishingBobberEntity;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -34,13 +35,16 @@ public class MouseMixin {
         ItemStack mainHand = this.client.player.getMainHandStack();
         ItemStack offHand = this.client.player.getOffHandStack();
 
-        if (mainHand.isOf(ItemRegistry.MEMBER_FISHING_ROD) || offHand.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
-            float amount = (float) (KeybindingRegistry.MULTIPLY_CART_ACTION_1.isPressed() ? ((int)vertical * 0.1f) : vertical);
-            ClientPacketSender.sendLineScroll(amount);
-            if (this.client.player.fishHook instanceof CustomFishingBobberEntity customFishingBobberEntity) {
-                customFishingBobberEntity.scrollLine(amount);
-            }
-            ci.cancel();
+        if (!mainHand.isOf(ItemRegistry.MEMBER_FISHING_ROD) && !offHand.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
+            return;
         }
+        if (!this.client.player.isSneaking()) {
+            return;
+        }
+        ClientPacketSender.sendLineScroll((int)vertical);
+        if (this.client.player.fishHook instanceof CustomFishingBobberEntity customFishingBobberEntity) {
+            customFishingBobberEntity.scrollLine((int)vertical);
+        }
+        ci.cancel();
     }
 }
