@@ -56,7 +56,7 @@ public class MemberButton extends ButtonWidget {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         texture.render(matrices, x, y, 0, this.buttonHeight * (active ? hovered ? 2 : 1 : 0), width, height);
         int j = this.active ? MemberScreen.BEIGE_TEXT_COLOR : 10526880;
-        drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
         //super.renderButton(matrices, mouseX, mouseY, delta);
     }

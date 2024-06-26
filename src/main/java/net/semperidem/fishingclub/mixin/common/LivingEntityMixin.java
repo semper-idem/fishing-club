@@ -99,7 +99,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (!isPlayer() || world.isClient) {
             return;
         }
-        FishingCard fishingCard = FishingCard.getPlayerCard((ServerPlayerEntity)(Object)this);
+        FishingCard fishingCard = FishingCard.of((ServerPlayerEntity)(Object)this);
         if (fishingCard != null) {
             fishingCard.shareStatusEffect(effect);
         }

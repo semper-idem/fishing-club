@@ -1,11 +1,13 @@
 package net.semperidem.fishingclub.mixin.client;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.HookClientPayload;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.KeybindingRegistry;
 import org.spongepowered.asm.mixin.Final;
@@ -18,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Mouse.class)
 public class MouseMixin {
 
-    @Shadow private double eventDeltaWheel;
-
     @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
@@ -31,19 +31,11 @@ public class MouseMixin {
             SpellListWidget.scrollSpells((int) vertical);
             ci.cancel();
         }
-        ItemStack mainHand = this.client.player.getMainHandStack();
-        ItemStack offHand = this.client.player.getOffHandStack();
 
-        if (!mainHand.isOf(ItemRegistry.MEMBER_FISHING_ROD) && !offHand.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
-            return;
-        }
-        if (!this.client.player.isSneaking()) {
-            return;
-        }
-        ClientPacketSender.sendLineScroll((int)vertical);
         if (this.client.player.fishHook instanceof HookEntity hookEntity) {
+            ClientPlayNetworking.send(new HookClientPayload((int) vertical));
             hookEntity.scrollLine((int)vertical);
+            ci.cancel();
         }
-        ci.cancel();
     }
 }

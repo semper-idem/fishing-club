@@ -13,18 +13,6 @@ import java.util.UUID;
 
 public class ServerPacketSender {
 
-
-    public static void sendFishingRod(ServerPlayerEntity serverPlayer, int entityId, ItemStack fishingRod) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(entityId);
-        buf.writeItemStack(fishingRod);
-        ServerPlayNetworking.send(
-                serverPlayer,
-                PacketIdentifiers.S2C_SET_FISHING_ROD,
-                buf
-        );
-    }
-
     public static void sendShopScreenInventorySyncPacket(ServerPlayerEntity player){
         player.networkHandler.sendPacket(
                 new InventoryS2CPacket(
@@ -50,11 +38,6 @@ public class ServerPacketSender {
         ServerPlayNetworking.send(player, PacketIdentifiers.S2C_FISH_GAME_UPDATE, fishMovementPacket);
     }
 
-    public static void sendTossResult(ServerPlayerEntity player, String result) {
-        PacketByteBuf tossResultPacket = PacketByteBufs.create();
-        tossResultPacket.writeString(result);
-        ServerPlayNetworking.send(player, PacketIdentifiers.S2C_TOSS_RESULT, tossResultPacket);
-    }
     public static void sendCardUpdate(ServerPlayerEntity player, FishingCard fishingCard) {
         PacketByteBuf cardPacket = PacketByteBufs.create();
         cardPacket.writeNbt(fishingCard.toNbt());

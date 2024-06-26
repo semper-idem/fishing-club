@@ -19,6 +19,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
+import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class MemberFishingRodItem extends FishingRodItem {
     private final String CAST_CHARGE_TAG = "lastCastCharge";
@@ -89,8 +90,11 @@ public class MemberFishingRodItem extends FishingRodItem {
             configuration.onComponentBroken(e);
         });
     }
+
     public void damageComponents(ItemStack fishingRod, int amount, ComponentItem.DamageSource damageSource, LivingEntity entity){
-        damageComponents(getRodConfiguration(fishingRod), amount, damageSource, entity);
+        if (fishingRod.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
+            damageComponents(getRodConfiguration(fishingRod), amount, damageSource, entity);
+        }
     }
 
     private void reelRod(World world, PlayerEntity user, Hand hand, ItemStack fishingRod){

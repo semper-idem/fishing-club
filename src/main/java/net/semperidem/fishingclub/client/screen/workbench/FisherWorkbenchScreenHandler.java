@@ -49,7 +49,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         super(ScreenHandlerRegistry.FISHER_WORKBENCH_SCREEN_HANDLER, syncId);
         this.context = context;
         this.benchInventory = new SimpleInventory(SLOT_COUNT);
-        this.fishingCard = FishingCard.getPlayerCard(playerInventory.player);
+        this.fishingCard = FishingCard.of(playerInventory.player);
         addSlots();
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -130,7 +130,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         }
     }
 
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStackCopy = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasStack()) {
@@ -149,7 +149,7 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
                 }
             }
             if (itemStackInSlot.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot.setStackNoCallbacks(ItemStack.EMPTY);
             } else {
                 slot.markDirty();
             }
@@ -184,8 +184,8 @@ public class FisherWorkbenchScreenHandler extends ScreenHandler {
         return ScreenHandler.canUse(this.context, player, FISHER_WORKBENCH_BLOCK);
     }
 
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
         ((FishingRodSlot)this.slots.get(0)).packFishingRod(benchInventory.getStack(0));
         this.context.run((world, pos) -> this.dropInventory(player, this.benchInventory));
     }

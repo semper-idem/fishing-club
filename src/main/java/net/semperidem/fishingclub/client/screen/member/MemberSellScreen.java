@@ -218,7 +218,7 @@ public class MemberSellScreen extends MemberSubScreen{
         @Override
         protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             if (entries.isEmpty()) {
-                drawCenteredText(matrices, textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
+                drawCenteredTextWithShadow(matrices, textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
                 return;
             }
 
@@ -234,7 +234,7 @@ public class MemberSellScreen extends MemberSubScreen{
         }
 
         @Override
-        public boolean isHovered() {
+        public boolean isSelected() {
             return hovered;
         }
 
@@ -245,7 +245,7 @@ public class MemberSellScreen extends MemberSubScreen{
 
         @Override
         public boolean isFocused() {
-            return super.isFocused() || isHovered();
+            return super.isFocused() || isSelected();
         }
 
         @Override

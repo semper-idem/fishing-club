@@ -193,7 +193,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         String cartPrice = cartWidget.getCartTotal();
         textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, totalTextY, BEIGE_TEXT_COLOR);
         super.render(matrixStack, mouseX, mouseY, delta);
-        if (!cartWidget.isHovered() && !offerGrid.isHovered()) {
+        if (!cartWidget.isSelected() && !offerGrid.isSelected()) {
             this.focusedOffer = null;
         }
 
@@ -260,7 +260,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         @Override
-        public boolean isHovered() {
+        public boolean isSelected() {
             return hovered;
         }
 
@@ -309,7 +309,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
         @Override
         public boolean isFocused() {
-            return super.isFocused() || isHovered();
+            return super.isFocused() || isSelected();
         }
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -404,7 +404,7 @@ public class MemberBuyScreen extends MemberSubScreen {
 
 
         @Override
-        public boolean isHovered() {
+        public boolean isSelected() {
             return hovered;
         }
 
@@ -431,7 +431,7 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         @Override
         public boolean isFocused() {
-            return super.isFocused() || isHovered();
+            return super.isFocused() || isSelected();
         }
 
         @Override
@@ -480,7 +480,7 @@ public class MemberBuyScreen extends MemberSubScreen {
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            if (isHovered()) {
+            if (isSelected()) {
                 focusedOffer = offerAtMouse(mouseX, mouseY);
             }
             super.render(matrices, mouseX, mouseY, delta);

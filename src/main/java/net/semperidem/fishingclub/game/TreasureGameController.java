@@ -19,7 +19,7 @@ public class TreasureGameController {
     private float nextArrowPos;
     private int treasureHookedTicks;
     private int ticks;
-    private boolean isWon;
+    private boolean isWon = false;
     private final FishingGameController parent;
 
 
@@ -55,7 +55,7 @@ public class TreasureGameController {
     }
 
     public void tick() {
-        if (treasureHookedTicks == 0) {
+        if (treasureHookedTicks == 0) {//verify if u can just hold reeling button
             isWon = false;
             return;
         }

@@ -59,7 +59,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
 
     public void instantSell(){
-        instantSellSlot.setStack(ItemStack.EMPTY);
+        instantSellSlot.setStackNoCallbacks(ItemStack.EMPTY);
     }
 
     private void addInstantSellSlot(){
@@ -103,7 +103,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStackCopy = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasStack()) {
@@ -119,7 +119,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
                 }
             }
             if (itemStackInSlot.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot.setStackNoCallbacks(ItemStack.EMPTY);
             } else {
                 slot.markDirty();
             }

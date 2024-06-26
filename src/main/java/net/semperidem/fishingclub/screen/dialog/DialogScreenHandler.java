@@ -30,7 +30,7 @@ public class DialogScreenHandler extends ScreenHandler {
         return openingKeys;
     }
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         return null;
     }
 
@@ -40,7 +40,7 @@ public class DialogScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
     }
 }

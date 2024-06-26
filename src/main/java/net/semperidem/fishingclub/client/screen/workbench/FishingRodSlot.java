@@ -24,13 +24,13 @@ public class FishingRodSlot extends Slot {
     }
 
     @Override
-    public void setStack(ItemStack stack) {
+    public void setStackNoCallbacks(ItemStack stack) {
         if (stack.isOf(Items.FISHING_ROD)) {//TODO Maybe add prompt to convert to custom rod
             stack = convertVanillaRod(stack);
         }
 
         unPackFishingRod(stack);
-        super.setStack(stack);
+        super.setStackNoCallbacks(stack);
     }
 
     private ItemStack convertVanillaRod(ItemStack rodToConvert){

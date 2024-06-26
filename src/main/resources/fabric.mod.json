@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "fishing-club",
-  "version": "${version}",
+  "version": "0.0.1",
   "name": "fishing-club",
   "description": "",
   "authors": [],
@@ -17,12 +17,22 @@
     ],
     "main": [
       "net.semperidem.fishingclub.FishingClub"
+    ],
+    "cardinal-components": [
+      "net.semperidem.fishingclub.fisher.FishingCard",
+      "net.semperidem.fishingclub.fisher.FishingKing"
     ]
   },
   "depends": {
     "fabricloader": ">=0.14.21",
     "fabric": "*",
-    "minecraft": "1.19.2"
+    "minecraft": "1.21"
+  },
+  "custom": {
+    "cardinal-components": [
+      "fishing-club:fishing_card",
+      "fishing-club:fishing_king"
+    ]
   },
   "mixins": [
     "fishingclub.mixins.json"

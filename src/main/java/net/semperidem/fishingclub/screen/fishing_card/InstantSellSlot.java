@@ -19,10 +19,10 @@ public class InstantSellSlot extends UnlockableBoundSlot {
     }
 
     @Override
-    public void setStack (ItemStack stack){
+    public void setStackNoCallbacks (ItemStack stack){
         attemptSell();
         attemptHideSellButton(stack);
-        super.setStack(stack);
+        super.setStackNoCallbacks(stack);
     }
 
     private void attemptSell() {

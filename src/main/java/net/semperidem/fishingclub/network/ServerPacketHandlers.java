@@ -10,12 +10,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreenFactory;
 import net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler;
-import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -28,72 +26,12 @@ import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 public class ServerPacketHandlers {
-
-    public static void handleFishingRodRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int entityId = buf.readVarInt();
-        server.execute(() -> {
-            if (player.world.getEntityById(entityId) instanceof HookEntity hookEntity) {
-                ServerPacketSender.sendFishingRod(player, entityId, hookEntity.getFishingRod());
-            }
-        });
-    }
-    public static void handleLineScroll(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        try {
-            float amount = buf.readFloat();
-            server.execute(() -> {
-                ItemStack mainHand = player.getMainHandStack();
-                ItemStack offHand = player.getOffHandStack();
-                ItemStack fishingRod = null;
-                if (mainHand.isOf(MEMBER_FISHING_ROD)) {
-                    fishingRod = mainHand;
-                }
-                if (offHand.isOf(MEMBER_FISHING_ROD)) {
-                    fishingRod = offHand;
-
-                }
-                if (fishingRod == null) {
-                    return;
-                }
-
-                if (player.fishHook instanceof HookEntity bobberEntity) {
-                    bobberEntity.scrollLine(amount);
-                    return;
-                }
-
-                float currentLineLength = MEMBER_FISHING_ROD.getLineLength(fishingRod);
-                float newLineLength = MEMBER_FISHING_ROD.setLineLength(fishingRod, currentLineLength + amount);
-                player.sendMessage(Text.literal("Line length: " + newLineLength), true);
-
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void handleFishingGameFished(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        try {
-            Fish fish = new Fish(buf.readNbt());//TO-DO MOVE FISHING GAME TO SERVER CAUSE THIS IS EZ CHEATING123
-            int rewardCount = buf.readInt();
-            ArrayList<ItemStack> rewards = new ArrayList<>();
-            for(int i = 0; i < rewardCount; i++) {
-                rewards.add(buf.readItemStack());
-            }
-            server.execute(() -> {
-                FishUtil.fishCaught(player, fish);
-                FishUtil.giveReward(player, rewards);
-            });
-            player.closeHandledScreen();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static void handleRepairRod(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
@@ -123,7 +61,7 @@ public class ServerPacketHandlers {
         server.execute(() -> player.openHandledScreen(new MemberScreenHandlerFactory()));
     }
     public static void handleFishingInfoOpenRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> player.openHandledScreen(new FishingCardScreenFactory(FishingCard.getPlayerCard(player))));
+        server.execute(() -> player.openHandledScreen(new FishingCardScreenFactory(FishingCard.of(player))));
     }
 
     public static void handleFishingShopSellContainer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -143,7 +81,7 @@ public class ServerPacketHandlers {
                 }
 
             }
-            FishingCard fishingCard = FishingCard.getPlayerCard(player);
+            FishingCard fishingCard = FishingCard.of(player);
             fishingCard.addCredit(credit);
             ServerPacketSender.sendCardUpdate(player, fishingCard);
         });
@@ -157,7 +95,7 @@ public class ServerPacketHandlers {
             cart.add(buf.readItemStack());
         }
         server.execute(() -> {
-            FishingCard playerCard = FishingCard.getPlayerCard(player);
+            FishingCard playerCard = FishingCard.of(player);
             if (playerCard.getCredit() < total) {
                 return;
             }
@@ -165,7 +103,7 @@ public class ServerPacketHandlers {
             for(ItemStack stack : cart) {
                 player.giveItemStack(stack);
             }
-            player.playSound(SoundEvents.ENTITY_VILLAGER_TRADE, SoundCategory.PLAYERS, 1f , 1f);
+            player.playSoundToPlayer(SoundEvents.ENTITY_VILLAGER_TRADE, SoundCategory.PLAYERS, 1f , 1f);
             ServerPacketSender.sendCardUpdate(player, playerCard);
         });
     }
@@ -173,13 +111,13 @@ public class ServerPacketHandlers {
 
     public static void handlePerkAdd(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
-            server.execute(() -> FishingCard.getPlayerCard(player).addPerk(perkName));
+            server.execute(() -> FishingCard.of(player).addPerk(perkName));
     }
 
     public static void handleSpellCast(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         String perkName = buf.readString();
         String uuidString = buf.readString();
-            server.execute(() -> FishingCard.getPlayerCard(player).useSpell(perkName, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
+            server.execute(() -> FishingCard.of(player).useSpell(perkName, server.getPlayerManager().getPlayer(UUID.fromString(uuidString))));
     }
 
 
@@ -192,7 +130,7 @@ public class ServerPacketHandlers {
     }
 
     public static void handleSummonAccept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> FishingCard.getPlayerCard(player).acceptSummonRequest());
+        server.execute(() -> FishingCard.of(player).acceptSummonRequest());
     }
 
     public static void handleAcceptDerek(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -218,88 +156,12 @@ public class ServerPacketHandlers {
             }
         });
     }
-    public static void handleCoinToss(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int amount = buf.readInt();
-        String choice = buf.readString();
-        server.execute(() -> {
-            String tossResult;
-            if (amount <= 0) {
-                return;
-            }
-            boolean isWon = Math.random() <= 0.49;
-            tossResult = choice;
-
-            String resultString = "Was;";
-            FishingCard playerCard = FishingCard.getPlayerCard(player);
-            int maxAmount = playerCard.getCredit();
-            int betAmount = amount;
-            if (betAmount > maxAmount) {
-                betAmount = maxAmount;
-            }
-            if (isWon) {
-                resultString += "§6" + tossResult + ";Won ;+" + (betAmount) + "$";
-                FishingCard.getPlayerCard(player).addCredit(betAmount);
-            } else {
-                tossResult  = !Objects.equals(tossResult, "Heads") ? "Heads" : "Tails";
-                resultString += "§8" + tossResult + ";Lost ;-" + (betAmount) + "$";
-                FishingCard.getPlayerCard(player).addCredit(-betAmount);
-            }
-            ServerPacketSender.sendTossResult(player, resultString);
-            ServerPacketSender.sendCardUpdate(player, playerCard);
-        });
-    }
 
     public static void handleResetPerk(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         server.execute(() -> {
-            FishingCard playerCard = FishingCard.getPlayerCard(player);
+            FishingCard playerCard = FishingCard.of(player);
             playerCard.resetPerks();
             ServerPacketSender.sendCardUpdate(player, playerCard);
-        });
-    }
-
-    public static void handleClaimCape(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        int claimPrice = buf.readInt();
-        server.execute(() -> {
-            boolean success;
-            if (!(server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties)) {
-                return;
-            }
-            success = fishingLevelProperties.claimCape(player, claimPrice);
-            if (!success) {
-                return;
-            }
-            FishingCard.getPlayerCard(player).addCredit(-claimPrice);
-            PlayerManager playerManager;
-            if ((playerManager = server.getPlayerManager()) == null) {
-                return;
-            }
-            LevelUpEffect.RARE_EFFECT.execute(player.getWorld(), player.getX(), player.getY(), player.getZ());
-            playerManager.getPlayerList().forEach(serverPlayer -> {
-                if (serverPlayer.currentScreenHandler instanceof MemberScreenHandler) {
-                    ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
-                }
-                serverPlayer.sendMessageToClient(Text.literal(player.getDisplayName().getString() + " claimed Fishing King Cape"), true);
-                ServerPacketSender.sendCapeDetails(
-                        serverPlayer,
-                        fishingLevelProperties.getFishingKingUUID(),
-                        fishingLevelProperties.getFishingKingName(),
-                        fishingLevelProperties.getMinFishingKingClaimPrice(serverPlayer)
-                );
-            });
-        });
-    }
-
-    public static void handleCapeDetailsRequest(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        server.execute(() -> {
-            if (server.getSaveProperties() instanceof FishingLevelProperties fishingLevelProperties) {
-                ServerPacketSender.sendCapeDetails(
-                        player,
-                        fishingLevelProperties.getFishingKingUUID(),
-                        fishingLevelProperties.getFishingKingName(),
-                        fishingLevelProperties.getMinFishingKingClaimPrice(player)
-                );
-                ServerPacketSender.sendCardUpdate(player, FishingCard.getPlayerCard(player));
-            }
         });
     }
 

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.screen.member;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -8,11 +9,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.CoinFlipPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
 import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
@@ -24,7 +26,8 @@ public class MemberScreenHandler extends ScreenHandler {
     private final PlayerEntity player;
     FishermanEntity fishermanEntity;
     FishingCard fishingCard;
-    private HashMap<Integer, String> tossHistory = new HashMap<>();
+    private final ArrayList<String> coinFlipHistory = new ArrayList<>();
+    private String lastCoinFlipSide = "";
 
     String capeHolder = "";
     int minCapePrice = 0;
@@ -107,20 +110,30 @@ public class MemberScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         return this.slots.get(index).getStack();
     }
 
     public void tossCoin(int amount, String playerChoice) {
-        addTossEntry("Picked;" + playerChoice + ";Bet:;" + amount + "$");
-        ClientPacketSender.sendCoinTossRequest(amount, playerChoice);
+        this.lastCoinFlipSide = playerChoice;
+        this.coinFlipHistory.add("Picked;" + playerChoice + ";Bet:;" + amount + "$");
+        ClientPlayNetworking.send(new CoinFlipPayload(amount));
     }
 
-    public HashMap<Integer, String> getTossHistory() {
-        return this.tossHistory;
+    public ArrayList<String> getCoinFlipHistory() {
+        return this.coinFlipHistory;
     }
 
-    public void addTossEntry(String tossEntry) {
-        this.tossHistory.put(tossHistory.size() + 1, tossEntry);
+    public void appendCoinFlipResult(int resultAmount) {
+        this.coinFlipHistory.add(
+                "Was;" + (resultAmount > 0 ?
+                        "§6" + this.lastCoinFlipSide + ";Won;" :
+                        "§8" + this.getOpposite() + ";Lost;"
+                ) + resultAmount +"$"
+        );
+    }
+
+    private String getOpposite() {
+        return Objects.equals(this.lastCoinFlipSide, "Heads") ? "Tails" : "Heads";
     }
 }

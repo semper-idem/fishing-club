@@ -8,6 +8,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.semperidem.fishingclub.registry.FishingClubRegistry;
@@ -36,7 +37,6 @@ public class FishingClub implements ModInitializer {
     }
 
     public static Identifier getIdentifier(String resource){
-        return new Identifier(MOD_ID, resource);
+        return Identifier.of(MOD_ID, resource);
     }
-
 }

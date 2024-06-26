@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.leaderboard;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.SaveProperties;
-import net.semperidem.fishingclub.FishingLevelProperties;
 import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fisher.FishingCard;
 

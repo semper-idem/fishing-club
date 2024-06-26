@@ -4,7 +4,6 @@
   "package": "net.semperidem.fishingclub.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.CraftingResultInventoryMixin",
     "common.EnchantmentHelperMixin",
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
@@ -13,6 +12,7 @@
     "common.LivingEntityMixin",
     "common.MinecraftServerMixin",
     "common.PlayerEntityMixin",
+    "common.ServerPlayerEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [

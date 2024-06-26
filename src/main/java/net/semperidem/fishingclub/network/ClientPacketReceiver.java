@@ -1,69 +1,12 @@
 package net.semperidem.fishingclub.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.client.FishingClubClient;
-import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
-import net.semperidem.fishingclub.client.screen.member.MemberScreen;
-import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.fisher.FishingCard;
-
-import java.util.UUID;
+import net.semperidem.fishingclub.network.payload.CoinFlipResultPayload;
+import net.semperidem.fishingclub.network.payload.HookPayload;
 
 public class ClientPacketReceiver {
     public static void registerClientPacketHandlers() {
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SET_FISHING_ROD, (client, handler, buf, responseSender) -> {
-            int entityId = buf.readInt();
-            ItemStack fishingRod = buf.readItemStack();
-            client.execute(() -> {
-                if (client.world == null) {
-                    return;
-                }
-                if (client.world.getEntityById(entityId) instanceof HookEntity hookEntity) {
-                    hookEntity.initClient(fishingRod);
-                }
-            });
-        });
-
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_FISH_GAME_INITIAL, (client, handler, buf, responseSender) -> {
-            PacketByteBuf copy = PacketByteBufs.copy(buf);
-            client.execute(() -> {
-                if (!(client.currentScreen instanceof FishingGameScreen fishGameScreen)) {
-                    return;
-                }
-                fishGameScreen.syncInit(copy);
-            });
-        });
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_TOSS_RESULT, (client, handler, buf, responseSender) -> {
-            String tossResult = buf.readString();
-            client.execute(() -> {
-                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
-                    return;
-                }
-                memberScreen.getScreenHandler().addTossEntry(tossResult);
-            });
-        });
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_UPDATE_CARD, (client, handler, buf, responseSender) -> {
-            FishingCard playerCard = new FishingCard(client.player, buf.readNbt());
-            client.execute(() -> {
-                if (!(client.currentScreen instanceof MemberScreen memberScreen)) {
-                    return;
-                }
-                memberScreen.getScreenHandler().updateCard(playerCard);
-            });
-        });
-        ClientPlayNetworking.registerGlobalReceiver(PacketIdentifiers.S2C_SET_CAPE_DETAILS, (client, handler, buf, responseSender) -> {
-            UUID capeHolderUUID = buf.readUuid();
-            String capeHolder = buf.readString();
-            int minCapePrice = buf.readInt();
-            client.execute(() -> {
-                FishingClubClient.FISHING_KING_UUID = capeHolderUUID;
-                if ((client.currentScreen instanceof MemberScreen memberScreen)) {
-                    memberScreen.getScreenHandler().setCapeHolder(capeHolder, minCapePrice);
-                }
-            });
-        });
+        ClientPlayNetworking.registerGlobalReceiver(HookPayload.ID, HookPayload::consumePayload);
+        ClientPlayNetworking.registerGlobalReceiver(CoinFlipResultPayload.ID, CoinFlipResultPayload::consumePayload);
     }
 }

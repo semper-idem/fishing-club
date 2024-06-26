@@ -1,10 +1,12 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
@@ -157,20 +159,20 @@ public class HistoryManager extends DataManager {
     }
 
     @Override
-    public void readNbt(NbtCompound nbtCompound) {
+    public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound historyTag = nbtCompound.getCompound(TAG);
         NbtList usedChunksTag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
         usedChunks.clear();
         usedChunksTag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
-        lastUsedBait = ItemStack.fromNbt(historyTag.getCompound(LAST_USED_BAIT_TAG));
+        lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompound(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
         totalCapeTime = historyTag.getLong(TOTAL_CAPE_TIME_TAG);
         NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
-        unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt((NbtCompound) rewardTag)));
+        unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt(wrapperLookup, rewardTag).orElse(ItemStack.EMPTY)));
         NbtList fishAtlasTag = historyTag.getList(FISH_ATLAS_TAG, NbtElement.COMPOUND_TYPE);
         fishAtlasTag.forEach(speciesTag -> {
             SpeciesStatistics stat = new SpeciesStatistics((NbtCompound) speciesTag);
@@ -179,19 +181,19 @@ public class HistoryManager extends DataManager {
     }
 
     @Override
-    public void writeNbt(NbtCompound nbtCompound) {
+    public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound historyTag = new NbtCompound();
         NbtList usedChunksTag = new NbtList();
         usedChunks.forEach(chunk -> usedChunksTag.add(chunk.toNbt()));
         historyTag.put(USED_CHUNKS_TAG, usedChunksTag);
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
-        historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.writeNbt(new NbtCompound()));
+        historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.encode(wrapperLookup));
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
         historyTag.putLong(TOTAL_CAPE_TIME_TAG, totalCapeTime);
         NbtList unclaimedRewardsTag = new NbtList();
-        unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.writeNbt(new NbtCompound())));
+        unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.encode(wrapperLookup)));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
         NbtList fishAtlasTag = new NbtList();
         fishAtlas.forEach((s, speciesStatistics) -> fishAtlasTag.add(speciesStatistics.toNbt()));
@@ -199,7 +201,7 @@ public class HistoryManager extends DataManager {
         nbtCompound.put(TAG, historyTag);
     }
 
-    private static class Chunk implements NbtData{
+    private static class Chunk {
         int x;
         int z;
 
@@ -224,13 +226,11 @@ public class HistoryManager extends DataManager {
             return chunkNbt;
         }
 
-        @Override
         public void readNbt(NbtCompound nbtCompound) {
             this.x = nbtCompound.getInt(X_TAG);
             this.z = nbtCompound.getInt(Z_TAG);
         }
 
-        @Override
         public void writeNbt(NbtCompound nbtCompound) {
             nbtCompound.putInt(X_TAG, x);
             nbtCompound.putInt(Z_TAG, z);

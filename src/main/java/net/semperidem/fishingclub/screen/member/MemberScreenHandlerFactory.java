@@ -15,7 +15,7 @@ public class MemberScreenHandlerFactory implements ExtendedScreenHandlerFactory 
 
     @Override
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCard.getPlayerCard(player).toNbt());
+        buf.writeNbt(FishingCard.of(player).toNbt());
     }
     @Override
     public Text getDisplayName() {
@@ -25,7 +25,7 @@ public class MemberScreenHandlerFactory implements ExtendedScreenHandlerFactory 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(FishingCard.getPlayerCard(player).toNbt());
+        buf.writeNbt(FishingCard.of(player).toNbt());
         return new MemberScreenHandler(syncId, inv, buf);
     }
 }

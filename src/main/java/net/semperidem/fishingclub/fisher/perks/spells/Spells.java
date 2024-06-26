@@ -44,7 +44,10 @@ public class Spells {
         SUMMON_RAIN = new Spell(FishingPerks.RAIN_SUMMON.getName(), FishingPerks.RAIN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                (source.getWorld()).setWeather(0, 6000, true, Math.random() < 0.1f);
+                if (Math.random() < 0.1f) {
+                    source.getWorld().setThunderGradient(1);
+                }
+                source.getWorld().setRainGradient(1);
             }
         });
         FISHING_SCHOOL = new Spell(FishingPerks.FISHING_SCHOOL.getName(), FishingPerks.FISHING_SCHOOL, 18000,   new Spell.Effect() {
@@ -74,19 +77,19 @@ public class Spells {
         FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
-                FishingCard.getPlayerCard(source).linkTarget(target);
+                FishingCard.of(source).linkTarget(target);
             }
         });
         SHARED_BAIT = new Spell(FishingPerks.SHARED_BAIT.getName(), FishingPerks.SHARED_BAIT, 6000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                FishingCard.getPlayerCard(source).shareBait();
+                FishingCard.of(source).shareBait();
             }
         });
         FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                FishingCard.getPlayerCard(source).requestSummon();;
+                FishingCard.of(source).requestSummon();;
             }
         });
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {

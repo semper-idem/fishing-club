@@ -56,9 +56,9 @@ public class ProgressComponent {
         isWinning = true;
         if (progress < 1) {
             progress = Math.min(1, progress + gain);
-        } else {
-            parent.winGame();
+            return;
         }
+        parent.winGame();
     }
 
     private void revokeProgress(){

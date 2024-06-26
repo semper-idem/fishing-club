@@ -36,7 +36,7 @@ public class TabButtonWidget extends ButtonWidget  {
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         BUTTON_TEXTURE.render(matrices, x, y, 0, 18 * (isSelected() ? 0 : hovered ? 2 : 1), 80, 18);
         int j = this.active ? MemberScreen.BEIGE_TEXT_COLOR : 10526880;
-        drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 
         //super.renderButton(matrices, mouseX, mouseY, delta);
     }

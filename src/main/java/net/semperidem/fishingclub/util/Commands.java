@@ -33,7 +33,7 @@ public class Commands {
 
     public static void registerLevelUp(){
         rootCommand.then(literal("level_up").executes(context -> {
-            FishingCard fishingCard = FishingCard.getPlayerCard(context.getSource().getPlayer());
+            FishingCard fishingCard = FishingCard.of(context.getSource().getPlayer());
             int xpForLevel = fishingCard.nextLevelXP() - fishingCard.getExp();
             fishingCard.grantExperience(xpForLevel);
             return 0;
@@ -67,7 +67,7 @@ public class Commands {
 
     public static void registerInfo(){
         rootCommand.then(literal("info").executes(context -> {
-            context.getSource().sendMessage(Text.literal(FishingCard.getPlayerCard(context.getSource().getPlayer()).toString()));
+            context.getSource().sendMessage(Text.literal(FishingCard.of(context.getSource().getPlayer()).toString()));
             return 0;
         }));
     }
@@ -83,7 +83,7 @@ public class Commands {
 
     public static void registerResetSpellCooldown(){
         rootCommand.then(literal("reset_cooldown").executes(context -> {
-            FishingCard.getPlayerCard(context.getSource().getPlayer()).resetCooldown();
+            FishingCard.of(context.getSource().getPlayer()).resetCooldown();
             return 0;
         }));
     }
@@ -92,7 +92,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.getPlayerCard(target).addSkillPoints(amount);
+            FishingCard.of(target).addSkillPoints(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to " + targetName + " skill points"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -104,7 +104,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.getPlayerCard(target).addCredit(amount);
+            FishingCard.of(target).addCredit(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -116,7 +116,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.getPlayerCard(target).setCredit(amount);
+            FishingCard.of(target).setCredit(amount);
             context.getSource().sendMessage(Text.literal("Set available credit of " + targetName + " to " + amount));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -144,7 +144,7 @@ public class Commands {
                         .then(argument("amount", integer()).executes(context -> addSkillPoints(context, context.getSource().getName())))
                 ).then(literal("level")
                         .then(argument("amount", integer()).executes(context -> {
-                            FishingCard.getPlayerCard(context.getSource().getPlayer()).setLevel(getInteger(context, "amount"));
+                            FishingCard.of(context.getSource().getPlayer()).setLevel(getInteger(context, "amount"));
                             return 0;
                         }))
                 )

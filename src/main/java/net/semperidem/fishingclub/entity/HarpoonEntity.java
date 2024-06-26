@@ -90,7 +90,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingCard.getPlayerCard((PlayerEntity) getOwner());
+        return FishingCard.of((PlayerEntity) getOwner());
     }
 
     @Override

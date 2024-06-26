@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
@@ -63,7 +63,7 @@ public class SpellListWidget{
         }
         String spellCd = getCooldownString(spell);
         int spellCdLen = MinecraftClient.getInstance().textRenderer.getWidth(spellCd);
-        DrawableHelper.fill(matrixStack, x - 4, y - 4, x + entryWidth, y + 12, bgColor);
+        DrawContext.fill(matrixStack, x - 4, y - 4, x + entryWidth, y + 12, bgColor);
         MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellName , x,y, color);
         MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellCd , x + entryWidth - spellCdLen - 4,y, color);
 

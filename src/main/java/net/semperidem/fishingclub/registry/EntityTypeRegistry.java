@@ -8,7 +8,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.FishermanEntity;

@@ -31,7 +31,7 @@ public class FishCoinBundleItem extends Item {
             value = bundleStackTag.getInt("value");
         }
         if (!user.world.isClient) {
-            FishingCard.getPlayerCard(user).addCredit(value);
+            FishingCard.of(user).addCredit(value);
         } else {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);
         }

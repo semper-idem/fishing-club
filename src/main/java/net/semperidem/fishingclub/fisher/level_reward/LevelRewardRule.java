@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fisher.level_reward;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.semperidem.fishingclub.fisher.level_reward.LevelReward.Amount;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.ArrayList;

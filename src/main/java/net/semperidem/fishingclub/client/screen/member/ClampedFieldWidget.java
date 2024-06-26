@@ -56,12 +56,6 @@ public class ClampedFieldWidget extends TextFieldWidget {
         return false;
     }
 
-    @Override
-    protected void onFocusedChanged(boolean newFocused) {
-        validateAmount();
-        super.onFocusedChanged(newFocused);
-    }
-
     private int getMaxAmount() {
         return parent.getScreenHandler().getCard().getCredit();
     }

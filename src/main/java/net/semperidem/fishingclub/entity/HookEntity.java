@@ -1,19 +1,22 @@
 package net.semperidem.fishingclub.entity;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,12 +28,12 @@ import net.semperidem.fishingclub.fish.Fish;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.*;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
+import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
-import net.semperidem.fishingclub.network.ClientPacketSender;
-import net.semperidem.fishingclub.network.ServerPacketSender;
+import net.semperidem.fishingclub.network.payload.HookPayload;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 import net.semperidem.fishingclub.screen.fishing_game.FishGameScreenFactory;
@@ -84,10 +87,9 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this(EntityTypeRegistry.HOOK_ENTITY, world);
         this.setOwner(owner);
         this.init(configuration);
-    }
-
-    public ItemStack getFishingRod(){
-        return this.fishingRod;
+        if (owner instanceof ServerPlayerEntity serverPlayer) {
+            ServerPlayNetworking.send(serverPlayer, new HookPayload(this.fishingRod));
+        }
     }
 
     public float getLineLength(){
@@ -96,7 +98,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
 
     public void scrollLine(float amount) {
         this.lineLength = MathHelper.clamp(lineLength + amount, 4, maxLineLength);
-        if (this.world.isClient) {
+        MEMBER_FISHING_ROD.setLineLength(this.fishingRod, this.lineLength);
+        if (this.getWorld().isClient) {
             this.playerOwner.sendMessage(Text.literal(String.format("Line length: %.2f", lineLength)), true);
         }
     }
@@ -104,7 +107,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     @Override
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
-        ClientPacketSender.requestFishingRod(packet.getId());
     }
 
     public void initClient(ItemStack fishingRod) {
@@ -112,7 +114,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     private void init(FishingRodConfiguration configuration) {
-        this.fishingCard = FishingCard.getPlayerCard(this.playerOwner);
+        this.fishingCard = FishingCard.of(this.playerOwner);
         this.configuration = configuration;
         this.fishingRod = configuration.getFishingRod();
         this.maxLineLength = configuration.getMaxLineLength();
@@ -133,14 +135,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this.hookedEntity = hookedEntity;
         ((FishingBobberEntityAccessor)this).invokeUpdateHookedEntityId(hookedEntity);
         this.weightRatio = (float) (1 + EntityWeights.getEntityMagnitude(hookedEntity.getType()) * 0.067f);
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        if (this.getOwner() instanceof  ServerPlayerEntity serverPlayerEntity) {
-            ServerPacketSender.sendCardUpdate(serverPlayerEntity, this.fishingCard);
-        }
-        return super.createSpawnPacket();
     }
 
     @Override
@@ -193,11 +187,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     @Override
     public void tick() {
         super.tick();
-        if ((!this.world.isClient && this.isOwnerValid(this.playerOwner))) {
+        if ((!this.getWorld().isClient && this.isOwnerValid(this.playerOwner))) {
             this.discard();
             return;
         }
-        this.isInWater = this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
+        this.isInWater = this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
         this.tickEntityCollision();
         this.tickFishingLogic();
         this.tickMotion();
@@ -210,7 +204,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     private boolean isHookedEntityInvalid() {
-        return this.hookedEntity != null && (this.hookedEntity.isRemoved() || this.hookedEntity.world.getRegistryKey() != this.world.getRegistryKey());
+        return this.hookedEntity != null && (this.hookedEntity.isRemoved() || this.hookedEntity.getWorld().getRegistryKey() != this.getWorld().getRegistryKey());
     }
 
     private void tickEntityCollision() {
@@ -247,7 +241,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     private void tickGravity() {
-        VelocityUtil.addVelocityY(this, this.onGround ? 0 : -0.03);
+        VelocityUtil.addVelocityY(this, this.isOnGround() ? 0 : -0.03);
     }
 
     @Override
@@ -262,7 +256,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     private Vec3d getResistance() {
-        if (this.onGround) {
+        if (this.isOnGround()) {
             float slipperiness = this.getSteppingBlockState().getBlock().getSlipperiness();
             return new Vec3d(slipperiness, slipperiness, slipperiness);
         }
@@ -273,7 +267,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
          if (tension <= 1 || this.maxEntityMagnitude < this.weightRatio) {
             return;
         }
-          if (this.world.isClient) {
+          if (this.getWorld().isClient) {
             return;//For some reason server tension is always lower then clients
         }
         MEMBER_FISHING_ROD.damageComponents(this.fishingRod, 10, ComponentItem.DamageSource.REEL_ENTITY, this.playerOwner);
@@ -317,7 +311,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
             return;
         }
         this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", this.ownerVector.length())), true);
-        ServerWorld serverWorld = (ServerWorld)this.world;
+        ServerWorld serverWorld = (ServerWorld)this.getWorld();
 
         if (this.hookCountdown > 0) {
             this.tickHookedFish();
@@ -335,7 +329,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     private boolean isValidFishing() {
-        return this.hookedEntity == null && this.isInWater && !this.world.isClient && this.getVelocity().horizontalLength() < 0.05f;
+        return this.hookedEntity == null && this.isInWater && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
     }
 
     private void tickHookedFish(){
@@ -399,7 +393,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         double j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1f);
         double e = ((float)MathHelper.floor(this.getY()) + 1.0f);
         double d = this.getX() + (double)(g * (float)this.fishTravelCountdown * 0.1f);
-        BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+        BlockState blockState = serverWorld.getBlockState(new BlockPos((int) d, (int) (e - 1.0), (int) j));
         if (blockState.isOf(Blocks.WATER)) {
             if (this.random.nextFloat() < 0.15f) {
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - (double)0.1f, j, 1, g, 0.1, h, 0.0);
@@ -432,7 +426,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
             double d = this.getX() + (double)(MathHelper.sin(g) * h) * 0.1;
             double e = ((float)MathHelper.floor(this.getY()) + 1.0f);
             double j = this.getZ() + (double)(MathHelper.cos(g) * h) * 0.1;
-            BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+            BlockState blockState = serverWorld.getBlockState(new BlockPos((int) d, (int) (e - 1.0), (int) j));
             if (blockState.isOf(Blocks.WATER)) {
                 serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 1 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
             }
@@ -442,7 +436,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     private void setWaitCountdown() {
         float catchRate;
         float catchRateReduction = FishingRodPartController.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
-        if (world.isRaining()) {
+        if (this.getWorld().isRaining()) {
             float rainBonus = 0.125f;
             if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
                 rainBonus *= 2;
@@ -490,11 +484,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
             this.reelFish();
             return 0;
         }
-        if (this.world.getFluidState(getBlockPos()).getHeight() > 0) {
+        if (this.getWorld().getFluidState(getBlockPos()).getHeight() > 0) {
             this.reelWater();
             return 0;
         }
-        if (this.onGround) {
+        if (this.isOnGround()) {
             this.reelGround();
             return 0;
         }
@@ -506,7 +500,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         if (this.hookedEntity != this.playerOwner) {
             pullEntity();
         }
-        this.world.sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
+        this.getWorld().sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
         this.discard();
     }
 
@@ -529,12 +523,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         int reactionBonus = calculateReactionBonus();
         this.caughtFish.experience += reactionBonus;
         if (reactionBonus > 0) {
-            this.getOwner().sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
+            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
         }
         MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, ComponentItem.DamageSource.REEL_FISH, this.playerOwner);
-        if(this.playerOwner.world != null) {
-            this.playerOwner.openHandledScreen(new FishGameScreenFactory(fishingCard, caughtFish));
-        }
+        this.playerOwner.openHandledScreen(new FishGameScreenFactory(this.caughtFish));
         this.discard();
     }
 
@@ -566,7 +558,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingCard.getPlayerCard(this.playerOwner);
+        return FishingCard.of(this.playerOwner);
     }
 
     @Override

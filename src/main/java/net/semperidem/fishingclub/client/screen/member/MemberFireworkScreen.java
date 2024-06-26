@@ -354,7 +354,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
             List<Text> tooltip = parent.getTooltipFromItem(fireworkStack);
             parent.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
         }
-        if (cartWidget.hoveredStack != null && cartWidget.isHovered()) {
+        if (cartWidget.hoveredStack != null && cartWidget.isSelected()) {
             parent.renderTooltip(matrixStack, parent.getTooltipFromItem(cartWidget.hoveredStack.stack), mouseX, mouseY);
         }
     }
@@ -409,7 +409,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
 
         NbtCompound getNbt() {
             NbtCompound explosionNbt = new NbtCompound();
-            explosionNbt.putByte("Type", (byte) FireworkRocketItem.Type.valueOf(this.shape.name()).getId());
+            //explosionNbt.putByte("Type", (byte) FireworkRocketItem.Type.valueOf(this.shape.name()).getId());
             explosionNbt.putIntArray(FireworkRocketItem.COLORS_KEY, ColorPickerWidget.getColors(this.colors));
             explosionNbt.putIntArray(FireworkRocketItem.FADE_COLORS_KEY,  ColorPickerWidget.getColors(this.fadeColors));
             explosionNbt.putBoolean(FireworkRocketItem.FLICKER_KEY, this.flicker);
@@ -486,7 +486,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
 
         @Override
-        public boolean isHovered() {
+        public boolean isSelected() {
             return hovered;
         }
 
@@ -535,7 +535,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
         @Override
         public boolean isFocused() {
-            return super.isFocused() || isHovered();
+            return super.isFocused() || isSelected();
         }
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {

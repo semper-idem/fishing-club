@@ -5,6 +5,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.util.TextUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
@@ -103,8 +104,8 @@ public class MemberFlipScreen extends MemberSubScreen {
         parent.drawContainerBox(matrixStack, historyXLeft - 2, historyMaxY + 1, historyXRight + 3, historyY + 10, true);
         textRenderer.drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
         int historyEntryY = historyY;
-        HashMap<Integer, String> tossHistory = parent.getScreenHandler().getTossHistory();
-        for(int i = tossHistory.size(); i > 0; i--) {
+        ArrayList<String> tossHistory = parent.getScreenHandler().getCoinFlipHistory();
+        for(int i = tossHistory.size() - 1; i >= 0; i--) {
             String tossEntry = tossHistory.get(i);
             if (historyEntryY  < historyMaxY) {
                 break;

@@ -1,8 +1,10 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.TitleClaimPayload;
 
 import java.util.Optional;
 
@@ -88,7 +90,7 @@ public class MemberMiscScreen extends MemberSubScreen {
         submitClaimButton = new DemandingButtonWidget(claimButtonX, claimButtonY, claimButtonWidth, BUTTON_HEIGHT, Text.literal("Claim"), button -> {
             int claimAmount = claimField.getValidAmount();
             if (claimAmount >= parent.getScreenHandler().getMinCapePrice()) {
-                ClientPacketSender.sendClaimCape(claimAmount);
+                ClientPlayNetworking.send(new TitleClaimPayload(claimAmount));
             }
         }, () -> claimField.getValidAmount() >= parent.getScreenHandler().getMinCapePrice() &&
                 parent.getScreenHandler().getCard().getCredit() > parent.getScreenHandler().getMinCapePrice());

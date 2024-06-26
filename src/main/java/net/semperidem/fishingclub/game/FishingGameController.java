@@ -4,25 +4,28 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
 import net.semperidem.fishingclub.network.ServerPacketSender;
+
+import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
 
 
 public class FishingGameController {
 
     public final PlayerEntity player;
-    public final Fish hookedFish;
     public final FishingCard fishingCard;
+    public final Fish hookedFish;
 
     public float reelForce = 0;
     private boolean isReeling;
     private boolean isPulling;
 
-    public FishingGameController(FishingCard fishingCard, Fish hookedFish){
+    public FishingGameController(PlayerEntity playerEntity, Fish hookedFish){
         this.hookedFish = hookedFish;
-        this.fishingCard = fishingCard;
-        this.player = fishingCard.getHolder();
+        this.player = playerEntity;
+        this.fishingCard = FishingCard.of(playerEntity);
 
         progressComponent = new ProgressComponent(this);
         fishComponent = new FishComponent(this);
@@ -75,7 +78,6 @@ public class FishingGameController {
         if (player instanceof ServerPlayerEntity serverPlayerEntity) {
             ServerPacketSender.sendFishingGameData(serverPlayerEntity,this);
         }
-        winGame();
     }
 
     private void tickInner(){
@@ -165,11 +167,20 @@ public class FishingGameController {
     }
 
     public void winGame() {
-        ClientPacketSender.sendFishGameWon(hookedFish, treasureGameController.getRewards());
+        if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
+            return;
+        }
+        FishUtil.fishCaught(serverPlayer, this.hookedFish);
+        FishUtil.giveReward(serverPlayer, this.treasureGameController.getRewards());
+        serverPlayer.closeHandledScreen();
     }
 
     public void loseGame() {
-        ClientPacketSender.sendFishGameLost();
+        MEMBER_FISHING_ROD.damageComponents(this.hookedFish.caughtUsing, 4, ComponentItem.DamageSource.BITE, this.player);
+        if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
+            return;
+        }
+        serverPlayer.closeHandledScreen();
     }
 
 

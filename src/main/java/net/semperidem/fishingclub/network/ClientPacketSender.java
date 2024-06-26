@@ -7,31 +7,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.fish.Fish;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class ClientPacketSender {
-
-    public static void sendLineScroll(float amount) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeFloat(amount);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_LINE_SCROLL, buf);
-    }
-
-    public static void requestFishingRod(int entityId) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeVarInt(entityId);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_GET_FISHING_ROD, buf);
-    }
-
-    public static void sendFishGameWon(Fish fish, ArrayList<ItemStack> treasureRewards) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(fish.getNbt());
-        buf.writeInt(treasureRewards.size());
-        for(ItemStack reward : treasureRewards) {
-            buf.writeItemStack(reward);
-        }
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_WON, buf);
-    }
 
     public static void sendFishToSell(ArrayList<ItemStack> fishToSell) {
         PacketByteBuf buf = PacketByteBufs.create();
@@ -40,16 +17,6 @@ public class ClientPacketSender {
             buf.writeItemStack(fishStack);
         }
         ClientPlayNetworking.send(PacketIdentifiers.C2S_F_SHOP_SELL, buf);
-    }
-
-    public static void sendCoinTossRequest(int amount, String playerChoice) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(amount);
-        buf.writeString(playerChoice);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_TOSS_COIN, buf);
-    }
-    public static void sendFishGameLost(){
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_F_GAME_LOST, PacketByteBufs.empty());
     }
 
     public static void acceptDerekOffer(){
@@ -117,16 +84,6 @@ public class ClientPacketSender {
 
     public static void sendResetPerk() {
         ClientPlayNetworking.send(PacketIdentifiers.C2S_RESET_PERKS, PacketByteBufs.empty());
-    }
-
-    public static void sendClaimCape(int claimPrice) {
-        PacketByteBuf capeClaimPacket = PacketByteBufs.create();
-        capeClaimPacket.writeInt(claimPrice);
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_CLAIM_CAPE, capeClaimPacket);
-    }
-
-    public static void sendRequestCapeDetails() {
-        ClientPlayNetworking.send(PacketIdentifiers.C2S_GET_CAPE_DETAILS, PacketByteBufs.empty());
     }
 
 }

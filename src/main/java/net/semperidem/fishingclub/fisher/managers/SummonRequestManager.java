@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
@@ -44,7 +45,7 @@ public class SummonRequestManager extends DataManager {
 
     private static void teleport(ServerPlayerEntity source, ServerPlayerEntity target) {
         source.teleport(
-                target.getWorld(),
+                target.getServerWorld(),
                 target.getX(),
                 target.getY(),
                 target.getZ(),
@@ -54,14 +55,14 @@ public class SummonRequestManager extends DataManager {
     }
 
     @Override
-    public void readNbt(NbtCompound nbtCompound) {
+    public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound summonTag = nbtCompound.getCompound(TAG);
         targetUUID = summonTag.contains(TARGET_TAG) ? summonTag.getString(TARGET_TAG) : "";
         requestTick = summonTag.contains(REQUEST_TICK_TAG) ? summonTag.getLong(REQUEST_TICK_TAG) : 0;
     }
 
     @Override
-    public void writeNbt(NbtCompound nbtCompound) {
+    public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (targetUUID == null) {
             return;
         }

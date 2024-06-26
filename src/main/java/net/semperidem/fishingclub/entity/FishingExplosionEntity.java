@@ -18,7 +18,7 @@ public class FishingExplosionEntity implements IHookEntity{
     }
     @Override
     public FishingCard getFishingCard() {
-        return FishingCard.getPlayerCard(causingEntity);
+        return FishingCard.of(causingEntity);
     }
 
     @Override

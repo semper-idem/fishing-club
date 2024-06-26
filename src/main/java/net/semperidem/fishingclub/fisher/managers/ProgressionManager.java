@@ -5,6 +5,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
@@ -139,7 +140,7 @@ public class ProgressionManager extends DataManager{
     }
 
     @Override
-    public void readNbt(NbtCompound fishingCardNbt) {
+    public void readNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound progressionNbt = fishingCardNbt.getCompound(TAG);
         level = progressionNbt.getInt(LEVEL_TAG);
         exp = progressionNbt.getInt(EXP_TAG);
@@ -168,7 +169,7 @@ public class ProgressionManager extends DataManager{
     }
 
     @Override
-    public void writeNbt(NbtCompound fishingCardNbt) {
+    public void writeNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound progressionNbt = new NbtCompound();
         progressionNbt.putInt(LEVEL_TAG, level);
         progressionNbt.putInt(EXP_TAG, exp);

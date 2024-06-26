@@ -5,7 +5,9 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 public class FishingCardInventory implements Inventory{
     public static final int SLOT_COUNT = 5;
@@ -17,15 +19,6 @@ public class FishingCardInventory implements Inventory{
 
     public int getCredit(){
         return credit;
-    }
-
-    public boolean addCredit(int credit) {
-        if (this.credit + credit < 0) {
-            return false;
-        }
-
-        this.credit += credit;
-        return true;
     }
 
     public void setCredit(int credit) {
@@ -95,13 +88,13 @@ public class FishingCardInventory implements Inventory{
 
     }
 
-    public void writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         tag.putInt(CREDIT_TAG, credit);
-        Inventories.writeNbt(tag, inventory);
+        Inventories.writeNbt(tag, inventory, wrapperLookup);
     }
 
-    public void readNbt(NbtCompound tag) {
+    public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         credit = tag.getInt(CREDIT_TAG);
-        Inventories.readNbt(tag, inventory);
+        Inventories.readNbt(tag, inventory, wrapperLookup);
     }
 }

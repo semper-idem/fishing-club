@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fisher.managers;
 
+import com.mojang.brigadier.LiteralMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -43,7 +45,7 @@ public class LinkingManager extends DataManager {
             return;
         }
         trackedFor.getHolder().addStatusEffect(sei);
-        linkedFishers.forEach(linkedFisher -> FishingCard.getPlayerCard(
+        linkedFishers.forEach(linkedFisher -> FishingCard.of(
                         trackedFor
                                 .getHolder()
                                 .getServer()
@@ -65,7 +67,7 @@ public class LinkingManager extends DataManager {
     }
 
     public void shareBait(ItemStack baitToShare) {
-        linkedFishers.forEach(linkedFisher -> FishingCard.getPlayerCard(
+        linkedFishers.forEach(linkedFisher -> FishingCard.of(
                 trackedFor
                         .getHolder()
                         .getServer()
@@ -109,7 +111,7 @@ public class LinkingManager extends DataManager {
         if (linkedFisher == null) {
             return;
         }
-        FishingCard.getPlayerCard(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
+        FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
         messageRequestSummon(linkedFisher);
     }
 
@@ -117,7 +119,7 @@ public class LinkingManager extends DataManager {
     //TODO
     private void messageRequestSummon(PlayerEntity target) {
         target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.getHolder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
-        target.sendMessage(MutableText.of(new LiteralTextContent("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
+        target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
 
     }
 
@@ -142,14 +144,14 @@ public class LinkingManager extends DataManager {
 
 
     @Override
-    public void readNbt(NbtCompound nbtCompound) {
+    public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         linkedFishers = new ArrayList<>();
         NbtList linkedFishersNbt = nbtCompound.getList(TAG, NbtElement.STRING_TYPE);
         linkedFishersNbt.forEach(nbtElement -> linkedFishers.add(UUID.fromString(nbtElement.asString())));
     }
 
     @Override
-    public void writeNbt(NbtCompound nbtCompound) {
+    public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtList linkedFishersNbt = new NbtList();
         linkedFishers.forEach(linkedFisher -> linkedFishersNbt.add(NbtString.of(linkedFisher.toString())));
         nbtCompound.put(TAG, linkedFishersNbt);

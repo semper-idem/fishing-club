@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.registry;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.enchantments.CurseOfMortality;
 

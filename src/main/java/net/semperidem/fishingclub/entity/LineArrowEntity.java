@@ -101,7 +101,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
 
     @Override
     public FishingCard getFishingCard() {
-        return FishingCard.getPlayerCard((PlayerEntity) getOwner());
+        return FishingCard.of((PlayerEntity) getOwner());
     }
 
     @Override

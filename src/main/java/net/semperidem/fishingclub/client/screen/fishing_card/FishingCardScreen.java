@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.fishing_card;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -118,6 +119,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         generalButton.onPress();
     }
 
+
     private void initButtons(){
         initTabButton();
         initUnlockButton();
@@ -226,72 +228,66 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         unlockButton.visible = handler.fishingCard.canUnlockPerk(perk);
     }
 
-    @Override
-    public void renderBackground(MatrixStack matrices) {
-        background.render(matrices, x,y);
+
+    private void renderDetailLine(DrawContext context, int x, int y, String l, String r){
+        context.drawTextWithShadow(textRenderer,l, x, y, TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer,r, detailsRightX - textRenderer.getWidth(r), y, TEXT_COLOR);
     }
 
-    private void renderDetailLine(MatrixStack matrices, int x, int y, String l, String r){
-        textRenderer.drawWithShadow(matrices,l, x, y, TEXT_COLOR);
-        textRenderer.drawWithShadow(matrices,r, detailsRightX - textRenderer.getWidth(r), y, TEXT_COLOR);
-    }
-
-    public void renderDetails(MatrixStack matrices){
+    public void renderDetails(DrawContext context){
         int lastDetailY = detailsY;
-        renderDetailLine(matrices, detailsLeftX, lastDetailY, "", name);
+        renderDetailLine(context, detailsLeftX, lastDetailY, "", name);
         lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
-        renderDetailLine(matrices, detailsLeftX, lastDetailY, sLevel, level);
+        renderDetailLine(context, detailsLeftX, lastDetailY, sLevel, level);
         lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
-        renderDetailLine(matrices, detailsLeftX, lastDetailY, sExp, exp);
+        renderDetailLine(context, detailsLeftX, lastDetailY, sExp, exp);
         lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
-        renderDetailLine(matrices, detailsLeftX, lastDetailY, sCredit, credit);
+        renderDetailLine(context, detailsLeftX, lastDetailY, sCredit, credit);
         lastDetailY += TEXT_LINE_HEIGHT + TILE_SIZE;
-        renderDetailLine(matrices, detailsLeftX, lastDetailY, sPerkPoint, perkPoints);
+        renderDetailLine(context, detailsLeftX, lastDetailY, sPerkPoint, perkPoints);
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-//        super.render(matrices, mouseX, mouseY, delta);
-//        renderDetails(matrices);
-//        renderSelectedPerkDescription(matrices);
-//        renderTooltip(matrices, mouseX, mouseY);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+//        super.render(context, mouseX, mouseY, delta);
+//        renderDetails(context);
+//        renderSelectedPerkDescription(context);
+//        renderTooltip(context, mouseX, mouseY);
     }
 
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        renderBackground(matrices);
-        textRenderer.drawWithShadow(matrices, title, titleX, titleY, TEXT_COLOR);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        background.render(matrices, x,y);
+        context.drawTextWithShadow(textRenderer, title, titleX, titleY, TEXT_COLOR);
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
     }
 
-    private void renderTooltip(MatrixStack matrices, int mouseX, int mouseY){
-        if (handler.getCursorStack().isEmpty() && focusedSlot != null && focusedSlot.hasStack()) {
-            super.renderTooltip(matrices, focusedSlot.getStack(), mouseX, mouseY);
-        }
-        hoveredElement(mouseX, mouseY).ifPresent(hovered -> {
-            if (!(hovered instanceof PerkButtonWidget)) return;
-            FishingPerk fishingPerk = ((PerkButtonWidget) hovered).fishingPerk;
-            ArrayList<Text> lines = new ArrayList<>();
-            lines.add(Text.of(labelFormatter + fishingPerk.getLabel()));//Optimize Later TODO
-            lines.addAll(fishingPerk.getDescription());
-            renderTooltip(matrices, lines, mouseX, mouseY);
+//    private void renderTooltip(DrawContext context, int mouseX, int mouseY){
+//        if (handler.getCursorStack().isEmpty() && focusedSlot != null && focusedSlot.hasStack()) {
+//            super.renderWithTooltip(context, focusedSlot.getStack(), mouseX, mouseY);
+//        }
+//        hoveredElement(mouseX, mouseY).ifPresent(hovered -> {
+//            if (!(hovered instanceof PerkButtonWidget)) return;
+//            FishingPerk fishingPerk = ((PerkButtonWidget) hovered).fishingPerk;
+//            ArrayList<Text> lines = new ArrayList<>();
+//            lines.add(Text.of(labelFormatter + fishingPerk.getLabel()));//Optimize Later TODO
+//            lines.addAll(fishingPerk.getDescription());
+//            renderTooltip(context, lines, mouseX, mouseY);
+//        });
+//    }
 
-        });
-    }
-
-    private void renderSelectedPerkDescription(MatrixStack matrices){
+    private void renderSelectedPerkDescription(DrawContext context){
         if (selectedPerk == null || activeTabButton == generalButton) {
             return;
         }
 
         int selectedPerkNameY = y + BACKGROUND_TEXTURE_HEIGHT - 107;
 
-        textRenderer.drawWithShadow(
-                matrices,
+                context.drawTextWithShadow(textRenderer,
                 labelFormatter + selectedPerk.getLabel(),
                 buttonsX,
                 selectedPerkNameY,
@@ -301,8 +297,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         ArrayList<Text> lines = selectedPerk.getDetailedDescription();
         int offset = 0;
         for(Text line : lines) {
-            textRenderer.drawWithShadow(matrices, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
-            offset += textRenderer.fontHeight + 2;
+            context.drawTextWithShadow(textRenderer, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
+            offset += context.fontHeight + 2;
         }
     }
 

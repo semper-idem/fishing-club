@@ -92,6 +92,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
                 (float) (distanceFromCenterPercent * -0.05f) :
                 0;
         updateCameraTarget();
+        //todo this make reeling/pulling not have impact if im not moving mouse
         ClientPacketSender.sendBobberMovement(this.handler.fishGameLogic.reelForce, isReeling(), isPulling());
         super.mouseMoved(mouseX, mouseY);
     }

@@ -156,7 +156,7 @@ public class DialogUtil {
 
     public static HashSet<DialogKey> getKeys(PlayerEntity playerEntity, FishermanEntity fishermanEntity) {
         HashSet<DialogKey> keys = fishermanEntity.getKeys(playerEntity);
-        keys.addAll(FishingCard.getPlayerCard(playerEntity).getKeys(fishermanEntity.getSummonType()));
+        keys.addAll(FishingCard.of(playerEntity).getKeys(fishermanEntity.getSummonType()));
         return keys;
     }
 

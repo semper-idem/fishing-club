@@ -63,13 +63,13 @@ public class FishUtil {
     }
 
     public static void fishCaught(ServerPlayerEntity player, Fish fish){
-        FishingCard fishingCard = FishingCard.getPlayerCard(player);
+        FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         giveItemStack(player, getStackFromFish(fish, getRewardMultiplier(fishingCard)));
     }
 
     public static void fishCaughtAt(ServerPlayerEntity player, Fish fish, BlockPos caughtAt) {
-        FishingCard fishingCard = FishingCard.getPlayerCard(player);
+        FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
     }
@@ -235,7 +235,7 @@ public class FishUtil {
 
         NbtList loreTag = new NbtList();
         for (Text line : lore) {
-            loreTag.add(NbtString.of(Text.Serializer.toJson(line)));
+            loreTag.add(NbtString.of(Text.Serialization.toJsonString(line)));
         }
         displayTag.put("Lore", loreTag);
     }

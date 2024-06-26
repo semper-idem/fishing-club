@@ -16,10 +16,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -102,7 +102,7 @@ public class FishermanEntity extends PassiveEntity {
     }
 
     private boolean isPaddleMoving() {
-        return limbDistance > 0.01;
+        return this.limbAnimator.isLimbMoving();
     }
 
     @Override
@@ -115,18 +115,18 @@ public class FishermanEntity extends PassiveEntity {
     }
 
     public void acceptTrade() {
-        if (world.isClient()) {
+        if (this.getWorld().isClient()) {
             return;
         }
         if (spawnedFrom.isEmpty()) {
             return;
         }
-        FishingCard.getPlayerCard(world.getPlayerByUuid(summonerUUID)).giveDerekFish();
+        FishingCard.of(this.getWorld().getPlayerByUuid(summonerUUID)).giveDerekFish();
         spawnedFrom = ItemStack.EMPTY;
     }
 
     public void refuseTrade() {
-        if (world.isClient()) {
+        if (this.getWorld().isClient()) {
             return;
         }
         if (spawnedFrom.isEmpty()) {
@@ -142,7 +142,7 @@ public class FishermanEntity extends PassiveEntity {
     @Override
     public void tickMovement() {
         if (customer != null) {
-            if (!world.isClient) {
+            if (!this.getWorld().isClient) {
                 if (!(customer.currentScreenHandler instanceof DialogScreenHandler) && !(customer.currentScreenHandler instanceof MemberScreenHandler)) {
                     customer = null;
                 }
@@ -163,7 +163,7 @@ public class FishermanEntity extends PassiveEntity {
         }
         if ((this.paddlePhases % TWO_PI) <= QUARTER_PI && ((this.paddlePhases + SIXTEENTH_PI) % TWO_PI) >= QUARTER_PI) {
             SoundEvent soundEvent = this.getPaddleSoundEvent();
-            this.world.playSoundFromEntity(null, this, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+            this.getWorld().playSoundFromEntity(null, this, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
         }
     }
 
@@ -172,8 +172,8 @@ public class FishermanEntity extends PassiveEntity {
            return;
         }
         ShapeContext shapeContext = ShapeContext.of(this);
-        if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
-            this.onGround = true;
+        if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.getWorld().getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
+            this.setOnGround(true);
             return;
         }
         this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
@@ -187,7 +187,7 @@ public class FishermanEntity extends PassiveEntity {
         if (despawnTimer > 0) {
             return;
         }
-        if (world instanceof ServerWorld serverWorld) {
+        if (this.getWorld() instanceof ServerWorld serverWorld) {
             EffectUtils.onDerekDisappearEffect(serverWorld, this);
         }
         this.discard();
@@ -295,7 +295,7 @@ public class FishermanEntity extends PassiveEntity {
         nbt.getList("talkedTo", NbtElement.INT_ARRAY_TYPE).forEach(
                 talkedToUUID -> talkedTo.add(NbtHelper.toUuid(talkedToUUID))
         );
-        if (world instanceof FishingServerWorld serverWorld){
+        if (this.getWorld() instanceof FishingServerWorld serverWorld){
             serverWorld.setDerek(this);
         }
     }
@@ -316,9 +316,9 @@ public class FishermanEntity extends PassiveEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
-        if(!world.isClient && customer == null) {
+        if(!this.getWorld().isClient && customer == null) {
             HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
-            FishingCard.getPlayerCard(playerEntity).meetDerek(summonType);
+            FishingCard.of(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
             playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet, this));
             setCustomer(playerEntity);
