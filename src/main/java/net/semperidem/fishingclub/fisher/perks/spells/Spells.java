@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fisher.perks.spells;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -101,7 +102,7 @@ public class Spells {
                     rodStack = source.getStackInHand(Hand.MAIN_HAND);
                 }
                 ItemStack clonedStack = ItemRegistry.CLONED_ROD.getDefaultStack();
-                NbtCompound clonedNbt = rodStack.getNbt();
+                clonedStack.applyComponentsFrom(rodStack.getComponents());
                 clonedNbt.putLong("creation_tick", source.getWorld().getTime());
                 source.giveItemStack(clonedStack);
             }

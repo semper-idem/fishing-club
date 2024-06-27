@@ -2,22 +2,26 @@ package net.semperidem.fishingclub.client.screen.member;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
+import java.util.function.Supplier;
+
 import static net.semperidem.fishingclub.util.TextUtil.drawOutlinedTextRightAlignedTo;
 import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 
 public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
-
     int x;
     int y;
     private MemberSubScreen currentView;
@@ -68,7 +72,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
-                client.player.getSkinTexture(),
+                client.player.getSkinTextures().texture(),
                 x + TILE_SIZE,
                 y + TEXTURE.renderHeight - TILE_SIZE * 9
         ));
@@ -125,8 +129,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return currentView.mouseScrolled(mouseX, mouseY, amount) || super.mouseScrolled(mouseX, mouseY, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
+        return currentView.mouseScrolled(mouseX, mouseY, horizontal, vertical) || super.mouseScrolled(mouseX, mouseY, horizontal, vertical);
     }
 
     @Override
@@ -145,33 +149,33 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        super.render(matrixStack, mouseX, mouseY, delta);
-        currentView.render(matrixStack, mouseX, mouseY, delta);
-        drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, creditValue, creditX, creditY, CREDIT_COLOR , CREDIT_OUTLINE_COLOR);//separate text and value
-        drawTextRightAlignedTo(textRenderer, matrixStack, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        currentView.render(context, mouseX, mouseY, delta);
+        drawOutlinedTextRightAlignedTo(textRenderer, context, creditValue, creditX, creditY, CREDIT_COLOR , CREDIT_OUTLINE_COLOR);//separate text and value
+        drawTextRightAlignedTo(textRenderer, context, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
-        TEXTURE.render(matrixStack, x , y);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        TEXTURE.render(context, x , y);
         if (currentView == null) {
             return;
         }
-        textRenderer.drawWithShadow(matrixStack,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
 
     }
 
     @Override
-    public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY) {
+    public void drawForeground(DrawContext context, int mouseX, int mouseY) {
     }
 
 
-    public void drawContainerBox(MatrixStack matrices, int x, int y, int x0, int y0, boolean outline) {
+    public void drawContainerBox(DrawContext context, int x, int y, int x0, int y0, boolean outline) {
         if (outline) {
-            fill(matrices, x - 1, y - 1, x0 + 1, y0 + 1, OUTLINE_BOX_COLOR);
+            context.fill(x - 1, y - 1, x0 + 1, y0 + 1, OUTLINE_BOX_COLOR);
         }
-        fill(matrices, x, y, x0, y0, BOX_COLOR);
+        context.fill(x, y, x0, y0, BOX_COLOR);
     }
 
     public MinecraftClient getClient() {
@@ -185,7 +189,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     public ItemRenderer getItemRenderer() {
-        return itemRenderer;
+        return MinecraftClient.getInstance().getItemRenderer();
     }
 
 

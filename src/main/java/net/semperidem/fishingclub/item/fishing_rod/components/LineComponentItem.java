@@ -24,8 +24,8 @@ public class LineComponentItem extends ComponentItem{
     }
 
     @Override
-    void applyComponent(FishingRodConfiguration configuration, ItemStack componentStack) {
-        super.applyComponent(configuration, componentStack);
-        configuration.maxLineLength.value = this.maxLineLength;
+    void applyComponent(RodConfigurationController configuration, ItemStack part) {
+        super.applyComponent(configuration, part);
+        configuration.maxLineLength = this.maxLineLength;
     }
 }

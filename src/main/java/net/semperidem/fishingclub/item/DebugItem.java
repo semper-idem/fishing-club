@@ -8,7 +8,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
-import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class DebugItem extends Item {
@@ -36,13 +36,13 @@ public class DebugItem extends Item {
         }
         if (mode == 2) {
             user.sendMessage(Text.literal("[DEBUG MODE]" + "CORE_WOODEN_OAK"));
-            FishingRodConfiguration rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
+            RodConfigurationComponent rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
             rodConfiguration.equipCoreComponent(FishingRodPartItems.CORE_WOODEN_OAK.getDefaultStack());
 
         }
         if (mode == 1) {
             user.sendMessage(Text.literal("[DEBUG MODE]" + "LINE_WOOL"));
-            FishingRodConfiguration rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
+            RodConfigurationComponent rodConfiguration = ItemRegistry.MEMBER_FISHING_ROD.getRodConfiguration(rod);
             rodConfiguration.equipLineComponent(FishingRodPartItems.LINE_SPIDER.getDefaultStack());
 
         }

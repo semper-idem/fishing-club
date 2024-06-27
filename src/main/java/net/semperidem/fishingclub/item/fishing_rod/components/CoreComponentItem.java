@@ -22,8 +22,8 @@ public class CoreComponentItem extends ComponentItem{
     }
 
     @Override
-    void applyComponent(FishingRodConfiguration configuration, ItemStack componentStack) {
-        super.applyComponent(configuration, componentStack);
-        configuration.castPower.value *= castPowerMultiplier;
+    void applyComponent(RodConfigurationController configuration, ItemStack partStack) {
+        super.applyComponent(configuration, partStack);
+        configuration.castPower *= castPowerMultiplier;
     }
 }

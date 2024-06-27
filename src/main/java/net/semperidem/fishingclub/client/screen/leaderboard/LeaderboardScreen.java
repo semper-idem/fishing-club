@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.leaderboard;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -110,7 +111,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (timer < -1600) {
             timer = CYCLE;
         }
@@ -121,14 +122,14 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
             st = firstColorGradient[gradientNumber];
         }
 
-        textRenderer.drawWithShadow(matrices, String.valueOf(gradientNumber), 5, 5, TITLE_COLOR);
-        drawHorizontalLine(matrices, 0, 100, 150, 0xffeace);
-        super.render(matrices, mouseX, mouseY, delta);
+        context.drawTextWithShadow(textRenderer, String.valueOf(gradientNumber), 5, 5, TITLE_COLOR);
+        context.drawHorizontalLine(0, 100, 150, 0xffeace);
+        super.render(context, mouseX, mouseY, delta);
         if (currentLeaderboard == null) {
             return;
         }
         leaderboardTitleX = (int) (x + (BACKGROUND.renderWidth - textRenderer.getWidth(currentLeaderboard.label)) * 0.5f);
-        textRenderer.drawWithShadow(matrices, currentLeaderboard.label, leaderboardTitleX, leaderboardTitleY, TITLE_COLOR);
+        context.drawTextWithShadow(textRenderer, currentLeaderboard.label, leaderboardTitleX, leaderboardTitleY, TITLE_COLOR);
         int entryOffset = 0;
         int index = 0;
         for (Iterator<Leaderboard.Entry> it = currentLeaderboard.getIterator(); it.hasNext(); ) {
@@ -142,11 +143,11 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
 
             String middleString = getRecordFormatting(index) + (!entry.context.isEmpty() ? "["+ entry.context +"]" : "");
             String rightString = getRecordFormatting(index) + String.format(currentLeaderboard.name.startsWith("_") ? "%.0f" : "%.2f", entry.value) + currentLeaderboard.unit;
-            textRenderer.drawWithShadow(matrices, leftString, leftRecordX, mainBoardY + entryOffset, color);
-            textRenderer.drawWithShadow(matrices, middleString, middleRecordX - textRenderer.getWidth(middleString), mainBoardY + entryOffset, color);
-            textRenderer.drawWithShadow(matrices, rightString, rightRecordX - textRenderer.getWidth(rightString), mainBoardY + entryOffset, color);
-            fill(matrices, leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 13, dividerColor2);
-            fill(matrices, leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 12, dividerColor);
+            context.drawTextWithShadow(textRenderer, leftString, leftRecordX, mainBoardY + entryOffset, color);
+            context.drawTextWithShadow(textRenderer, middleString, middleRecordX - textRenderer.getWidth(middleString), mainBoardY + entryOffset, color);
+            context.drawTextWithShadow(textRenderer, rightString, rightRecordX - textRenderer.getWidth(rightString), mainBoardY + entryOffset, color);
+            context.fill(leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 13, dividerColor2);
+            context.fill( leftRecordX - 5, mainBoardY + entryOffset + 11, rightRecordX + 5, mainBoardY + entryOffset + 12, dividerColor);
             entryOffset += 20;
             index++;
         }
@@ -161,20 +162,20 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
             middleString = getRecordFormatting(place) + (!entry.context.isEmpty() ? "["+ entry.context +"]" : "");
             rightString = getRecordFormatting(place) + String.format(currentLeaderboard.name.startsWith("_") ? "%.0f" : "%.2f", entry.value) + currentLeaderboard.unit;
         }
-        textRenderer.drawWithShadow(matrices, leftString, leftRecordX, boardBottomY, color);
-        textRenderer.drawWithShadow(matrices, middleString, middleRecordX - textRenderer.getWidth(middleString), boardBottomY, color);
-        textRenderer.drawWithShadow(matrices, rightString, rightRecordX - textRenderer.getWidth(rightString), boardBottomY, color);
+        context.drawTextWithShadow(textRenderer, leftString, leftRecordX, boardBottomY, color);
+        context.drawTextWithShadow(textRenderer, middleString, middleRecordX - textRenderer.getWidth(middleString), boardBottomY, color);
+        context.drawTextWithShadow(textRenderer, rightString, rightRecordX - textRenderer.getWidth(rightString), boardBottomY, color);
 
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        textRenderer.drawWithShadow(matrices, title, titleX, titleY,TITLE_COLOR);
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawTextWithShadow(textRenderer, title, titleX, titleY,TITLE_COLOR);
 
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        BACKGROUND.render(matrices, x, y);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        BACKGROUND.render(context, x, y);
     }
 }

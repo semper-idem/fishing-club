@@ -4,6 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FishingClubRegistry;
 
 import java.util.function.Consumer;
 
@@ -34,23 +36,10 @@ public class ComponentItem extends Item {
         return durabilityMultiplier[source.value];
     }
 
-    private final String QUALITY_TAG = "quality";
-    private final String BROKEN_TAG = "broken";
-
     public ComponentItem(Settings settings) {
         super(settings);
     }
 
-    @Override
-    public ItemStack getDefaultStack() {
-        return getStack(1);
-    }
-
-    public ItemStack getStack(int quality) {
-        ItemStack stack = new ItemStack(this);
-        stack.getOrCreateNbt().putInt(QUALITY_TAG, quality);
-        return stack;
-    }
 
     private boolean shouldDamage(int quality) {
         return Math.random() > MathHelper.clamp((quality - 1) * 0.25f, 0, 1);
@@ -61,33 +50,35 @@ public class ComponentItem extends Item {
     }
 
     <T extends LivingEntity> void damage(ItemStack componentStack, int amount, T entity, Consumer<T> breakCallback) {
-        int quality = componentStack.getOrCreateNbt().getInt(QUALITY_TAG);
+        int quality = componentStack.getOrDefault(ComponentRegistry.PART_QUALITY, 1);
         if (!shouldDamage(quality)) {
             return;
         }
-        if (componentStack.getDamage() + amount > componentStack.getMaxDamage() && !destroyOnBreak) {
-            componentStack.getOrCreateSubNbt(BROKEN_TAG);
+        int currentDamage = componentStack.getDamage();
+        if (currentDamage + amount >= componentStack.getMaxDamage() && !destroyOnBreak) {
+            componentStack.setDamage(componentStack.getMaxDamage() - 1);
+            componentStack.set(ComponentRegistry.BROKEN, true);
             breakCallback.accept(entity);
             return;
         }
-        componentStack.damage(amount, entity, breakCallback);
+        componentStack.setDamage(currentDamage + amount);
     }
 
-    void applyComponent(FishingRodConfiguration configuration, ItemStack componentStack) {
+    void applyComponent(RodConfigurationController configuration, ItemStack componentStack) {
         if (isBroken(componentStack)) {
             configuration.canCast = false;
             return;
         }
-        calculateWeightCapacity(configuration, weightCapacity);
+        validateWeightCapacity(configuration, weightCapacity);
     }
 
     boolean isBroken(ItemStack componentStack) {
-        return componentStack.getOrCreateNbt().contains(BROKEN_TAG);
+        return componentStack.getOrDefault(ComponentRegistry.BROKEN, false);
     }
 
-    void calculateWeightCapacity(FishingRodConfiguration configuration, int weightCapacity) {
-        if (configuration.weightCapacity.value > weightCapacity || configuration.weightCapacity.value == 0) {
-            configuration.weightCapacity.value = weightCapacity;
+    void validateWeightCapacity(RodConfigurationController configuration, int weightCapacity) {
+        if (configuration.weightCapacity > weightCapacity || configuration.weightCapacity == 0) {
+            configuration.setWeightCapacity(weightCapacity);
         }
     }
 }

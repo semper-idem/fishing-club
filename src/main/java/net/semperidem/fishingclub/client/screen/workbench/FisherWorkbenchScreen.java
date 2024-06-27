@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.workbench;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -9,19 +10,22 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.network.ClientPacketSender;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 import static net.semperidem.fishingclub.client.screen.workbench.FisherWorkbenchScreenHandler.*;
 
 public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHandler> implements ScreenHandlerProvider<FisherWorkbenchScreenHandler> {
+
     private static final int TEXT_TO_SLOT_OFFSET = (SLOT_SIZE - 9) / 2; // 9 is text height
-    private static final Identifier BACKGROUND_DEFAULT = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui.png");
-    private static final Identifier BACKGROUND_REPAIR = new Identifier(MOD_ID,"textures/gui/fisher_workbench_gui_repair.png");
-    private static final Identifier WRENCH_ICON = new Identifier(MOD_ID,"textures/gui/wrench.png");
+    private static final Identifier BACKGROUND_DEFAULT = FishingClub.getIdentifier("textures/gui/fisher_workbench_gui.png");
+    private static final Identifier BACKGROUND_REPAIR = FishingClub.getIdentifier("textures/gui/fisher_workbench_gui_repair.png");
+    private static final Identifier WRENCH_ICON = FishingClub.getIdentifier("textures/gui/wrench.png");
     private static final int TEXT_COLOR = Color.WHITE.getRGB();
 
 
@@ -75,18 +79,21 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
     }
 
     private void initRepairButton(){
-        repairButton = new ButtonWidget(x + ROD_X,y + SLOTS_Y + SLOT_OFFSET * 3 - 1,40,20, Text.of("Repair"), repairClick -> ClientPacketSender.sendFishingRodRepairRequest());
+        repairButton =  ButtonWidget.builder(Text.of("Repair"), repairClick -> ClientPacketSender.sendFishingRodRepairRequest()).dimensions(
+                x + ROD_X,
+                y + SLOTS_Y + SLOT_OFFSET * 3 - 1,
+                40,20
+        ).build();
         repairButton.active = false;
         repairButton.visible = false;
         addDrawableChild(repairButton);
     }
 
     private void initToggleModeButton(){
-        addDrawableChild(new ButtonWidget(x + ROD_X + SLOT_SIZE, y + ROD_Y, 8, 8, Text.of(""), wrenchClick -> toggleMode()){
+        addDrawableChild(new ButtonWidget(x + ROD_X + SLOT_SIZE, y + ROD_Y, 8, 8, Text.of(""), wrenchClick -> toggleMode(), Supplier::get){
             @Override
-            public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-                setTexture(WRENCH_ICON);
-                drawTexture(matrices, x, y, 0, 0, 8, 8, 8, 8);
+            public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+                context.drawTexture(WRENCH_ICON, x, y, 0, 0, 8, 8, 8, 8);
             }
         });
     }
@@ -115,43 +122,34 @@ public class FisherWorkbenchScreen extends HandledScreen<FisherWorkbenchScreenHa
         repairButton.visible = true;
         labels = repairLabels;
     }
-
-
-    //RENDERING
-    public void render(MatrixStack matrixStack, int i, int j, float f) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, i, j, f);
-        renderLabels(matrixStack);
-        drawMouseoverTooltip(matrixStack, i, j);
+    
+    public void render(DrawContext context, int i, int j, float f) {
+        renderBackground(context, i, j, f);
+        super.render(context, i, j, f);
+        renderLabels(context);
+        drawMouseoverTooltip(context, i, j);
     }
 
-    private void renderLabels(MatrixStack matrixStack){
+    private void renderLabels(DrawContext context){
         for(SlotLabel label : labels) {
-            renderTextRightSide(matrixStack, label.text, label.x, label.y);
+            renderTextRightSide(context, label.text, label.x, label.y);
         }
     }
 
-    private void renderTextRightSide(MatrixStack matrixStack, String text, int x, int y){
-        this.textRenderer.drawWithShadow(matrixStack, text,x - textRenderer.getWidth(text),y, TEXT_COLOR);
+    private void renderTextRightSide(DrawContext context, String text, int x, int y){
+        context.drawText(textRenderer, text,x - textRenderer.getWidth(text),y, TEXT_COLOR, true);
     }
 
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        setTexture(background);
-        this.drawTexture(matrices, x, y, 0, 0, 256, 256);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        context.drawTexture(background, x, y, 0, 0, 256, 256);
     }
 
-    private void setTexture(Identifier texture){
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, texture);
-
-    }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        textRenderer.draw(matrices, playerInventoryTitle, (float)playerInventoryTitleX, (float)playerInventoryTitleY, 0x404040);
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 0x404040, false);
     }
 
 

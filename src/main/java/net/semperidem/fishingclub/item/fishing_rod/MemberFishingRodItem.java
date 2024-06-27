@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +19,9 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FishingClubRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 public class MemberFishingRodItem extends FishingRodItem {
@@ -67,7 +70,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             return;
         }
         if (!world.isClient) {
-            FishingRodConfiguration configuration = getRodConfiguration(fishingRod);
+            RodConfigurationComponent configuration = getRodConfiguration(fishingRod);
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
             setCastCharge(fishingRod, power);
             damageComponents(configuration, 2, ComponentItem.DamageSource.CAST, user);
@@ -84,7 +87,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         user.fishHook.use(itemStack);
     }
 
-    public void damageComponents(FishingRodConfiguration configuration, int amount, ComponentItem.DamageSource damageSource, LivingEntity entity){
+    public void damageComponents(RodConfigurationComponent configuration, int amount, ComponentItem.DamageSource damageSource, LivingEntity entity){
         configuration.damage(amount, damageSource, entity, (e) -> {
             e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND);
             configuration.onComponentBroken(e);
@@ -130,8 +133,8 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
 
-    public FishingRodConfiguration getRodConfiguration(ItemStack fishingRod) {
-        return new FishingRodConfiguration(fishingRod);
+    public RodConfigurationComponent getRodConfiguration(ItemStack fishingRod) {
+        return fishingRod.get(ComponentRegistry.ROD_CONFIGURATION);
     }
 
     @Override

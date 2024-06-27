@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import com.google.common.collect.Lists;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -15,13 +16,13 @@ public interface IMemberSubScreen {
     ArrayList<Drawable> getComponents();
     default void handledScreenTick() {}
 
-    default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    default boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
         for (Drawable component : getComponents()) {
             if (!(component instanceof ScrollableWidget scrollableWidget)) {
                 continue;
             }
 
-            if (scrollableWidget.mouseScrolled(mouseX, mouseY, amount)) {
+            if (scrollableWidget.mouseScrolled(mouseX, mouseY, horizontal, vertical)) {
                 return true;
             }
         }
@@ -57,7 +58,7 @@ public interface IMemberSubScreen {
         return false;
     }
 
-    void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta);
+    void render(DrawContext context, int mouseX, int mouseY, float delta);
 
     default boolean charTyped(char chr, int modifiers) {
         for (Drawable component : getComponents()) {

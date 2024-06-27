@@ -31,7 +31,7 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
 import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
 import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodConfiguration;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.network.payload.HookPayload;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
@@ -74,7 +74,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     private PlayerEntity playerOwner;
     private FishingCard fishingCard;
     private ItemStack fishingRod;
-    private FishingRodConfiguration configuration;
+    private RodConfigurationComponent configuration;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
     private Fish caughtFish;
@@ -83,7 +83,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         super(entityEntityType, world);
     }
 
-    public HookEntity(PlayerEntity owner, World world, FishingRodConfiguration configuration) {
+    public HookEntity(PlayerEntity owner, World world, RodConfigurationComponent configuration) {
         this(EntityTypeRegistry.HOOK_ENTITY, world);
         this.setOwner(owner);
         this.init(configuration);
@@ -113,7 +113,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this.init(MEMBER_FISHING_ROD.getRodConfiguration(fishingRod));
     }
 
-    private void init(FishingRodConfiguration configuration) {
+    private void init(RodConfigurationComponent configuration) {
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.configuration = configuration;
         this.fishingRod = configuration.getFishingRod();

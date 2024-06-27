@@ -1,0 +1,75 @@
+package net.semperidem.fishingclub.item.fishing_rod.components;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.semperidem.fishingclub.registry.ItemRegistry;
+
+public record RodConfigurationComponent(
+        ItemStack fishingRod,
+        RodPartComponent coreComponent,
+        RodPartComponent lineComponent,
+        Integer maxLineLength,
+        Float castPower,
+        Integer weightCapacity,
+        Integer weightMagnitude,
+        Boolean canCast
+) {
+
+    public static final RodConfigurationComponent DEFAULT = new RodConfigurationComponent(
+            ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack(),
+            RodPartComponent.DEFAULT,
+            RodPartComponent.DEFAULT,
+            8,
+            1f,
+            10,
+            0,
+            true
+    );
+
+    public static Codec<RodConfigurationComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ItemStack.CODEC.fieldOf("fishingRod").forGetter(RodConfigurationComponent::fishingRod),
+            RodPartComponent.CODEC.fieldOf("coreComponent").forGetter(RodConfigurationComponent::coreComponent),
+            RodPartComponent.CODEC.fieldOf("lineComponent").forGetter(RodConfigurationComponent::lineComponent),
+            Codec.INT.fieldOf("maxLineLength").forGetter(RodConfigurationComponent::maxLineLength),
+            Codec.FLOAT.fieldOf("castPower").forGetter(RodConfigurationComponent::castPower),
+            Codec.INT.fieldOf("weightCapacity").forGetter(RodConfigurationComponent::weightCapacity),
+            Codec.INT.fieldOf("weightMagnitude").forGetter(RodConfigurationComponent::weightMagnitude),
+            Codec.BOOL.fieldOf("canCast").forGetter(RodConfigurationComponent::canCast)
+    ).apply(instance, RodConfigurationComponent::new));
+
+    public static PacketCodec<RegistryByteBuf, RodConfigurationComponent>  PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
+
+    public RodConfigurationComponent equipCore(RodPartComponent core) {
+        RodConfigurationController controller = equip(core, this.lineComponent);
+        core.apply(controller);
+        return controller.toRecord();
+    }
+
+    public RodConfigurationComponent equipLine(RodPartComponent line) {
+        RodConfigurationController controller = equip(this.coreComponent, line);
+        line.apply(controller);
+        return controller.toRecord();
+    }
+
+    private RodConfigurationController equip(
+            RodPartComponent core,
+            RodPartComponent line
+    ) {
+        return new RodConfigurationController(new RodConfigurationComponent(
+                this.fishingRod,
+                core,
+                line,
+                DEFAULT.maxLineLength,
+                DEFAULT.castPower,
+                DEFAULT.weightCapacity,
+                DEFAULT.weightMagnitude,
+                DEFAULT.canCast
+        ));
+    }
+
+}
+

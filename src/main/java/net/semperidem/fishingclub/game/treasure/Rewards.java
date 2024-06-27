@@ -136,7 +136,7 @@ public class Rewards {
 
     public static Reward roll(FishingCard fisher){
         int grade = getGrade(fisher);
-        return new Reward(roll(getCost(fisher), grade), grade);
+        return new Reward(roll(fisher, getCost(fisher), grade), grade);
     }
 
     public  static int getCost(FishingCard fisher){
@@ -149,7 +149,7 @@ public class Rewards {
         return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
     }
 
-    public static ArrayList<ItemStack> roll(int costTotal, int grade){
+    public static ArrayList<ItemStack> roll(FishingCard card, int costTotal, int grade){
         ArrayList<ItemStack> rollResult = new ArrayList<>();
         int costLeft = costTotal;
         for(int i = 0; i < ((3 + grade) / 2f); i++) {
@@ -157,7 +157,7 @@ public class Rewards {
             if (possibleRewards.size() == 0) break;
             int randomIndex = (int) (Math.random() * possibleRewards.size() - 1);
             TreasureReward reward = possibleRewards.get(randomIndex);
-            rollResult.add(reward.roll());
+            rollResult.add(reward.roll(card.getHolder()));
             costLeft -= reward.cost;
         }
         return rollResult;

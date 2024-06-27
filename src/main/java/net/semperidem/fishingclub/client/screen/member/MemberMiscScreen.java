@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.network.ClientPacketSender;
@@ -94,12 +95,10 @@ public class MemberMiscScreen extends MemberSubScreen {
             }
         }, () -> claimField.getValidAmount() >= parent.getScreenHandler().getMinCapePrice() &&
                 parent.getScreenHandler().getCard().getCredit() > parent.getScreenHandler().getMinCapePrice());
-
         components.add(resetPerksButton);
         components.add(claimField);
         components.add(submitClaimButton);
 
-        ClientPacketSender.sendRequestCapeDetails();
     }
 
     @Override
@@ -124,15 +123,15 @@ public class MemberMiscScreen extends MemberSubScreen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, claimFieldX - 1, kingTitleY - 2, claimFieldX + claimFieldWidth + 1, claimButtonY + BUTTON_HEIGHT + 1, true);
-        parent.drawContainerBox(matrixStack, resetButtonX - 1, resetY - 2, resetButtonX + BUTTON_WIDTH + 1, resetButtonY + BUTTON_HEIGHT + 1, true);
-        drawTextCenteredAt(textRenderer, matrixStack, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
-        drawTextCenteredAt(textRenderer, matrixStack, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
-        drawTextCenteredAt(textRenderer, matrixStack, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
-        drawOutlinedTextCenteredAt(textRenderer, matrixStack, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
-        drawTextCenteredAt(textRenderer, matrixStack, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(context, claimFieldX - 1, kingTitleY - 2, claimFieldX + claimFieldWidth + 1, claimButtonY + BUTTON_HEIGHT + 1, true);
+        parent.drawContainerBox(context, resetButtonX - 1, resetY - 2, resetButtonX + BUTTON_WIDTH + 1, resetButtonY + BUTTON_HEIGHT + 1, true);
+        drawTextCenteredAt(textRenderer, context, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(textRenderer, context, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
+        drawTextCenteredAt(textRenderer, context, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
+        drawOutlinedTextCenteredAt(textRenderer, context, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+        drawTextCenteredAt(textRenderer, context, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
 
-        super.render(matrixStack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 }

@@ -1,10 +1,15 @@
 package net.semperidem.fishingclub.game.treasure;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
@@ -30,7 +35,7 @@ public class TreasureReward {
     }
 
 
-    ItemStack roll(){
+    ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
         if (rewardStack.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
             return ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack();
@@ -40,13 +45,13 @@ public class TreasureReward {
             float percentageDurability = (float) (quality * 0.75 + quality * Math.random() * 0.25);
             float curseChance = (1 - quality);
             int enchantingLevel = (int) Math.max(5, Math.min(50, 8 / Math.pow(quality, 1.5)));
-            rewardStack = EnchantmentHelper.enchant(localRandom, rewardStack, enchantingLevel, false);
-            rewardStack.setDamage((int) (item.getMaxDamage() * (1f - percentageDurability)));
+            //rewardStack = EnchantmentHelper.enchant(localRandom, rewardStack, enchantingLevel, false);
+            rewardStack.setDamage((int) (item.getComponents().get(DataComponentTypes.DAMAGE) * (1f - percentageDurability)));
             if (Math.random() < curseChance) {
                 if (item instanceof ArmorItem) {
-                    rewardStack.addEnchantment(Enchantments.BINDING_CURSE, 1);
+                    rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.BINDING_CURSE).get(), 1);
                 }
-                rewardStack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.VANISHING_CURSE).get(), 1);
             }
             return rewardStack;
         }

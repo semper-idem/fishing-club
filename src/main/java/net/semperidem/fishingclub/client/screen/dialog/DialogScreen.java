@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.InputUtil;
@@ -65,9 +66,10 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        return dialogBox.mouseScrolled(mouseX, mouseY, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        return dialogBox.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
+
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
@@ -81,13 +83,14 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float delta, int mouseX, int mouseY) {
-        TEXTURE.render(matrixStack, x , y);
+    public void drawForeground(DrawContext context, int mouseX, int mouseY) {
     }
 
     @Override
-    public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+
     }
 
     public static final Texture TEXTURE = new Texture(

@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,45 +34,28 @@ public class DialogBox extends ScrollableWidget {
     }
 
     public void resize(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
+        this.setX(x);
+        this.setY(y);
         this.width = width;
         this.height = height;
     }
 
-    @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        if (!this.visible) {
-            return;
-        }
-        enableScissor(this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1);
-        matrixStack.push();
-        matrixStack.translate(0.0, -this.getScrollY(), 0.0);
-        this.renderContents(matrixStack, mouseX, mouseY, delta);
-        matrixStack.pop();
-        disableScissor();
-        if (overflows()) {
-            renderScrollbar(matrixStack);
-        }
-    }
 
-    private void renderScrollbar(MatrixStack matrixStack) {
+    private void renderScrollbar(DrawContext context) {
         int i = MathHelper.clamp((int)((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding())), (int)32, (int)this.height);
-        int l = Math.max(this.y, (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.y);
+        int l = Math.max(getY(), (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.getY());
         int m = l + i;
-        int scrollBarX = x + width;
+        int scrollBarX = getX() + width;
         int scrollBarWidth = 4;
         int scrollBarShadowWidth = 1;
-        fill(
-                matrixStack,
+        context.fill(
                 scrollBarX - scrollBarWidth,
                 l,
                 scrollBarX,
                 m,
                 Color.BLACK.getRGB()
         );
-        fill(
-                matrixStack,
+        context.fill(
                 scrollBarX - scrollBarWidth  + scrollBarShadowWidth,
                 l + scrollBarShadowWidth,
                 scrollBarX - scrollBarShadowWidth,
@@ -96,6 +80,32 @@ public class DialogBox extends ScrollableWidget {
     @Override
     protected double getDeltaYPerScroll() {
         return 5;
+    }
+
+    @Override
+    protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderMessages(context);
+        if (responseLinesQueue.isEmpty()) {
+            renderPossibleQuestions(context);
+            return;
+        }
+        renderTrailingLine(context);
+    }
+
+    @Override
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (!this.visible) {
+            return;
+        }
+        context.enableScissor(getX() + 1, getY() + 1, getX() + this.width - 1, getY() + this.height - 1);
+        context.getMatrices().push();
+        context.getMatrices().translate(0.0, -this.getScrollY(), 0.0);
+        this.renderContents(context, mouseX, mouseY, delta);
+        context.getMatrices().pop();
+        context.disableScissor();
+        if (overflows()) {
+            renderScrollbar(context);
+        }
     }
 
     void tick() {
@@ -164,33 +174,41 @@ public class DialogBox extends ScrollableWidget {
         trailingLine = lineInQueue;
     }
 
-    @Override
-    protected void renderContents(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        renderMessages(matrixStack);
-        if (responseLinesQueue.isEmpty()) {
-            renderPossibleQuestions(matrixStack);
-            return;
-        }
-        renderTrailingLine(matrixStack);
-    }
-
-    private void renderMessages(MatrixStack matrixStack) {
+    private void renderMessages(DrawContext context) {
         for(int i = 0; i < responseLines.size(); i++) {
-            drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of(responseLines.get(i)), x + getPadding(), y + i * lineHeight + getPadding(), Color.LIGHT_GRAY.getRGB());
+            context.drawText(
+                    MinecraftClient.getInstance().textRenderer,
+                    Text.of(responseLines.get(i)),
+                    getX() + getPadding(),
+                    getY() + i * lineHeight + getPadding(),
+                    Color.LIGHT_GRAY.getRGB(),
+                    true
+            );
         }
     }
 
-    private void renderPossibleQuestions(MatrixStack matrixStack) {
+    private void renderPossibleQuestions(DrawContext context) {
         for(int i = 0; i < response.questions.size(); i++) {
-            drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of("["+(i+1)+"] " + possibleQuestions.get(i)), x + getPadding(), y + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2, Color.WHITE.getRGB());
+            context.drawText(
+                    MinecraftClient.getInstance().textRenderer,
+                    Text.of("["+(i+1)+"] " + possibleQuestions.get(i)),
+                    getX() + getPadding(),
+                    getY() + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2,
+                    Color.WHITE.getRGB(),
+                    true);
         }
     }
 
-    private void renderTrailingLine(MatrixStack matrixStack) {
+    private void renderTrailingLine(DrawContext context) {
         if (trailingLine.isEmpty()) {
             return;
         }
-        drawTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of(trailingLine), x + getPadding(), y + responseLines.size() * lineHeight + getPadding(), Color.WHITE.getRGB());
+        context.drawText(
+                MinecraftClient.getInstance().textRenderer,
+                Text.of(trailingLine), getX() + getPadding(),
+                getY() + responseLines.size() * lineHeight + getPadding(),
+                Color.WHITE.getRGB(),
+                true);
     }
 
     @Override
@@ -207,5 +225,7 @@ public class DialogBox extends ScrollableWidget {
     }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {}
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+
+    }
 }

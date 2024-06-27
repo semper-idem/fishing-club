@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.client.screen.game;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.option.Perspective;
@@ -152,6 +153,9 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     @Override
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {}
+
+    @Override
     public void handledScreenTick() {
         lightTick = !lightTick;
     }
@@ -202,11 +206,6 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         }
         renderInfo(matrices);
         matrices.pop();
-    }
-
-    @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-
     }
 
     private void renderFish(MatrixStack matrices, float delta){
