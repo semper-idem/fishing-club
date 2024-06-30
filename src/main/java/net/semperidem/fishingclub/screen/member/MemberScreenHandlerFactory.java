@@ -9,23 +9,22 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.network.payload.MemberPayload;
 import org.jetbrains.annotations.Nullable;
 
-public class MemberScreenHandlerFactory implements ExtendedScreenHandlerFactory {
-
-    @Override
-    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-        buf.writeNbt(FishingCard.of(player).toNbt());
-    }
+public class MemberScreenHandlerFactory implements ExtendedScreenHandlerFactory<MemberPayload> {
     @Override
     public Text getDisplayName() {
-        return Text.translatable("Sell");
+        return Text.of("Member Screen");
     }
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeNbt(FishingCard.of(player).toNbt());
-        return new MemberScreenHandler(syncId, inv, buf);
+        return new MemberScreenHandler(syncId, inv, FishingCard.of(player));
+    }
+
+    @Override
+    public MemberPayload getScreenOpeningData(ServerPlayerEntity player) {
+        return new MemberPayload();
     }
 }

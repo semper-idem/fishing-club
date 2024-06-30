@@ -5,10 +5,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.network.PacketIdentifiers;
 
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
 

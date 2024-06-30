@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -10,11 +9,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartType;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
 
 import java.util.ArrayList;
@@ -35,6 +32,7 @@ public class HistoryManager extends DataManager {
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
     private long totalCapeTime = 0;
     private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
+    private FishComponent fish;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -53,7 +51,7 @@ public class HistoryManager extends DataManager {
     }
 
     public void giveDerekFish(){
-        gaveDerekFish = true;
+        this.gaveDerekFish = true;
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -84,20 +82,22 @@ public class HistoryManager extends DataManager {
     }
 
     public void fishHooked(IHookEntity hookEntity) {
-        lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
+       //lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
         checkChunk(hookEntity.getFishedInChunk());
     }
 
-    public void recordFishCaught(Fish fish) {
-        SpeciesStatistics speciesStatistics = new SpeciesStatistics(fish.name);
-        if (fishAtlas.containsKey(fish.name)) {
-            speciesStatistics = fishAtlas.get(fish.name);
+    public void recordFishCaught(FishComponent fish) {
+        String speciesName = fish.speciesName();
+        SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
+        if (fishAtlas.containsKey(speciesName)) {
+            speciesStatistics = fishAtlas.get(speciesName);
         }
         speciesStatistics.record(fish);
-        fishAtlas.put(fish.name, speciesStatistics);
+        fishAtlas.put(speciesName, speciesStatistics);
     }
 
-    public void fishCaught(Fish fish) {
+    public void fishCaught(FishComponent fish) {
+        this.fish = fish;
         recordFishCaught(fish);
         if (isFirstCatchOfTheDay()) {
             return;
@@ -138,10 +138,10 @@ public class HistoryManager extends DataManager {
             }
             minGrade++;
         }
-        int daysSinceLastFish = getDaysSinceLastCatch();
-        if (progressionManager.hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && daysSinceLastFish > 0) {
-            minGrade = (int) (minGrade + Math.floor(daysSinceLastFish / DAYS_SINCE_LAST_FISH_PERIOD));
-            if (Math.random() < (1 / DAYS_SINCE_LAST_FISH_PERIOD) * (daysSinceLastFish % DAYS_SINCE_LAST_FISH_PERIOD)) {
+        int daysSinceLastFishComponent = getDaysSinceLastCatch();
+        if (progressionManager.hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && daysSinceLastFishComponent > 0) {
+            minGrade = (int) (minGrade + Math.floor(daysSinceLastFishComponent / DAYS_SINCE_LAST_FISH_PERIOD));
+            if (Math.random() < (1 / DAYS_SINCE_LAST_FISH_PERIOD) * (daysSinceLastFishComponent % DAYS_SINCE_LAST_FISH_PERIOD)) {
                 minGrade++;
             }
         }
@@ -166,7 +166,9 @@ public class HistoryManager extends DataManager {
         usedChunksTag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
         lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
         firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
-        lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompound(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
+        if (historyTag.contains(LAST_USED_BAIT_TAG)) {
+            lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompound(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
+        }
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
@@ -188,7 +190,9 @@ public class HistoryManager extends DataManager {
         historyTag.put(USED_CHUNKS_TAG, usedChunksTag);
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
-        historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.encode(wrapperLookup));
+        if (!lastUsedBait.isEmpty()) {
+            historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.encode(wrapperLookup));
+        }
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
         historyTag.putLong(TOTAL_CAPE_TIME_TAG, totalCapeTime);

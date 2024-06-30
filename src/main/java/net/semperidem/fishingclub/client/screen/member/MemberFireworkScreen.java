@@ -1,24 +1,32 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FireworkExplosionComponent;
+import net.minecraft.component.type.FireworksComponent;
 import net.minecraft.item.FireworkRocketItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.fisher.shop.OrderItem;
+import net.semperidem.fishingclub.network.payload.CheckoutPayload;
 import net.semperidem.fishingclub.registry.KeybindingRegistry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberButton.SMALL_BUTTON_TEXTURE;
 import static net.semperidem.fishingclub.client.screen.member.MemberBuyScreen.OFFER_TEXTURE;
@@ -194,7 +202,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
         buyButtonX = previewFireworkX + FIREWORK_CREATOR_TEXTURE.renderWidth + TILE_SIZE * 2;
         buyButtonY = totalTextY + TEXT_LINE_HEIGHT - 2;
         buyButton = new MemberButton(buyButtonX, buyButtonY, SMALL_BUTTON_WIDTH + TILE_SIZE * 2, BUTTON_HEIGHT, Text.literal("Checkout"), button -> {
-            ClientPacketSender.checkout(cartWidget.getItems(), cartWidget.getCartTotalAmount());
+            ClientPlayNetworking.send(new CheckoutPayload(cartWidget.getItems()));
             resetValues();
             cartWidget.entries.clear();
         });
@@ -214,7 +222,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
                 range++;
             }
             button.setMessage(Text.literal(rangeText + range));
-            updateNbt();
+            updateComponent();
         });
         components.add(rangeButton);
 
@@ -259,7 +267,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
         shapeButton.setTexture(MemberButton.SMALL_WIDE_BUTTON_TEXTURE);
         components.add(shapeButton);
 
-        updateNbt();
+        updateComponent();
     }
 
     @Override
@@ -282,13 +290,13 @@ public class MemberFireworkScreen extends MemberSubScreen {
             } else {
                 resetValues();
             }
-            updateNbt();
+            updateComponent();
             return true;
         } else if (isHoveringAdd && isHoveringY) {
             if (shape != Shape.NONE && !colorPickerWidget.colorsPicked.isEmpty()) {
                 explosions.add(new Explosion(shape, colorPickerWidget.colorsPicked, fadePickerWidget.colorsPicked, flicker, trail));
                 resetValues();
-                updateNbt();
+                updateComponent();
             }
             return true;
         } else if (isHoveringConfirm && isHoveringY) {
@@ -298,18 +306,18 @@ public class MemberFireworkScreen extends MemberSubScreen {
     }
 
     private void addToCart() {
-        updateNbt();
+        updateComponent();
         cartWidget.addItem(fireworkStack, getPrice());
         fireworkStack = Items.FIREWORK_ROCKET.getDefaultStack();
         explosions = new ArrayList<>();
         resetValues();
-        updateNbt();
+        updateComponent();
     }
 
     private void resetValues() {
         this.shape = Shape.NONE;
-        this.colorPickerWidget.colorsPicked = new ArrayList<>();
-        this.fadePickerWidget.colorsPicked = new ArrayList<>();
+        this.colorPickerWidget.colorsPicked = new IntArrayList();
+        this.fadePickerWidget.colorsPicked = new IntArrayList();
         this.flicker = false;
         this.trail = false;
         shapeButton.setMessage(Text.literal(shapeText + shape.name));
@@ -319,12 +327,12 @@ public class MemberFireworkScreen extends MemberSubScreen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        drawTextWithShadow(matrixStack, textRenderer, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.drawTextWithShadow(textRenderer, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
         String price = getPrice() + "$";
         int priceWidth = textRenderer.getWidth(price);
-        drawTextWithShadow(matrixStack, textRenderer, Text.literal(price), priceTextX + priceValueMaxWidth - priceWidth, priceTextY, BEIGE_TEXT_COLOR);
-        drawTextWithShadow(matrixStack, textRenderer, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, Text.literal(price), priceTextX + priceValueMaxWidth - priceWidth, priceTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
 
         int mode = 2;
         if (shape == Shape.NONE && !explosions.isEmpty()) {
@@ -336,40 +344,38 @@ public class MemberFireworkScreen extends MemberSubScreen {
         if (shape != Shape.NONE && explosions.isEmpty() && !colorPickerWidget.colorsPicked.isEmpty()) {
             mode = 3;
         }
-        FIREWORK_CREATOR_TEXTURE.render(matrixStack, previewFireworkX, previewFireworkY, 0, mode);
-        itemRenderer.renderInGui(fireworkStack, previewFireworkX + 16, previewFireworkY);
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
-        super.render(matrixStack, mouseX, mouseY, delta);
+        FIREWORK_CREATOR_TEXTURE.render(context, previewFireworkX, previewFireworkY, 0, mode);
+        context.drawItem(fireworkStack, previewFireworkX + 16, previewFireworkY);
+        parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+        super.render(context, mouseX, mouseY, delta);
 
-        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
         String totalValueString = cartWidget.getCartTotal();
         int totalValueX = totalTextX + totalMaxWidth - textRenderer.getWidth(totalValueString);
-        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
-        textRenderer.drawWithShadow(matrixStack, totalValueString, totalValueX, totalTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, totalValueString, totalValueX, totalTextY, BEIGE_TEXT_COLOR);
 
         boolean isHoveringX = mouseX >= previewFireworkXStart && mouseX <= previewFireworkXStart + 16;
         boolean isHoveringY = mouseY >= previewFireworkY && mouseY <= previewFireworkY + OFFER_TEXTURE.renderHeight;
         boolean hoveringFirework = isHoveringX && isHoveringY;
         if (hoveringFirework) {
-            List<Text> tooltip = parent.getTooltipFromItem(fireworkStack);
-            parent.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
+            List<Text> tooltip = fireworkStack.getTooltip(Item.TooltipContext.DEFAULT, MinecraftClient.getInstance().player, TooltipType.BASIC);
+            context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
+            return;
         }
         if (cartWidget.hoveredStack != null && cartWidget.isSelected()) {
-            parent.renderTooltip(matrixStack, parent.getTooltipFromItem(cartWidget.hoveredStack.stack), mouseX, mouseY);
+            context.drawTooltip(textRenderer, cartWidget.hoveredStack.stack.getTooltip(Item.TooltipContext.DEFAULT, MinecraftClient.getInstance().player, TooltipType.BASIC), mouseX, mouseY);
         }
     }
 
-    private void updateNbt() {
-        NbtCompound nbt = fireworkStack.getOrCreateNbt();
-        NbtList explosionsNbt = new NbtList();
-        for(Explosion explosion : explosions) {
-            explosionsNbt.add(explosion.getNbt());
+    private void updateComponent() {
+        ArrayList<FireworkExplosionComponent> explosions = new ArrayList<>();
+        for(Explosion explosion : this.explosions) {//todo use vanilla explosions now that they exist
+            explosions.add(explosion.getExplosionComponent());
         }
-        NbtCompound fireworkNbt = new NbtCompound();
-        fireworkNbt.put(FireworkRocketItem.EXPLOSIONS_KEY, explosionsNbt);
-        fireworkNbt.putByte(FireworkRocketItem.FLIGHT_KEY, (byte)range);
-        nbt.put(FireworkRocketItem.FIREWORKS_KEY, fireworkNbt);
-        fireworkStack.setNbt(nbt);
+        fireworkStack.set(DataComponentTypes.FIREWORKS, new FireworksComponent(
+                range,explosions
+        ));
     }
 
     private int getPrice() {
@@ -391,14 +397,14 @@ public class MemberFireworkScreen extends MemberSubScreen {
         return (int) result;
     }
 
-    class Explosion {
+    static class Explosion {
         Shape shape;
-        ArrayList<DyeColor> colors;
-        ArrayList<DyeColor> fadeColors;
+        IntArrayList colors;
+        IntArrayList fadeColors;
         boolean flicker;
         boolean trail;
 
-        Explosion(Shape shape, ArrayList<DyeColor> colors, ArrayList<DyeColor> fadeColors, boolean flicker, boolean trail) {
+        Explosion(Shape shape, IntArrayList colors, IntArrayList fadeColors, boolean flicker, boolean trail) {
             this.shape = shape;
             this.colors = colors;
             this.fadeColors = fadeColors;
@@ -406,15 +412,15 @@ public class MemberFireworkScreen extends MemberSubScreen {
             this.trail = trail;
 
         }
-
-        NbtCompound getNbt() {
-            NbtCompound explosionNbt = new NbtCompound();
-            //explosionNbt.putByte("Type", (byte) FireworkRocketItem.Type.valueOf(this.shape.name()).getId());
-            explosionNbt.putIntArray(FireworkRocketItem.COLORS_KEY, ColorPickerWidget.getColors(this.colors));
-            explosionNbt.putIntArray(FireworkRocketItem.FADE_COLORS_KEY,  ColorPickerWidget.getColors(this.fadeColors));
-            explosionNbt.putBoolean(FireworkRocketItem.FLICKER_KEY, this.flicker);
-            explosionNbt.putBoolean(FireworkRocketItem.TRAIL_KEY, this.trail);
-            return explosionNbt;
+        //FireworkExplosionComponent.Type shape, IntList colors, it.unimi.dsi.fastutil.ints.IntList fadeColors, boolean hasTrail, boolean hasTwinkle
+        FireworkExplosionComponent getExplosionComponent() {
+            return new FireworkExplosionComponent(
+                    FireworkExplosionComponent.Type.valueOf(this.shape.name()),
+                    this.colors,
+                    this.fadeColors,
+                    this.flicker,
+                    this.trail
+            );
         }
     }
 
@@ -441,10 +447,10 @@ public class MemberFireworkScreen extends MemberSubScreen {
             super(x, y, width, height);
         }
 
-        public ArrayList<ItemStack> getItems() {
-            ArrayList<ItemStack> items = new ArrayList<>();
+        public ArrayList<OrderItem> getItems() {
+            ArrayList<OrderItem> items = new ArrayList<>();
             for(Entry entry : entries) {
-                items.add(entry.stack);
+                items.add(new OrderItem(Optional.of(entry.stack), entry.stack.getCount(), Optional.of(entry.price)));
             }
 
             return items;
@@ -453,7 +459,9 @@ public class MemberFireworkScreen extends MemberSubScreen {
         private void addItem(ItemStack itemStack, int price) {
             if (!entries.isEmpty()) {
                 for(CartWidget.Entry entry : cartWidget.entries) {
-                    if (itemStack.getOrCreateNbt().toString().equals(entry.stack.getOrCreateNbt().toString())) {
+                    //todo test isEqual, should work as well
+                    boolean isSameFirework = itemStack.get(DataComponentTypes.FIREWORKS).toString().equals(entry.stack.get(DataComponentTypes.FIREWORKS).toString());
+                    if (isSameFirework) {
                         entry.stack.setCount(entry.stack.getCount() + getActionCount());
                         return;
                     }
@@ -516,19 +524,19 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
 
         @Override
-        protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             int index = 0;
             for (Entry entry : entries) {
-                CART_ITEM_TEXTURE.render(matrices, x, y + index * ENTRY_HEIGHT);
+                CART_ITEM_TEXTURE.render(context, getX(), getY() + index * ENTRY_HEIGHT);
                 ItemStack stackToRender = entry.stack;
-                itemRenderer.renderInGui(
+                context.drawItem(
                         stackToRender,
-                        x + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
-                        (int) (y + index * 16 - getScrollY()));
-                itemRenderer.renderGuiItemOverlay(textRenderer,
+                        getX() + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
+                        (int) (getY() + index * 16 - getScrollY()));
+                context.drawItemInSlot(textRenderer,
                         stackToRender,
-                        x + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
-                        (int) (y + index * 16  - getScrollY()));
+                        getX() + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
+                        (int) (getY() + index * 16  - getScrollY()));
                 index++;
                 //next add to components
             }
@@ -538,36 +546,30 @@ public class MemberFireworkScreen extends MemberSubScreen {
             return super.isFocused() || isSelected();
         }
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, true);
-                textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
-                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                matrices.push();
-                matrices.translate(0, -this.getScrollY(), 0);
-                this.renderContents(matrices, mouseX, mouseY, delta);
-                matrices.pop();
-                disableScissor();
-                this.renderOverlay(matrices);
+                if (hovered) {
+                    hoveredStack = offerAtMouse(mouseX, mouseY);
+                }
+                parent.drawContainerBox(context, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, true);
+                context.drawTextWithShadow(textRenderer,"Cart: (" + getStacksInCart() + ")", this.getX(), this.getY() - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
+                context.enableScissor(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height);
+                context.getMatrices().push();
+                context.getMatrices().translate(0, -this.getScrollY(), 0);
+                this.renderContents(context, mouseX, mouseY, delta);
+                context.getMatrices().pop();
+                context.disableScissor();
+                this.renderOverlay(context);
             }
         }
-
-        @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            if (hovered) {
-                hoveredStack = offerAtMouse(mouseX, mouseY);
-            }
-            super.render(matrices, mouseX, mouseY, delta);
-        }
-
         private Entry offerAtMouse(double mouseX, double mouseY) {
             if (!hovered) {
                 return null;
             }
-            int predictedIndex = (int) ((mouseY + getScrollY() - y) / 16);
+            int predictedIndex = (int) ((mouseY + getScrollY() - getY()) / 16);
             if (entries.size() > predictedIndex && predictedIndex >= 0) {
                 int clickSize = 16;
-                boolean isIcon = mouseX >= x + clickSize  && mouseX <= x + clickSize * 2;
+                boolean isIcon = mouseX >= getX() + clickSize  && mouseX <= getX() + clickSize * 2;
                 if (isIcon) {
                     return entries.get(predictedIndex);
                 }
@@ -579,16 +581,16 @@ public class MemberFireworkScreen extends MemberSubScreen {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             boolean isClicked = active;
             isClicked &= visible;
-            isClicked &= mouseX >= x && mouseX <= x + width;
-            isClicked &= mouseY >= y && mouseY <= y + height;
+            isClicked &= mouseX >= getX() && mouseX <= getX() + width;
+            isClicked &= mouseY >= getY() && mouseY <= getY() + height;
             if (!isClicked) {
                 return false;
             }
-            int predictedIndex = (int) ((mouseY + getScrollY() - y) / 16);
+            int predictedIndex = (int) ((mouseY + getScrollY() - getY()) / 16);
             if (entries.size() > predictedIndex) {
                 int clickSize = 16;
-                boolean isLeftSide = mouseX >= x && mouseX <= x + clickSize;
-                boolean isRightSide = mouseX >= x + CART_ITEM_TEXTURE.renderWidth - clickSize && mouseX <= x + CART_ITEM_TEXTURE.renderWidth;
+                boolean isLeftSide = mouseX >= getX() && mouseX <= getX() + clickSize;
+                boolean isRightSide = mouseX >= getX() + CART_ITEM_TEXTURE.renderWidth - clickSize && mouseX <= getX() + CART_ITEM_TEXTURE.renderWidth;
                 if (isLeftSide) {
                     decreaseCount(predictedIndex, getActionCount());
                 }
@@ -604,7 +606,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
     class ColorPickerWidget extends ClickableWidget {
 
         public static final int COLOR_SIZE = TILE_SIZE * 3;
-        ArrayList<DyeColor> colorsPicked = new ArrayList<>();
+        IntArrayList colorsPicked = new IntArrayList();
 
 
         public ColorPickerWidget(int x, int y, int width, int height, Text message) {
@@ -626,19 +628,19 @@ public class MemberFireworkScreen extends MemberSubScreen {
                 if (this.isValidClickButton(button)) {
                     boolean bl = this.clicked(mouseX, mouseY);
                     if (bl) {
-                        int predictedX = (int) ((mouseX - x) / (COLOR_SIZE + 2));
-                        int predictedY = (int) ((mouseY - y - TEXT_LINE_HEIGHT) / (COLOR_SIZE + 2));
+                        int predictedX = (int) ((mouseX - getX()) / (COLOR_SIZE + 2));
+                        int predictedY = (int) ((mouseY - getY() - TEXT_LINE_HEIGHT) / (COLOR_SIZE + 2));
                         int predictedIndex = predictedX + predictedY * 4;
                         if (predictedIndex >= 0 && predictedIndex < DyeColor.values().length) {
                             DyeColor pickedColor = DyeColor.byId(predictedIndex);
-                            if (colorsPicked.contains(pickedColor)) {
-                                colorsPicked.remove(pickedColor);
+                            if (colorsPicked.contains(pickedColor.getFireworkColor())) {
+                                colorsPicked.remove(pickedColor.getFireworkColor());
                                 return true;
                             }
                             if (colorsPicked.size() >= 8) {
                                 colorsPicked.remove(0);
                             }
-                            colorsPicked.add(pickedColor);
+                            colorsPicked.add(pickedColor.getFireworkColor());
                             return true;
                         }
                     }
@@ -648,37 +650,37 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+
+        }
+
+        @Override
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             Iterator<DyeColor> colorIterator = Arrays.stream(DyeColor.values()).iterator();
-            drawTextWithShadow(matrices, textRenderer, getMessage(),x,y, BEIGE_TEXT_COLOR);
-            int colorY = y + TEXT_LINE_HEIGHT;
-            parent.drawContainerBox(matrices, x - 1, colorY - 1, x + 4 * (COLOR_SIZE + 2) - 1, colorY + 4 * (COLOR_SIZE + 2) - 1, true);
+            context.drawTextWithShadow(textRenderer, getMessage(),getX(),getY(), BEIGE_TEXT_COLOR);
+            int colorY = getY() + TEXT_LINE_HEIGHT;
+            parent.drawContainerBox(context, getX() - 1, colorY - 1, getX() + 4 * (COLOR_SIZE + 2) - 1, colorY + 4 * (COLOR_SIZE + 2) - 1, true);
             if (!active) {
                 return;
             }
             for(int i = 0; i < 4; i++) {
-                int colorX = x;
+                int colorX = getX();
                 for(int j = 0; j < 4; j++) {
                     DyeColor c = colorIterator.next();
                     int color = c.getFireworkColor() | 0xFF000000;
                     boolean isSelected = colorsPicked.contains(c);
                     if (isSelected) {
-                        fill(matrices, colorX, colorY, colorX + COLOR_SIZE, colorY + COLOR_SIZE, color);
+                        context.fill(colorX, colorY, colorX + COLOR_SIZE, colorY + COLOR_SIZE, color);
                     } else {
-                        fill(matrices, colorX + 2, colorY + 2, colorX + COLOR_SIZE - 2, colorY + COLOR_SIZE - 2, color);
+                        context.fill(colorX + 2, colorY + 2, colorX + COLOR_SIZE - 2, colorY + COLOR_SIZE - 2, color);
 
                     }
                     colorX += COLOR_SIZE + 2;
                 }
                 colorY += COLOR_SIZE + 2;
             }
-            //super.render(matrices, mouseX, mouseY, delta);
+            //super.render(context, mouseX, mouseY, delta);
         }
 
-
-        @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {
-
-        }
     }
 }

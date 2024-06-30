@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
@@ -38,8 +38,8 @@ public class StatusEffectHelper {
         return minGrade;
     }
 
-    public void fishCaught(ProgressionManager progressionManager, Fish fish){
-        processOneTimeBuff(fish);
+    public void fishCaught(ProgressionManager progressionManager){
+        processOneTimeBuff();
         prolongStatusEffects(progressionManager);
     }
 
@@ -52,16 +52,14 @@ public class StatusEffectHelper {
         return multiplier;
     }
 
-    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, Fish fish) {
+    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, FishComponent fish) {
         return
-                fish != null &&
-                fish.grade >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
+                fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
-                !holder.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF) &&
-                !fish.consumeGradeBuff;
+                !holder.hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF);
     }
 
-    public int spreadStatusEffect(ProgressionManager progressionManager, Fish fish) {
+    public int spreadStatusEffect(ProgressionManager progressionManager, FishComponent fish) {
         int xpBuffAffectedCount = 0;
         Box box = new Box(holder.getBlockPos());
         box.expand(SPREAD_EFFECT_RANGE);
@@ -113,10 +111,7 @@ public class StatusEffectHelper {
                 ));
     }
 
-    private void processOneTimeBuff(Fish fish){
-        if (!fish.consumeGradeBuff) {
-            return;
-        }
+    private void processOneTimeBuff(){
         if (!trackedFor.getHolder().hasStatusEffect(StatusEffectRegistry.ONE_TIME_QUALITY_BUFF)) {
             return;
         }

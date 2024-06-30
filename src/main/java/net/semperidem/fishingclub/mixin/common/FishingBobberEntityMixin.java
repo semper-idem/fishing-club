@@ -5,6 +5,7 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +27,7 @@ public abstract class FishingBobberEntityMixin{
         if (this.getPlayerOwner() == null) {
             return;
         }
-        FishUtil.putCaughtBy(fishedItemStack, this.getPlayerOwner().getUuid());
+        fishedItemStack.set(ComponentRegistry.CAUGHT_BY, this.getPlayerOwner().getUuid());
     }
 
 

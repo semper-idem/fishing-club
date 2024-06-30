@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.client.screen.game;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -15,7 +16,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.FishingGameController;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.FishingGameInputPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import org.lwjgl.glfw.GLFW;
 
@@ -89,26 +91,23 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         double distanceFromCenterPercent = (halfScreen - mouseX) / halfScreen;
-        this.handler.fishGameLogic.reelForce = (Math.abs(distanceFromCenterPercent) > safeZone) ?
+        float reelForce = (Math.abs(distanceFromCenterPercent) > safeZone) ?
                 (float) (distanceFromCenterPercent * -0.05f) :
                 0;
+        this.handler.fishGameLogic.reelForce = reelForce;
         updateCameraTarget();
         //todo this make reeling/pulling not have impact if im not moving mouse
-        ClientPacketSender.sendBobberMovement(this.handler.fishGameLogic.reelForce, isReeling(), isPulling());
         super.mouseMoved(mouseX, mouseY);
-    }
-
-    public void sync(PacketByteBuf buf){
-        fishGameLogic.readUpdatePacket(buf);
-    }
-    public void syncInit(PacketByteBuf buf){
-        fishGameLogic.readInitialPacket(buf);
     }
 
     private boolean keyPressed(int keyCode){
         return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
     }
 
+    public void consumeTick(FishingGameTickPayload fishingGameTickPayload) {
+        fishGameLogic.consumeTick(fishingGameTickPayload);
+        ClientPlayNetworking.send(new FishingGameInputPayload(this.handler.fishGameLogic.reelForce, isReeling(), isPulling()));
+    }
     boolean isReeling(){
         return keyPressed(GLFW.GLFW_KEY_SPACE);
     }
@@ -196,91 +195,91 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        matrices.push();
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.getMatrices().push();
         updateCamera();
         if (isTreasureHooked()) {
-            renderTreasure(matrices, delta);
+            renderTreasure(drawContext, delta);
         } else {
-            renderFish(matrices, delta);
+            renderFish(drawContext, delta);
         }
-        renderInfo(matrices);
-        matrices.pop();
+        renderInfo(drawContext);
+        drawContext.getMatrices().pop();
     }
 
-    private void renderFish(MatrixStack matrices, float delta){
-        renderFishBackground(matrices);
-        renderBobber(matrices, delta);
-        renderFishIcon(matrices, delta);
-        renderProgressBar(matrices);
-        renderTreasureMark(matrices);
+    private void renderFish(DrawContext drawContext, float delta){
+        renderFishBackground(drawContext);
+        renderBobber(drawContext, delta);
+        renderFishIcon(drawContext, delta);
+        renderProgressBar(drawContext);
+        renderTreasureMark(drawContext);
     }
 
-    private void renderTreasure(MatrixStack matrices, float delta){
-        renderTreasureBackground(matrices);
-        renderTreasureBar(matrices);
-        renderTreasureSpot(matrices);
-        renderTreasureArrow(matrices, delta);
+    private void renderTreasure(DrawContext drawContext, float delta){
+        renderTreasureBackground(drawContext);
+        renderTreasureBar(drawContext);
+        renderTreasureSpot(drawContext);
+        renderTreasureArrow(drawContext, delta);
     }
 
-    private void renderTreasureBar(MatrixStack matrices){
-        TREASURE_BAR.render(matrices, treasureBarX, treasureBarY);
+    private void renderTreasureBar(DrawContext drawContext){
+        TREASURE_BAR.render(drawContext, treasureBarX, treasureBarY);
     }
 
-    private void renderTreasureArrow(MatrixStack matrices, float delta){
+    private void renderTreasureArrow(DrawContext drawContext, float delta){
         treasureArrowX = (int) (x + getArrowPos(delta) * (treasureBarWidth - treasureArrowWidth));
-        TREASURE_ARROW.render(matrices, treasureArrowX, treasureArrowY);
+        TREASURE_ARROW.render(drawContext, treasureArrowX, treasureArrowY);
     }
 
-    private void renderTreasureSpot(MatrixStack matrices){
-        matrices.push();
+    private void renderTreasureSpot(DrawContext drawContext){
+        drawContext.getMatrices().push();
         float spotWidth = (treasureBarWidth * fishGameLogic.getTreasureSpotSize());
         float spotScale = spotWidth / treasureSpotWidth;
-        matrices.scale(spotScale, 1,1);
+        drawContext.getMatrices().scale(spotScale, 1,1);
         treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
-        TREASURE_SPOT.render(matrices, treasureSpotX, treasureSpotY);
-        matrices.pop();
+        TREASURE_SPOT.render(drawContext, treasureSpotX, treasureSpotY);
+        drawContext.getMatrices().pop();
     }
 
-    private void renderTreasureMark(MatrixStack matrices){
+    private void renderTreasureMark(DrawContext drawContext){
         if (!canPullTreasure()) return;
         int shakeOffset = lightTick ? 1 : 0;
-        TREASURE_MARK.render(matrices, treasureMarkX, treasureMarkY + shakeOffset);
+        TREASURE_MARK.render(drawContext, treasureMarkX, treasureMarkY + shakeOffset);
     }
 
-    private void renderTreasureBackground(MatrixStack matrices){
-        BACKGROUND_EMPTY.render(matrices, x,y);
+    private void renderTreasureBackground(DrawContext drawContext){
+        BACKGROUND_EMPTY.render(drawContext, x,y);
     }
 
-    private void renderFishBackground(MatrixStack matrices){
-        BACKGROUND.render(matrices, x, y);
+    private void renderFishBackground(DrawContext drawContext){
+        BACKGROUND.render(drawContext, x, y);
     }
 
-    private void renderBobber(MatrixStack matrices, float delta){
-        matrices.push();
+    private void renderBobber(DrawContext drawContext, float delta){
+        drawContext.getMatrices().push();
         float bobberScale = barWidth * fishGameLogic.getBobberSize() / barWidth;
-        matrices.scale(bobberScale,1f,1f);
+        drawContext.getMatrices().scale(bobberScale,1f,1f);
         if (fishGameLogic.bobberHasFish()) {
             RenderSystem.setShaderColor(1f,1,0.5f,1);
         }
         bobberX = (int) ( (barX + barWidth * getBobberStartPos(delta) - halfBobber) * (1f / bobberScale));
-        BOBBER.render(matrices, bobberX, bobberY);
+        BOBBER.render(drawContext, bobberX, bobberY);
         RenderSystem.setShaderColor(1f,1,1,1);
-        matrices.pop();
+        drawContext.getMatrices().pop();
     }
 
-    private void renderFishIcon(MatrixStack matrices, float delta){
+    private void renderFishIcon(DrawContext drawContext, float delta){
         fishX = (int) (barX + barWidth * getFishPos(delta)) - halfFish;
         fishY = barY - (int)((fishGameLogic.getFishPosY() * 4)) ;
-        FISH.render(matrices, fishX, fishY);
+        FISH.render(drawContext, fishX, fishY);
     }
 
-    private void renderProgressBar(MatrixStack matrices ) {
+    private void renderProgressBar(DrawContext drawContext) {
         int progressBarWidth = (int) (barWidth * fishGameLogic.getProgress());
-        PROGRESS_BAR.render(matrices, progressBarX, progressBarY, progressBarWidth,barHeight);
+        PROGRESS_BAR.render(drawContext, progressBarX, progressBarY, progressBarWidth,barHeight);
     }
 
-    private void renderInfo(MatrixStack matrices) {
+    private void renderInfo(DrawContext drawContext) {
         String infoLabel = (isTreasureHooked() || canPullTreasure())? TREASURE_LABEL : HEALTH_LABEL;
         String infoValue = isTreasureHooked() ? getTimeLeft() : canPullTreasure() ? TREASURE_REEL_LABEL : getLineHealth();
         int labelColor = canPullTreasure() && ! isTreasureHooked() ? (
@@ -289,8 +288,8 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
                         TREASURE_COLOR)
                 : DEFAULT_COLOR;
 
-        textRenderer.drawWithShadow(matrices, Text.of(infoLabel), x + (backgroundWidth - textRenderer.getWidth(infoLabel)) / 2f, y + 75,labelColor);
-        textRenderer.drawWithShadow(matrices, Text.of(infoValue), x + (backgroundWidth - textRenderer.getWidth(infoValue)) / 2f, y + 90,DEFAULT_COLOR);
+        drawContext.drawTextWithShadow(textRenderer, infoLabel, (int) (x + (backgroundWidth - textRenderer.getWidth(infoLabel)) / 2f), y + 75,labelColor);
+        drawContext.drawTextWithShadow(textRenderer, infoValue, (int) (x + (backgroundWidth - textRenderer.getWidth(infoValue)) / 2f), y + 90,DEFAULT_COLOR);
     }
 
     private String getTimeLeft(){
@@ -337,17 +336,16 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         int textureHeight;
 
         Texture(String fileName, int textureWidth, int textureHeight){
-            this.texture = new Identifier(FishingClub.MOD_ID, TEXTURE_DIR_ROOT + fileName);
+            this.texture = FishingClub.getIdentifier(TEXTURE_DIR_ROOT + fileName);
             this.textureWidth = textureWidth;
             this.textureHeight = textureHeight;
         }
-        private void render(MatrixStack matrices, int x, int y){
-            render(matrices,x, y, textureWidth, textureHeight);
+        private void render(DrawContext drawContext, int x, int y){
+            render(drawContext,x, y, textureWidth, textureHeight);
         }
 
-        private void render(MatrixStack matrices, int x, int y, int width, int height){
-            RenderSystem.setShaderTexture(0, this.texture);
-            drawTexture(matrices, x, y, 0, 0, width, height, this.textureWidth, this.textureHeight);
+        private void render(DrawContext drawContext, int x, int y, int width, int height){
+            drawContext.drawTexture(this.texture , x, y, 0, 0, width, height, this.textureWidth, this.textureHeight);
         }
     }
 }

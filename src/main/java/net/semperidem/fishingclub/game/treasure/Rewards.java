@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.game.treasure;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.ArrayList;
@@ -64,11 +64,6 @@ public class Rewards {
 
         ALL_REWARDS.add(new TreasureReward(2,30,10, ItemRegistry.FISH_COIN_BUNDLE, 10));
 
-        ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.BAIT_WORM, 1));
-        ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.CORE_BAMBOO, 1));
-        ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.HOOK_COPPER, 1));
-        ALL_REWARDS.add(new TreasureReward(3,200,1, FishingRodPartItems.LINE_SPIDER_SILK, 1));
-
         ALL_REWARDS.add(new TreasureReward(3,80,16, Items.IRON_NUGGET, 5));
         ALL_REWARDS.add(new TreasureReward(3,80,12, Items.GOLD_NUGGET, 10));
 
@@ -85,13 +80,6 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(4,120,3, Items.GOLD_INGOT, 10));
 
         ALL_REWARDS.add(new TreasureReward(4,60,16, ItemRegistry.FISH_COIN_BUNDLE, 5));
-
-
-
-        ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.BAIT_FEATHER, 1));
-        ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.CORE_COMPOSITE, 1));
-        ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.HOOK_IRON, 1));
-        ALL_REWARDS.add(new TreasureReward(5,300,1, FishingRodPartItems.LINE_FIBER_THREAD, 1));
 
         ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_BOOTS, 1));
         ALL_REWARDS.add(new TreasureReward(5,200,0.8f, Items.GOLDEN_CHESTPLATE, 1));
@@ -116,12 +104,6 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(6,300,0.6f, Items.IRON_LEGGINGS, 1));
 
         ALL_REWARDS.add(new TreasureReward(6,100,30, ItemRegistry.FISH_COIN_BUNDLE, 5));
-
-
-        ALL_REWARDS.add(new TreasureReward(7,400,1, FishingRodPartItems.BAIT_CRAFTED, 1));
-        ALL_REWARDS.add(new TreasureReward(7,800,1, FishingRodPartItems.CORE_NETHERITE, 1));
-        ALL_REWARDS.add(new TreasureReward(7,800,1, FishingRodPartItems.HOOK_NETHERITE, 1));
-        ALL_REWARDS.add(new TreasureReward(7,600,1, FishingRodPartItems.LINE_FIBER_THREAD, 1));
 
         ALL_REWARDS.add(new TreasureReward(7,800,0.2f, Items.DIAMOND_BOOTS, 1));
         ALL_REWARDS.add(new TreasureReward(7,800,0.2f, Items.DIAMOND_CHESTPLATE, 1));

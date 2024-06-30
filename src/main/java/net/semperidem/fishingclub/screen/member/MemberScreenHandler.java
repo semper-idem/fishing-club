@@ -10,21 +10,18 @@ import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.payload.CoinFlipPayload;
+import net.semperidem.fishingclub.network.payload.MemberPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
-
 public class MemberScreenHandler extends ScreenHandler {
     final static int ROW_COUNT = 6;
-    final static int SLOT_COUNT =  ROW_COUNT *  SLOTS_PER_ROW;
+    final static int SLOT_COUNT =  ROW_COUNT *  9;
 
-    private final PlayerEntity player;
-    FishermanEntity fishermanEntity;
+    private PlayerEntity player;
     FishingCard fishingCard;
     private final ArrayList<String> coinFlipHistory = new ArrayList<>();
     private String lastCoinFlipSide = "";
@@ -32,32 +29,20 @@ public class MemberScreenHandler extends ScreenHandler {
     String capeHolder = "";
     int minCapePrice = 0;
 
-    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard, FishermanEntity fishermanEntity) {
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
         super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
         this.fishingCard = fishingCard;
-        this.fishermanEntity = fishermanEntity;
-//        addPlayerInventory(player.getInventory());
-//        addPlayerHotbar(player.getInventory());
     }
 
-    public void setCapeHolder(String capeHolder, int minCapePrice) {
-        this.capeHolder = capeHolder;
-        this.minCapePrice = minCapePrice;
-    }
-
-    public int getSlotsLeft() {
-        int slotsLeft = 0;
-        for(int i = 0; i < this.player.getInventory().main.size(); ++i) {
-            if (this.player.getInventory().main.get(i).isEmpty()) {
-                slotsLeft++;
-            }
-        }
-        return slotsLeft;
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, MemberPayload payload) {
+        super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
+        this.player = playerInventory.player;
+        this.fishingCard = FishingCard.of(player);
     }
 
     public int getMoonPhaseDiscount() {
-        return player.world.getMoonPhase();
+        return player.getWorld().getMoonPhase();
     }
 
     public ArrayList<ItemStack> getFishes() {
@@ -79,31 +64,11 @@ public class MemberScreenHandler extends ScreenHandler {
         return this.capeHolder;
     }
 
-    public void updateCard(FishingCard fishingCard) {
-        this.fishingCard = fishingCard;
-    }
 
     public FishingCard getCard() {
         return fishingCard;
     }
 
-    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FishingCard(playerInventory.player, buf.readNbt()), null);
-    }
-
-    private void addPlayerInventory(PlayerInventory playerInventory){
-        for(int y = 0; y < 3; ++y) {
-            for(int x = 0; x < 9; ++x) {
-                addSlot(new Slot(playerInventory, x + y * SLOTS_PER_ROW + 9, 8 + x * SLOT_SIZE, 139 + y * SLOT_SIZE));
-            }
-        }
-    }
-
-    private void addPlayerHotbar(PlayerInventory playerInventory){
-        for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addSlot(new Slot(playerInventory, x, 8 + x * SLOT_SIZE, 197));
-        }
-    }
 
     public boolean canUse(PlayerEntity playerEntity) {
         return true;

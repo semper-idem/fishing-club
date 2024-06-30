@@ -2,21 +2,22 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
-
-import java.util.Optional;
+import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
 
 public record RodPartComponent(
         ItemVariant partItem,
         Optional<ItemStack> partStack
 ){
     public static final RodPartComponent DEFAULT = new RodPartComponent(
-            ItemVariant.of(FishingRodPartItems.EMPTY_COMPONENT),
+            ItemVariant.of(RodPartItems.EMPTY_COMPONENT),
             Optional.empty()
     );
 
@@ -28,8 +29,17 @@ public record RodPartComponent(
     public static PacketCodec<RegistryByteBuf, RodPartComponent> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
     public void apply(RodConfigurationController configurationController) {
-        if (partItem instanceof ComponentItem componentItem && partStack.isPresent()) {
+        if (partItem instanceof PartItem componentItem && partStack.isPresent()) {
             componentItem.applyComponent(configurationController, partStack.get());
         }
+    }
+    //ItemStack componentStack, int amount, DamageSource damageSource, T entity, Consumer<T> breakCallback
+    public void damage(int amount, PartItem.DamageSource damageSource, LivingEntity entity) {
+        if (!(partItem instanceof PartItem componentItem) || partStack.isEmpty()) {
+            return;
+        }
+        componentItem.damage(partStack.get(), amount, damageSource, entity, e -> {
+            e.sendEquipmentBreakStatus(componentItem, EquipmentSlot.MAINHAND);
+        });
     }
 }

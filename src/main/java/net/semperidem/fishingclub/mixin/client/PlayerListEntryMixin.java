@@ -18,15 +18,16 @@ public abstract class PlayerListEntryMixin {
 
     @Shadow public abstract GameProfile getProfile();
 
-    @Inject(method="getCapeTexture", at = @At("TAIL"), cancellable = true)
-    private void onGetCapeTexture(CallbackInfoReturnable<Identifier> cir) {
-        if (FishingClubClient.FISHING_KING_UUID == null) {
-            return;
-        }
-
-        if (getProfile().getId().equals(FishingClubClient.FISHING_KING_UUID)) {
-            cir.setReturnValue(KING_CAPE);
-        }
-    }
+    //TODO
+//    @Inject(method="getCapeTexture", at = @At("TAIL"), cancellable = true)
+//    private void onGetCapeTexture(CallbackInfoReturnable<Identifier> cir) {
+//        if (FishingClubClient.FISHING_KING_UUID == null) {
+//            return;
+//        }
+//
+//        if (getProfile().getId().equals(FishingClubClient.FISHING_KING_UUID)) {
+//            cir.setReturnValue(KING_CAPE);
+//        }
+//    }
 
 }

@@ -12,7 +12,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.LeaderboardTrackingServer;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
@@ -33,12 +33,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public static final ComponentKey<FishingCard> FISHING_CARD = ComponentRegistry.getOrCreate(FishingClub.getIdentifier("fishing_card"), FishingCard.class);
     private PlayerEntity holder;
 
-    private ProgressionManager progressionManager;
-    private SummonRequestManager summonRequestManager;
-    private HistoryManager historyManager;
-    private LinkingManager linkingManager;
+    private final ProgressionManager progressionManager;
+    private final SummonRequestManager summonRequestManager;
+    private final HistoryManager historyManager;
+    private final LinkingManager linkingManager;
 
-    private StatusEffectHelper statusEffectHelper;
+    private final StatusEffectHelper statusEffectHelper;//todo its prob util class, verify
 
     public static FishingCard of(PlayerEntity playerEntity) {
         return FISHING_CARD.get(playerEntity);
@@ -200,21 +200,20 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         FISHING_CARD.sync(this);
     }
 
-    public void fishCaught(Fish fish){
-        int expGained = fish.experience;
+    public void fishCaught(FishComponent fish){
+        int expGained = fish.experience();
         expGained += (int) statusEffectHelper.getExpMultiplier();
         float passiveExpMultiplier = 1 + 0.1f * statusEffectHelper.spreadStatusEffect(progressionManager, fish);
         expGained = (int)(expGained * passiveExpMultiplier);
 
         progressionManager.grantExperience(expGained);
         historyManager.fishCaught(fish);
-        statusEffectHelper.fishCaught(progressionManager, fish);
+        statusEffectHelper.fishCaught(progressionManager);
 
         if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
             LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
             tracker.record(holder, fish);
             tracker.record(holder, this, tracker.highestLevel);
-            tracker.record(holder, this, tracker.longestCapeClaimTotal);
         }
         FISHING_CARD.sync(this);
     }

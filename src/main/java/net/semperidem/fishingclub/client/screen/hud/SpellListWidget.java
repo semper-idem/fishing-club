@@ -35,7 +35,7 @@ public class SpellListWidget{
         pressed = true;
     }
 
-    public void render(MatrixStack matrices, float tickDelta){
+    public void render(DrawContext context, float tickDelta){
         if(selectedSpell == null){
             if (pressed) pressed = false;
             return;
@@ -46,27 +46,26 @@ public class SpellListWidget{
         }
         int x = (int) (MinecraftClient.getInstance().getWindow().getScaledWidth() * xPercent);
         int y = (int) (MinecraftClient.getInstance().getWindow().getScaledHeight() * yPercent);
-        renderSpell(matrices, selectedSpell, x, y, Color.WHITE.getRGB(), 0x99000000);
+        renderSpell(context, selectedSpell, x, y, Color.WHITE.getRGB(), 0x99000000);
         if (availableSpells.size() > 1) {
-            renderSpell(matrices, prevSpell(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+            renderSpell(context, prevSpell(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         }
         if (availableSpells.size() > 2) {
-            renderSpell(matrices, nextSpell(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+            renderSpell(context, nextSpell(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         }
     }
 
 
-    private void renderSpell(MatrixStack matrixStack, SpellInstance spell, int x, int y, int color, int bgColor){
+    private void renderSpell(DrawContext context, SpellInstance spell, int x, int y, int color, int bgColor){
         String spellName = spell.getLabel();
         if (selectedSpell == spell) {
             spellName = "> " + spellName + " <";
         }
         String spellCd = getCooldownString(spell);
         int spellCdLen = MinecraftClient.getInstance().textRenderer.getWidth(spellCd);
-        DrawContext.fill(matrixStack, x - 4, y - 4, x + entryWidth, y + 12, bgColor);
-        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellName , x,y, color);
-        MinecraftClient.getInstance().textRenderer.drawWithShadow(matrixStack, spellCd , x + entryWidth - spellCdLen - 4,y, color);
-
+        context.fill(x - 4, y - 4, x + entryWidth, y + 12, bgColor);
+        context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, spellName , x,y, color);
+        context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, spellCd , x + entryWidth - spellCdLen - 4,y, color);
     }
 
     private int getCooldown(SpellInstance spellInstance) {

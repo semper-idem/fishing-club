@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.nbt.NbtCompound;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 
 public class SpeciesStatistics {
     private final String name;
@@ -25,23 +25,23 @@ public class SpeciesStatistics {
         this.worstWeight = nbt.getFloat(WORST_WEIGHT);
     }
 
-    void record(Fish fish) {
+    void record(FishComponent fish) {
         count++;
 
-        if (fish.grade == 5) {
+        if (fish.quality() == 5) {
             topGradeCount++;
         }
-        if (fish.length > bestLength) {
-            bestLength = fish.length;
+        if (fish.length() > bestLength) {
+            bestLength = fish.length();
         }
-        if (fish.length < worstLength || worstLength == 0) {
-            worstLength = fish.length;
+        if (fish.length() < worstLength || worstLength == 0) {
+            worstLength = fish.length();
         }
-        if (fish.weight > bestWeight) {
-            bestWeight = fish.weight;
+        if (fish.weight() > bestWeight) {
+            bestWeight = fish.weight();
         }
-        if (fish.weight < worstWeight || worstWeight == 0) {
-            worstWeight = fish.weight;
+        if (fish.weight() < worstWeight || worstWeight == 0) {
+            worstWeight = fish.weight();
         }
     }
 

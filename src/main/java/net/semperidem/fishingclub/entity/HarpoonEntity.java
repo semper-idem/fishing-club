@@ -15,6 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
@@ -66,7 +67,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
 
         if ((this.dealtDamage || this.isNoClip() || isTouchingWater()) && owner != null) {
             if (!this.getOwner().isAlive()) {
-                if (!this.world.isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
+                if (!this.getWorld().isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1f);
                 }
                 this.discard();
@@ -74,7 +75,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
                 this.setNoClip(true);
                 Vec3d vec3d = owner.getEyePos().subtract(this.getPos());
                 this.setPos(this.getX(), this.getY() + vec3d.y * 0.06, this.getZ());
-                if (this.world.isClient) {
+                if (this.getWorld().isClient) {
                     this.lastRenderY = this.getY();
                 }
                 double d = 0.3;
@@ -94,8 +95,8 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
     }
 
     @Override
-    public ItemStack getCaughtUsing() {
-        return harpoonStack;
+    public RodConfigurationComponent getCaughtUsing() {
+        return RodConfigurationComponent.DEFAULT;
     }
 
     @Override

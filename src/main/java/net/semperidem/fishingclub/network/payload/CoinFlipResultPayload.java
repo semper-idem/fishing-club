@@ -6,11 +6,11 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
-import net.semperidem.fishingclub.network.PacketIdentifiers;
 
 public record CoinFlipResultPayload(int amount) implements CustomPayload {
-public static final CustomPayload.Id<CoinFlipResultPayload> ID = new CoinFlipResultPayload.Id<>(PacketIdentifiers.S2C_COIN_FLIP_RESULT);
+public static final CustomPayload.Id<CoinFlipResultPayload> ID = new CoinFlipResultPayload.Id<>(FishingClub.getIdentifier("s2c_coin_flip"));
 public static final PacketCodec<RegistryByteBuf, CoinFlipResultPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, CoinFlipResultPayload::amount, CoinFlipResultPayload::new);
 
     @Override

@@ -6,7 +6,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.client.screen.Texture;
 
-public class PlayerFaceComponent extends DrawContext implements Drawable {
+public class PlayerFaceComponent implements Drawable {
     private static final int faceTextureSize = 32;
     private static final int hatSkinTextureOffsetX = 160, faceSkinTextureOffsetX = 32, hatSkinTextureOffsetY = 32, faceSkinTextureOffsetY = 32;
     int x, y;
@@ -18,10 +18,10 @@ public class PlayerFaceComponent extends DrawContext implements Drawable {
         this.y = y;
     }
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         Texture.setTexture(playerIcon);
-        drawTexture(matrixStack, x, y, faceSkinTextureOffsetX,faceSkinTextureOffsetY, faceTextureSize, faceTextureSize);
-        drawTexture(matrixStack, x, y, hatSkinTextureOffsetX,hatSkinTextureOffsetY,faceTextureSize,faceTextureSize);
+        context.drawTexture(playerIcon, x, y, faceSkinTextureOffsetX,faceSkinTextureOffsetY, faceTextureSize, faceTextureSize);
+        context.drawTexture(playerIcon, x, y, hatSkinTextureOffsetX,hatSkinTextureOffsetY,faceTextureSize,faceTextureSize);
 
     }
 }

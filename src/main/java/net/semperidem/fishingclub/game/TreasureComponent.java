@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.game;
 
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class TreasureComponent {
 
@@ -30,21 +31,8 @@ public class TreasureComponent {
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
     }
 
-
-    public void readInitialData(PacketByteBuf buf) {
-        this.isActive = buf.readBoolean();
-    }
-
-    public void writeInitialData(PacketByteBuf buf) {
-        buf.writeBoolean(isActive);
-    }
-
-    public void readData(PacketByteBuf buf) {
-        this.canPullTreasure = buf.readBoolean();
-    }
-
-    public void writeData(PacketByteBuf buf) {
-        buf.writeBoolean(canPullTreasure);
+    public void consumeData(FishingGameTickPayload payload) {
+        this.canPullTreasure = payload.canPullTreasure();
     }
 
 

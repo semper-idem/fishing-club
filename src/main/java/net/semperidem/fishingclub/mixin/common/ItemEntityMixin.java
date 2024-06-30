@@ -8,8 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,7 +35,7 @@ public abstract class ItemEntityMixin extends Entity{
     @Inject(method = "setStack", at = @At("TAIL"))
     private void onInit(ItemStack stack, CallbackInfo ci) {
         if (stack.isOf(ItemRegistry.GOLD_FISH)) {
-            summonerUUID = FishUtil.getCaughtBy(getStack());
+            summonerUUID = stack.getOrDefault(ComponentRegistry.CAUGHT_BY, UUID.randomUUID());
             isSummonItem = true;
             return;
         }
@@ -42,9 +43,9 @@ public abstract class ItemEntityMixin extends Entity{
         if (!stack.isOf(FishUtil.FISH_ITEM)) {
             return;
         }
-        Fish fish = FishUtil.getFishFromStack(stack);
-        if (fish != null && fish.grade >= 4) {
-            summonerUUID = fish.caughtByUUID;
+        FishComponent fish = stack.get(ComponentRegistry.FISH);
+        if (fish != null && fish.quality() >= 4) {
+            summonerUUID = fish.caughtByUUID();
             isSummonItem = true;
         }
     }
@@ -59,14 +60,14 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        if (itemAge < 100) {//TODO
+        if (itemAge < 100) {//todo configure properly, bigger number
             return;
         }
 
         if (!isSubmergedInWater()) {
             return;
         }
-//TODO
+//TODO uncomment/add biome condition
 //        if (!(world.getBiome(getBlockPos()).isIn(BiomeTags.IS_OCEAN) || world.getBiome(getBlockPos()).isIn(BiomeTags.IS_RIVER))) {
 //            return;
 //        }
@@ -76,7 +77,7 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Unique
     private void summonDerek() {
-        if (!(world instanceof ServerWorld serverWorld)) {
+        if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
         FishermanEntity.summonDerek(getPos(), serverWorld, getStack(), summonerUUID);

@@ -1,21 +1,22 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.CheckoutPayload;
 import net.semperidem.fishingclub.registry.KeybindingRegistry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.String.format;
 import static net.minecraft.text.Text.literal;
@@ -166,13 +167,14 @@ public class MemberBuyScreen extends MemberSubScreen {
 
     private ButtonWidget.PressAction onBuy() {
         return button -> {
-            ArrayList<ItemStack> cart = new ArrayList<>();
+            ArrayList<OrderItem> cart = new ArrayList<>();
             for(OfferGrid.Offer offer : cartWidget.cartItems.keySet()) {
                 ItemStack offerStack = offer.stockEntry.item.getDefaultStack();
-                offerStack.setCount(cartWidget.cartItems.get(offer));
-                cart.add(offerStack);
+                int count = cartWidget.cartItems.get(offer);
+                offerStack.setCount(count);
+                cart.add(new OrderItem(Optional.of(offerStack), count, Optional.empty()));
             }
-            ClientPacketSender.checkout(cart, cartWidget.getCartTotalAmount());
+            ClientPlayNetworking.send(new CheckoutPayload(cart));
             clearCart();
         };
     }
@@ -187,24 +189,24 @@ public class MemberBuyScreen extends MemberSubScreen {
 
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
-        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+        context.drawTextWithShadow(textRenderer, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
         String cartPrice = cartWidget.getCartTotal();
-        textRenderer.drawWithShadow(matrixStack, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, totalTextY, BEIGE_TEXT_COLOR);
-        super.render(matrixStack, mouseX, mouseY, delta);
+        context.drawTextWithShadow(textRenderer, cartPrice, buttonBoxX1 - textRenderer.getWidth(cartPrice) -  3, totalTextY, BEIGE_TEXT_COLOR);
+        super.render(context, mouseX, mouseY, delta);
         if (!cartWidget.isSelected() && !offerGrid.isSelected()) {
             this.focusedOffer = null;
         }
 
-        renderTooltip(matrixStack, mouseX, mouseY);
+        renderTooltip(context, mouseX, mouseY);
 
     }
 
-    private void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    private void renderTooltip(DrawContext context, int mouseX, int mouseY) {
         if (this.focusedOffer != null) {
             StockEntry entry = this.focusedOffer.stockEntry;
-            List<Text> tooltip = parent.getTooltipFromItem(entry.item.getDefaultStack());
+            List<Text> tooltip = entry.item.getDefaultStack().getTooltip(Item.TooltipContext.DEFAULT, MinecraftClient.getInstance().player, TooltipType.BASIC);;
             if (cartWidget.cartItems.containsKey(this.focusedOffer)) {
                 int total = (int) entry.getPriceFor(cartWidget.cartItems.get(this.focusedOffer));
                 tooltip.add(literal(format(TOOLTIP_TOTAL_STRING, total)));
@@ -214,8 +216,7 @@ public class MemberBuyScreen extends MemberSubScreen {
                 tooltip.add(literal(format(TOOLTIP_DISCOUNT_STRING, entry.discount, entry.discountPer)));
                 tooltip.add(literal(format(TOOLTIP_MIN_PRICE_STRING, entry.minPrice)));
             }
-            parent.renderTooltip(matrixStack, tooltip, mouseX, mouseY);
-
+            context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
         }
     }
 
@@ -280,6 +281,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         public String getCartTotal() {
             return getCartTotalAmount() + "$";
         }
+
         public int getCartTotalAmount() {
             int total = 0;
             for(OfferGrid.Offer offer : cartItems.keySet()) {
@@ -289,20 +291,22 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         @Override
-        protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             int index = 0;
             for (OfferGrid.Offer offer : cartItems.keySet()) {
-                CART_ITEM_TEXTURE.render(matrices, x, y + index * OfferGrid.Offer.SIZE);
+                CART_ITEM_TEXTURE.render(context, getX(), getY() + index * OfferGrid.Offer.SIZE);
                 ItemStack stackToRender = offer.stockEntry.item.getDefaultStack();
                 stackToRender.setCount(cartItems.get(offer));
-                itemRenderer.renderInGui(
+                context.drawItemInSlot(
+                        textRenderer,
                         stackToRender,
-                        x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
-                        (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
-                itemRenderer.renderGuiItemOverlay(textRenderer,
+                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
+                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
+                context.drawItemInSlot(
+                        textRenderer,
                         stackToRender,
-                        x + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
-                        (int) (y + index * OfferGrid.Offer.SIZE - getScrollY()));
+                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
+                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
                 index++;
                 //next add to components
             }
@@ -312,36 +316,31 @@ public class MemberBuyScreen extends MemberSubScreen {
             return super.isFocused() || isSelected();
         }
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, true);
-                textRenderer.drawWithShadow(matrices,"Cart: (" + getStacksInCart() + ")", this.x, this.y - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
-                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                matrices.push();
-                matrices.translate(0, -this.getScrollY(), 0);
-                this.renderContents(matrices, mouseX, mouseY, delta);
-                matrices.pop();
-                disableScissor();
-                this.renderOverlay(matrices);
+                if (hovered) {
+                    focusedOffer = offerAtMouse(mouseX, mouseY);
+                }
+                parent.drawContainerBox(context, getX(), getY(), getX() + this.width, getX() + this.height, true);
+                context.drawTextWithShadow(textRenderer,"Cart: (" + getStacksInCart() + ")", getX(), getY() - TILE_SIZE * 2 - 2 , BEIGE_TEXT_COLOR);
+                context.enableScissor(getX(), getY(), getX() + this.width, getX() + this.height);
+                context.getMatrices().push();
+                context.getMatrices().translate(0, -this.getScrollY(), 0);
+                this.renderContents(context, mouseX, mouseY, delta);
+                context.getMatrices().pop();
+                context.disableScissor();
+                this.renderOverlay(context);
             }
-        }
-
-        @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            if (hovered) {
-                focusedOffer = offerAtMouse(mouseX, mouseY);
-            }
-            super.render(matrices, mouseX, mouseY, delta);
         }
 
         private OfferGrid.Offer offerAtMouse(double mouseX, double mouseY) {
             if (!hovered) {
                 return null;
             }
-            int predictedIndex = (int) ((mouseY + getScrollY() - y) / OfferGrid.Offer.SIZE);
+            int predictedIndex = (int) ((mouseY + getScrollY() - getY()) / OfferGrid.Offer.SIZE);
             if (cartItems.size() > predictedIndex && predictedIndex >= 0) {
                 int clickSize = 16;
-                boolean isIcon = mouseX >= x + clickSize  && mouseX <= x + CART_ITEM_TEXTURE.renderWidth + clickSize;
+                boolean isIcon = mouseX >= getX() + clickSize  && mouseX <= getX() + CART_ITEM_TEXTURE.renderWidth + clickSize;
                 if (isIcon) {
                     return new ArrayList<>(cartItems.keySet()).get(predictedIndex);
                 }
@@ -353,16 +352,16 @@ public class MemberBuyScreen extends MemberSubScreen {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             boolean isClicked = active;
             isClicked &= visible;
-            isClicked &= mouseX >= x && mouseX <= x + width;
-            isClicked &= mouseY >= y && mouseY <= y + height;
+            isClicked &= mouseX >= getX() && mouseX <= getX() + width;
+            isClicked &= mouseY >= getY() && mouseY <= getY() + height;
             if (!isClicked) {
                 return false;
             }
-            int predictedIndex = (int) ((mouseY + getScrollY() - y) / OfferGrid.Offer.SIZE);
+            int predictedIndex = (int) ((mouseY + getScrollY() - getY()) / OfferGrid.Offer.SIZE);
             if (cartItems.size() > predictedIndex) {
                 int clickSize = 16;
-                boolean isLeftSide = mouseX >= x && mouseX <= x + clickSize;
-                boolean isRightSide = mouseX >= x + CART_ITEM_TEXTURE.renderWidth - clickSize && mouseX <= x + CART_ITEM_TEXTURE.renderWidth;
+                boolean isLeftSide = mouseX >= getX() && mouseX <= getX() + clickSize;
+                boolean isRightSide = mouseX >= getX() + CART_ITEM_TEXTURE.renderWidth - clickSize && mouseX <= getX() + CART_ITEM_TEXTURE.renderWidth;
                 ArrayList<OfferGrid.Offer> offers = new ArrayList<>(cartItems.keySet());
                 OfferGrid.Offer predictedOffer = offers.get(predictedIndex);
                 if (isLeftSide) {
@@ -435,16 +434,19 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext drawContext, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, false);
-                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                matrices.push();
-                matrices.translate(0, -this.getScrollY(), 0);
-                this.renderContents(matrices, mouseX, mouseY, delta);
-                matrices.pop();
-                disableScissor();
-                this.renderOverlay(matrices);
+                if (isSelected()) {
+                    focusedOffer = offerAtMouse(mouseX, mouseY);
+                }
+                parent.drawContainerBox(drawContext, getX(), getY(), getX() + this.width, getY() + this.height, false);
+                drawContext.enableScissor(getX(), getY(), getX() + this.width, getY() + this.height);
+                drawContext.getMatrices().push();
+                drawContext.getMatrices().translate(0, -this.getScrollY(), 0);
+                this.renderContents(drawContext, mouseX, mouseY, delta);
+                drawContext.getMatrices().pop();
+                drawContext.disableScissor();
+                this.renderOverlay(drawContext);
             }
         }
 
@@ -452,13 +454,13 @@ public class MemberBuyScreen extends MemberSubScreen {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             boolean isClicked = active;
             isClicked &= visible;
-            isClicked &= mouseX >= x && mouseX <= x + width;
-            isClicked &= mouseY >= y && mouseY <= y + height;
+            isClicked &= mouseX >= getX() && mouseX <= getX() + width;
+            isClicked &= mouseY >= getY() && mouseY <= getY() + height;
             if (!isClicked) {
                 return false;
             }
-            int predictedX = (int) ((mouseX - x) / Offer.SIZE);
-            int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
+            int predictedX = (int) ((mouseX - getX()) / Offer.SIZE);
+            int predictedY = (int) ((mouseY + getScrollY() - getY()) / Offer.SIZE);
             int predictedIndex = predictedX + predictedY * entriesPerRow;
             if (entries.size() > predictedIndex) {
                 if (entries.get(predictedIndex).mouseClicked(button)) {
@@ -469,8 +471,8 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         private OfferGrid.Offer offerAtMouse(double mouseX, double mouseY) {
-            int predictedX = (int) ((mouseX - x) / Offer.SIZE);
-            int predictedY = (int) ((mouseY + getScrollY() - y) / Offer.SIZE);
+            int predictedX = (int) ((mouseX - getX()) / Offer.SIZE);
+            int predictedY = (int) ((mouseY + getScrollY() - getY()) / Offer.SIZE);
             int predictedIndex = predictedX + predictedY * entriesPerRow;
             if (predictedIndex >= 0 && predictedIndex < entries.size()) {
                 return entries.get(predictedIndex);
@@ -478,26 +480,19 @@ public class MemberBuyScreen extends MemberSubScreen {
             return null;
         }
 
-        @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            if (isSelected()) {
-                focusedOffer = offerAtMouse(mouseX, mouseY);
-            }
-            super.render(matrices, mouseX, mouseY, delta);
-        }
 
         @Override
-        protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            int offerY = y;
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+            int offerY = getY();
             int rows = getRows();
             Iterator<Offer> iterator = entries.iterator();
             for(int i = 0; i < rows; i++) {
-                int offerX = x;
+                int offerX = getX();
                 for(int j = 0; j < entriesPerRow; j++) {
                     if (!iterator.hasNext()) {
                         return;
                     }
-                    iterator.next().render(matrices, offerX, offerY);
+                    iterator.next().render(context, offerX, offerY);
                     offerX += Offer.SIZE;
                 }
                 offerY += Offer.SIZE;
@@ -512,9 +507,9 @@ public class MemberBuyScreen extends MemberSubScreen {
                 this.stockEntry = stockEntry;
             }
 
-            void render(MatrixStack matrixStack, int x, int y) {
-                OFFER_TEXTURE.render(matrixStack, x, y);
-                itemRenderer.renderGuiItemIcon(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
+            void render(DrawContext context, int x, int y) {
+                OFFER_TEXTURE.render(context, x, y);
+                context.drawItem(stockEntry.item.getDefaultStack(), x, (int) (y - getScrollY()));
             }
 
             public boolean mouseClicked(int button){
@@ -563,7 +558,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             int textureIndex = 0;
             if (currentCategory == category) {
                 textureIndex = 1;
@@ -572,9 +567,9 @@ public class MemberBuyScreen extends MemberSubScreen {
             } else if (active){
                 textureIndex = 2;
             }
-            CATEGORY_BUTTON.render(matrices, x, y, 0, SIZE * textureIndex, width, height);
-            itemRenderer.renderInGui(category.itemIcon.getDefaultStack(), x, y);
-            itemRenderer.renderInGui(active ? Items.GLASS_PANE.getDefaultStack() : Items.GRAY_STAINED_GLASS_PANE.getDefaultStack(), x, y);
+            CATEGORY_BUTTON.render(context, getX(), getY(), 0, SIZE * textureIndex, width, height);
+            context.drawItem(category.itemIcon.getDefaultStack(), getX(), getY());
+            context.drawItem(active ? Items.GLASS_PANE.getDefaultStack() : Items.GRAY_STAINED_GLASS_PANE.getDefaultStack(), getX(), getY());
         }
     }
 /*

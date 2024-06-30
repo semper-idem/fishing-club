@@ -1,22 +1,21 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class HealthComponent {
-    private static final float BASE_HEALTH = 0;
+    private static final float BASE_HEALTH = 1;
     private float health;
     private final FishingGameController parent;
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        this.health = BASE_HEALTH + FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.LINE_HEALTH);
+        this.health = BASE_HEALTH ;//+ FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.LINE_HEALTH);
     }
 
 
-    public void readData(PacketByteBuf buf) {
-        this.health = buf.readFloat();
+    public void consumeData(FishingGameTickPayload payload) {
+        this.health = payload.health();
     }
 
     public void writeData(PacketByteBuf buf) {
@@ -27,8 +26,8 @@ public class HealthComponent {
         if (!parent.progressComponent.isWinning()) {
             return;
         }
-        if (parent.hookedFish.damage != 0) {
-            health -= (parent.hookedFish.damage);
+        if (parent.hookedFish.damage() != 0) {
+            health -= (parent.hookedFish.damage());
         }
 
         if (health <= 0){

@@ -27,10 +27,11 @@ import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 import java.util.UUID;
 
 public final class FishingKing implements ScoreboardComponentInitializer, AutoSyncedComponent {
-    private static final String FISHING_KING_KEY = "fishing_key";
+    private static final String FISHING_KING_KEY = "fishing_king";
     public static final ComponentKey<FishingKing> FISHING_KING = ComponentRegistry.getOrCreate(FishingClub.getIdentifier(FISHING_KING_KEY), FishingKing.class);
 
     private static final String UUID_KEY = "uuid";
+    private static final String IS_CLAIMED = "is_claimed";
     private static final String NAME_KEY = "name";
     private static final String PRICE_KEY = "price";
     private static final String TIMESTAMP_KEY = "timestamp";
@@ -61,6 +62,9 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
     public FishingKing(Scoreboard scoreboard, MinecraftServer server) {
         this();
         this.scoreboard = scoreboard;
+        if (server == null) {
+            return;
+        }
         this.serverWorld = server.getOverworld();
         if ((this.objective = scoreboard.getNullableObjective(FISHING_KING_KEY)) != null) {
             return;
@@ -76,18 +80,26 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
     }
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        this.uuid = tag.getUuid(UUID_KEY);
-        this.name = tag.getString(NAME_KEY);
         this.price = tag.getInt(PRICE_KEY);
         this.timestamp = tag.getLong(TIMESTAMP_KEY);
+        if (tag.contains(IS_CLAIMED) && !tag.getBoolean(IS_CLAIMED)) {
+            return;
+        }
+        this.uuid = tag.getUuid(UUID_KEY);
+        this.name = tag.getString(NAME_KEY);
     }
 
     @Override
     public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        tag.putUuid(UUID_KEY, this.uuid);
-        tag.putString(NAME_KEY, this.name);
         tag.putInt(PRICE_KEY, this.price);
         tag.putLong(TIMESTAMP_KEY, this.timestamp);
+        if (this.uuid == null) {
+            tag.putBoolean(IS_CLAIMED, false);
+            return;
+        }
+        tag.putBoolean(IS_CLAIMED, true);
+        tag.putUuid(UUID_KEY, this.uuid);
+        tag.putString(NAME_KEY, this.name);
     }
 
     @Override

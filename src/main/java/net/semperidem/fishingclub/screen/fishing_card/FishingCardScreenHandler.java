@@ -1,25 +1,26 @@
 package net.semperidem.fishingclub.screen.fishing_card;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
+import net.semperidem.fishingclub.network.payload.FishingCardPayload;
+import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
 
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOTS_PER_ROW;
-import static net.semperidem.fishingclub.client.screen.shop.ShopScreenUtil.SLOT_SIZE;
-
 public class FishingCardScreenHandler extends ScreenHandler {
     private final static int SLOT_COUNT = 5;
+    private final static int SLOTS_PER_ROW = 9;
+    private final static int SLOT_SIZE = 18;
 
     private final PlayerInventory playerInventory;
     public final boolean isClient;
@@ -30,8 +31,8 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
 
 
-    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, PacketByteBuf buf) {
-        this(syncId, playerInventory, new FishingCard(playerInventory.player, buf.readNbt()));
+    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCardPayload fishingCardPayload) {//todo move from cca to vanila component
+        this(syncId, playerInventory, FishingCard.of(playerInventory.player));
     }
 
     public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
@@ -41,7 +42,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
         addFisherInventory();
         addInstantSellSlot();
         addPlayerInventorySlots();
-        this.isClient = playerInventory.player.world.isClient();
+        this.isClient = playerInventory.player.getWorld().isClient();
     }
 
     public Path getActiveTab(){
@@ -59,7 +60,8 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
 
     public void instantSell(){
-        instantSellSlot.setStackNoCallbacks(ItemStack.EMPTY);
+        ClientPlayNetworking.send(new SellFishDirectPayload(instantSellSlot.getStack()));
+        //instantSellSlot.getStack().setCount(0);
     }
 
     private void addInstantSellSlot(){

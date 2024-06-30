@@ -1,14 +1,14 @@
 package net.semperidem.fishingclub.registry;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.enchantments.CurseOfMortality;
 
 public class EnchantmentRegistry {
-    public static final Enchantment CURSE_OF_MORTALITY = new CurseOfMortality(Enchantment.Rarity.COMMON);
+    public static RegistryKey<Enchantment> CURSE_OF_MORTALITY;
 
-    public static void register(){
-        Registry.register(Registry.ENCHANTMENT, FishingClub.getIdentifier("curse_of_mortality"), CURSE_OF_MORTALITY);
+    public static void register() {
+        CURSE_OF_MORTALITY = RegistryKey.of(RegistryKeys.ENCHANTMENT, FishingClub.getIdentifier("curse_of_mortality"));
     }
 }

@@ -5,22 +5,19 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.CacheAwareButtonWidget;
 import net.semperidem.fishingclub.client.screen.Cacheable;
 import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
-import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
-import net.semperidem.fishingclub.network.ClientPacketSender;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> implements ScreenHandlerProvider<FishingCardScreenHandler>, Cacheable {
@@ -111,7 +108,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         leaderBoardButtonX = x + TILE_SIZE;
         leaderBoardButtonY = y + BACKGROUND_TEXTURE_HEIGHT - TILE_SIZE * 6;
         leaderboardButton = new MemberButton(leaderBoardButtonX, leaderBoardButtonY, BANNER_WIDTH - TILE_SIZE * 2, TILE_SIZE * 5, Text.literal("Leaderboard"), button -> {
-            ClientPacketSender.openLeaderboardScreen();
+            MinecraftClient.getInstance().setScreen(new LeaderboardScreen(Text.empty()));
         });
         addDrawableChild(leaderboardButton);
 
@@ -194,7 +191,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
             handler.fishingCard.addPerk(selectedPerk.getName());
-            ClientPacketSender.unlockPerk(selectedPerk.getName());
             unlockButton.visible = false;
         };
     }
@@ -258,7 +254,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        background.render(matrices, x,y);
+        background.render(context, x,y);
         context.drawTextWithShadow(textRenderer, title, titleX, titleY, TEXT_COLOR);
     }
 
@@ -298,7 +294,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         int offset = 0;
         for(Text line : lines) {
             context.drawTextWithShadow(textRenderer, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
-            offset += context.fontHeight + 2;
+            offset += textRenderer.fontHeight + 2;
         }
     }
 

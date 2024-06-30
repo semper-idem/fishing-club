@@ -320,7 +320,7 @@ public class FishermanEntity extends PassiveEntity {
             HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
             FishingCard.of(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
-            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet, this));
+            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
             setCustomer(playerEntity);
         }
         return ActionResult.CONSUME;

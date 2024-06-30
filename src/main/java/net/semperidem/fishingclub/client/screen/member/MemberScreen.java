@@ -51,7 +51,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         super(memberScreenHandler, playerInventory, title);
         this.client = MinecraftClient.getInstance();
         this.textRenderer = client.textRenderer;
-        this.itemRenderer = client.getItemRenderer();
         this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
         this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
         this.miscView = new MemberMiscScreen(this, Text.literal("Services"));

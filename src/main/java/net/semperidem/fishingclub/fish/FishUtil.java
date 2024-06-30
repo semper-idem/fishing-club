@@ -1,5 +1,7 @@
 package net.semperidem.fishingclub.fish;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -16,8 +18,8 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
-import net.semperidem.fishingclub.util.MathUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,46 +31,26 @@ public class FishUtil {
     private static final String CAUGHT_BY_TAG = "caught_by";
 
 
-    public static ItemStack getStackFromFish(Fish fish){
+    public static ItemStack getStackFromFish(FishComponent fish){
         return getStackFromFish(fish, 1);
     }
 
-    public static ItemStack getStackFromFish(Fish fish, int count){
-        ItemStack fishReward = new ItemStack(FISH_ITEM).setCustomName(Text.of(fish.name));
-        setFishDetails(fishReward, fish);
+    public static ItemStack getStackFromFish(FishComponent fish, int count){
+        ItemStack fishReward = new ItemStack(FISH_ITEM);
+        fishReward.set(ComponentRegistry.FISH, fish);
+        fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
+        setLore(fishReward, fish);
         fishReward.setCount(count);
         return fishReward;
     }
 
-    public static Fish getFishFromStack(ItemStack fishStack) {
-        NbtCompound itemNbt = fishStack.getOrCreateNbt();
-        if (!itemNbt.contains("fish_details")) {
-            return null;
-        }
-        return new Fish(itemNbt.getCompound("fish_details"));
-    }
-
-    //Used by goldfish only
-    public static UUID getCaughtBy(ItemStack spawnedFrom) {
-        NbtCompound itemNbt = spawnedFrom.getOrCreateNbt();
-        if (!itemNbt.containsUuid(CAUGHT_BY_TAG)) {
-             return null;
-        }
-        return itemNbt.getUuid(CAUGHT_BY_TAG);
-    }
-
-    //Used by goldfish only
-    public static void putCaughtBy(ItemStack spawnedFrom, UUID uuid) {
-        spawnedFrom.getOrCreateNbt().putUuid(CAUGHT_BY_TAG, uuid);
-    }
-
-    public static void fishCaught(ServerPlayerEntity player, Fish fish){
+    public static void fishCaught(ServerPlayerEntity player, FishComponent fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         giveItemStack(player, getStackFromFish(fish, getRewardMultiplier(fishingCard)));
     }
 
-    public static void fishCaughtAt(ServerPlayerEntity player, Fish fish, BlockPos caughtAt) {
+    public static void fishCaughtAt(ServerPlayerEntity player, FishComponent fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
@@ -118,41 +100,26 @@ public class FishUtil {
     }
 
 
-    private static void setFishDetails(ItemStack stack, Fish fish){
-        stack.getOrCreateNbt();
-        setLore(stack, getDetailsAsLore(fish));
-        setDetails(stack, fish);
+    private static void setLore(ItemStack stack, FishComponent fish){
+        stack.set(DataComponentTypes.LORE, new LoreComponent(getDetailsAsLore(fish)));
     }
-    private static List<Text> getDetailsAsLore(Fish fish){
+    private static List<Text> getDetailsAsLore(FishComponent fish){
         int weightGrade = getWeightGrade(fish);
         int lengthGrade = getLengthGrade(fish);
         return Arrays.asList(
                 getGradeText(Math.max(lengthGrade, weightGrade)),
-                getWeightText(fish.weight, weightGrade),
-                getLengthText(fish.length, lengthGrade),
+                getWeightText(fish.weight(), weightGrade),
+                getLengthText(fish.length(), lengthGrade),
                 getCaughtText(),
-                getValueText(fish.value)
+                getValueText(fish.value())
         );
     }
 
-    private static void setDetails(ItemStack stack, Fish fish){
-        if (stack.getNbt() != null) {
-            stack.getNbt().put("fish_details", fish.getNbt());
-        }
-    }
 
     public static boolean isFish(ItemStack fish) {
         return fish.isOf(FISH_ITEM);
     }
 
-    public static boolean areEqual(ItemStack left, ItemStack right) {
-        if (isFish(left) && isFish(right) ) {
-            Fish leftFish = getFishFromStack(left);
-            Fish rightFish = getFishFromStack(right);
-            return leftFish != null && rightFish != null  && leftFish.isEqual(rightFish);
-        }
-        return false;
-    }
 
     private static Text getValueText(int value){
         return Text.of("§3Value: §6" + value + "$");
@@ -192,14 +159,20 @@ public class FishUtil {
         };
     }
 
-    public static int getWeightGrade(Fish fish){
-        Species fishType = fish.getSpecies();
-        float percentile = (fish.weight) / (fishType.fishMinWeight + fishType.fishRandomWeight);
+    public static int getWeightGrade(FishComponent fish){
+        Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
+        if (fishType == null) {
+            return 1;
+        }
+        float percentile = (fish.weight()) / (fishType.fishMinWeight + fishType.fishRandomWeight);
         return getGrade(percentile);
     }
-    public static int getLengthGrade(Fish fish){
-        Species fishType = fish.getSpecies();
-        float percentile = (fish.length) / (fishType.fishMinLength + fishType.fishRandomLength);
+    public static int getLengthGrade(FishComponent fish){
+        Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
+        if (fishType == null) {
+            return 1;
+        }
+        float percentile = (fish.length()) / (fishType.fishMinLength + fishType.fishRandomLength);
         return getGrade(percentile);
     }
 
@@ -225,19 +198,7 @@ public class FishUtil {
     }
 
     private static void setLore(ItemStack stack, List<Text> lore) {
-        NbtCompound displayTag;
-        if (stack.getNbt().contains("display")) {
-            displayTag = stack.getNbt().getCompound("display");
-        } else {
-            displayTag = new NbtCompound();
-            stack.getNbt().put("display", displayTag);
-        }
-
-        NbtList loreTag = new NbtList();
-        for (Text line : lore) {
-            loreTag.add(NbtString.of(Text.Serialization.toJsonString(line)));
-        }
-        displayTag.put("Lore", loreTag);
+        stack.set(DataComponentTypes.LORE, new LoreComponent(lore));
     }
 
     private static Species getRandomSpecies(int level) {
@@ -259,10 +220,9 @@ public class FishUtil {
         return randomSpecies;
     }
 
-    public static Fish getFishOnHook(IHookEntity hookEntity) {
+    public static FishComponent getFishOnHook(IHookEntity hookEntity) {
         FishingCard fishingCard = hookEntity.getFishingCard();
-        Species species = getRandomSpecies(fishingCard.getLevel());
-        Fish fishOnHook = new Fish(species, fishingCard, hookEntity);
+        FishComponent fishOnHook = FishComponent.create(hookEntity);
         fishingCard.fishHooked(hookEntity);
         return fishOnHook;
     }
@@ -280,14 +240,6 @@ public class FishUtil {
     public static int getPseudoRandomValue(int base, int randomAdjustment, float skew){
         return (int) getPseudoRandomValue(Float.valueOf(base), Float.valueOf(randomAdjustment), skew);
     }
-
-    public static int getFishValue(ItemStack fishStack){
-        NbtCompound fishNbt = fishStack.getNbt();
-        if (fishNbt != null) {
-            return fishNbt.getCompound("fish_details").getInt("value");
-        }
-        return 1;
-     }
 
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};

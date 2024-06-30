@@ -1,72 +1,48 @@
 package net.semperidem.fishingclub.game;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.fish.Fish;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.ComponentItem;
-import net.semperidem.fishingclub.network.ServerPacketSender;
-
-import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
-
+import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class FishingGameController {
 
     public final PlayerEntity player;
     public final FishingCard fishingCard;
-    public final Fish hookedFish;
+    public final FishComponent hookedFish;
+    public final RodConfigurationComponent hookedUsing;
 
     public float reelForce = 0;
     private boolean isReeling;
     private boolean isPulling;
 
-    public FishingGameController(PlayerEntity playerEntity, Fish hookedFish){
+    public FishingGameController(PlayerEntity playerEntity, FishComponent hookedFish, RodConfigurationComponent hookedUsing){
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.fishingCard = FishingCard.of(playerEntity);
+        this.hookedUsing = hookedUsing;
 
         progressComponent = new ProgressComponent(this);
-        fishComponent = new FishComponent(this);
+        fishController = new FishController(this);
         bobberComponent = new BobberComponent(this);
         healthComponent = new HealthComponent(this);
         treasureComponent = new TreasureComponent(this);
         treasureGameController = new TreasureGameController(this);
-        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPacketSender.sendInitialFishingGameData(serverPlayerEntity,this);
-        }
     }
 
-    public void writeInitialPacket(PacketByteBuf buf) {
-        bobberComponent.writeInitialData(buf);
-        treasureComponent.writeInitialData(buf);
-        treasureGameController.writeInitialData(buf);
-    }
-
-    public void readInitialPacket(PacketByteBuf buf) {
-        bobberComponent.readInitialData(buf);
-        treasureComponent.readInitialData(buf);
-        treasureGameController.readInitialData(buf);
-    }
-
-    public void writeUpdatePacket(PacketByteBuf buf) {
-        bobberComponent.writeData(buf);
-        fishComponent.writeData(buf);
-        healthComponent.writeData(buf);
-        progressComponent.writeData(buf);
-        treasureComponent.writeData(buf);
-        treasureGameController.writeData(buf);
-    }
-
-
-    public void readUpdatePacket(PacketByteBuf buf) {
-        bobberComponent.readData(buf);
-        fishComponent.readData(buf);
-        healthComponent.readData(buf);
-        progressComponent.readData(buf);
-        treasureComponent.readData(buf);
-        treasureGameController.readData(buf);
+    public void consumeTick(FishingGameTickPayload payload) {
+        bobberComponent.consumeData(payload);
+        fishController.consumeData(payload);
+        healthComponent.consumeData(payload);
+        progressComponent.consumeData(payload);
+        treasureComponent.consumeData(payload);
+        treasureGameController.consumeData(payload);
     }
 
     public void tick() {
@@ -76,12 +52,22 @@ public class FishingGameController {
             tickInner();
         }
         if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPacketSender.sendFishingGameData(serverPlayerEntity,this);
+            ServerPlayNetworking.send(serverPlayerEntity, new FishingGameTickPayload(
+                    bobberComponent.getPositionX(),
+                    fishController.getPositionX(),
+                    fishController.getPositionY(),
+                    healthComponent.getHealth(),
+                    progressComponent.getProgress(),
+                    treasureComponent.canPullTreasure(),
+                    treasureGameController.getArrowPos(),
+                    treasureGameController.getTreasureHookedTicks(),
+                    treasureGameController.isWon()
+            ));
         }
     }
 
     private void tickInner(){
-        fishComponent.tick();
+        fishController.tick();
         bobberComponent.tick();
         progressComponent.tick();
         healthComponent.tick();
@@ -103,15 +89,15 @@ public class FishingGameController {
     }
 
     public float getFishPosX() {
-        return fishComponent.getPositionX();
+        return fishController.getPositionX();
     }
 
     public float getNextFishPosX() {
-        return fishComponent.getNextPositionX();
+        return fishController.getNextPositionX();
     }
 
     public float getFishPosY() {
-        return fishComponent.getPositionY();
+        return fishController.getPositionY();
     }
 
     public float getBobberSize() {
@@ -155,7 +141,7 @@ public class FishingGameController {
     }
 
     public boolean bobberHasFish() {
-        return bobberComponent.hasFish(fishComponent);
+        return bobberComponent.hasFish(fishController);
     }
 
     public void startTreasureHunt() {
@@ -176,7 +162,7 @@ public class FishingGameController {
     }
 
     public void loseGame() {
-        MEMBER_FISHING_ROD.damageComponents(this.hookedFish.caughtUsing, 4, ComponentItem.DamageSource.BITE, this.player);
+        this.hookedUsing.damage(4, PartItem.DamageSource.BITE, this.player);
         if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }
@@ -184,7 +170,7 @@ public class FishingGameController {
     }
 
 
-    FishComponent fishComponent;
+    FishController fishController;
     BobberComponent bobberComponent;
     ProgressComponent progressComponent;
     HealthComponent healthComponent;

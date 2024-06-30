@@ -1,16 +1,20 @@
 package net.semperidem.fishingclub.registry;
 
+import static net.semperidem.fishingclub.FishingClub.MOD_ID;
+
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.FishingCardPayload;
+import net.semperidem.fishingclub.network.payload.SpellCastPayload;
 import org.lwjgl.glfw.GLFW;
 
-import static net.semperidem.fishingclub.FishingClub.MOD_ID;
+import java.util.UUID;
 
 public class KeybindingRegistry {
     private final static KeyBinding FISHER_INFO_SCREEN_KB = registerKeybinding("fisher_info_screen", "misc", GLFW.GLFW_KEY_F);
@@ -41,7 +45,7 @@ public class KeybindingRegistry {
     private static ClientTickEvents.EndTick openFisherInfoScreen(){
         return client -> {
             while (FISHER_INFO_SCREEN_KB.wasPressed()) {
-                ClientPacketSender.sendOpenFisherInfoScreen();
+                ClientPlayNetworking.send(new FishingCardPayload());
             }
         };
     }
@@ -49,16 +53,16 @@ public class KeybindingRegistry {
         return client -> {
             while (CAST_SPELL_KB.wasPressed()) {
                 if (SpellListWidget.selectedSpell != null) {
-                    String targetUUID = "";
+                    UUID targetUUID = UUID.randomUUID();
                     if (SpellListWidget.selectedSpell.needsTarget()){
                         HitResult hitResult = client.player.raycast(5,0,false);
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
-                            targetUUID = ((EntityHitResult) hitResult).getEntity().getUuidAsString();
+                            targetUUID = ((EntityHitResult) hitResult).getEntity().getUuid();
                         }
                     } else {
-                        targetUUID = client.player.getUuid().toString();
+                        targetUUID = client.player.getUuid();
                     }
-                    ClientPacketSender.castSpell(SpellListWidget.selectedSpell.getKey(), targetUUID);
+                    ClientPlayNetworking.send(new SpellCastPayload(SpellListWidget.selectedSpell.getKey(), targetUUID));
                 };
             }
         };

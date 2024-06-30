@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -23,10 +24,6 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     private double range = 0;
     public LineArrowEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
         super(entityType, world);
-    }
-
-    public LineArrowEntity(World world, LivingEntity shooter) {
-        super(EntityTypeRegistry.LINE_ARROW_ENTITY, shooter, world);
         pickupType = PickupPermission.ALLOWED;
     }
 
@@ -43,7 +40,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
         Entity owner = this.getOwner();
         if (isReturning && owner != null) {
             if (!this.getOwner().isAlive()) {
-                if (!this.world.isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
+                if (!this.getWorld().isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1f);
                 }
                 this.discard();
@@ -51,7 +48,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
                 this.setNoClip(true);
                 Vec3d vec3d = owner.getEyePos().subtract(this.getPos());
                 this.setPos(this.getX(), this.getY() + vec3d.y * 0.06, this.getZ());
-                if (this.world.isClient) {
+                if (this.getWorld().isClient) {
                     this.lastRenderY = this.getY();
                 }
                 double d = 0.3;
@@ -100,13 +97,18 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     }
 
     @Override
+    protected ItemStack getDefaultItemStack() {
+        return this.getItemStack();
+    }
+
+    @Override
     public FishingCard getFishingCard() {
         return FishingCard.of((PlayerEntity) getOwner());
     }
 
     @Override
-    public ItemStack getCaughtUsing() {
-        return this.asItemStack();
+    public RodConfigurationComponent getCaughtUsing() {
+        return RodConfigurationComponent.DEFAULT;
     }
 
     @Override

@@ -61,7 +61,7 @@ public class FishingPerk {
     }
 
     public FishingPerk withIcon(String iconName){
-        this.icon = new Identifier(FishingClub.MOD_ID, "textures/gui/skill/" + iconName);
+        this.icon = Identifier.of(FishingClub.MOD_ID, "textures/gui/skill/" + iconName);
         return this;
     }
 
@@ -120,10 +120,10 @@ public class FishingPerk {
     }
 
     static void grantAdvancement(PlayerEntity player, Identifier advancementIdentifier){
-        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementIdentifier);
-        AdvancementProgress advancementProgress =  ((ServerPlayerEntity)player).getAdvancementTracker().getProgress(advancement);
-        for(String criterion : advancementProgress.getUnobtainedCriteria()) {
-            ((ServerPlayerEntity)player).getAdvancementTracker().grantCriterion(advancement, criterion);
-        }
+//        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementIdentifier);
+//        AdvancementProgress advancementProgress =  ((ServerPlayerEntity)player).getAdvancementTracker().getProgress(advancement);
+//        for(String criterion : advancementProgress.getUnobtainedCriteria()) {
+//            ((ServerPlayerEntity)player).getAdvancementTracker().grantCriterion(advancement, criterion);
+//        }
     }
 }

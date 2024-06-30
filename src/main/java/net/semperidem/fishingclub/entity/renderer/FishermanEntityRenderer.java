@@ -13,23 +13,23 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {
-    private static final Identifier TEXTURE = new Identifier(FishingClub.MOD_ID, "textures/entity/fisherman.png");
+    private static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/fisherman.png");
     private final BoatEntityModel boatEntityModel;
-    private final Identifier boatIdentifier = new Identifier("textures/entity/chest_boat/mangrove.png");
+    private final Identifier boatIdentifier = FishingClub.getIdentifier("textures/entity/chest_boat/mangrove.png");
     private final ModelPart leftPaddle;
     private final ModelPart rightPaddle;
 
     public FishermanEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new FishermanEntityModel<>(context.getPart(EntityTypeRegistry.MODEL_FISHERMAN_LAYER)), 0.5F);
         EntityModelLayer entityModelLayer = EntityModelLayers.createChestBoat(BoatEntity.Type.MANGROVE);
-        boatEntityModel = new BoatEntityModel(context.getPart(entityModelLayer), true);
+        boatEntityModel = new BoatEntityModel(context.getPart(entityModelLayer));
         this.leftPaddle = boatEntityModel.getParts().get(5);
         this.rightPaddle =  boatEntityModel.getParts().get(6);
     }
@@ -43,10 +43,10 @@ public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, 
         matrixStack.push();
         matrixStack.translate(0.0D, 0.375D, 0.0D);
         matrixStack.scale(-1.0F, -1.0F, 1.0F);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90 + fishermanEntity.getBodyYaw()));
+      //  matrixStack.multiply(new Vec3d(0D,1D,0D).getDegreesQuaternion(-90 + fishermanEntity.getBodyYaw()));
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(boatEntityModel.getLayer(boatIdentifier));
-        setAngles(fishermanEntity, fishermanEntity.limbAngle);
-        boatEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+        setAngles(fishermanEntity, fishermanEntity.limbAnimator.getPos());
+        boatEntityModel.render(matrixStack, vertexConsumer,  1, 1, 1);
         if (!fishermanEntity.isSubmergedInWater()) {
             VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
             boatEntityModel.getWaterPatch().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);

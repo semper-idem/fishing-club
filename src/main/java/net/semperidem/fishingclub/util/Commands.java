@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.util;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
@@ -11,8 +12,8 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodUtil;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.SummonAcceptPayload;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
@@ -26,7 +27,7 @@ public class Commands {
     public static LiteralArgumentBuilder<ServerCommandSource> rootCommand = literal(FishingClub.MOD_ID);
     public static void registerSummonAccept(){
         rootCommand.then(literal("summon_accept").executes(context -> {
-                    ClientPacketSender.sendSummonAccept();
+            ClientPlayNetworking.send(new SummonAcceptPayload());
             return 0;
         }));
     }
@@ -58,12 +59,6 @@ public class Commands {
             return 0;
         }));
     }
-    public static void registerGiveAdvancedRod(){
-        rootCommand.then(literal("advanced_rod").executes(context -> {
-            context.getSource().getPlayer().giveItemStack(FishingRodUtil.getAdvancedRod());
-            return 0;
-        }));
-    }
 
     public static void registerInfo(){
         rootCommand.then(literal("info").executes(context -> {
@@ -75,7 +70,7 @@ public class Commands {
     public static void registerGoldFish() {
         rootCommand.then(literal("gold_fish").executes(context -> {
             ItemStack goldFish = ItemRegistry.GOLD_FISH.getDefaultStack();
-            FishUtil.putCaughtBy(goldFish, context.getSource().getPlayer().getUuid());
+            goldFish.set(ComponentRegistry.CAUGHT_BY, context.getSource().getPlayer().getUuid());
             context.getSource().getPlayer().giveItemStack(goldFish);
             return 0;
         }));
@@ -164,7 +159,6 @@ public class Commands {
             registerLevelUp();
             registerIllegalGoods();
             registerGiveStarterRod();
-            registerGiveAdvancedRod();
             registerTestFirework();
             dispatcher.register(rootCommand);
         });

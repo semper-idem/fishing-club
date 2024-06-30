@@ -1,60 +1,62 @@
 package net.semperidem.fishingclub.registry;
 
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.minecraft.entity.EquipmentSlot;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
-import net.semperidem.fishingclub.item.armor.FisherMaterial;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartItems;
+import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
+import java.util.HashSet;
+
 public class ItemRegistry {
+  public static DoubleFishingNetItem DOUBLE_FISHING_NET;
+  public static MemberFishingRodItem MEMBER_FISHING_ROD;
+  public static FishingNetItem FISHING_NET;
+  public static Item FISH_COIN_BUNDLE;
+  public static Item FISHER_HAT;
+  public static Item FISHER_VEST;
+  public static Item HARPOON_ROD;
+  public static Item LINE_ARROW;
+  public static Item CLONED_ROD;
+  public static Item ILLEGAL_GOODS;
+  public static Item GOLD_FISH;
+  public static Item DEBUG;
+  public static ItemGroup FISHING_CLUB_GROUP;
 
-    public static final ItemGroup FISHING_CLUB_GROUP = FabricItemGroupBuilder.build( FishingClub.getIdentifier("fishing_club_group"), () -> new ItemStack(Items.COD));
+  private static final HashSet<ItemStack> FISHING_ITEMS = new HashSet<>();
 
-    public static final DoubleFishingNetItem DOUBLE_FISHING_NET = new DoubleFishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final MemberFishingRodItem MEMBER_FISHING_ROD = new MemberFishingRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(100));
-    public static final Item FISHER_WORKBENCH = new BlockItem(BlockRegistry.FISHER_WORKBENCH_BLOCK, new Item.Settings().group(FISHING_CLUB_GROUP));
-    public static final FishingNetItem FISHING_NET = new FishingNetItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final Item FISH_COIN_BUNDLE = new FishCoinBundleItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1));
-    public static final ArmorMaterial FISHER_MATERIAL = new FisherMaterial();
-    public static final Item FISHER_HAT = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(FISHING_CLUB_GROUP));
-    public static final Item FISHER_VEST = new ArmorItem(FISHER_MATERIAL, EquipmentSlot.CHEST, new Item.Settings().group(FISHING_CLUB_GROUP));
-    public static final Item HARPOON_ROD = new HarpoonRodItem(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(64));
-    public static final Item LINE_ARROW = new LineArrowItem(new Item.Settings().group(FISHING_CLUB_GROUP));
-    public static final Item CLONED_ROD = new ClonedFishingRod(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1).maxDamage(128));
-    public static final Item ILLEGAL_GOODS = new IllegalGoodsItem(new Item.Settings().group(FISHING_CLUB_GROUP).rarity(Rarity.RARE).maxCount(1));
-    public static final Item GOLD_FISH = new Item(new Item.Settings().group(FISHING_CLUB_GROUP).maxCount(1)){
-        @Override
-        public ItemStack getDefaultStack() {
-            return super.getDefaultStack();
-        }
-    };
+  public static void register() {
+    FISHING_NET =registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
+    DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new DoubleFishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
+    MEMBER_FISHING_ROD = registerItem(("custom_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100)));
+    FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
+    FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
+    FISHER_VEST = registerItem(("fisher_vest"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
+    HARPOON_ROD= registerItem(("harpoon_rod"), new HarpoonRodItem(new Item.Settings().maxCount(1).maxDamage(64)));
+    LINE_ARROW = registerItem(("line_arrow"), new LineArrowItem(new Item.Settings()));
+    CLONED_ROD = registerItem(("cloned_rod"), new ClonedFishingRod(new Item.Settings().maxCount(1).maxDamage(128)));
+    ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(Rarity.RARE).maxCount(1)));
+    GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
+    DEBUG =registerItem("debug", new DebugItem(new Item.Settings()));
 
-    public static final Item DEBUG = new DebugItem(new Item.Settings().group(FISHING_CLUB_GROUP));
+    RodPartItems.registerParts();
 
+    FISHING_CLUB_GROUP =
+        FabricItemGroup.builder()
+                .displayName(Text.literal("Fishing Club"))
+            .icon(Items.COD::getDefaultStack)
+            .entries((displayContext, entries) -> entries.addAll(FISHING_ITEMS))
+            .build();
+  }
 
-    public static void register(){
-        registerItem(("fisher_workbench"), FISHER_WORKBENCH);
-        registerItem(("fishing_net"), FISHING_NET);
-        registerItem(("double_fishing_net"), DOUBLE_FISHING_NET);
-        registerItem(("custom_fishing_rod"), MEMBER_FISHING_ROD);
-        registerItem(("fish_coin_bundle"), FISH_COIN_BUNDLE);
-        registerItem(("fisher_hat"), FISHER_HAT);
-        registerItem(("fisher_vest"), FISHER_VEST);
-        registerItem(("harpoon_rod"), HARPOON_ROD);
-        registerItem(("line_arrow"), LINE_ARROW);
-        registerItem(("cloned_rod"), CLONED_ROD);
-        registerItem(("illegal_goods"), ILLEGAL_GOODS);
-        registerItem(("gold_fish"), GOLD_FISH);
-        registerItem("debug", DEBUG);
-        FishingRodPartItems.registerParts();
-    }
-
-    public static void registerItem(String id, Item item){
-        Registry.register(Registry.ITEM, FishingClub.getIdentifier(id), item);
-    }
+  public  static <T extends Item> T registerItem(String id, T item) {
+    Registry.register(Registries.ITEM, FishingClub.getIdentifier(id), item);
+    FISHING_ITEMS.add(item.getDefaultStack());
+    return item;
+  }
 }

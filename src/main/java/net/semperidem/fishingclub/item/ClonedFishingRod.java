@@ -9,6 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 
 public class ClonedFishingRod extends MemberFishingRodItem {
     private static final int DURATION = 6000;
@@ -19,11 +20,9 @@ public class ClonedFishingRod extends MemberFishingRodItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack clonedRod = user.getStackInHand(hand);
-        //clonedRod.get(DataComponentTypes.CUSTOM_DATA).
-        clonedRod.set(NbtComponent.of())
-        long creationTick = clonedRod.getOrCreateNbt().getLong("creation_tick");
+        long creationTick = clonedRod.getOrDefault(ComponentRegistry.CREATION_TICK, 0L);
         float maxDamage = clonedRod.getMaxDamage();
-        clonedRod.setDamage((int) (world.getTime() / (creationTick + DURATION) * maxDamage));
+        clonedRod.setDamage((int) ((float) world.getTime() / (creationTick + DURATION) * maxDamage));
         if (creationTick + DURATION < world.getTime()) {
             clonedRod.decrement(1);
             return TypedActionResult.consume(user.getStackInHand(hand));

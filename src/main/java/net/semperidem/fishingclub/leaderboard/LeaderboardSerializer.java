@@ -14,7 +14,6 @@ public class LeaderboardSerializer {
         Leaderboard.writeToPacket(packet, instance.worstLength);
         Leaderboard.writeToPacket(packet, instance.highestCredit);
         Leaderboard.writeToPacket(packet, instance.highestLevel);
-        Leaderboard.writeToPacket(packet, instance.longestCapeClaimTotal);
     }
 
     public static void readPacket(LeaderboardTracker instance, PacketByteBuf packet) {
@@ -24,7 +23,6 @@ public class LeaderboardSerializer {
         Leaderboard.readStandings(packet, instance.worstLength);
         Leaderboard.readStandings(packet, instance.highestCredit);
         Leaderboard.readStandings(packet, instance.highestLevel);
-        Leaderboard.readStandings(packet, instance.longestCapeClaimTotal);
     }
 
     public static void loadLeaderboards(LeaderboardTracker instance, MinecraftServer server) {
@@ -35,7 +33,6 @@ public class LeaderboardSerializer {
         instance.worstLength.loadFromPath(path);
         instance.highestCredit.loadFromPath(path);
         instance.highestLevel.loadFromPath(path);
-        instance.longestCapeClaimTotal.loadFromPath(path);
     }
 
     private static String getStoragePath(MinecraftServer server) {
@@ -51,6 +48,5 @@ public class LeaderboardSerializer {
         instance.worstLength.saveToPath(path);
         instance.highestCredit.saveToPath(path);
         instance.highestLevel.saveToPath(path);
-        instance.longestCapeClaimTotal.saveToPath(path);
     }
 }

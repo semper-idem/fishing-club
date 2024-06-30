@@ -1,13 +1,17 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.SellFishPayload;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -125,25 +129,25 @@ public class MemberSellScreen extends MemberSubScreen{
         }
         fishGridWidget.entries.removeAll(fishToRemove);
         fishGridWidget.recalculateTotals();
-        ClientPacketSender.sendFishToSell(fishToSell);
+    ClientPlayNetworking.send(new SellFishPayload(fishToSell));
     }
 
 
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
-        textRenderer.drawWithShadow(matrixStack, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
-        textRenderer.drawWithShadow(matrixStack, SELECTED_TEXT, totalTextX, selectedTextY, BEIGE_TEXT_COLOR);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+        context.drawTextWithShadow(textRenderer, TOTAL_TEXT, totalTextX, totalTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, SELECTED_TEXT, totalTextX, selectedTextY, BEIGE_TEXT_COLOR);
 
         String totalPrice = fishGridWidget.lastTotal + "$";
         String selectedPrice = fishGridWidget.lastTotalSelected + "$";
         int totalTextValueX = buttonBoxX1 - textRenderer.getWidth(totalPrice) -  3;
         int selectedTextValueX = buttonBoxX1 - textRenderer.getWidth(totalPrice) -  3;
-        textRenderer.drawWithShadow(matrixStack, totalPrice, totalTextValueX, totalTextY, BEIGE_TEXT_COLOR);
-        textRenderer.drawWithShadow(matrixStack, selectedPrice, selectedTextValueX, selectedTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, totalPrice, totalTextValueX, totalTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, selectedPrice, selectedTextValueX, selectedTextY, BEIGE_TEXT_COLOR);
 
-        super.render(matrixStack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     private class EntriesGridWidget extends MemberScrollableWidget {
@@ -170,7 +174,7 @@ public class MemberSellScreen extends MemberSubScreen{
         public int getTotalAvailable() {
             int total = 0;
             for(GridEntry entry : entries) {
-                    total += FishUtil.getFishValue(entry.itemStack);
+                    total += entry.itemStack.getOrDefault(ComponentRegistry.FISH, FishComponent.DEFAULT).value();
             }
             return total;
         }
@@ -179,7 +183,7 @@ public class MemberSellScreen extends MemberSubScreen{
             int total = 0;
             for(GridEntry entry : entries) {
                 if (entry.isSelected) {
-                    total += FishUtil.getFishValue(entry.itemStack);
+                    total += entry.itemStack.getOrDefault(ComponentRegistry.FISH, FishComponent.DEFAULT).value();
                 }
             }
             return total;
@@ -189,13 +193,13 @@ public class MemberSellScreen extends MemberSubScreen{
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             boolean isClicked = active;
             isClicked &= visible;
-            isClicked &= mouseX >= x && mouseX <= x + width;
-            isClicked &= mouseY >= y && mouseY <= y + height;
+            isClicked &= mouseX >= getX() && mouseX <= getX() + width;
+            isClicked &= mouseY >= getY() && mouseY <= getY() + height;
             if (!isClicked) {
                 return false;
             }
-            int predictedX = (int) ((mouseX - x) / SLOT_SIZE);
-            int predictedY = (int) ((mouseY + getScrollY() - y) / SLOT_SIZE);
+            int predictedX = (int) ((mouseX - getX()) / SLOT_SIZE);
+            int predictedY = (int) ((mouseY + getScrollY() - getY()) / SLOT_SIZE);
             int predictedIndex = predictedX + predictedY * SLOTS_IN_ROW;
             if (entries.size() > predictedIndex) {
                 GridEntry fish = entries.get(predictedIndex);
@@ -216,9 +220,9 @@ public class MemberSellScreen extends MemberSubScreen{
         }
 
         @Override
-        protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             if (entries.isEmpty()) {
-                drawCenteredTextWithShadow(matrices, textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
+                context.drawCenteredTextWithShadow(textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
                 return;
             }
 
@@ -228,7 +232,7 @@ public class MemberSellScreen extends MemberSubScreen{
                     if (!fishIterator.hasNext()) {
                         return;
                     }
-                    fishIterator.next().render(matrices, x + j * SLOT_SIZE, y + (int) (i * SLOT_SIZE - getScrollY()));
+                    fishIterator.next().render(context, getX() + j * SLOT_SIZE, getY() + (int) (i * SLOT_SIZE - getScrollY()));
                 }
             }
         }
@@ -249,16 +253,16 @@ public class MemberSellScreen extends MemberSubScreen{
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, false);
-                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                matrices.push();
-                matrices.translate(0, -this.getScrollY(), 0);
-                this.renderContents(matrices, mouseX, mouseY, delta);
-                matrices.pop();
-                disableScissor();
-                this.renderOverlay(matrices);
+                parent.drawContainerBox(context, getX(), getY(), getX() + this.width, getY() + this.height, false);
+                context.enableScissor(getX(), getY(), getX() + this.width, getY() + this.height);
+                context.getMatrices().push();
+                context.getMatrices().translate(0, -this.getScrollY(), 0);
+                this.renderContents(context, mouseX, mouseY, delta);
+                context.getMatrices().pop();
+                context.disableScissor();
+                this.renderOverlay(context);
             }
         }
 
@@ -272,11 +276,11 @@ public class MemberSellScreen extends MemberSubScreen{
                 this.isSelected = false;
             }
 
-            public void render(MatrixStack matrixStack, int x, int y){
-                OFFER_TEXTURE.render(matrixStack, x, y);
-                itemRenderer.renderGuiItemIcon(itemStack, x, y);
+            public void render(DrawContext context, int x, int y){
+                OFFER_TEXTURE.render(context, x, y);
+                context.drawItemInSlot(textRenderer, itemStack, x, y);
                 if (isSelected) {
-                    SELECTION_TEXTURE.render(matrixStack, x, y);
+                    SELECTION_TEXTURE.render(context, x, y);
                 }
             }
         }

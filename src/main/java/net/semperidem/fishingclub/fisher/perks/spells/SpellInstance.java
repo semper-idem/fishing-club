@@ -33,9 +33,9 @@ public class SpellInstance {
     }
 
     public void use(ServerPlayerEntity playerEntity, Entity target){
-        long currentTime = playerEntity.world.getTime();
+        long currentTime = playerEntity.getServerWorld().getTime();
         if (currentTime <= nextPossibleCastTime) return;
-        this.nextPossibleCastTime = playerEntity.world.getTime() + spell.cooldown;
+        this.nextPossibleCastTime = playerEntity.getServerWorld().getTime() + spell.cooldown;
         if (spell.needsTarget) {
             spell.effect.targetedCast(playerEntity, target);
         } else {

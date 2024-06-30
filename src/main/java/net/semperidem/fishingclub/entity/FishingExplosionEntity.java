@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 
 import javax.swing.text.html.parser.Entity;
 
@@ -22,8 +23,8 @@ public class FishingExplosionEntity implements IHookEntity{
     }
 
     @Override
-    public ItemStack getCaughtUsing() {
-        return Items.TNT.getDefaultStack();
+    public RodConfigurationComponent getCaughtUsing() {
+        return RodConfigurationComponent.DEFAULT;
     }
 
     @Override

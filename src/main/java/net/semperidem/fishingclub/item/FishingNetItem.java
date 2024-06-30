@@ -1,56 +1,94 @@
 package net.semperidem.fishingclub.item;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
+import net.minecraft.inventory.StackReference;
+import net.minecraft.item.BundleItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.fishing_net.FishingNetScreenFactory;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ClickType;
+import net.semperidem.fishingclub.fish.FishUtil;
 
-public class FishingNetItem extends Item {
+public class FishingNetItem extends BundleItem {
     public int size;
-    private static final String INVENTORY_TAG = "Items";
 
     public FishingNetItem(Settings settings) {
         super(settings);
-        this.size = 27;
     }
+//overide component builder maxAllowedOcc method and change Fraction from ONE to X
+    @Override
+    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
+        if (clickType != ClickType.RIGHT) {
+            return false;
+        } else {
+            BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
+            if (bundleContentsComponent == null) {
+                return false;
+            } else {
+                ItemStack itemStack = slot.getStack();
+                BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
+                if (itemStack.isEmpty()) {
+                    this.playRemoveOneSound(player);
+                    ItemStack itemStack2 = builder.removeFirst();
+                    if (itemStack2 != null) {
+                        ItemStack itemStack3 = slot.insertStack(itemStack2);
+                        builder.add(itemStack3);
+                    }
+                } else if (itemStack.getItem().canBeNested() && itemStack.isOf(FishUtil.FISH_ITEM)) {
+                    int i = builder.add(slot, player);
+                    if (i > 0) {
+                        this.playInsertSound(player);
+                    }
+                }
 
-    public static void openScreen(PlayerEntity player, ItemStack fishingNetStack) {
-        if (player.world != null && !player.world.isClient) {
-            player.openHandledScreen(new FishingNetScreenFactory(fishingNetStack));
+                stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+                return true;
+            }
         }
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        openScreen(user, user.getMainHandStack());
-        return TypedActionResult.success(user.getMainHandStack());
-    }
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
+        if (clickType == ClickType.RIGHT && slot.canTakePartial(player)) {
+            BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
+            if (bundleContentsComponent == null) {
+                return false;
+            } else {
+                BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
+                if (otherStack.isEmpty()) {
+                    ItemStack itemStack = builder.removeFirst();
+                    if (itemStack != null) {
+                        this.playRemoveOneSound(player);
+                        cursorStackReference.set(itemStack);
+                    }
+                } else  if (otherStack.isOf(FishUtil.FISH_ITEM)){
+                    int i = builder.add(otherStack);
+                    if (i > 0) {
+                        this.playInsertSound(player);
+                    }
+                }
 
-    public static SimpleInventory readFishingNetInventory(ItemStack fishingNetStack){
-        int size = 1;
-        if (fishingNetStack.getItem() instanceof FishingNetItem netItem) {
-            size = netItem.size;
-        }
-        SimpleInventory inventory = new SimpleInventory(size){
-            @Override
-            public void markDirty() {
-                fishingNetStack.setNbt(writeFishingNetInventory(this));
-                super.markDirty();
+                stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+                return true;
             }
-        };
-        inventory.readNbtList(fishingNetStack.getOrCreateNbt().getList(INVENTORY_TAG, NbtElement.COMPOUND_TYPE));
-        return inventory;
+        } else {
+            return false;
+        }
     }
 
-    public static NbtCompound writeFishingNetInventory(SimpleInventory inventory){
-        NbtCompound inventoryTag = new NbtCompound();
-        inventoryTag.put(INVENTORY_TAG, inventory.toNbtList());
-        return inventoryTag;
+
+    private void playRemoveOneSound(Entity entity) {
+        entity.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+    }
+
+    private void playInsertSound(Entity entity) {
+        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+    }
+
+    private void playDropContentsSound(Entity entity) {
+        entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
     }
 }

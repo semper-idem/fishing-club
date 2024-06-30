@@ -14,7 +14,6 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
@@ -32,10 +31,10 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
     @Override
     public void render(HarpoonEntity harpoonEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevYaw, harpoonEntity.getYaw()) - 90.0f));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevPitch, harpoonEntity.getPitch()) + 90.0f));
+//        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevYaw, harpoonEntity.getYaw()) - 90.0f));
+//        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevPitch, harpoonEntity.getPitch()) + 90.0f));
         VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(harpoonEntity)), false, false);
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+//        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
 
         double s;
@@ -97,7 +96,7 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
         float o = g * (j * j + j) * 0.5f + 0.25f - l;
         float p = h * j - m;
         float q = MathHelper.sqrt(n * n + o * o + p * p);
-        vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
+//        vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
     }
 
     @Override

@@ -13,14 +13,13 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
+import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
 
     int x;
     int y;
     private final DialogBox dialogBox;
-
-
 
     public DialogScreen(DialogScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
         super(dialogScreenHandler, playerInventory, title);
@@ -37,7 +36,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
 
     private void addPlayerFaceComponent() {
         addDrawable(new PlayerFaceComponent(
-                MinecraftClient.getInstance().player.getSkinTexture(),
+                MinecraftClient.getInstance().player.getSkinTextures().texture(),
                 x + TILE_SIZE,
                 y + TEXTURE.renderHeight - TILE_SIZE * 9
         ));

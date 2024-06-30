@@ -1,51 +1,31 @@
 package net.semperidem.fishingclub.leaderboard;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.world.SaveProperties;
-import net.semperidem.fishingclub.fish.Fish;
-import net.semperidem.fishingclub.fisher.FishingCard;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.semperidem.fishingclub.fish.FishComponent;
+import net.semperidem.fishingclub.fisher.FishingCard;
 
 public class LeaderboardTracker {
     private static final float DISCOUNT_PER_TITLE = 0.1f;
-    public final Leaderboard<Fish> bestWeight;
-    public final Leaderboard<Fish> worstWeight;
-    public final Leaderboard<Fish> bestLength;
-    public final Leaderboard<Fish> worstLength;
+    public final Leaderboard<FishComponent> bestWeight;
+    public final Leaderboard<FishComponent> worstWeight;
+    public final Leaderboard<FishComponent> bestLength;
+    public final Leaderboard<FishComponent> worstLength;
     public final Leaderboard<FishingCard> highestCredit;
     public final Leaderboard<FishingCard> highestLevel;
-    public final Leaderboard<FishingCard> longestCapeClaimTotal;
     public LeaderboardTracker() {
-        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, fish -> fish.weight);
-        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, fish -> fish.weight);
-        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, fish -> fish.length);
-        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, fish -> fish.length);
+        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, FishComponent::weight);
+        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, FishComponent::weight);
+        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, FishComponent::length);
+        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, FishComponent::length);
         highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
         highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
-        longestCapeClaimTotal = new Leaderboard<>("_capeClaim", Text.literal("§lTotal Crowned Time"), " ticks", false, card -> {
-            float capeTotal = card.getCapeTime();
-            SaveProperties saveProperties = Objects.requireNonNull(card.getHolder().getServer()).getSaveProperties();
-            if (!(saveProperties instanceof FishingLevelProperties fishingLevelProperties)) {
-                return capeTotal;
-            }
-
-            if (fishingLevelProperties.getFishingKingUUID() == null || fishingLevelProperties.getFishingKingUUID().compareTo(card.getHolder().getUuid()) != 0) {
-                return capeTotal;
-            }
-
-            return capeTotal + fishingLevelProperties.getCurrentClaimTime();
-        });
     }
 
     public float getDiscount(PlayerEntity player) {
         float discount = 0;
-        if (longestCapeClaimTotal.isFirst(player)) {
-                return 0;
-        }
         if (bestWeight.isFirst(player)) {
             discount += DISCOUNT_PER_TITLE;
         }
@@ -65,7 +45,7 @@ public class LeaderboardTracker {
     }
 
 
-    public void record(PlayerEntity caughtBy, Fish fish) {
+    public void record(PlayerEntity caughtBy, FishComponent fish) {
         bestWeight.consume(caughtBy, fish);
         worstWeight.consume(caughtBy, fish);
         bestLength.consume(caughtBy, fish);
@@ -78,7 +58,6 @@ public class LeaderboardTracker {
 
     public ArrayList<Leaderboard<?>> getLeaderboards() {
         return new ArrayList<>(Arrays.asList(
-                longestCapeClaimTotal,
                 bestWeight,
                 worstWeight,
                 bestLength,

@@ -87,7 +87,7 @@ public class LineArrowEntityRenderer extends ProjectileEntityRenderer<LineArrowE
         float o = g * (j * j + j) * 0.5f + 0.25f - l;
         float p = h * j - m;
         float q = MathHelper.sqrt(n * n + o * o + p * p);
-        vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
+        //vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry, n /= q, o /= q, p /= q).next();
     }
 
 }

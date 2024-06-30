@@ -1,19 +1,24 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
+import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.CheckoutPayload;
 import net.semperidem.fishingclub.registry.EnchantmentRegistry;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
 import static net.minecraft.text.Text.literal;
@@ -100,23 +105,26 @@ public class MemberIllegalScreen extends MemberSubScreen {
     }
 
     private ButtonWidget.PressAction onBuy() {
-        return button -> ClientPacketSender.checkout(new ArrayList<>(Set.of(IllegalGoodsItem.getStackWithTier(selectedEntry.tier))), BOX_PRICES[selectedEntry.tier - 1]);
+        return button -> {
+            OrderItem oi = new OrderItem(Optional.of(IllegalGoodsItem.getStackWithTier(selectedEntry.tier)),1, Optional.of(BOX_PRICES[selectedEntry.tier - 1]));
+            ClientPlayNetworking.send(new CheckoutPayload(new ArrayList<>(Set.of(oi))));
+        };
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
         int helpTextLineY = helpTextY;
         for(String string : helpText.split("\n")) {
-            textRenderer.drawWithShadow(matrixStack, string, helpTextX, helpTextLineY, BEIGE_TEXT_COLOR);
+            context.drawTextWithShadow(textRenderer, string, helpTextX, helpTextLineY, BEIGE_TEXT_COLOR);
             helpTextLineY += TEXT_LINE_HEIGHT;
         }
-        textRenderer.drawWithShadow(matrixStack, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
+        context.drawTextWithShadow(textRenderer, PRICE_TEXT, priceTextX, priceTextY, BEIGE_TEXT_COLOR);
         if (selectedEntry != null) {
             String boxPrice = String.format( "%.0f$", BOX_PRICES[selectedEntry.tier - 1] * (1 - moonPhaseDiscount));
-            textRenderer.drawWithShadow(matrixStack, boxPrice, buttonBoxX1 - textRenderer.getWidth(boxPrice) -  3, priceTextY, BEIGE_TEXT_COLOR);
+            context.drawTextWithShadow(textRenderer, boxPrice, buttonBoxX1 - textRenderer.getWidth(boxPrice) -  3, priceTextY, BEIGE_TEXT_COLOR);
         }
-        super.render(matrixStack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
     }
 
@@ -136,10 +144,10 @@ public class MemberIllegalScreen extends MemberSubScreen {
             return super.isFocused() || isSelected();
         }
         @Override
-        protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            int entryY = y;
+        protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+            int entryY = getY();
             for(BoxPreviewEntry entry : entries) {
-                entry.render(matrices, x, (int) (entryY - getScrollY()));
+                entry.render(context, getX(), (int) (entryY - getScrollY()));
                 entryY += ENTRY_HEIGHT;
             }
         }
@@ -155,24 +163,24 @@ public class MemberIllegalScreen extends MemberSubScreen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
             if (this.visible) {
-                parent.drawContainerBox(matrices, this.x, this.y, this.x + this.width, this.y + this.height, true);
-                enableScissor(this.x, this.y, this.x + this.width, this.y + this.height);
-                matrices.push();
+                parent.drawContainerBox(context, getX(), getY(), getX() + this.width, getY() + this.height, true);
+                context.enableScissor(getX(), getY(), getX() + this.width, getY() + this.height);
+                context.getMatrices().push();
                 //RENDER PRICE
-                this.renderContents(matrices, mouseX, mouseY, delta);
-                matrices.pop();
-                disableScissor();
-                this.renderOverlay(matrices);
+                this.renderContents(context, mouseX, mouseY, delta);
+                context.getMatrices().pop();
+                context.disableScissor();
+                this.renderOverlay(context);
             }
         }
 
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (mouseX > x + 8 && mouseX < x + 24) {
-                int predictedIndex = (int) ((mouseY + getScrollY() - y) / ENTRY_HEIGHT);
+            if (mouseX > getX() + 8 && mouseX < getX() + 24) {
+                int predictedIndex = (int) ((mouseY + getScrollY() - getY()) / ENTRY_HEIGHT);
                 if (predictedIndex >= 0 && predictedIndex < entries.size()) {
                     if (selectedEntry != null ) {
                         selectedEntry.selected = false;
@@ -193,30 +201,35 @@ public class MemberIllegalScreen extends MemberSubScreen {
                 this.tier = tier;
                 for(Item item : possibleLoot) {
                     ItemStack enchantedStack = item.getDefaultStack();
-                    enchantedStack.addEnchantment(EnchantmentRegistry.CURSE_OF_MORTALITY, 0);
+
+                    MinecraftClient.getInstance().world
+                            .getRegistryManager()
+                            .get(RegistryKeys.ENCHANTMENT)
+                            .getEntry(EnchantmentRegistry.CURSE_OF_MORTALITY.getValue())
+                            .ifPresent(curseOfMortality -> enchantedStack.addEnchantment(curseOfMortality, 1));
                     this.possibleLoot.add(enchantedStack);
                 }
             }
 
-            private void render(MatrixStack matrixStack, int x, int y) {
+            private void render(DrawContext context, int x, int y) {
                 if (selected) {
-                    SELECTED_PREVIEW_BACKGROUND.render(matrixStack, x, y);
+                    SELECTED_PREVIEW_BACKGROUND.render(context, x, y);
                 } else {
-                    PREVIEW_BACKGROUND.render(matrixStack, x, y);
+                    PREVIEW_BACKGROUND.render(context, x, y);
                 }
                 int itemX = x + TILE_SIZE * 8;
                 int itemY = y + TILE_SIZE;
-                itemRenderer.renderGuiItemIcon(IllegalGoodsItem.getStackWithTier(tier), x + TILE_SIZE * 2, itemY);
-                matrixStack.push();
-                matrixStack.translate(0.0, 0.0, 200.0F);
-                drawCenteredTextWithShadow(matrixStack, textRenderer, literal(MathUtil.integerToRoman(tier)).asOrderedText(), x + 16,y + 8,BEIGE_TEXT_COLOR);
-                matrixStack.pop();
+                context.drawItem(IllegalGoodsItem.getStackWithTier(tier), x + TILE_SIZE * 2, itemY);
+                context.getMatrices().push();
+                context.getMatrices().translate(0.0, 0.0, 200.0F);
+                context.drawTextWithShadow(textRenderer, literal(MathUtil.integerToRoman(tier)).asOrderedText(), x + 16,y + 8,BEIGE_TEXT_COLOR);
+                context.getMatrices().pop();
                 for(ItemStack lootStack : possibleLoot) {
-                    OFFER_TEXTURE.render(matrixStack, itemX ,itemY);
+                    OFFER_TEXTURE.render(context, itemX ,itemY);
 
 
-                    itemRenderer.renderGuiItemIcon(lootStack, itemX, itemY);
-                    itemRenderer.renderGuiItemOverlay(textRenderer, lootStack, itemX, itemY);
+                    context.drawItem(lootStack, itemX, itemY);
+                    context.drawItemInSlot(textRenderer, lootStack, itemX, itemY);
 
                     itemX += 16;
                 }

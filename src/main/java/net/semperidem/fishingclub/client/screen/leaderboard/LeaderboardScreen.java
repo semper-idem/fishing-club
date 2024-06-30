@@ -1,24 +1,21 @@
 package net.semperidem.fishingclub.client.screen.leaderboard;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
-import net.semperidem.fishingclub.network.ClientPacketSender;
-import net.semperidem.fishingclub.screen.leaderboard.LeaderboardScreenHandler;
+import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 
 import java.awt.*;
 import java.util.Iterator;
 
-public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> implements ScreenHandlerProvider<LeaderboardScreenHandler> {
+public class LeaderboardScreen  extends Screen {
     private static final Texture BACKGROUND = new Texture(FishingClub.getIdentifier("textures/gui/leaderboard.png"), 400, 280);
     private static final int TITLE_COLOR = Color.WHITE.getRGB();
     private int mainBoardX, mainBoardY;
@@ -32,6 +29,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     private int nextButtonX, nextButtonY;
     private int previousButtonX, previousButtonY;
     private int boardBottomY;
+    private int x,y;
     private static final int RECORD_PADDING = 60;
     private int firstColor = 0xffaa00;
     private int secondColor = 0xbbb9bd;
@@ -44,8 +42,8 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     static final int CYCLE = 1600;
     int timer = CYCLE;
 
-    public LeaderboardScreen(LeaderboardScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
+    public LeaderboardScreen(Text title) {
+        super(title);
         populateGradient();
     }
 
@@ -68,7 +66,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     protected void init() {
         x = (int) ((width - BACKGROUND.renderWidth) * 0.5f);
         y = (int) ((height - BACKGROUND.renderHeight) * 0.5f);
-        titleX = (int) ((BACKGROUND.renderWidth - textRenderer.getWidth(title)) * 0.5f);
+        //titleX = (int) ((BACKGROUND.renderWidth - textRenderer.getWidth(title)) * 0.5f);
         leaderboardTitleY = y + 24;
         mainBoardX = x + RECORD_PADDING;
         mainBoardY = leaderboardTitleY + 24;
@@ -83,16 +81,16 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
         exitButtonX = x + 14;
         exitButtonY =  y + BACKGROUND.renderHeight - 28;
 
-        currentLeaderboard = handler.getCurrentLeaderboard();
+        //currentLeaderboard = handler.getCurrentLeaderboard();
         exitButton = new MemberButton(exitButtonX,exitButtonY,16,16, Text.empty(), button -> {
-            ClientPacketSender.sendOpenFisherInfoScreen();
+            ClientPlayNetworking.send(new FishingCardPayload());
         });
         exitButton.setTexture(MemberButton.BUTTON_EXIT_TEXTURE);
-        nextButton = new MemberButton(nextButtonX,nextButtonY,24,20,Text.literal(">>"), button -> currentLeaderboard = handler.getNextLeaderboard());
-        previousButton = new MemberButton(previousButtonX,previousButtonY,24,20,Text.literal("<<"), button -> currentLeaderboard = handler.getPreviousLeaderboard());
-        addDrawableChild(nextButton);
+        //nextButton = new MemberButton(nextButtonX,nextButtonY,24,20,Text.literal(">>"), button -> currentLeaderboard = handler.getNextLeaderboard());
+        //previousButton = new MemberButton(previousButtonX,previousButtonY,24,20,Text.literal("<<"), button -> currentLeaderboard = handler.getPreviousLeaderboard());
+       // addDrawableChild(nextButton);
         addDrawableChild(exitButton);
-        addDrawableChild(previousButton);
+        //addDrawableChild(previousButton);
     }
 
     public int getRecordColor(int recordNumber) {
@@ -169,13 +167,7 @@ public class LeaderboardScreen  extends HandledScreen<LeaderboardScreenHandler> 
     }
 
     @Override
-    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
-        context.drawTextWithShadow(textRenderer, title, titleX, titleY,TITLE_COLOR);
-
-    }
-
-    @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         BACKGROUND.render(context, x, y);
     }
 }

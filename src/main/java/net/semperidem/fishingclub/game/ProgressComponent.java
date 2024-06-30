@@ -1,8 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController;
-import net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class ProgressComponent {
     private final FishingGameController parent;
@@ -19,13 +18,13 @@ public class ProgressComponent {
     public ProgressComponent(FishingGameController parent) {
         this.parent = parent;
         gain = BASE_GAIN * (1 + getProgressMultiplierBonus());
-        loss = BASE_LOSS + (parent.hookedFish.damage * 0.01f);
+        loss = BASE_LOSS + (parent.hookedFish.damage() * 0.01f);
     }
 
 
 
-    public void readData(PacketByteBuf buf) {
-        this.progress = buf.readFloat();
+    public void consumeData(FishingGameTickPayload payload) {
+        this.progress = payload.progress();
     }
 
     public void writeData(PacketByteBuf buf) {
@@ -33,12 +32,12 @@ public class ProgressComponent {
     }
 
     private float getProgressMultiplierBonus() {
-        return FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
+        return 1;//FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
     }
 
     public void tick() {
-        boolean bobberHasFish = parent.bobberComponent.hasFish(parent.fishComponent);
-        if (!bobberHasFish && !parent.fishComponent.isFishJumping()) {
+        boolean bobberHasFish = parent.bobberComponent.hasFish(parent.fishController);
+        if (!bobberHasFish && !parent.fishController.isFishJumping()) {
             revokeProgress();
         }
 

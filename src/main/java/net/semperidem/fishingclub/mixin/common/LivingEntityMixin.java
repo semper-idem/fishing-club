@@ -32,8 +32,6 @@ import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_RO
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
 
-    @Shadow public abstract void updateLimbs(LivingEntity entity, boolean flutter);
-
     @Unique private int pullPower = 0;
 
     public LivingEntityMixin(EntityType<?> type, World world) {
@@ -96,7 +94,7 @@ public abstract class LivingEntityMixin extends Entity{
 
     @Inject(method="addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("TAIL"))
     private void onAddStatusEffect(StatusEffectInstance effect, Entity source, CallbackInfoReturnable<Boolean> cir) {
-        if (!isPlayer() || world.isClient) {
+        if (!isPlayer() || getWorld().isClient) {
             return;
         }
         FishingCard fishingCard = FishingCard.of((ServerPlayerEntity)(Object)this);

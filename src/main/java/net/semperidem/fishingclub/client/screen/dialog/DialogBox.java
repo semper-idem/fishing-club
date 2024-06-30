@@ -1,20 +1,18 @@
 package net.semperidem.fishingclub.client.screen.dialog;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.network.payload.DialogResponsePayload;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import net.semperidem.fishingclub.screen.dialog.DialogUtil;
-import net.semperidem.fishingclub.screen.dialog.Responses;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DialogBox extends ScrollableWidget {
     ArrayList<String> responseLines = new ArrayList<>();
@@ -157,12 +155,7 @@ public class DialogBox extends ScrollableWidget {
         if (response.specialAction == null) {
             return;
         }
-        switch (response.specialAction) {
-            case Responses.EXIT -> MinecraftClient.getInstance().currentScreen.close();
-            case Responses.TRADE -> ClientPacketSender.sendOpenSellShopRequest();
-            case Responses.ACCEPT -> ClientPacketSender.acceptDerekOffer();
-            case Responses.REFUSE -> ClientPacketSender.refuseDerekOffer();
-        }
+        ClientPlayNetworking.send(new DialogResponsePayload(response.specialAction));
     }
 
     private boolean finishedRenderingLine() {

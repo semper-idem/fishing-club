@@ -9,9 +9,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
+import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.registry.ComponentRegistry;
 import net.semperidem.fishingclub.registry.EntityTypeRegistry;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 import net.semperidem.fishingclub.registry.StatusEffectRegistry;
@@ -103,7 +105,7 @@ public class Spells {
                 }
                 ItemStack clonedStack = ItemRegistry.CLONED_ROD.getDefaultStack();
                 clonedStack.applyComponentsFrom(rodStack.getComponents());
-                clonedNbt.putLong("creation_tick", source.getWorld().getTime());
+                clonedStack.set(ComponentRegistry.CREATION_TICK, source.getWorld().getTime());
                 source.giveItemStack(clonedStack);
             }
         });
@@ -112,8 +114,7 @@ public class Spells {
             public void cast(ServerPlayerEntity source){
                 //TODO Make only on Derek per world
                 //TODO Add condition to spawn only in water or near water
-                //ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-                EntityTypeRegistry.DEREK_ENTITY.spawn(source.getWorld(), null, null, null, source.getBlockPos(), SpawnReason.MOB_SUMMONED, true, false);
+                source.getServerWorld().spawnEntity(new FishermanEntity(source.getWorld(), ItemStack.EMPTY, source.getUuid()));
             }
         });
     }

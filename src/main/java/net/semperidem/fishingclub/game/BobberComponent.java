@@ -2,10 +2,9 @@ package net.semperidem.fishingclub.game;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOAT_BOBBER_SIZE;
-import static net.semperidem.fishingclub.item.fishing_rod.FishingRodPartController.getStat;
-import static net.semperidem.fishingclub.item.fishing_rod.FishingRodStatType.BOBBER_WIDTH;
 import static net.semperidem.fishingclub.registry.StatusEffectRegistry.BOBBER_BUFF;
 
 public class BobberComponent {
@@ -34,17 +33,9 @@ public class BobberComponent {
         this.maxPositionX = 1 - length / 2;
     }
 
-    public void readInitialData(PacketByteBuf buf) {
-        this.length = buf.readFloat();
-    }
 
-    public void writeInitialData(PacketByteBuf buf) {
-        buf.writeFloat(length);
-    }
-
-
-    public void readData(PacketByteBuf buf) {
-        this.positionX = buf.readFloat();
+    public void consumeData(FishingGameTickPayload payload) {
+        this.positionX = payload.bobberPositionX();
     }
 
     public void writeData(PacketByteBuf buf) {
@@ -54,7 +45,7 @@ public class BobberComponent {
 
     private float calculateLength(){
 
-        float lengthMultiplier = 0.9f + getStat(parent.hookedFish.caughtUsing, BOBBER_WIDTH);
+        float lengthMultiplier = 1;
 
         boolean isFromBoat = parent.fishingCard.isFishingFromBoat();
         boolean hasPerk = parent.fishingCard.hasPerk(BOAT_BOBBER_SIZE);
@@ -89,16 +80,16 @@ public class BobberComponent {
     }
 
     private float getBaseResistance() {
-        float levelDifference = MathHelper.clamp(parent.fishingCard.getLevel() - parent.hookedFish.level, -50, 50);
-       return (parent.hookedFish.level + 50) * 0.04f * (0.0375f + levelDifference / 50f * 0.0125f);
+        float levelDifference = MathHelper.clamp(parent.fishingCard.getLevel() - parent.hookedFish.level(), -50, 50);
+       return (parent.hookedFish.level() + 50) * 0.04f * (0.0375f + levelDifference / 50f * 0.0125f);
     }
 
     private float getCurrentResistance() {
-        float fishDistanceFromCenterPercent = parent.fishComponent.getPositionX() - 0.5f;
+        float fishDistanceFromCenterPercent = parent.fishController.getPositionX() - 0.5f;
         if (Math.abs(fishDistanceFromCenterPercent) < 0.01f) {
             return 0;
         }
-        return (fishDistanceFromCenterPercent) * baseResistance * parent.fishComponent.getStaminaPercentage();
+        return (fishDistanceFromCenterPercent) * baseResistance * parent.fishController.getStaminaPercentage();
     }
 
     public float getPositionX() {
@@ -109,11 +100,11 @@ public class BobberComponent {
         return length;
     }
 
-    public boolean hasFish(FishComponent fishComponent) {
-        if (fishComponent.isFishJumping()) {
+    public boolean hasFish(FishController fishController) {
+        if (fishController.isFishJumping()) {
             return false;
         }
-        float fishPositionX = fishComponent.getPositionX();
-        return Math.abs(positionX - fishPositionX) <= (length - FishComponent.FISH_LENGTH + 0.001) * 0.5f;
+        float fishPositionX = fishController.getPositionX();
+        return Math.abs(positionX - fishPositionX) <= (length - FishController.FISH_LENGTH + 0.001) * 0.5f;
     }
 }

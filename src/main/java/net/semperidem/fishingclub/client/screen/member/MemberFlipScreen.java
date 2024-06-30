@@ -1,12 +1,11 @@
 package net.semperidem.fishingclub.client.screen.member;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.util.TextUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
 import static net.semperidem.fishingclub.util.TextUtil.TEXT_HEIGHT;
@@ -99,10 +98,10 @@ public class MemberFlipScreen extends MemberSubScreen {
 
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
-        parent.drawContainerBox(matrixStack, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
-        parent.drawContainerBox(matrixStack, historyXLeft - 2, historyMaxY + 1, historyXRight + 3, historyY + 10, true);
-        textRenderer.drawWithShadow(matrixStack,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
+        parent.drawContainerBox(context, historyXLeft - 2, historyMaxY + 1, historyXRight + 3, historyY + 10, true);
+        context.drawTextWithShadow(textRenderer,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
         int historyEntryY = historyY;
         ArrayList<String> tossHistory = parent.getScreenHandler().getCoinFlipHistory();
         for(int i = tossHistory.size() - 1; i >= 0; i--) {
@@ -114,15 +113,15 @@ public class MemberFlipScreen extends MemberSubScreen {
             if (parts.length != 4) {
                 continue;
             }
-            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
-            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
-            textRenderer.drawWithShadow(matrixStack,  Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
-            TextUtil.drawOutlinedTextRightAlignedTo(textRenderer, matrixStack, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+            context.drawTextWithShadow(textRenderer, Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
+            context.drawTextWithShadow(textRenderer, Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
+            context.drawTextWithShadow(textRenderer, Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
+            TextUtil.drawOutlinedTextRightAlignedTo(textRenderer, context, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
             historyEntryY -= TEXT_HEIGHT;
 
         }
 
 
-        super.render(matrixStack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 }

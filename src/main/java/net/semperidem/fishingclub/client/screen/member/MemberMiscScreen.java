@@ -2,9 +2,8 @@ package net.semperidem.fishingclub.client.screen.member;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.network.ClientPacketSender;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.payload.TitleClaimPayload;
 
 import java.util.Optional;
@@ -79,7 +78,7 @@ public class MemberMiscScreen extends MemberSubScreen {
 
         resetPerksButton = new DemandingButtonWidget(resetButtonX, resetButtonY, BUTTON_WIDTH, BUTTON_HEIGHT, Text.literal("Reset"), button -> {
             if (parent.getScreenHandler().getCard().canResetPerks()) {
-                ClientPacketSender.sendResetPerk();
+                parent.getScreenHandler().getCard().resetPerks();
                 button.active = false;
             }
         }, () -> parent.getScreenHandler().getCard().canResetPerks());
