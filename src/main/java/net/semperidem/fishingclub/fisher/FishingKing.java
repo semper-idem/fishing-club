@@ -69,14 +69,14 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
         if ((this.objective = scoreboard.getNullableObjective(FISHING_KING_KEY)) != null) {
             return;
         }
-        this.objective = scoreboard.addObjective(
-                FISHING_KING_KEY,
-                ScoreboardCriterion.DUMMY,
-                Text.of(FISHING_KING_KEY),
-                ScoreboardCriterion.RenderType.INTEGER,
-                true,
-                StyledNumberFormat.EMPTY
-        );
+//        this.objective = scoreboard.addObjective(
+//                FISHING_KING_KEY,
+//                ScoreboardCriterion.DUMMY,
+//                Text.of(FISHING_KING_KEY),
+//                ScoreboardCriterion.RenderType.INTEGER,
+//                true,
+//                StyledNumberFormat.EMPTY
+//        );
     }
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {

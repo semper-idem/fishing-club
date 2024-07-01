@@ -11,6 +11,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -85,9 +86,9 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this(EntityTypeRegistry.HOOK_ENTITY, world);
         this.setOwner(owner);
         this.init(configuration);
-        if (owner instanceof ServerPlayerEntity serverPlayer) {
-            ServerPlayNetworking.send(serverPlayer, new HookPayload(this.fishingRod));
-        }
+//        if (owner instanceof ServerPlayerEntity serverPlayer) {
+//            ServerPlayNetworking.send(serverPlayer, new HookPayload(this.fishingRod));
+//        }
     }
 
     public float getLineLength(){
@@ -102,6 +103,20 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         }
     }
 
+    @Override
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        if (this.playerOwner.getMainHandStack().isOf(MEMBER_FISHING_ROD)) {
+            initClient(this.playerOwner.getMainHandStack());
+            return;
+        }
+        if (this.playerOwner.getOffHandStack().isOf(MEMBER_FISHING_ROD)) {
+            initClient(this.playerOwner.getOffHandStack());
+            return;
+        }
+        //todo request fishing rod itemstack add flag to block skip ticking until fishingrod populated
+    }
+
     public void initClient(ItemStack fishingRod) {
         this.init(MEMBER_FISHING_ROD.getRodConfiguration(fishingRod));
     }
@@ -109,7 +124,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     private void init(RodConfigurationComponent configuration) {
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.configuration = configuration;
-        this.fishingRod = configuration.fishingRod();
+        this.fishingRod = configuration.fishingRod().orElseThrow();
         this.maxLineLength = configuration.maxLineLength();
         this.maxEntityMagnitude = configuration.weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(ComponentRegistry.LINE_LENGTH, 8);

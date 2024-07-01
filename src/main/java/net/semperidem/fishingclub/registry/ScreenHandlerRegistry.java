@@ -23,10 +23,6 @@ public class ScreenHandlerRegistry {
     public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGamePayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<DialogScreenHandler, DialogPayload> DIALOG_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
-//    public static ExtendedScreenHandlerType<LeaderboardScreenHandler> LEADERBOARD_SCREEN = new
-//            ExtendedScreenHandlerType<>(LeaderboardScreenHandler::new);
-//    public static ScreenHandlerType<FishingNetScreenHandler> FISHING_NET_SCREEN_HANDLER; =new
-//            ExtendedScreenHandlerType<>(FishingNetScreenHandler::new);
 
     public static void register() {
         FISHING_CARD_SCREEN =
@@ -54,11 +50,6 @@ public class ScreenHandlerRegistry {
                         FishingClub.getIdentifier("member_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 MemberScreenHandler::new, MemberPayload.CODEC));
-
-//        Registry.register(Registries.SCREEN_HANDLER,
-//                FishingClub.getIdentifier("member_screen_handler"), MEMBER_SCREEN);
-//        Registry.register(Registries.SCREEN_HANDLER,
-//                FishingClub.getIdentifier("fishing_net_screen_handler"), FISHING_NET_SCREEN_HANDLER);
     }
 
     public static void registerClient() {
@@ -66,8 +57,5 @@ public class ScreenHandlerRegistry {
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
         HandledScreens.register(DIALOG_SCREEN, DialogScreen::new);
         HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
-//        HandledScreens.register(LEADERBOARD_SCREEN, LeaderboardScreen::new);
-//        HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
-//        HandledScreens.register(FISHING_NET_SCREEN_HANDLER, FishingNetScreen::new);
     }
 }

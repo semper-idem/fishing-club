@@ -9,8 +9,10 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.semperidem.fishingclub.registry.ItemRegistry;
 
+import java.util.Optional;
+
 public record RodConfigurationComponent(
-        ItemStack fishingRod,
+        Optional<ItemStack> fishingRod,
         RodPartComponent coreComponent,
         RodPartComponent lineComponent,
         Integer maxLineLength,
@@ -21,7 +23,7 @@ public record RodConfigurationComponent(
 ) {
 
     public static final RodConfigurationComponent DEFAULT = new RodConfigurationComponent(
-            ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack(),
+            Optional.empty(),
             RodPartComponent.DEFAULT,
             RodPartComponent.DEFAULT,
             8,
@@ -32,7 +34,7 @@ public record RodConfigurationComponent(
     );
 
     public static Codec<RodConfigurationComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ItemStack.CODEC.fieldOf("fishingRod").forGetter(RodConfigurationComponent::fishingRod),
+            ItemStack.CODEC.optionalFieldOf("fishingRod").forGetter(RodConfigurationComponent::fishingRod),
             RodPartComponent.CODEC.fieldOf("coreComponent").forGetter(RodConfigurationComponent::coreComponent),
             RodPartComponent.CODEC.fieldOf("lineComponent").forGetter(RodConfigurationComponent::lineComponent),
             Codec.INT.fieldOf("maxLineLength").forGetter(RodConfigurationComponent::maxLineLength),
@@ -43,6 +45,19 @@ public record RodConfigurationComponent(
     ).apply(instance, RodConfigurationComponent::new));
 
     public static PacketCodec<RegistryByteBuf, RodConfigurationComponent>  PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
+
+    public static RodConfigurationComponent of(ItemStack fishingRod) {
+        return new RodConfigurationComponent(
+                Optional.of(fishingRod),
+                RodPartComponent.DEFAULT,
+                RodPartComponent.DEFAULT,
+                8,
+                1f,
+                10,
+                0,
+                true
+        );
+    }
 
     public RodConfigurationComponent equipCore(RodPartComponent core) {
         RodConfigurationController controller = equip(core, this.lineComponent);

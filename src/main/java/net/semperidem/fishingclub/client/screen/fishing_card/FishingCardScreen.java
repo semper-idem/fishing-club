@@ -245,10 +245,10 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-//        super.render(context, mouseX, mouseY, delta);
-//        renderDetails(context);
-//        renderSelectedPerkDescription(context);
-//        renderTooltip(context, mouseX, mouseY);
+        super.render(context, mouseX, mouseY, delta);
+        renderDetails(context);
+        renderSelectedPerkDescription(context);
+       // renderTooltip(context, mouseX, mouseY);
     }
 
 

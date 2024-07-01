@@ -1,6 +1,0 @@
-{
-    "parent": "fishing-club:item/custom_fishing_rod",
-    "textures": {
-        "layer0": "fishing-club:item/custom_fishing_rod_cast"
-    }
-}

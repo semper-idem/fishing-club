@@ -10,6 +10,8 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
 import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 
 import java.util.HashSet;
 
@@ -27,13 +29,15 @@ public class ItemRegistry {
   public static Item GOLD_FISH;
   public static Item DEBUG;
   public static ItemGroup FISHING_CLUB_GROUP;
+  public static PartItem EMPTY_COMPONENT;
 
   private static final HashSet<ItemStack> FISHING_ITEMS = new HashSet<>();
 
   public static void register() {
     FISHING_NET =registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
     DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new DoubleFishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
-    MEMBER_FISHING_ROD = registerItem(("custom_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100)));
+    EMPTY_COMPONENT = registerItem("empty_component", new PartItem(new Item.Settings()));
+    MEMBER_FISHING_ROD = registerItem(("member_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(ComponentRegistry.ROD_CONFIGURATION, RodConfigurationComponent.DEFAULT)));
     FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
     FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
     FISHER_VEST = registerItem(("fisher_vest"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings()));

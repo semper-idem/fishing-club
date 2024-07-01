@@ -20,15 +20,8 @@ public record HookPayload(ItemStack fishingRod) implements CustomPayload {
         }
 
         public static void consumePayload(HookPayload payload, ClientPlayNetworking.Context context) {
-                try (MinecraftClient client = context.client()) {
-                        client.execute(() -> {
-                                if (client.player == null) {
-                                        return;
-                                }
-                                if (client.player.fishHook instanceof HookEntity hookEntity) {
-                                        hookEntity.initClient(payload.fishingRod());
-                                }
-                        });
+                if (context.player().fishHook instanceof HookEntity hookEntity) {
+                        hookEntity.initClient(payload.fishingRod());
                 }
         }
 }

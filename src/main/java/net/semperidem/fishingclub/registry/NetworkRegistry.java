@@ -11,7 +11,7 @@ public class NetworkRegistry {
         PayloadTypeRegistry.playS2C().register(HookPayload.ID, HookPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(CoinFlipResultPayload.ID, CoinFlipResultPayload.CODEC);
 
-        PayloadTypeRegistry.playC2S().register(HookClientPayload.ID, HookClientPayload.CODEC);
+       //PayloadTypeRegistry.playC2S().register(HookClientPayload.ID, HookClientPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CoinFlipPayload.ID, CoinFlipPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(TitleClaimPayload.ID, TitleClaimPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SellFishPayload.ID, SellFishPayload.CODEC);
@@ -30,15 +30,15 @@ public class NetworkRegistry {
         ClientPlayNetworking.registerGlobalReceiver(CoinFlipResultPayload.ID, CoinFlipResultPayload::consumePayload);
     }
 
-    public static void registerCommon() {
+    public static void registerServer() {
         registerPayload();
-        ServerPlayNetworking.registerGlobalReceiver(HookClientPayload.ID, HookClientPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(FishingCardPayload.ID, FishingCardPayload::consumePayload);
+      //  ServerPlayNetworking.registerGlobalReceiver(HookClientPayload.ID, HookClientPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CoinFlipPayload.ID, CoinFlipPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(TitleClaimPayload.ID, TitleClaimPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishPayload.ID, SellFishPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(DialogResponsePayload.ID, DialogResponsePayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(DialogPayload.ID, DialogPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(FishingCardPayload.ID, FishingCardPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CheckoutPayload.ID, CheckoutPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SpellCastPayload.ID, SpellCastPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishDirectPayload.ID, SellFishDirectPayload::consumePayload);

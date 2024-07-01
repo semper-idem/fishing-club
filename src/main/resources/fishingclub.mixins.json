@@ -10,7 +10,6 @@
     "common.LivingEntityMixin",
     "common.MinecraftServerMixin",
     "common.PlayerEntityMixin",
-    "common.ServerPlayerEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [

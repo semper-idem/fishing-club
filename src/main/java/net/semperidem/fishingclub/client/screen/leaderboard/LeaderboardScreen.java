@@ -83,7 +83,7 @@ public class LeaderboardScreen  extends Screen {
 
         //currentLeaderboard = handler.getCurrentLeaderboard();
         exitButton = new MemberButton(exitButtonX,exitButtonY,16,16, Text.empty(), button -> {
-            ClientPlayNetworking.send(new FishingCardPayload());
+            ClientPlayNetworking.send(new FishingCardPayload(3));
         });
         exitButton.setTexture(MemberButton.BUTTON_EXIT_TEXTURE);
         //nextButton = new MemberButton(nextButtonX,nextButtonY,24,20,Text.literal(">>"), button -> currentLeaderboard = handler.getNextLeaderboard());

@@ -116,36 +116,36 @@ public class Leaderboard<T> {
     }
 
     public void loadFromPath(String path) {
-        try {
-            if (!Files.exists(Path.of(path))) {
-                return;
-            }
-            //TODO Possible performance hit on game load
-            Gson gson = new GsonBuilder().create();
-            FileReader fileReader = new FileReader(getFilePath(path));
-            JsonReader jsonReader = new JsonReader(fileReader);
-            Entry[] entries = gson.fromJson(jsonReader, Entry[].class);
-            for(Entry entry : entries) {
-                standings.add(entry);
-                unorderedStandings.put(entry.key, entry);
-            }
-            fileReader.close();
-            jsonReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (!Files.exists(Path.of(path))) {
+//                return;
+//            }
+//            //TODO Possible performance hit on game load
+//            Gson gson = new GsonBuilder().create();
+//            FileReader fileReader = new FileReader(getFilePath(path));
+//            JsonReader jsonReader = new JsonReader(fileReader);
+//            Entry[] entries = gson.fromJson(jsonReader, Entry[].class);
+//            for(Entry entry : entries) {
+//                standings.add(entry);
+//                unorderedStandings.put(entry.key, entry);
+//            }
+//            fileReader.close();
+//            jsonReader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void saveToPath(String path) {
-        try {
-            Gson gson = new Gson();
-            Files.createDirectories(Path.of(path));
-            FileWriter fileWriter = new FileWriter(getFilePath(path));
-            gson.toJson(standings, fileWriter);
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Gson gson = new Gson();
+//            Files.createDirectories(Path.of(path));
+//            FileWriter fileWriter = new FileWriter(getFilePath(path));
+//            gson.toJson(standings, fileWriter);
+//            fileWriter.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

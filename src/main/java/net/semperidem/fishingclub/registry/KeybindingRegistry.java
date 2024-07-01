@@ -45,7 +45,12 @@ public class KeybindingRegistry {
     private static ClientTickEvents.EndTick openFisherInfoScreen(){
         return client -> {
             while (FISHER_INFO_SCREEN_KB.wasPressed()) {
-                ClientPlayNetworking.send(new FishingCardPayload());
+                System.out.println("packet send123");
+                try {
+                    ClientPlayNetworking.send(new FishingCardPayload(1));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         };
     }

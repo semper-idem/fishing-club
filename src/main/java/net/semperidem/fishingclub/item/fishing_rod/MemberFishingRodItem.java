@@ -1,9 +1,11 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -17,6 +19,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.registry.ComponentRegistry;
 
 public class MemberFishingRodItem extends FishingRodItem {
@@ -29,7 +32,7 @@ public class MemberFishingRodItem extends FishingRodItem {
 
   @Override
   public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-    ItemStack fishingRod = user.getStackInHand(hand);
+   ItemStack fishingRod = user.getStackInHand(hand);
 
     if (isCast(user)) {
       reelRod(world, user, hand, fishingRod);
@@ -59,22 +62,24 @@ public class MemberFishingRodItem extends FishingRodItem {
     if (fishingRod.getMaxDamage() - fishingRod.getDamage() == 1) {
       return;
     }
-    if (!world.isClient) {
-      RodConfigurationComponent configuration = getRodConfiguration(fishingRod);
+    if (!world.isClient && user instanceof ServerPlayerEntity serverPlayer) {
+      RodConfigurationComponent configuration = fishingRod.getOrDefault(ComponentRegistry.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
       float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
       fishingRod.set(ComponentRegistry.CAST_POWER, power);
       configuration.damage(2, PartItem.DamageSource.CAST, user);
+      FishingCard.of(serverPlayer).addSkillPoints(1);
+
       world.spawnEntity(new HookEntity(user, world, configuration));
     }
-    world.playSound(
-        null,
-        user.getX(),
-        user.getY(),
-        user.getZ(),
-        SoundEvents.ENTITY_FISHING_BOBBER_THROW,
-        SoundCategory.NEUTRAL,
-        0.5f,
-        0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+//    world.playSound(
+//        null,
+//        user.getX(),
+//        user.getY(),
+//        user.getZ(),
+//        SoundEvents.ENTITY_FISHING_BOBBER_THROW,
+//        SoundCategory.NEUTRAL,
+//        0.5f,
+//        0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
     user.incrementStat(Stats.USED.getOrCreateStat(this));
     user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
   }
@@ -102,7 +107,7 @@ public class MemberFishingRodItem extends FishingRodItem {
   }
 
   public RodConfigurationComponent getRodConfiguration(ItemStack fishingRod) {
-    return fishingRod.get(ComponentRegistry.ROD_CONFIGURATION);
+    return fishingRod.getOrDefault(ComponentRegistry.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
   }
 
   @Override

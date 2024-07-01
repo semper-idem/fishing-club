@@ -9,14 +9,12 @@ import static net.minecraft.util.Rarity.*;
 import static net.semperidem.fishingclub.registry.ItemRegistry.registerItem;
 
 public class RodPartItems {
-  public static PartItem EMPTY_COMPONENT;
   public static CorePartItem CORE_WOODEN_OAK;
   public static CorePartItem CORE_IRON;
   public static LinePartItem LINE_SPIDER;
   public static LinePartItem LINE_WOOL;
 
   public static void registerParts() {
-    EMPTY_COMPONENT = registerItem("empty_component", new PartItem(new Item.Settings()));
     CORE_WOODEN_OAK =
         registerItem(
             "core_wooden_oak",

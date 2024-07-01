@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -17,6 +18,7 @@ import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.LineArrowEntity;
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
@@ -39,7 +41,6 @@ public class EntityTypeRegistry {
     EntityModelLayerRegistry.registerModelLayer(
         MODEL_FISHERMAN_LAYER, FishermanEntityModel::getTextureModelData);
 
-    FabricDefaultAttributeRegistry.register(DEREK_ENTITY, FishermanEntity.createMobAttributes());
 
     DEREK_ENTITY =
         Registry.register(
@@ -49,6 +50,7 @@ public class EntityTypeRegistry {
                     SpawnGroup.CREATURE, (entityType, world) -> new FishermanEntity(world))
                 .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                 .build());
+    FabricDefaultAttributeRegistry.register(DEREK_ENTITY, FishermanEntity.createMobAttributes());
 
     HOOK_ENTITY =
         Registry.register(
@@ -56,7 +58,6 @@ public class EntityTypeRegistry {
             FishingClub.getIdentifier("hook_entity"),
             FabricEntityTypeBuilder.<HookEntity>create(SpawnGroup.MISC, HookEntity::new)
                 .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
-                .disableSummon()
                 .disableSaving()
                 .trackRangeBlocks(128)
                 .trackedUpdateRate(20)
@@ -87,7 +88,7 @@ public class EntityTypeRegistry {
                 .build());
     
     EntityRendererRegistry.register(DEREK_ENTITY, FishermanEntityRenderer::new);
-   // EntityRendererRegistry.register(HOOK_ENTITY, HookEntityRenderer::new);
+    EntityRendererRegistry.register(HOOK_ENTITY, FishingBobberEntityRenderer::new);
     EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
     EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
   }

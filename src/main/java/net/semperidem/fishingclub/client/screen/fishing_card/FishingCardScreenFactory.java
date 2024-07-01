@@ -30,6 +30,6 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<Fi
 
     @Override
     public FishingCardPayload getScreenOpeningData(ServerPlayerEntity player) {
-    return new FishingCardPayload();
+    return new FishingCardPayload(2);
     }
 }
