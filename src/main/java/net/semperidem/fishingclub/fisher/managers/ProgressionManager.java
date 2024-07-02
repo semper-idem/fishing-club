@@ -1,10 +1,7 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -16,7 +13,7 @@ import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
 import java.util.HashMap;
 
-public class ProgressionManager extends DataManager{
+public class ProgressionManager extends DataManager {
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
     private static final float PLAYER_EXP_RATIO = 0.1f;
@@ -39,6 +36,7 @@ public class ProgressionManager extends DataManager{
 
     public void resetCooldown(){
         spells.forEach((key, spell) -> spell.resetCooldown());
+        markDirty();
     }
 
 
@@ -52,6 +50,7 @@ public class ProgressionManager extends DataManager{
         perks.clear();
         spells.clear();
         addPerkPoints(refundPerkPoints);
+        markDirty();
     }
 
     public int getLevel() {
@@ -62,6 +61,7 @@ public class ProgressionManager extends DataManager{
         int currentLevel = this.level;
         this.level = level;
         this.perkPoints += (level - currentLevel);
+        markDirty();
     }
     public int getExp() {
         return exp;
@@ -78,7 +78,10 @@ public class ProgressionManager extends DataManager{
             this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
         }
         perkPoints--;
+        markDirty();
     }
+
+
 
     public boolean hasRequiredPerk(FishingPerk perk){
         return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
@@ -91,6 +94,7 @@ public class ProgressionManager extends DataManager{
 
     public void addPerkPoints(int amount){
         this.perkPoints += amount;
+        markDirty();
     }
 
     public int getPerkPoints(){
@@ -108,6 +112,7 @@ public class ProgressionManager extends DataManager{
         SpellInstance spellInstance = spells.get(perkName);
         spellInstance.use((ServerPlayerEntity) trackedFor.getHolder(), target);
         spells.put(perkName, spellInstance);
+        markDirty();
     }
 
     public int nextLevelXP(){
@@ -129,6 +134,7 @@ public class ProgressionManager extends DataManager{
             LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
             nextLevelXP = nextLevelXP();
         }
+        markDirty();
     }
 
     public HashMap<String, FishingPerk> getPerks(){
@@ -141,6 +147,9 @@ public class ProgressionManager extends DataManager{
 
     @Override
     public void readNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!fishingCardNbt.contains(TAG)) {
+            return;
+        }
         NbtCompound progressionNbt = fishingCardNbt.getCompound(TAG);
         level = progressionNbt.getInt(LEVEL_TAG);
         exp = progressionNbt.getInt(EXP_TAG);
@@ -152,11 +161,7 @@ public class ProgressionManager extends DataManager{
 
     private void readPerks(NbtCompound fishingCardNbt){
         perks.clear();
-        NbtList perkListTag = fishingCardNbt.getList(PERKS_TAG, NbtElement.STRING_TYPE);
-        perkListTag.forEach(nbtElement -> {
-            FishingPerk perk = FishingPerks.getPerkFromName(nbtElement.asString());
-            perks.put(perk.getName(), perk);
-        });
+        this.perks.putAll(FishingPerks.fromByteArray(fishingCardNbt.getByteArray(PERKS_TAG)));
     }
 
     private void readSpells(NbtCompound progressionNbt){
@@ -170,6 +175,9 @@ public class ProgressionManager extends DataManager{
 
     @Override
     public void writeNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!isDirty) {
+            return;
+        }
         NbtCompound progressionNbt = new NbtCompound();
         progressionNbt.putInt(LEVEL_TAG, level);
         progressionNbt.putInt(EXP_TAG, exp);
@@ -178,12 +186,11 @@ public class ProgressionManager extends DataManager{
         writePerks(progressionNbt);
         writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
+        this.isDirty = false;
     }
 
     public void writePerks(NbtCompound progressionNbt){
-        NbtList perksTag = new NbtList();
-        perks.forEach((fishingPerkName, fishingPerk) -> perksTag.add(NbtString.of(fishingPerkName)));
-        progressionNbt.put(PERKS_TAG, perksTag);
+        progressionNbt.putByteArray(PERKS_TAG, FishingPerks.toByteArray(this.perks));//todo with spells
     }
 
     public void writeSpells(NbtCompound progressionNbt){

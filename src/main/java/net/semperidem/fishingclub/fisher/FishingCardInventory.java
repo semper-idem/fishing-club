@@ -14,8 +14,10 @@ public class FishingCardInventory implements Inventory{
     DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
     ItemStack sharedBait = ItemStack.EMPTY;
     int credit = 0;
+    boolean isDirty = true;
 
     private static final String CREDIT_TAG = "credit";
+    private static final String BAIT_TAG = "bait";
 
     public int getCredit(){
         return credit;
@@ -31,6 +33,7 @@ public class FishingCardInventory implements Inventory{
 
     public void setSharedBait(ItemStack baitToShare){
         this.sharedBait = baitToShare;
+        this.isDirty = true;
     }
 
     @Override
@@ -75,7 +78,6 @@ public class FishingCardInventory implements Inventory{
 
     @Override
     public void markDirty() {
-
     }
 
     @Override
@@ -89,12 +91,23 @@ public class FishingCardInventory implements Inventory{
     }
 
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
-        tag.putInt(CREDIT_TAG, credit);
+        if (!isDirty) {
+            return;
+        }
+        this.isDirty = false;
         Inventories.writeNbt(tag, inventory, wrapperLookup);
+        tag.putInt(CREDIT_TAG, credit);
+        if (sharedBait.isEmpty()) {
+            return;
+        }
+        tag.put(BAIT_TAG, sharedBait.encode(wrapperLookup));
     }
 
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
-        credit = tag.getInt(CREDIT_TAG);
+        if (tag.contains(CREDIT_TAG)) {
+            credit = tag.getInt(CREDIT_TAG);
+        }
         Inventories.readNbt(tag, inventory, wrapperLookup);
+        sharedBait = ItemStack.fromNbt(wrapperLookup, tag.get(BAIT_TAG)).orElse(ItemStack.EMPTY);
     }
 }

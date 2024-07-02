@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.FishingClub;
@@ -58,6 +59,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         this.holder = playerEntity;
     }
 
+    public boolean isClient() {
+        return holder.getWorld().isClient();
+    }
+
     @Override
     public void readFromNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         progressionManager.readNbt(fishingCardNbt, wrapperLookup);
@@ -78,16 +83,13 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void giveDerekFish() {
         historyManager.giveDerekFish();
-        FISHING_CARD.sync(this.holder);
     }
     public void addUnclaimedReward(ItemStack rewardStack) {
         historyManager.addUnclaimedReward(rewardStack);
-        FISHING_CARD.sync(this.holder);
     }
 
     public void claimReward(ItemStack rewardStack) {
         historyManager.claimReward(rewardStack);
-        FISHING_CARD.sync(this.holder);
     }
 
     public ArrayList<ItemStack> getUnclaimedRewards() {
@@ -109,22 +111,16 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void setLevel(int level) {
         progressionManager.setLevel(level);
-        FISHING_CARD.sync(this.holder);
     }
 
     public void addSkillPoints(int amount){
         progressionManager.addPerkPoints(amount);
-        if (this.holder.getWorld().isClient) {
-            return;
-        }
-        FISHING_CARD.sync(this.holder);
     }
 
     public void resetPerks(){
         if (canResetPerks()) {
             progressionManager.resetPerks();
         }
-        FISHING_CARD.sync(this.holder);
     }
 
     public boolean canResetPerks() {
@@ -144,7 +140,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void useSpell(String perkName, Entity target){
         progressionManager.useSpell(perkName, target);
-        FISHING_CARD.sync(this.holder);
     }
 
     public int nextLevelXP(){
@@ -153,7 +148,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void grantExperience(double gainedXP){
         progressionManager.grantExperience(gainedXP);
-        FISHING_CARD.sync(this.holder);
     }
 
     public int getLevel() {
@@ -174,12 +168,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void setSummonRequest(ServerPlayerEntity target){
         summonRequestManager.set(target);
-        FISHING_CARD.sync(this.holder);
     }
 
     public void acceptSummonRequest(){
         summonRequestManager.execute();//todo put cooldown on summon
-        FISHING_CARD.sync(this.holder);
     }
 
     public HashSet<DialogKey> getKeys(FishermanEntity.SummonType summonType) {
@@ -201,7 +193,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void fishHooked(IHookEntity hookEntity){;
         historyManager.fishHooked(hookEntity);
-        FISHING_CARD.sync(this.holder);
     }
 
     public void fishCaught(FishComponent fish){
@@ -219,7 +210,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
             tracker.record(holder, fish);
             tracker.record(holder, this, tracker.highestLevel);
         }
-        FISHING_CARD.sync(this.holder);
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -228,7 +218,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void addPerk(String perkName){
         progressionManager.addPerk(perkName);
-        FISHING_CARD.sync(this.holder);
     }
 
     public boolean hasPerk(FishingPerk perk){
@@ -241,7 +230,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void linkTarget(Entity target){
         linkingManager.linkTarget(target);
-        FISHING_CARD.sync(this.holder);
     }
 
     public boolean addCredit(int credit) {
@@ -253,8 +241,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
             LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
             tracker.record(holder, this, tracker.highestCredit);
         }
-
-        FISHING_CARD.sync(this.holder);
         return true;
     }
 
@@ -262,18 +248,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         linkingManager.requestSummon();
     }
 
-    public void addCapeTime(long timeToAdd) {//todo remove // this will not work if cape gets claimed when king is offline
-        historyManager.addCapeTime(timeToAdd);
-        FISHING_CARD.sync(this.holder);
-    }
-
-    public float getCapeTime() {
-        return historyManager.getTotalCapeTime();
-    }
-
     public void shareBait() {
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
-        FISHING_CARD.sync(this.holder);
     }
 
     @Override

@@ -51,7 +51,7 @@ public class LinkingManager extends DataManager {
                                 .getServer()
                                 .getPlayerManager()
                                 .getPlayer(linkedFisher)
-                ).shareStatusEffect(getWeakerEffect(sei))
+                ).shareStatusEffect(getWeakerEffect(sei))//this is prob too complicated todo verify
         );
     }
 
@@ -100,6 +100,7 @@ public class LinkingManager extends DataManager {
         }
         linkedFishers.add(targetUUID);
         messageLink(trackedFor.getHolder(), playerTarget);
+        markDirty();
     }
 
     public void requestSummon() {
@@ -113,6 +114,7 @@ public class LinkingManager extends DataManager {
         }
         FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
         messageRequestSummon(linkedFisher);
+        markDirty();
     }
 
 
@@ -145,6 +147,9 @@ public class LinkingManager extends DataManager {
 
     @Override
     public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!nbtCompound.contains(TAG)) {
+            return;
+        }
         linkedFishers = new ArrayList<>();
         NbtList linkedFishersNbt = nbtCompound.getList(TAG, NbtElement.STRING_TYPE);
         linkedFishersNbt.forEach(nbtElement -> linkedFishers.add(UUID.fromString(nbtElement.asString())));
@@ -152,9 +157,13 @@ public class LinkingManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!this.isDirty) {
+            return;
+        }
         NbtList linkedFishersNbt = new NbtList();
         linkedFishers.forEach(linkedFisher -> linkedFishersNbt.add(NbtString.of(linkedFisher.toString())));
         nbtCompound.put(TAG, linkedFishersNbt);
+        this.isDirty = false;
     }
 
     private static final String TAG ="linked";

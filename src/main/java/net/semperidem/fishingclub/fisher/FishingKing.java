@@ -144,6 +144,7 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
 
         LevelUpEffect.RARE_EFFECT.execute(claimedBy.getServerWorld(), claimedBy.getX(), claimedBy.getY(), claimedBy.getZ());//todo add unique effect
         this.serverWorld.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessageToClient(Text.literal(this.name).append(CLAIM_TEXT), true));
+        FISHING_KING.sync(this.scoreboard);
     }
 
     public long getCurrentReign(){

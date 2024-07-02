@@ -30,9 +30,7 @@ public class HistoryManager extends DataManager {
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
-    private long totalCapeTime = 0;
     private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
-    private FishComponent fish;
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
@@ -40,18 +38,12 @@ public class HistoryManager extends DataManager {
 
     public void meetDerek(FishermanEntity.SummonType summonType) {
         derekMet.add(summonType.name());
-    }
-
-    public void addCapeTime(long time) {
-        totalCapeTime += time;
-    }
-
-    public long getTotalCapeTime(){
-        return totalCapeTime;
+        markDirty();
     }
 
     public void giveDerekFish(){
         this.gaveDerekFish = true;
+        markDirty();
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -60,6 +52,7 @@ public class HistoryManager extends DataManager {
 
     public void addUnclaimedReward(ItemStack rewardStack) {
         unclaimedRewards.add(rewardStack);
+        markDirty();
     }
 
     public void claimReward(ItemStack rewardStack) {
@@ -67,6 +60,7 @@ public class HistoryManager extends DataManager {
             return;
         }
         unclaimedRewards.remove(rewardStack);
+        markDirty();
     }
 
     public ArrayList<ItemStack> getUnclaimedRewards() {
@@ -84,9 +78,10 @@ public class HistoryManager extends DataManager {
     public void fishHooked(IHookEntity hookEntity) {
        //lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
         checkChunk(hookEntity.getFishedInChunk());
+        markDirty();//checkChunk writes
     }
 
-    public void recordFishCaught(FishComponent fish) {
+    private void recordFishCaught(FishComponent fish) {
         String speciesName = fish.speciesName();
         SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
         if (fishAtlas.containsKey(speciesName)) {
@@ -94,10 +89,10 @@ public class HistoryManager extends DataManager {
         }
         speciesStatistics.record(fish);
         fishAtlas.put(speciesName, speciesStatistics);
+        markDirty(); //technically not needed cause we always call "fishCaught"
     }
 
     public void fishCaught(FishComponent fish) {
-        this.fish = fish;
         recordFishCaught(fish);
         if (isFirstCatchOfTheDay()) {
             return;
@@ -109,6 +104,7 @@ public class HistoryManager extends DataManager {
         if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF,1200));
         }
+        markDirty();
     }
 
     public ItemStack getLastUsedBait() {
@@ -152,6 +148,7 @@ public class HistoryManager extends DataManager {
     private void checkChunk(ChunkPos chunkPos) {
         firstCatchInChunk = usedChunks.stream().anyMatch(usedChunk -> usedChunk.matches(chunkPos));
         usedChunks.add(Chunk.create(chunkPos));
+        //markDirty();
     }
 
     private long getCurrentTime() {
@@ -172,7 +169,6 @@ public class HistoryManager extends DataManager {
         derekMet.clear();
         derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
         gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
-        totalCapeTime = historyTag.getLong(TOTAL_CAPE_TIME_TAG);
         NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
         unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt(wrapperLookup, rewardTag).orElse(ItemStack.EMPTY)));
         NbtList fishAtlasTag = historyTag.getList(FISH_ATLAS_TAG, NbtElement.COMPOUND_TYPE);
@@ -184,6 +180,9 @@ public class HistoryManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!isDirty) {
+            return;
+        }
         NbtCompound historyTag = new NbtCompound();
         NbtList usedChunksTag = new NbtList();
         usedChunks.forEach(chunk -> usedChunksTag.add(chunk.toNbt()));
@@ -195,7 +194,6 @@ public class HistoryManager extends DataManager {
         }
         historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
         historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
-        historyTag.putLong(TOTAL_CAPE_TIME_TAG, totalCapeTime);
         NbtList unclaimedRewardsTag = new NbtList();
         unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.encode(wrapperLookup)));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
@@ -203,6 +201,7 @@ public class HistoryManager extends DataManager {
         fishAtlas.forEach((s, speciesStatistics) -> fishAtlasTag.add(speciesStatistics.toNbt()));
         historyTag.put(FISH_ATLAS_TAG, fishAtlasTag);
         nbtCompound.put(TAG, historyTag);
+        this.isDirty = false;
     }
 
     private static class Chunk {
@@ -253,7 +252,6 @@ public class HistoryManager extends DataManager {
     private static final String Z_TAG = "z";
     private static final String DEREK_MET_TAG = "derek_met";
     private static final String WELCOMED_DEREK_TAG = "welcomed_derek";
-    private static final String TOTAL_CAPE_TIME_TAG = "total_cape_time_tag";
     private static final String FISH_ATLAS_TAG = "fish_atlas_tag";
 
 }

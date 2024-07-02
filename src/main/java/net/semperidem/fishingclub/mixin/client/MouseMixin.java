@@ -5,7 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.network.payload.HookClientPayload;
+import net.semperidem.fishingclub.network.payload.HookLinePayload;
 import net.semperidem.fishingclub.registry.KeybindingRegistry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +30,7 @@ public class MouseMixin {
         }
 
         if (this.client.player.fishHook instanceof HookEntity hookEntity) {
-            ClientPlayNetworking.send(new HookClientPayload((int) vertical));
+            ClientPlayNetworking.send(new HookLinePayload((int) vertical));
             hookEntity.scrollLine((int)vertical);
             ci.cancel();
         }

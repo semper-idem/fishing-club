@@ -68,7 +68,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     private Vec3d airResistance = new Vec3d(1,1,1);
     private Vec3d waterResistance = this.airResistance;
 
-    private Vec3d ownerVector;
+    private Vec3d ownerVector = Vec3d.ZERO;
 
     private PlayerEntity playerOwner;
     private FishingCard fishingCard;
@@ -86,9 +86,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this(EntityTypeRegistry.HOOK_ENTITY, world);
         this.setOwner(owner);
         this.init(configuration);
-//        if (owner instanceof ServerPlayerEntity serverPlayer) {
-//            ServerPlayNetworking.send(serverPlayer, new HookPayload(this.fishingRod));
-//        }
+
+    }
+
+    public ItemStack getFishingRod() {
+        return this.fishingRod;
     }
 
     public float getLineLength(){
@@ -114,6 +116,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
             initClient(this.playerOwner.getOffHandStack());
             return;
         }
+
         //todo request fishing rod itemstack add flag to block skip ticking until fishingrod populated
     }
 
@@ -194,6 +197,9 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
 
     @Override
     public void tick() {
+        if (this.playerOwner == null) {
+            return;
+        }
         super.tick();
         if ((!this.getWorld().isClient && this.isOwnerValid(this.playerOwner))) {
             this.discard();

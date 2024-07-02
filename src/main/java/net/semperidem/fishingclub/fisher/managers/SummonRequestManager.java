@@ -9,8 +9,8 @@ import java.util.Objects;
 
 public class SummonRequestManager extends DataManager {
     private static final int REQUEST_VALID_TIME = 600;
-    public String targetUUID;
-    public long requestTick;
+    public String targetUUID = "";
+    public long requestTick = 0L;
 
     public SummonRequestManager(FishingCard requestFor){
         super(requestFor);
@@ -19,6 +19,7 @@ public class SummonRequestManager extends DataManager {
     public void set(ServerPlayerEntity target){
         targetUUID = target.getUuidAsString();
         requestTick = target.getWorld().getTime();
+        markDirty();
     }
 
     public boolean canAccept(){
@@ -36,6 +37,8 @@ public class SummonRequestManager extends DataManager {
         if (!canAccept()){
             return;
         }
+        targetUUID = "";
+        requestTick = 0;
         source.server.getPlayerManager().getPlayerList().stream()
                 .filter(Objects::nonNull)
                 .filter(this::isTarget)
@@ -56,6 +59,9 @@ public class SummonRequestManager extends DataManager {
 
     @Override
     public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!nbtCompound.contains(TAG)) {
+            return;
+        }
         NbtCompound summonTag = nbtCompound.getCompound(TAG);
         targetUUID = summonTag.contains(TARGET_TAG) ? summonTag.getString(TARGET_TAG) : "";
         requestTick = summonTag.contains(REQUEST_TICK_TAG) ? summonTag.getLong(REQUEST_TICK_TAG) : 0;
@@ -63,6 +69,9 @@ public class SummonRequestManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (!isDirty) {
+            return;
+        }
         if (targetUUID == null) {
             return;
         }
@@ -70,6 +79,7 @@ public class SummonRequestManager extends DataManager {
         summonTag.putString(TARGET_TAG, targetUUID);
         summonTag.putLong(REQUEST_TICK_TAG, requestTick);
         nbtCompound.put(TAG, summonTag);
+        this.isDirty = false;
     }
 
     private static final String TAG = "summon";

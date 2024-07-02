@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.fishing_card;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -16,6 +17,7 @@ import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.fisher.perks.Path;
+import net.semperidem.fishingclub.network.payload.AddPerkPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 import java.util.ArrayList;
@@ -191,6 +193,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
             handler.fishingCard.addPerk(selectedPerk.getName());
+            ClientPlayNetworking.send(new AddPerkPayload(selectedPerk.getName()));
             unlockButton.visible = false;
         };
     }

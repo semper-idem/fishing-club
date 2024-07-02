@@ -10,10 +10,10 @@ import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
 
-import static net.semperidem.fishingclub.fisher.perks.FishingPerks.NAME_TO_PERK_MAP;
-import static net.semperidem.fishingclub.fisher.perks.FishingPerks.SKILL_TREE;
+import static net.semperidem.fishingclub.fisher.perks.FishingPerks.*;
 
 public class FishingPerk {
+    static byte LAST_ID = 0;
     String name;
     String label;
     ArrayList<Text> description;
@@ -23,27 +23,33 @@ public class FishingPerk {
     Path path;
     Identifier icon;
     PerkReward reward;
+    public final byte id;
 
 
     FishingPerk(String name){
         this.name = name;
+        this.id = LAST_ID++;
     }
 
     FishingPerk(String name, Path path){
+        this.id = LAST_ID++;
         this.name = name;
         this.path = path;
         NAME_TO_PERK_MAP.put(name, this);
+        ID_TO_PERK_MAP.put(this.id, this);
         if (!SKILL_TREE.containsKey(path)) {
             SKILL_TREE.put(path, new ArrayList<>());
         }
         SKILL_TREE.get(path).add(this);
     }
     FishingPerk(String name, FishingPerk parent){
+        this.id = LAST_ID++;
         this.name = name;
         this.path = parent.path;
         this.parent = parent;
         parent.child = this;
         NAME_TO_PERK_MAP.put(name, this);
+        ID_TO_PERK_MAP.put(this.id, this);
     }
 
     public void onEarn(PlayerEntity playerEntity){

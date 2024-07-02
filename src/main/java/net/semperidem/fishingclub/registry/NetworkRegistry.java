@@ -11,7 +11,8 @@ public class NetworkRegistry {
         PayloadTypeRegistry.playS2C().register(HookPayload.ID, HookPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(CoinFlipResultPayload.ID, CoinFlipResultPayload.CODEC);
 
-       //PayloadTypeRegistry.playC2S().register(HookClientPayload.ID, HookClientPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(HookLinePayload.ID, HookLinePayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(HookClientPayload.ID, HookClientPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CoinFlipPayload.ID, CoinFlipPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(TitleClaimPayload.ID, TitleClaimPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SellFishPayload.ID, SellFishPayload.CODEC);
@@ -23,6 +24,7 @@ public class NetworkRegistry {
         PayloadTypeRegistry.playC2S().register(SellFishDirectPayload.ID, SellFishDirectPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SummonAcceptPayload.ID, SummonAcceptPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingGameInputPayload.ID, FishingGameInputPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(AddPerkPayload.ID, AddPerkPayload.CODEC);
     }
 
     public static void registerClient() {
@@ -33,7 +35,9 @@ public class NetworkRegistry {
     public static void registerServer() {
         registerPayload();
         ServerPlayNetworking.registerGlobalReceiver(FishingCardPayload.ID, FishingCardPayload::consumePayload);
-      //  ServerPlayNetworking.registerGlobalReceiver(HookClientPayload.ID, HookClientPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(AddPerkPayload.ID, AddPerkPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(HookLinePayload.ID, HookLinePayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(HookClientPayload.ID, HookClientPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CoinFlipPayload.ID, CoinFlipPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(TitleClaimPayload.ID, TitleClaimPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishPayload.ID, SellFishPayload::consumePayload);

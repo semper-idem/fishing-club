@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class FishingPerks {
     static final HashMap<String, FishingPerk> NAME_TO_PERK_MAP = new HashMap<>();
+    static final HashMap<Byte, FishingPerk> ID_TO_PERK_MAP = new HashMap<>();
     public static final HashMap<Path, ArrayList<FishingPerk>> SKILL_TREE = new HashMap<>();
 
 
@@ -493,5 +494,28 @@ public class FishingPerks {
 
     public static FishingPerk getPerkFromName(String name){
         return Optional.of(NAME_TO_PERK_MAP.get(name)).orElse(CURSE_OF_LOSER);
+    }
+
+    public static FishingPerk getPerkFromId(byte id) {
+        return Optional.of(ID_TO_PERK_MAP.get(id)).orElse(CURSE_OF_LOSER);
+    }
+
+    public static HashMap<String, FishingPerk> fromByteArray(byte[] ids) {
+        HashMap<String, FishingPerk> perkMap = new HashMap<>();
+        for (byte id : ids) {
+            FishingPerk perk = getPerkFromId(id);
+            perkMap.put(perk.getName(), perk);
+        }
+        return perkMap;
+    }
+
+    public static byte[] toByteArray(HashMap<String, FishingPerk> perkMap) {
+        byte[] ids = new byte[perkMap.size()];
+        byte lastIndex = 0;
+        for(FishingPerk perk : perkMap.values()){
+            ids[lastIndex] = perk.id;
+            lastIndex++;
+        }
+        return ids;
     }
 }
