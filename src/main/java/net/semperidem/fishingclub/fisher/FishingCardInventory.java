@@ -9,12 +9,13 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
+import static net.semperidem.fishingclub.fisher.FishingCard.FISHING_CARD;
+
 public class FishingCardInventory implements Inventory{
     public static final int SLOT_COUNT = 5;
     DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
     ItemStack sharedBait = ItemStack.EMPTY;
     int credit = 0;
-    boolean isDirty = true;
 
     private static final String CREDIT_TAG = "credit";
     private static final String BAIT_TAG = "bait";
@@ -33,7 +34,6 @@ public class FishingCardInventory implements Inventory{
 
     public void setSharedBait(ItemStack baitToShare){
         this.sharedBait = baitToShare;
-        this.isDirty = true;
     }
 
     @Override
@@ -91,10 +91,6 @@ public class FishingCardInventory implements Inventory{
     }
 
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (!isDirty) {
-            return;
-        }
-        this.isDirty = false;
         Inventories.writeNbt(tag, inventory, wrapperLookup);
         tag.putInt(CREDIT_TAG, credit);
         if (sharedBait.isEmpty()) {

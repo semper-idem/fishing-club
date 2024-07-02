@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.fisher.managers;
 
-import com.mojang.brigadier.LiteralMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -100,7 +99,7 @@ public class LinkingManager extends DataManager {
         }
         linkedFishers.add(targetUUID);
         messageLink(trackedFor.getHolder(), playerTarget);
-        markDirty();
+        sync();
     }
 
     public void requestSummon() {
@@ -114,7 +113,7 @@ public class LinkingManager extends DataManager {
         }
         FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
         messageRequestSummon(linkedFisher);
-        markDirty();
+        sync();
     }
 
 
@@ -157,13 +156,9 @@ public class LinkingManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (!this.isDirty) {
-            return;
-        }
         NbtList linkedFishersNbt = new NbtList();
         linkedFishers.forEach(linkedFisher -> linkedFishersNbt.add(NbtString.of(linkedFisher.toString())));
         nbtCompound.put(TAG, linkedFishersNbt);
-        this.isDirty = false;
     }
 
     private static final String TAG ="linked";

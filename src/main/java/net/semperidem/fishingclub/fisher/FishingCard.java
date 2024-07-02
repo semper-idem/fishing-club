@@ -28,6 +28,7 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 
 public final class FishingCard extends FishingCardInventory implements EntityComponentInitializer, AutoSyncedComponent {
@@ -64,6 +65,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     @Override
+    public void setSharedBait(ItemStack baitToShare) {
+        super.setSharedBait(baitToShare);
+        FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
+    }
+
+    @Override
     public void readFromNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         progressionManager.readNbt(fishingCardNbt, wrapperLookup);
         historyManager.readNbt(fishingCardNbt, wrapperLookup);
@@ -79,6 +86,28 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         summonRequestManager.writeNbt(fishingCardNbt, registryLookup);
         linkingManager.writeNbt(fishingCardNbt, registryLookup);
         writeNbt(fishingCardNbt, registryLookup);
+    }
+
+    @Override
+    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient) {
+        NbtCompound tag = new NbtCompound();
+        this.writeToNbt(tag, buf.getRegistryManager());
+        buf.writeNbt(tag);
+    }
+
+    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient, DataManager source) {
+        NbtCompound tag = new NbtCompound();
+        if (source == null) {
+            this.writeNbt(tag, buf.getRegistryManager());
+        } else {
+            source.writeNbt(tag, buf.getRegistryManager());
+        }
+        buf.writeNbt(tag);
+    }
+
+    @Override
+    public void applySyncPacket(RegistryByteBuf buf) {
+        AutoSyncedComponent.super.applySyncPacket(buf);
     }
 
     public void giveDerekFish() {
@@ -241,7 +270,29 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
             LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
             tracker.record(holder, this, tracker.highestCredit);
         }
+
+        FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
         return true;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot) {
+        ItemStack result = super.removeStack(slot);
+        FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
+        return result;
+    }
+
+    @Override
+    public ItemStack removeStack(int slot, int amount) {
+        ItemStack result = super.removeStack(slot, amount);
+        FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
+        return result;
+    }
+
+    @Override
+    public void setStack(int slot, ItemStack stack) {
+        super.setStack(slot, stack);
+        FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
     }
 
     public void requestSummon(){

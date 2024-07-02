@@ -19,7 +19,7 @@ public class SummonRequestManager extends DataManager {
     public void set(ServerPlayerEntity target){
         targetUUID = target.getUuidAsString();
         requestTick = target.getWorld().getTime();
-        markDirty();
+        sync();
     }
 
     public boolean canAccept(){
@@ -69,9 +69,6 @@ public class SummonRequestManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (!isDirty) {
-            return;
-        }
         if (targetUUID == null) {
             return;
         }
@@ -79,7 +76,6 @@ public class SummonRequestManager extends DataManager {
         summonTag.putString(TARGET_TAG, targetUUID);
         summonTag.putLong(REQUEST_TICK_TAG, requestTick);
         nbtCompound.put(TAG, summonTag);
-        this.isDirty = false;
     }
 
     private static final String TAG = "summon";

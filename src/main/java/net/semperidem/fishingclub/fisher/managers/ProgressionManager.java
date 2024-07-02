@@ -36,7 +36,7 @@ public class ProgressionManager extends DataManager {
 
     public void resetCooldown(){
         spells.forEach((key, spell) -> spell.resetCooldown());
-        markDirty();
+        sync();
     }
 
 
@@ -50,7 +50,7 @@ public class ProgressionManager extends DataManager {
         perks.clear();
         spells.clear();
         addPerkPoints(refundPerkPoints);
-        markDirty();
+        sync();
     }
 
     public int getLevel() {
@@ -61,7 +61,7 @@ public class ProgressionManager extends DataManager {
         int currentLevel = this.level;
         this.level = level;
         this.perkPoints += (level - currentLevel);
-        markDirty();
+        sync();
     }
     public int getExp() {
         return exp;
@@ -78,7 +78,7 @@ public class ProgressionManager extends DataManager {
             this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
         }
         perkPoints--;
-        markDirty();
+        sync();
     }
 
 
@@ -94,7 +94,7 @@ public class ProgressionManager extends DataManager {
 
     public void addPerkPoints(int amount){
         this.perkPoints += amount;
-        markDirty();
+        sync();
     }
 
     public int getPerkPoints(){
@@ -112,7 +112,7 @@ public class ProgressionManager extends DataManager {
         SpellInstance spellInstance = spells.get(perkName);
         spellInstance.use((ServerPlayerEntity) trackedFor.getHolder(), target);
         spells.put(perkName, spellInstance);
-        markDirty();
+        sync();
     }
 
     public int nextLevelXP(){
@@ -134,7 +134,7 @@ public class ProgressionManager extends DataManager {
             LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
             nextLevelXP = nextLevelXP();
         }
-        markDirty();
+        sync();
     }
 
     public HashMap<String, FishingPerk> getPerks(){
@@ -175,9 +175,6 @@ public class ProgressionManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (!isDirty) {
-            return;
-        }
         NbtCompound progressionNbt = new NbtCompound();
         progressionNbt.putInt(LEVEL_TAG, level);
         progressionNbt.putInt(EXP_TAG, exp);
@@ -186,7 +183,6 @@ public class ProgressionManager extends DataManager {
         writePerks(progressionNbt);
         writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
-        this.isDirty = false;
     }
 
     public void writePerks(NbtCompound progressionNbt){

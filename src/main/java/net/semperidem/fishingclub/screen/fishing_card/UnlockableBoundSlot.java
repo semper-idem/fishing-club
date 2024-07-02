@@ -20,6 +20,6 @@ public class UnlockableBoundSlot extends UnlockableSlot{
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.getItem().getClass() == boundItem.getClass();
+        return boundItem.getClass().isAssignableFrom(stack.getItem().getClass());
     }
 }

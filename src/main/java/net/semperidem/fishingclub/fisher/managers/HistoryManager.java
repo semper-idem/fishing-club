@@ -38,12 +38,12 @@ public class HistoryManager extends DataManager {
 
     public void meetDerek(FishermanEntity.SummonType summonType) {
         derekMet.add(summonType.name());
-        markDirty();
+        sync();
     }
 
     public void giveDerekFish(){
         this.gaveDerekFish = true;
-        markDirty();
+        sync();
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -52,7 +52,7 @@ public class HistoryManager extends DataManager {
 
     public void addUnclaimedReward(ItemStack rewardStack) {
         unclaimedRewards.add(rewardStack);
-        markDirty();
+        sync();
     }
 
     public void claimReward(ItemStack rewardStack) {
@@ -60,7 +60,7 @@ public class HistoryManager extends DataManager {
             return;
         }
         unclaimedRewards.remove(rewardStack);
-        markDirty();
+        sync();
     }
 
     public ArrayList<ItemStack> getUnclaimedRewards() {
@@ -78,7 +78,7 @@ public class HistoryManager extends DataManager {
     public void fishHooked(IHookEntity hookEntity) {
        //lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
         checkChunk(hookEntity.getFishedInChunk());
-        markDirty();//checkChunk writes
+        sync();//checkChunk writes
     }
 
     private void recordFishCaught(FishComponent fish) {
@@ -89,7 +89,7 @@ public class HistoryManager extends DataManager {
         }
         speciesStatistics.record(fish);
         fishAtlas.put(speciesName, speciesStatistics);
-        markDirty(); //technically not needed cause we always call "fishCaught"
+        sync(); //technically not needed cause we always call "fishCaught"
     }
 
     public void fishCaught(FishComponent fish) {
@@ -104,7 +104,7 @@ public class HistoryManager extends DataManager {
         if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF,1200));
         }
-        markDirty();
+        sync();
     }
 
     public ItemStack getLastUsedBait() {
@@ -180,9 +180,6 @@ public class HistoryManager extends DataManager {
 
     @Override
     public void writeNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (!isDirty) {
-            return;
-        }
         NbtCompound historyTag = new NbtCompound();
         NbtList usedChunksTag = new NbtList();
         usedChunks.forEach(chunk -> usedChunksTag.add(chunk.toNbt()));
@@ -201,7 +198,6 @@ public class HistoryManager extends DataManager {
         fishAtlas.forEach((s, speciesStatistics) -> fishAtlasTag.add(speciesStatistics.toNbt()));
         historyTag.put(FISH_ATLAS_TAG, fishAtlasTag);
         nbtCompound.put(TAG, historyTag);
-        this.isDirty = false;
     }
 
     private static class Chunk {
