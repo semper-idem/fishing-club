@@ -4,7 +4,9 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.client.FishingClubClient;
+import net.semperidem.fishingclub.registry.FCItems;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +33,14 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
 
     @Unique
     private void onPosition(ModelPart arm, BipedEntityModel.ArmPose armPose, T entity) {
-        FishingClubClient.onPosition3rd(arm, armPose, entity);
+        if (armPose != BipedEntityModel.ArmPose.THROW_SPEAR) {
+            return;
+        }
+        if (!entity.getActiveItem().isOf(FCItems.MEMBER_FISHING_ROD))  {
+            return;
+        }
+        float usedFor = MathHelper.clamp(entity.getItemUseTime() / 100f, 0, 1);
+        arm.pitch = (float) Math.PI - usedFor + 1f;
     }
 
     @Inject(method = "positionRightArm", at = @At("TAIL"))

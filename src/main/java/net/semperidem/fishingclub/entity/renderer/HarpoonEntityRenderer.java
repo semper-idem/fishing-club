@@ -32,7 +32,7 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
         matrixStack.push();
 //        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevYaw, harpoonEntity.getYaw()) - 90.0f));
 //        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, harpoonEntity.prevPitch, harpoonEntity.getPitch()) + 90.0f));
-        VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(harpoonEntity)), false, false);
+      //  VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumerProvider, this.model.getLayer(this.getTexture(harpoonEntity)), false, false);
 //        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
 

@@ -9,6 +9,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
+import net.semperidem.fishingclub.fisher.FishingKing;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 
@@ -135,7 +136,7 @@ public class LeaderboardScreen  extends Screen {
                 return;
             }
             Leaderboard.Entry entry = it.next();
-            boolean isKing = FishingClubClient.FISHING_KING_UUID.compareTo(entry.key) == 0;
+            boolean isKing = true;//FishingClubClient.FISHING_KING_UUID.compareTo(entry.key) == 0;
             String leftString =getRecordFormatting(index) + (index + 1) + ") "  + entry.playerName+ (isKing ? " [♚]" : "");
             int color = index == 0 ? st : getRecordColor(index);
 

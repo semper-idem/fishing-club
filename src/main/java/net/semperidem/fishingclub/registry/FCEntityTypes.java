@@ -18,6 +18,7 @@ import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.LineArrowEntity;
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
@@ -87,7 +88,7 @@ public class FCEntityTypes {
                 .build());
     
     EntityRendererRegistry.register(DEREK_ENTITY, FishermanEntityRenderer::new);
-    EntityRendererRegistry.register(HOOK_ENTITY, FishingBobberEntityRenderer::new);
+    EntityRendererRegistry.register(HOOK_ENTITY, HookEntityRenderer::new);
     EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
     EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
   }

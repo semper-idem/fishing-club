@@ -20,17 +20,8 @@ public class SpellListWidget{
     private static final int entryWidth = 150;
 
 
-    public static void updateFisherInfo(){
-        availableSpells.clear();
-        availableSpells.addAll(FishingClubClient.getAvailableSpells().values());
-        if (availableSpells.size() > 0 && selectedSpell == null) {
-            selectedSpell = availableSpells.get(0);
-        }
-    }
-
     public static void stickPress(){
         if (pressed) return;
-        updateFisherInfo();
         pressed = true;
     }
 

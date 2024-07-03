@@ -103,7 +103,12 @@ public class FishingCardInventory implements Inventory{
         if (tag.contains(CREDIT_TAG)) {
             credit = tag.getInt(CREDIT_TAG);
         }
-        Inventories.readNbt(tag, inventory, wrapperLookup);
-        sharedBait = ItemStack.fromNbt(wrapperLookup, tag.get(BAIT_TAG)).orElse(ItemStack.EMPTY);
+        if (tag.contains("Items")) {
+            Inventories.readNbt(tag, inventory, wrapperLookup);
+        }
+        if (tag.contains(BAIT_TAG)) {
+            sharedBait = ItemStack.fromNbt(wrapperLookup, tag.get(BAIT_TAG)).orElse(ItemStack.EMPTY);
+
+        }
     }
 }

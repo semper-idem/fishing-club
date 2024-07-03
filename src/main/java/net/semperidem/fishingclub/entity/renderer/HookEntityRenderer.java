@@ -1,106 +1,123 @@
 package net.semperidem.fishingclub.entity.renderer;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.entity.HookEntity;
+import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
+import net.semperidem.fishingclub.registry.FCItems;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
-public class HookEntityRenderer extends FishingBobberEntityRenderer {
+public class HookEntityRenderer extends EntityRenderer<HookEntity> {
     public static final Identifier DEFAULT = FishingClub.getIdentifier("textures/entity/bobber.png");
-    public static final Identifier ANCIENT = FishingClub.getIdentifier("textures/entity/bobber_ancient.png");
-    public static final Identifier PLANT = FishingClub.getIdentifier("textures/entity/bobber_plant.png");
-    public static final Identifier WOODEN = FishingClub.getIdentifier("textures/entity/bobber_wooden.png");
-    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(ANCIENT);
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(DEFAULT);
 
     public HookEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
     }
 
-    //public void render(FishingBobberEntity fishingBobberEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-//        double s;
-//        float r;
-//        double q;
-//        double p;
-//        double o;
-//        PlayerEntity playerEntity = fishingBobberEntity.getPlayerOwner();
-//        if (playerEntity == null) {
-//            return;
-//        }
-//        matrixStack.push();
-//        matrixStack.push();
-//        matrixStack.scale(0.5f, 0.5f, 0.5f);
-//        matrixStack.multiply(this.dispatcher.getRotation());
-//        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-//        MatrixStack.Entry entry = matrixStack.peek();
-//        Matrix4f matrix4f = entry.getPositionMatrix();
-//        Matrix3f matrix3f = entry.getNormalMatrix();
-//        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(DEFAULT));
-//        vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
-//        vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
-//        vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
-//        vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
-//        matrixStack.pop();
-//        int j = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
-//        ItemStack itemStack = playerEntity.getMainHandStack();
-//        if (!itemStack.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
-//            j = -j;
-//        }
-//        float h = playerEntity.getHandSwingProgress(g);
-//        float k = MathHelper.sin(MathHelper.sqrt(h) * (float)Math.PI);
-//        float l = MathHelper.lerp(g, playerEntity.prevBodyYaw, playerEntity.bodyYaw) * ((float)Math.PI / 180);
-//        double d = MathHelper.sin(l);
-//        double e = MathHelper.cos(l);
-//        double m = (double)j * 0.35;
-//        if (this.dispatcher.gameOptions != null && !this.dispatcher.gameOptions.getPerspective().isFirstPerson() || playerEntity != MinecraftClient.getInstance().player) {
-//            o = MathHelper.lerp(g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
-//            p = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)g - 0.45;
-//            q = MathHelper.lerp(g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
-//            r = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
-//        } else {
-//            s = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
-//            Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition((float)j * 0.525f, -0.1f);
-//            vec3d = vec3d.multiply(s);
-//            vec3d = vec3d.rotateY(k * 0.5f);
-//            vec3d = vec3d.rotateX(-k * 0.7f);
-//            o = MathHelper.lerp(g, playerEntity.prevX, playerEntity.getX()) + vec3d.x;
-//            p = MathHelper.lerp(g, playerEntity.prevY, playerEntity.getY()) + vec3d.y;
-//            q = MathHelper.lerp(g, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
-//            r = playerEntity.getStandingEyeHeight();
-//        }
-//        s = MathHelper.lerp(g, fishingBobberEntity.prevX, fishingBobberEntity.getX());
-//        double t = MathHelper.lerp(g, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
-//        double u = MathHelper.lerp(g, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
-//        float v = (float)(o - s);
-//        float w = (float)(p - t) + r;
-//        float x = (float)(q - u);
-//        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
-//        MatrixStack.Entry entry2 = matrixStack.peek();
-//        for (int z = 0; z <= 8; ++z) {
-//            renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 8), percentage(z + 1, 8));
-//        }
-//        matrixStack.pop();
-  //  }
+    public void render(HookEntity hookEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        PlayerEntity playerEntity = hookEntity.getPlayerOwner();
+        if (playerEntity != null) {
+            matrixStack.push();
+            matrixStack.push();
+            matrixStack.scale(0.5F, 0.5F, 0.5F);
+            matrixStack.multiply(this.dispatcher.getRotation());
+            MatrixStack.Entry entry = matrixStack.peek();
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
+            vertex(vertexConsumer, entry, i, 0.0F, 0, 0, 1);
+            vertex(vertexConsumer, entry, i, 1.0F, 0, 1, 1);
+            vertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
+            vertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
+            matrixStack.pop();
+            float h = playerEntity.getHandSwingProgress(g);
+            float j = MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
+            Vec3d vec3d = this.getHandPos(playerEntity, j, g);
+            Vec3d vec3d2 = hookEntity.getLerpedPos(g).add(0.0, 0.25, 0.0);
+            float k = (float)(vec3d.x - vec3d2.x);
+            float l = (float)(vec3d.y - vec3d2.y);
+            float m = (float)(vec3d.z - vec3d2.z);
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
+            MatrixStack.Entry entry2 = matrixStack.peek();
+            int n = 16;
 
-    private static float percentage(int i, int j) {
-        return (float)i / (float)j;
+            for (int o = 0; o <= 16; o++) {
+                renderFishingLine(k, l, m, vertexConsumer2, entry2, percentage(o, 16), percentage(o + 1, 16));
+            }
+
+            matrixStack.pop();
+            super.render(hookEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        }
     }
 
-//    private static void vertex(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
-//    //    vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.5f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
-//    }
+    private Vec3d getHandPos(PlayerEntity player, float f, float tickDelta) {
+        int i = player.getMainArm() == Arm.RIGHT ? 1 : -1;
+        ItemStack itemStack = player.getMainHandStack();
+        if (!itemStack.isOf(FCItems.MEMBER_FISHING_ROD)) {
+            i = -i;
+        }
 
-    private static void renderFishingLine(float f, float g, float h, VertexConsumer vertexConsumer, MatrixStack.Entry entry, float i, float j) {
-        float k = f * i;
-        float l = g * (i * i + i) * 0.5f + 0.25f;
-        float m = h * i;
-        float n = f * j - k;
-        float o = g * (j * j + j) * 0.5f + 0.25f - l;
-        float p = h * j - m;
-        float q = MathHelper.sqrt(n * n + o * o + p * p);
-       // vertexConsumer.vertex(entry.getPositionMatrix(), k, l, m).color(111, 111, 111, 111).normal(entry.getNormalMatrix(), n /= q, o /= q, p /= q).next();
+        if (this.dispatcher.gameOptions.getPerspective().isFirstPerson() && player == MinecraftClient.getInstance().player) {
+            double m = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
+            Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition((float)i * 0.525F, -0.1F).multiply(m).rotateY(f * 0.5F).rotateX(-f * 0.7F);
+            return player.getCameraPosVec(tickDelta).add(vec3d);
+        } else {
+            float g = MathHelper.lerp(tickDelta, player.prevBodyYaw, player.bodyYaw) * (float) (Math.PI / 180.0);
+            double d = (double)MathHelper.sin(g);
+            double e = (double)MathHelper.cos(g);
+            float h = player.getScale();
+            double j = (double)i * 0.35 * (double)h;
+            double k = 0.8 * (double)h;
+            float l = player.isInSneakingPose() ? -0.1875F : 0.0F;
+            return player.getCameraPosVec(tickDelta).add(-e * j - d * k, (double)l - 0.45 * (double)h, -d * j + e * k);
+        }
+    }
+
+    private static float percentage(int value, int max) {
+        return (float)value / (float)max;
+    }
+
+    private static void vertex(VertexConsumer buffer, MatrixStack.Entry matrix, int light, float x, int y, int u, int v) {
+        buffer.vertex(matrix, x - 0.5F, (float)y - 0.5F, 0.0F)
+                .color(Colors.WHITE)
+                .texture((float)u, (float)v)
+                .overlay(OverlayTexture.DEFAULT_UV)
+                .light(light)
+                .normal(matrix, 0.0F, 1.0F, 0.0F);
+    }
+
+    private static void renderFishingLine(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry matrices, float segmentStart, float segmentEnd) {
+        float f = x * segmentStart;
+        float g = y * (segmentStart * segmentStart + segmentStart) * 0.5F + 0.25F;
+        float h = z * segmentStart;
+        float i = x * segmentEnd - f;
+        float j = y * (segmentEnd * segmentEnd + segmentEnd) * 0.5F + 0.25F - g;
+        float k = z * segmentEnd - h;
+        float l = MathHelper.sqrt(i * i + j * j + k * k);
+        i /= l;
+        j /= l;
+        k /= l;
+        buffer.vertex(matrices, f, g, h).color(Colors.BLACK).normal(matrices, i, j, k);
+    }
+
+    @Override//Actually not used in FishingBobberEntityRenderer/HookEntityRenderer
+    public Identifier getTexture(HookEntity hookEntity) {
+        return DEFAULT;
     }
 }
