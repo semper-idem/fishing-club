@@ -11,7 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
 
 public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
     public static final CustomPayload.Id<SellFishPayload> ID = new CustomPayload.Id<>(FishingClub.getIdentifier("c2s_sell_fish"));
@@ -33,7 +33,7 @@ public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
                 
                 int totalValue = 0;                
                 for(ItemStack fishStack : payload.fish()) {
-                    totalValue += fishStack.getOrDefault(ComponentRegistry.FISH, FishComponent.DEFAULT).value();
+                    totalValue += fishStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
                     fishStack.setCount(0);
                 }
                 FishingCard fishingCard = FishingCard.of(context.player());

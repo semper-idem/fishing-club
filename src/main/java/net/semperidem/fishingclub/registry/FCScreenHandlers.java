@@ -18,7 +18,7 @@ import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
-public class ScreenHandlerRegistry {
+public class FCScreenHandlers {
     public static ExtendedScreenHandlerType<FishingCardScreenHandler, FishingCardPayload> FISHING_CARD_SCREEN;
     public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGamePayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<DialogScreenHandler, DialogPayload> DIALOG_SCREEN;

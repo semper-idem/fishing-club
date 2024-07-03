@@ -10,7 +10,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -18,15 +17,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.EnchantmentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
-import net.semperidem.fishingclub.registry.TagRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCEnchantments;
+import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 public class IllegalGoodsItem extends Item {
   private static final HashMap<Integer, ArrayList<Item>> TIER_TO_LOOT = new HashMap<>();
@@ -112,8 +110,8 @@ public class IllegalGoodsItem extends Item {
   }
 
   public static ItemStack getStackWithTier(int tier) {
-    ItemStack defaultStack = new ItemStack(ItemRegistry.ILLEGAL_GOODS);
-    defaultStack.set(ComponentRegistry.TIER, tier);
+    ItemStack defaultStack = new ItemStack(FCItems.ILLEGAL_GOODS);
+    defaultStack.set(FCComponents.TIER, tier);
     return defaultStack;
   }
 
@@ -124,7 +122,7 @@ public class IllegalGoodsItem extends Item {
       user.swingHand(hand);
       return TypedActionResult.consume(itemStack);
     }
-    int tier = itemStack.getOrDefault(ComponentRegistry.TIER, 1);
+    int tier = itemStack.getOrDefault(FCComponents.TIER, 1);
 
     if (!user.getAbilities().creativeMode) {
       itemStack.decrement(1);
@@ -196,12 +194,12 @@ public class IllegalGoodsItem extends Item {
     EnchantmentHelper.apply(
         cursedLootStack,
         components ->
-            components.remove(enchantment -> enchantment.isIn(TagRegistry.ENCHANTMENT_REPAIR_TAG)));
+            components.remove(enchantment -> enchantment.isIn(FCTags.ENCHANTMENT_REPAIR_TAG)));
 
     world
         .getRegistryManager()
         .get(RegistryKeys.ENCHANTMENT)
-        .getEntry(EnchantmentRegistry.CURSE_OF_MORTALITY.getValue())
+        .getEntry(FCEnchantments.CURSE_OF_MORTALITY.getValue())
         .ifPresent(curseOfMortality -> cursedLootStack.addEnchantment(curseOfMortality, 1));
     return cursedLootStack;
   }

@@ -9,8 +9,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.registry.FishingClubRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCRegistry;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class FishingClubClient implements ClientModInitializer {
         if (armPose != BipedEntityModel.ArmPose.THROW_SPEAR) {
             return;
         }
-        if (entity.getActiveItem().isOf(ItemRegistry.MEMBER_FISHING_ROD))  {
+        if (entity.getActiveItem().isOf(FCItems.MEMBER_FISHING_ROD))  {
             float usedFor = MathHelper.clamp(entity.getItemUseTime() / 100f, 0, 1);
             arm.pitch = (float) Math.PI - usedFor + 1f;
         }
@@ -45,6 +45,6 @@ public class FishingClubClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        FishingClubRegistry.registerClient();
+        FCRegistry.registerClient();
     }
 }

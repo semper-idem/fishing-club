@@ -5,7 +5,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.semperidem.fishingclub.FishingClub;
 
-public class TagRegistry {
+public class FCTags {
     public static TagKey<Enchantment> ENCHANTMENT_REPAIR_TAG;
 
     public static void register() {

@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.semperidem.fishingclub.network.payload.*;
 
-public class NetworkRegistry {
+public class FCNetworking {
 
     private static void registerPayload() {
         PayloadTypeRegistry.playS2C().register(HookPayload.ID, HookPayload.CODEC);

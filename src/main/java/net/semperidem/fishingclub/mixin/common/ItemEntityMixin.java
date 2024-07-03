@@ -10,8 +10,8 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -34,8 +34,8 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Inject(method = "setStack", at = @At("TAIL"))
     private void onInit(ItemStack stack, CallbackInfo ci) {
-        if (stack.isOf(ItemRegistry.GOLD_FISH)) {
-            summonerUUID = stack.getOrDefault(ComponentRegistry.CAUGHT_BY, UUID.randomUUID());
+        if (stack.isOf(FCItems.GOLD_FISH)) {
+            summonerUUID = stack.getOrDefault(FCComponents.CAUGHT_BY, UUID.randomUUID());
             isSummonItem = true;
             return;
         }
@@ -43,7 +43,7 @@ public abstract class ItemEntityMixin extends Entity{
         if (!stack.isOf(FishUtil.FISH_ITEM)) {
             return;
         }
-        FishComponent fish = stack.get(ComponentRegistry.FISH);
+        FishComponent fish = stack.get(FCComponents.FISH);
         if (fish != null && fish.quality() >= 4) {
             summonerUUID = fish.caughtByUUID();
             isSummonItem = true;

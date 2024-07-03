@@ -9,12 +9,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.network.payload.SummonAcceptPayload;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -50,7 +49,7 @@ public class Commands {
     }
     public static void registerGiveStarterRod(){
         rootCommand.then(literal("starter_rod").executes(context -> {
-            context.getSource().getPlayer().giveItemStack(ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack());
+            context.getSource().getPlayer().giveItemStack(FCItems.MEMBER_FISHING_ROD.getDefaultStack());
             return 0;
         }));
     }
@@ -69,8 +68,8 @@ public class Commands {
 
     public static void registerGoldFish() {
         rootCommand.then(literal("gold_fish").executes(context -> {
-            ItemStack goldFish = ItemRegistry.GOLD_FISH.getDefaultStack();
-            goldFish.set(ComponentRegistry.CAUGHT_BY, context.getSource().getPlayer().getUuid());
+            ItemStack goldFish = FCItems.GOLD_FISH.getDefaultStack();
+            goldFish.set(FCComponents.CAUGHT_BY, context.getSource().getPlayer().getUuid());
             context.getSource().getPlayer().giveItemStack(goldFish);
             return 0;
         }));

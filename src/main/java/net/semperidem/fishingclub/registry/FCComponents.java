@@ -14,7 +14,7 @@ import net.minecraft.util.dynamic.Codecs;
 
 import java.util.UUID;
 
-public class ComponentRegistry {
+public class FCComponents {
     public static ComponentType<RodConfigurationComponent> ROD_CONFIGURATION;
     public static ComponentType<RodPartComponent> ROD_PART;
     public static ComponentType<Integer> LINE_LENGTH;

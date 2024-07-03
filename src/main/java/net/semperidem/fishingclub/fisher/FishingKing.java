@@ -7,9 +7,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.number.StyledNumberFormat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -17,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
-import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import net.semperidem.fishingclub.registry.FCStatusEffects;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -171,10 +169,10 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .forEach(otherPlayer -> {
-                    applyStatusEffect(otherPlayer, StatusEffectRegistry.EXP_BUFF);
-                    applyStatusEffect(otherPlayer, StatusEffectRegistry.QUALITY_BUFF);
-                    applyStatusEffect(otherPlayer, StatusEffectRegistry.BOBBER_BUFF);
-                    applyStatusEffect(otherPlayer, StatusEffectRegistry.FREQUENCY_BUFF);
+                    applyStatusEffect(otherPlayer, FCStatusEffects.EXP_BUFF);
+                    applyStatusEffect(otherPlayer, FCStatusEffects.QUALITY_BUFF);
+                    applyStatusEffect(otherPlayer, FCStatusEffects.BOBBER_BUFF);
+                    applyStatusEffect(otherPlayer, FCStatusEffects.FREQUENCY_BUFF);
                 });
     }
 

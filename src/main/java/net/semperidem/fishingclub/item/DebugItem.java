@@ -7,9 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 
 public class DebugItem extends Item {
     private static int mode = 0;
@@ -31,7 +29,7 @@ public class DebugItem extends Item {
             return super.use(world, user, hand);
         }
         ItemStack rod = user.getInventory().getStack(0);
-        if (!rod.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
+        if (!rod.isOf(FCItems.MEMBER_FISHING_ROD)) {
             return super.use(world, user, hand);
         }
         return super.use(world, user, hand);

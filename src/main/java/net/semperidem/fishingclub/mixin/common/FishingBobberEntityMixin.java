@@ -4,9 +4,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,13 +20,13 @@ public abstract class FishingBobberEntityMixin{
 
     @Inject(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
     private void onUse(ItemStack fishedItemStack, CallbackInfoReturnable<Integer> cir) {
-        if (!fishedItemStack.isOf(ItemRegistry.GOLD_FISH)) {
+        if (!fishedItemStack.isOf(FCItems.GOLD_FISH)) {
             return;
         }
         if (this.getPlayerOwner() == null) {
             return;
         }
-        fishedItemStack.set(ComponentRegistry.CAUGHT_BY, this.getPlayerOwner().getUuid());
+        fishedItemStack.set(FCComponents.CAUGHT_BY, this.getPlayerOwner().getUuid());
     }
 
 

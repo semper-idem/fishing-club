@@ -2,10 +2,9 @@ package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.registry.KeybindingRegistry;
+import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class SpellListWidget{
             if (pressed) pressed = false;
             return;
         }
-        if (!KeybindingRegistry.SPELL_SELECT_KB.isPressed()){
+        if (!FCKeybindings.SPELL_SELECT_KB.isPressed()){
             pressed = false;
             return;
         }

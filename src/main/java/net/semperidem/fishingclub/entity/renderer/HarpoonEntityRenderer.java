@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.entity.renderer;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -17,14 +16,14 @@ import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.FCEntityTypes;
 
 public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
     public static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/harpoon_rod.png");
     private final HarpoonEntityModel model;
     public HarpoonEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
-        this.model = new HarpoonEntityModel(context.getPart(EntityTypeRegistry.MODEL_HARPOON_LAYER));
+        this.model = new HarpoonEntityModel(context.getPart(FCEntityTypes.MODEL_HARPOON_LAYER));
     }
 
 

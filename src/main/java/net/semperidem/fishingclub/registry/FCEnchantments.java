@@ -5,7 +5,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.semperidem.fishingclub.FishingClub;
 
-public class EnchantmentRegistry {
+public class FCEnchantments {
     public static RegistryKey<Enchantment> CURSE_OF_MORTALITY;
 
     public static void register() {

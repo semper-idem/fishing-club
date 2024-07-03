@@ -6,7 +6,7 @@ import net.minecraft.client.Mouse;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.network.payload.HookLinePayload;
-import net.semperidem.fishingclub.registry.KeybindingRegistry;
+import net.semperidem.fishingclub.registry.FCKeybindings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +24,7 @@ public class MouseMixin {
         if (this.client.player == null) {
             return;
         }
-        if (KeybindingRegistry.SPELL_SELECT_KB.isPressed()) {
+        if (FCKeybindings.SPELL_SELECT_KB.isPressed()) {
             SpellListWidget.scrollSpells((int) vertical);
             ci.cancel();
         }

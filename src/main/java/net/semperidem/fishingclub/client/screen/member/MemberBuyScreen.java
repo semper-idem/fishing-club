@@ -14,7 +14,7 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
 import net.semperidem.fishingclub.network.payload.CheckoutPayload;
-import net.semperidem.fishingclub.registry.KeybindingRegistry;
+import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.util.*;
 
@@ -251,8 +251,8 @@ public class MemberBuyScreen extends MemberSubScreen {
             cartItems = updatedCartItem;
         }
         private int getActionCount() {
-            int count = KeybindingRegistry.MULTIPLY_CART_ACTION_1.isPressed() ? 4 : 1;
-            count *= KeybindingRegistry.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
+            int count = FCKeybindings.MULTIPLY_CART_ACTION_1.isPressed() ? 4 : 1;
+            count *= FCKeybindings.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
             return count;
         }
         @Override

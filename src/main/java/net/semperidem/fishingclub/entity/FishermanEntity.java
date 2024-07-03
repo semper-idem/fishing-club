@@ -32,7 +32,7 @@ import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.FishingServerWorld;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.FCEntityTypes;
 import net.semperidem.fishingclub.screen.dialog.DialogKey;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
@@ -60,7 +60,7 @@ public class FishermanEntity extends PassiveEntity {
     private int despawnTimer;
 
     public FishermanEntity(World world) {
-        super(EntityTypeRegistry.DEREK_ENTITY, world);
+        super(FCEntityTypes.DEREK_ENTITY, world);
         this.setCustomName(Text.of("Derek ol'Stinker"));
         this.intersectionChecked = true;
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);

@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.entity;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,17 +30,16 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
-import net.semperidem.fishingclub.network.payload.HookPayload;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
-import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCEntityTypes;
+import net.semperidem.fishingclub.registry.FCStatusEffects;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
 import net.semperidem.fishingclub.util.Util;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
 
-import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.FCItems.MEMBER_FISHING_ROD;
 
 
 public class HookEntity extends FishingBobberEntity implements IHookEntity{
@@ -83,7 +81,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
     }
 
     public HookEntity(PlayerEntity owner, World world, RodConfigurationComponent configuration) {
-        this(EntityTypeRegistry.HOOK_ENTITY, world);
+        this(FCEntityTypes.HOOK_ENTITY, world);
         this.setOwner(owner);
         this.init(configuration);
 
@@ -99,7 +97,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
 
     public void scrollLine(float amount) {
         this.lineLength = MathHelper.clamp(lineLength + amount, 4, maxLineLength);
-        this.fishingRod.set(ComponentRegistry.LINE_LENGTH, (int)this.lineLength);
+        this.fishingRod.set(FCComponents.LINE_LENGTH, (int)this.lineLength);
         if (this.getWorld().isClient) {
             this.playerOwner.sendMessage(Text.literal(String.format("Line length: %.2f", lineLength)), true);
         }
@@ -130,8 +128,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
         this.fishingRod = configuration.fishingRod().orElseThrow();
         this.maxLineLength = configuration.maxLineLength();
         this.maxEntityMagnitude = configuration.weightMagnitude();
-        this.lineLength = this.fishingRod.getOrDefault(ComponentRegistry.LINE_LENGTH, 8);
-        this.castCharge = this.fishingRod.getOrDefault(ComponentRegistry.CAST_POWER, 1f);
+        this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, 8);
+        this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
         this.calculateResistance();
         this.setCastAngle();
         this.updateHookEntity(this);
@@ -467,7 +465,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity{
             }
         }
 
-        if (this.playerOwner.hasStatusEffect(StatusEffectRegistry.FREQUENCY_BUFF)) {
+        if (this.playerOwner.hasStatusEffect(FCStatusEffects.FREQUENCY_BUFF)) {
             catchRateReduction += 0.1f;
         }
         catchRate = Math.max(.33f,(1 - catchRateReduction));

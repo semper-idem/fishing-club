@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.fisher.shop;
 
 import net.minecraft.item.Items;
-import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
 
 import java.util.ArrayList;
 import java.util.HashMap;

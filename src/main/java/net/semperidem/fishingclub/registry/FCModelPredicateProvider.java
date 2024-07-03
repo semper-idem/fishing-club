@@ -5,10 +5,10 @@ import net.minecraft.util.Identifier;
 
 import static net.minecraft.client.item.ModelPredicateProviderRegistry.*;
 
-public class ModelPredicateProviderRegistry {
+public class FCModelPredicateProvider {
 
     public static void registerClient(){
-        register(ItemRegistry.MEMBER_FISHING_ROD, Identifier.ofVanilla("cast"), (itemStack, clientWorld, livingEntity, clamp) -> {
+        register(FCItems.MEMBER_FISHING_ROD, Identifier.ofVanilla("cast"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }
@@ -17,7 +17,7 @@ public class ModelPredicateProviderRegistry {
             }
             return ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
         });
-        register(ItemRegistry.MEMBER_FISHING_ROD, Identifier.ofVanilla("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
+        register(FCItems.MEMBER_FISHING_ROD, Identifier.ofVanilla("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }

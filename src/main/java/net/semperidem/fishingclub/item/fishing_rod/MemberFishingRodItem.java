@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
@@ -19,8 +18,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
-import net.semperidem.fishingclub.network.payload.FishingCardPayload;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
 
 public class MemberFishingRodItem extends FishingRodItem {
   private final String CAST_CHARGE_TAG = "lastCastCharge";
@@ -63,9 +61,9 @@ public class MemberFishingRodItem extends FishingRodItem {
       return;
     }
     if (!world.isClient && user instanceof ServerPlayerEntity serverPlayer) {
-      RodConfigurationComponent configuration = fishingRod.getOrDefault(ComponentRegistry.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
+      RodConfigurationComponent configuration = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
       float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
-      fishingRod.set(ComponentRegistry.CAST_POWER, power);
+      fishingRod.set(FCComponents.CAST_POWER, power);
       configuration.damage(2, PartItem.DamageSource.CAST, user);
       FishingCard.of(serverPlayer).addSkillPoints(1);
 
@@ -107,7 +105,7 @@ public class MemberFishingRodItem extends FishingRodItem {
   }
 
   public RodConfigurationComponent getRodConfiguration(ItemStack fishingRod) {
-    return fishingRod.getOrDefault(ComponentRegistry.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
+    return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
   }
 
   @Override

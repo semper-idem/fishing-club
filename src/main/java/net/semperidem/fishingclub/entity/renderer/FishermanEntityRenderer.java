@@ -13,11 +13,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
+import net.semperidem.fishingclub.registry.FCEntityTypes;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {
     private static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/fisherman.png");
@@ -27,7 +26,7 @@ public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, 
     private final ModelPart rightPaddle;
 
     public FishermanEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new FishermanEntityModel<>(context.getPart(EntityTypeRegistry.MODEL_FISHERMAN_LAYER)), 0.5F);
+        super(context, new FishermanEntityModel<>(context.getPart(FCEntityTypes.MODEL_FISHERMAN_LAYER)), 0.5F);
         EntityModelLayer entityModelLayer = EntityModelLayers.createChestBoat(BoatEntity.Type.MANGROVE);
         boatEntityModel = new BoatEntityModel(context.getPart(entityModelLayer));
         this.leftPaddle = boatEntityModel.getParts().get(5);

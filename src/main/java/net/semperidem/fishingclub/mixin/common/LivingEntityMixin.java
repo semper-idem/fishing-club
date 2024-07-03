@@ -17,7 +17,7 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.HarpoonRodItem;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.registry.ItemRegistry.MEMBER_FISHING_ROD;
+import static net.semperidem.fishingclub.registry.FCItems.MEMBER_FISHING_ROD;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
@@ -50,7 +50,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (activeStack.isOf(MEMBER_FISHING_ROD)){
             power = MemberFishingRodItem.getChargePower(getItemUseTime());
             tickPullPower(power);
-        } else if (activeStack.isOf(ItemRegistry.HARPOON_ROD)) {
+        } else if (activeStack.isOf(FCItems.HARPOON_ROD)) {
             power = HarpoonRodItem.getPower(getItemUseTime());
         } else {
             return;

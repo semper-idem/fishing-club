@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.status_effects.*;
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
 
-public class StatusEffectRegistry {
+public class FCStatusEffects {
     //TODO TREASURE CHANCE BUFF
     public static RegistryEntry<StatusEffect> QUALITY_BUFF;
     public static RegistryEntry<StatusEffect> FREQUENCY_BUFF ;

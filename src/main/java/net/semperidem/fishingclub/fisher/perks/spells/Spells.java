@@ -1,11 +1,8 @@
 package net.semperidem.fishingclub.fisher.perks.spells;
 
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -13,10 +10,9 @@ import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
-import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,25 +52,25 @@ public class Spells {
         FISHING_SCHOOL = new Spell(FishingPerks.FISHING_SCHOOL.getName(), FishingPerks.FISHING_SCHOOL, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.BOBBER_BUFF, 6000));
+                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.BOBBER_BUFF, 6000));
             }
         });
         SLOWER_FISH = new Spell(FishingPerks.SLOWER_FISH.getName(), FishingPerks.SLOWER_FISH, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.SLOW_FISH_BUFF, 6000));
+                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.SLOW_FISH_BUFF, 6000));
             }
         });
         EXPERIENCE_BOOST = new Spell(FishingPerks.EXPERIENCE_BOOST.getName(), FishingPerks.EXPERIENCE_BOOST, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.EXP_BUFF,  6000));
+                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.EXP_BUFF,  6000));
             }
         });
         LUCKY_FISHING = new Spell(FishingPerks.LUCKY_FISHING.getName(), FishingPerks.LUCKY_FISHING, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                castEffect(source, 4, new StatusEffectInstance(StatusEffectRegistry.QUALITY_BUFF,  6000));
+                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,  6000));
             }
         });
         FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
@@ -99,13 +95,13 @@ public class Spells {
             @Override
             public void cast(ServerPlayerEntity source){
                 ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
-                ItemStack rodStack = ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack();
-                if (mainHand.getItem().equals(ItemRegistry.MEMBER_FISHING_ROD)) {
+                ItemStack rodStack = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
+                if (mainHand.getItem().equals(FCItems.MEMBER_FISHING_ROD)) {
                     rodStack = source.getStackInHand(Hand.MAIN_HAND);
                 }
-                ItemStack clonedStack = ItemRegistry.CLONED_ROD.getDefaultStack();
+                ItemStack clonedStack = FCItems.CLONED_ROD.getDefaultStack();
                 clonedStack.applyComponentsFrom(rodStack.getComponents());
-                clonedStack.set(ComponentRegistry.CREATION_TICK, source.getWorld().getTime());
+                clonedStack.set(FCComponents.CREATION_TICK, source.getWorld().getTime());
                 source.giveItemStack(clonedStack);
             }
         });

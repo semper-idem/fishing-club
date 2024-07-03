@@ -1,30 +1,26 @@
 package net.semperidem.fishingclub.client.screen.member;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FireworkExplosionComponent;
 import net.minecraft.component.type.FireworksComponent;
-import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.network.payload.CheckoutPayload;
-import net.semperidem.fishingclub.registry.KeybindingRegistry;
+import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.util.*;
 
@@ -483,8 +479,8 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
 
         private int getActionCount() {
-            int count = KeybindingRegistry.MULTIPLY_CART_ACTION_1.isPressed() ? 4 : 1;
-            count *= KeybindingRegistry.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
+            int count = FCKeybindings.MULTIPLY_CART_ACTION_1.isPressed() ? 4 : 1;
+            count *= FCKeybindings.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
             return count;
         }
 

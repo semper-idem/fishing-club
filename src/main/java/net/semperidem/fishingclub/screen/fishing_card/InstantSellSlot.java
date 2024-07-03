@@ -6,9 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.fish.FishComponent;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.perks.Path;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
 
 public class InstantSellSlot extends UnlockableBoundSlot {
     public InstantSellSlot(Inventory inventory, int index, int x, int y, FishingCardScreenHandler parent, Path tab, boolean isUnlocked, Item boundItem) {
@@ -30,7 +29,7 @@ public class InstantSellSlot extends UnlockableBoundSlot {
     private void attemptSell() {
         ItemStack currentStack = getStack();
         if (!currentStack.isEmpty()) {
-            parent.fishingCard.addCredit(currentStack.getOrDefault(ComponentRegistry.FISH, FishComponent.DEFAULT).value());
+            parent.fishingCard.addCredit(currentStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value());
             currentStack.setCount(0);
         }
     }

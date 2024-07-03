@@ -7,9 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -18,8 +15,8 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +34,7 @@ public class FishUtil {
 
     public static ItemStack getStackFromFish(FishComponent fish, int count){
         ItemStack fishReward = new ItemStack(FISH_ITEM);
-        fishReward.set(ComponentRegistry.FISH, fish);
+        fishReward.set(FCComponents.FISH, fish);
         fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
         setLore(fishReward, fish);
         fishReward.setCount(count);
@@ -244,7 +241,7 @@ public class FishUtil {
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(ItemRegistry.FISHER_HAT)) result[0] = true;
+            if (armorStack.isOf(FCItems.FISHER_HAT)) result[0] = true;
         });
         return result[0];
     }
@@ -252,7 +249,7 @@ public class FishUtil {
     public static boolean hasFishingVest(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(ItemRegistry.FISHER_VEST)) result[0] = true;
+            if (armorStack.isOf(FCItems.FISHER_VEST)) result[0] = true;
         });
         return result[0];
     }
@@ -260,7 +257,7 @@ public class FishUtil {
     public static boolean hasProperFishingEquipment(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (!(armorStack.isOf(ItemRegistry.FISHER_VEST) || armorStack.isOf(ItemRegistry.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
+            if (!(armorStack.isOf(FCItems.FISHER_VEST) || armorStack.isOf(FCItems.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
         });
         return !result[0];
     }

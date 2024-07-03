@@ -10,15 +10,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.semperidem.fishingclub.item.fishing_rod.RodPartItems;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 
 public record RodPartComponent(
         ItemVariant partItem,
         Optional<ItemStack> partStack
 ){
     public static final RodPartComponent DEFAULT = new RodPartComponent(
-            ItemVariant.of(ItemRegistry.EMPTY_COMPONENT),
+            ItemVariant.of(FCItems.EMPTY_COMPONENT),
             Optional.empty()
     );
 

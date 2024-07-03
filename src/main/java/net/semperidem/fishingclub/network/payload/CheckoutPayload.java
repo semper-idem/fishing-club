@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
                         continue;
                     }
                     double itemPrice = 0;
-                    if (item.content().get().isOf(Items.FIREWORK_ROCKET) || item.content().get().isOf(ItemRegistry.ILLEGAL_GOODS)) {
+                    if (item.content().get().isOf(Items.FIREWORK_ROCKET) || item.content().get().isOf(FCItems.ILLEGAL_GOODS)) {
                         itemPrice = item.price().orElse(100);
                     } else {
                         itemPrice = StockEntry.getPriceFor(item.content().get(), item.quantity());

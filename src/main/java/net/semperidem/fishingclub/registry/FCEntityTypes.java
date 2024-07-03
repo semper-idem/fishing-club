@@ -18,12 +18,11 @@ import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.LineArrowEntity;
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HarpoonEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.LineArrowEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 
-public class EntityTypeRegistry {
+public class FCEntityTypes {
 
   public static EntityType<FishermanEntity> DEREK_ENTITY;
   public static EntityType<HookEntity> HOOK_ENTITY;

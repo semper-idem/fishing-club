@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
 
-public class KeybindingRegistry {
+public class FCKeybindings {
     private final static KeyBinding FISHER_INFO_SCREEN_KB = registerKeybinding("fisher_info_screen", "misc", GLFW.GLFW_KEY_F);
     public final static KeyBinding CAST_SPELL_KB = registerKeybinding("cast_spell", "misc", GLFW.GLFW_KEY_N);
     public final static KeyBinding SPELL_SELECT_KB = registerKeybinding("spell_select", "misc", GLFW.GLFW_KEY_M);

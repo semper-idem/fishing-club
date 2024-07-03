@@ -3,15 +3,13 @@ package net.semperidem.fishingclub.item;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 
 public class FishCoinBundleItem extends Item {
     public FishCoinBundleItem(Settings settings) {
@@ -20,14 +18,14 @@ public class FishCoinBundleItem extends Item {
 
 
     public static ItemStack ofValue(int value){
-        ItemStack bundleStack = ItemRegistry.FISH_COIN_BUNDLE.getDefaultStack();
-        bundleStack.set(ComponentRegistry.COIN, value);
+        ItemStack bundleStack = FCItems.FISH_COIN_BUNDLE.getDefaultStack();
+        bundleStack.set(FCComponents.COIN, value);
         return bundleStack;
     }
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack bundleStack = user.getStackInHand(hand);
-        int value = bundleStack.getOrDefault(ComponentRegistry.COIN, 1);
+        int value = bundleStack.getOrDefault(FCComponents.COIN, 1);
         if (!user.getWorld().isClient) {
             FishingCard.of(user).addCredit(value);
         } else {

@@ -4,7 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.registry.ComponentRegistry;
+import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.function.Consumer;
 
@@ -49,14 +49,14 @@ public class PartItem extends Item {
     }
 
     <T extends LivingEntity> void damage(ItemStack componentStack, int amount, T entity, Consumer<T> breakCallback) {
-        int quality = componentStack.getOrDefault(ComponentRegistry.PART_QUALITY, 1);
+        int quality = componentStack.getOrDefault(FCComponents.PART_QUALITY, 1);
         if (!shouldDamage(quality)) {
             return;
         }
         int currentDamage = componentStack.getDamage();
         if (currentDamage + amount >= componentStack.getMaxDamage() && !destroyOnBreak) {
             componentStack.setDamage(componentStack.getMaxDamage() - 1);
-            componentStack.set(ComponentRegistry.BROKEN, true);
+            componentStack.set(FCComponents.BROKEN, true);
             breakCallback.accept(entity);
             return;
         }
@@ -72,7 +72,7 @@ public class PartItem extends Item {
     }
 
     boolean isBroken(ItemStack componentStack) {
-        return componentStack.getOrDefault(ComponentRegistry.BROKEN, false);
+        return componentStack.getOrDefault(FCComponents.BROKEN, false);
     }
 
     void validateWeightCapacity(RodConfigurationController configuration, int weightCapacity) {

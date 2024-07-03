@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.semperidem.fishingclub.registry.ItemRegistry;
 
 import java.util.Optional;
 

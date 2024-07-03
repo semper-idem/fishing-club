@@ -13,7 +13,7 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.network.payload.CheckoutPayload;
-import net.semperidem.fishingclub.registry.EnchantmentRegistry;
+import net.semperidem.fishingclub.registry.FCEnchantments;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.ArrayList;
@@ -205,7 +205,7 @@ public class MemberIllegalScreen extends MemberSubScreen {
                     MinecraftClient.getInstance().world
                             .getRegistryManager()
                             .get(RegistryKeys.ENCHANTMENT)
-                            .getEntry(EnchantmentRegistry.CURSE_OF_MORTALITY.getValue())
+                            .getEntry(FCEnchantments.CURSE_OF_MORTALITY.getValue())
                             .ifPresent(curseOfMortality -> enchantedStack.addEnchantment(curseOfMortality, 1));
                     this.possibleLoot.add(enchantedStack);
                 }

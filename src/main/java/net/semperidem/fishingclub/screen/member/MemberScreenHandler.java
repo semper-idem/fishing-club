@@ -4,17 +4,13 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.payload.CoinFlipPayload;
 import net.semperidem.fishingclub.network.payload.MemberPayload;
-import net.semperidem.fishingclub.registry.ScreenHandlerRegistry;
+import net.semperidem.fishingclub.registry.FCScreenHandlers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class MemberScreenHandler extends ScreenHandler {
@@ -30,13 +26,13 @@ public class MemberScreenHandler extends ScreenHandler {
     int minCapePrice = 0;
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
-        super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
+        super(FCScreenHandlers.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
         this.fishingCard = fishingCard;
     }
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, MemberPayload payload) {
-        super(ScreenHandlerRegistry.MEMBER_SCREEN, syncId);
+        super(FCScreenHandlers.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
         this.fishingCard = FishingCard.of(player);
     }

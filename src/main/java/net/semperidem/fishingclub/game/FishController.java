@@ -6,7 +6,7 @@ import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fish.SpeciesLibrary;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
-import net.semperidem.fishingclub.registry.StatusEffectRegistry;
+import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import static net.semperidem.fishingclub.util.MathUtil.quadraticBezier;
 
@@ -148,7 +148,7 @@ public class FishController {
     public void calculateSpeed() {
         float staminaPercent = getStaminaPercentage();
         speed = baseSpeed + 0.75f * staminaPercent;
-        if (parent.player.hasStatusEffect(StatusEffectRegistry.SLOW_FISH_BUFF)) {
+        if (parent.player.hasStatusEffect(FCStatusEffects.SLOW_FISH_BUFF)) {
             speed = speed * 0.75f;
         }
     }

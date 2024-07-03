@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
@@ -15,8 +14,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
-import net.semperidem.fishingclub.registry.EntityTypeRegistry;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 import org.jetbrains.annotations.Nullable;
 
 public class LineArrowEntity extends PersistentProjectileEntity implements IHookEntity{
@@ -93,7 +91,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
 
     @Override
     protected ItemStack asItemStack() {
-        return ItemRegistry.LINE_ARROW.getDefaultStack();
+        return FCItems.LINE_ARROW.getDefaultStack();
     }
 
     @Override

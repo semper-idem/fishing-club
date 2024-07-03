@@ -1,19 +1,16 @@
 package net.semperidem.fishingclub.game.treasure;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
-import net.semperidem.fishingclub.registry.ItemRegistry;
+import net.semperidem.fishingclub.registry.FCItems;
 
 import java.util.Random;
 
@@ -37,8 +34,8 @@ public class TreasureReward {
 
     ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isOf(ItemRegistry.MEMBER_FISHING_ROD)) {
-            return ItemRegistry.MEMBER_FISHING_ROD.getDefaultStack();
+        if (rewardStack.isOf(FCItems.MEMBER_FISHING_ROD)) {
+            return FCItems.MEMBER_FISHING_ROD.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {
@@ -56,7 +53,7 @@ public class TreasureReward {
             return rewardStack;
         }
 
-        if (item == ItemRegistry.FISH_COIN_BUNDLE) {
+        if (item == FCItems.FISH_COIN_BUNDLE) {
            return FishCoinBundleItem.ofValue((int) (quality * (1 + MathHelper.clamp(0, 4, Math.abs(random.nextGaussian())))));
         }
         if (quality != 1) {

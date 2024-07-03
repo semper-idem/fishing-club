@@ -4,7 +4,7 @@ import net.minecraft.entity.*;
 import java.util.HashMap;
 
 import static net.minecraft.entity.EntityType.*;
-import static net.semperidem.fishingclub.registry.EntityTypeRegistry.HOOK_ENTITY;
+import static net.semperidem.fishingclub.registry.FCEntityTypes.HOOK_ENTITY;
 
 public class EntityWeights {
     private static final HashMap<EntityType<?>, Integer> ENTITY_TYPE_TO_MAGNITUDE = new HashMap<>();
