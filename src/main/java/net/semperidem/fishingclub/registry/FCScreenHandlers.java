@@ -8,11 +8,9 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
-import net.semperidem.fishingclub.network.payload.DialogPayload;
-import net.semperidem.fishingclub.network.payload.FishingCardPayload;
-import net.semperidem.fishingclub.network.payload.FishingGamePayload;
+import net.semperidem.fishingclub.network.payload.*;
 import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
-import net.semperidem.fishingclub.network.payload.MemberPayload;
+import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
 import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
@@ -23,6 +21,7 @@ public class FCScreenHandlers {
     public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGamePayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<DialogScreenHandler, DialogPayload> DIALOG_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
+    public static ExtendedScreenHandlerType<ConfigurationScreenHandler, ConfigurationPayload> CONFIGURATION_SCREEN;
 
     public static void register() {
         FISHING_CARD_SCREEN =
@@ -50,6 +49,12 @@ public class FCScreenHandlers {
                         FishingClub.getIdentifier("member_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 MemberScreenHandler::new, MemberPayload.CODEC));
+        CONFIGURATION_SCREEN =
+                Registry.register(
+                        Registries.SCREEN_HANDLER,
+                        FishingClub.getIdentifier("configuration_screen_handler"),
+                        new ExtendedScreenHandlerType<>(
+                                ConfigurationScreenHandler::new, ConfigurationPayload.CODEC));
     }
 
     public static void registerClient() {
