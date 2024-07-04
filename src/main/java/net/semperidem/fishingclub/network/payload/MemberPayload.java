@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
@@ -19,9 +18,6 @@ public record MemberPayload() implements CustomPayload {
         return ID;
     }
     public static void consumePayload(MemberPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(
-                    () -> context.player().openHandledScreen(new MemberScreenHandlerFactory()));
-        }
+        context.player().openHandledScreen(new MemberScreenHandlerFactory());
     }
 }

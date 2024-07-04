@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.MinecraftServer;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -23,17 +22,13 @@ public record SellFishDirectPayload(ItemStack fish) implements CustomPayload {
     }
 
     public static void consumePayload(SellFishDirectPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                if (payload.fish().isEmpty()) {
-                    return;
-                }
-
-                int value = payload.fish.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
-                payload.fish.setCount(0);
-                FishingCard fishingCard = FishingCard.of(context.player());
-                fishingCard.addCredit(value);
-            });
+        if (payload.fish().isEmpty()) {
+            return;
         }
+
+        int value = payload.fish.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
+        payload.fish.setCount(0);
+        FishingCard fishingCard = FishingCard.of(context.player());
+        fishingCard.addCredit(value);
     }
 }

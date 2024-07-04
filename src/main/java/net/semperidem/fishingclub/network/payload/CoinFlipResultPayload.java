@@ -10,8 +10,8 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 
 public record CoinFlipResultPayload(int amount) implements CustomPayload {
-public static final CustomPayload.Id<CoinFlipResultPayload> ID = new CoinFlipResultPayload.Id<>(FishingClub.getIdentifier("s2c_coin_flip"));
-public static final PacketCodec<RegistryByteBuf, CoinFlipResultPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, CoinFlipResultPayload::amount, CoinFlipResultPayload::new);
+    public static final CustomPayload.Id<CoinFlipResultPayload> ID = new CoinFlipResultPayload.Id<>(FishingClub.getIdentifier("s2c_coin_flip"));
+    public static final PacketCodec<RegistryByteBuf, CoinFlipResultPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, CoinFlipResultPayload::amount, CoinFlipResultPayload::new);
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
@@ -20,11 +20,9 @@ public static final PacketCodec<RegistryByteBuf, CoinFlipResultPayload> CODEC = 
 
     public static void consumePayload(CoinFlipResultPayload payload, ClientPlayNetworking.Context context) {
         try (MinecraftClient client = context.client()) {
-            client.execute(() -> {
-                if (client.currentScreen instanceof MemberScreen memberScreen) {
-                    memberScreen.getScreenHandler().appendCoinFlipResult(payload.amount);
-                }
-            });
+            if (client.currentScreen instanceof MemberScreen memberScreen) {
+                memberScreen.getScreenHandler().appendCoinFlipResult(payload.amount);
+            }
         }
     }
 }

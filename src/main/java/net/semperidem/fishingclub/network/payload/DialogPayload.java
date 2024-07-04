@@ -21,13 +21,6 @@ public record DialogPayload(String openingKeys) implements CustomPayload {
     }
 
     public static void consumePayload(DialogPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-      server.execute(
-          () -> {
-            context
-                .player()
-                .openHandledScreen(new DialogScreenHandlerFactory(DialogUtil.getKeysFromString(payload.openingKeys)));
-          });
-        }
+        context.player().openHandledScreen(new DialogScreenHandlerFactory(DialogUtil.getKeysFromString(payload.openingKeys)));
     }
 }

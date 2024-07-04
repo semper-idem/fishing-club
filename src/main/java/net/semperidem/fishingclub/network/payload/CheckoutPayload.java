@@ -27,36 +27,32 @@ public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
     }
 
     public static void consumePayload(CheckoutPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                int total = 0;
-                for (OrderItem item : payload.cart) {
-                    if (item.content().isEmpty()) {
-                        continue;
-                    }
-                    double itemPrice = 0;
-                    if (item.content().get().isOf(Items.FIREWORK_ROCKET) || item.content().get().isOf(FCItems.ILLEGAL_GOODS)) {
-                        itemPrice = item.price().orElse(100);
-                    } else {
-                        itemPrice = StockEntry.getPriceFor(item.content().get(), item.quantity());
-                    }
-                    if (itemPrice < 0) {
-                        return;//throw item does not exist exception
-                    }
-                    total += (int) itemPrice;
-                }
-                FishingCard card = FishingCard.of(context.player());
-                if (card.getCredit() < total) {
-                    return;
-                }
-                card.addCredit(-total);
-                for(OrderItem item : payload.cart) {
-                    if (item.content().isEmpty()) {
-                        continue;
-                    }
-                    context.player().giveItemStack(item.content().get());
-                }
-            });
+        int total = 0;
+        for (OrderItem item : payload.cart) {
+            if (item.content().isEmpty()) {
+                continue;
+            }
+            double itemPrice = 0;
+            if (item.content().get().isOf(Items.FIREWORK_ROCKET) || item.content().get().isOf(FCItems.ILLEGAL_GOODS)) {
+                itemPrice = item.price().orElse(100);
+            } else {
+                itemPrice = StockEntry.getPriceFor(item.content().get(), item.quantity());
+            }
+            if (itemPrice < 0) {
+                return;//throw item does not exist exception
+            }
+            total += (int) itemPrice;
+        }
+        FishingCard card = FishingCard.of(context.player());
+        if (card.getCredit() < total) {
+            return;
+        }
+        card.addCredit(-total);
+        for (OrderItem item : payload.cart) {
+            if (item.content().isEmpty()) {
+                continue;
+            }
+            context.player().giveItemStack(item.content().get());
         }
     }
 }

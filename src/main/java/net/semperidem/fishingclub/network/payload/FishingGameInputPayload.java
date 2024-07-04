@@ -29,14 +29,9 @@ public record FishingGameInputPayload(float reelForce, boolean isReeling, boolea
     }
 
     public static void consumePayload(FishingGameInputPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-
-                if (!(context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)){
-                    return;
-                }
-                screenHandler.consumeBobberMovement(payload.reelForce, payload.isReeling, payload.isPulling);
-            });
+        if (!(context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) {
+            return;
         }
+        screenHandler.consumeBobberMovement(payload.reelForce, payload.isReeling, payload.isPulling);
     }
 }

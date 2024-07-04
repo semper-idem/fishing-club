@@ -56,13 +56,11 @@ public class MemberFishingRodItem extends FishingRodItem {
         if (fishingRod.getMaxDamage() - fishingRod.getDamage() == 1) {
             return;
         }
-        if (!world.isClient && user instanceof ServerPlayerEntity serverPlayer) {
+        if (!world.isClient) {
             RodConfigurationComponent configuration = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
             configuration.damage(2, PartItem.DamageSource.CAST, user);
-            FishingCard.of(serverPlayer).addSkillPoints(1);
-
             world.spawnEntity(new HookEntity(user, world, configuration));
         }
         world.playSound(

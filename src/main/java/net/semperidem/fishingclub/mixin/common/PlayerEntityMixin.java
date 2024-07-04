@@ -21,6 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Inject(method = "tickMovement", at = @At("RETURN"))
     private void afterTickMovement(CallbackInfo ci) {
+        if (this.getWorld().isClient()) {
+            return;
+        }
         if (this.fishHook instanceof HookEntity hookEntity) {
             this.onLanding();
             Vec3d lineVector = hookEntity.getPos().subtract(this.getEyePos());

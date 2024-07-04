@@ -19,20 +19,16 @@ public record CoinFlipPayload(int amount) implements CustomPayload {
     }
 
     public static void consumePayload(CoinFlipPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                if (payload.amount <= 0) {
-                    return;
-                }
-                FishingCard fishingCard = FishingCard.of(context.player());
-                if (payload.amount > fishingCard.getCredit()) {
-                    return;
-                }
-                int resultAmount = payload.amount * Math.random() <= 0.49 ? 1 : -1;
-                fishingCard.addCredit(resultAmount);
-                ServerPlayNetworking.send(context.player(), new CoinFlipResultPayload(resultAmount));
-                //ServerPacketSender.sendCardUpdate(player, fishingCard);
-            });
+        if (payload.amount <= 0) {
+            return;
         }
+        FishingCard fishingCard = FishingCard.of(context.player());
+        if (payload.amount > fishingCard.getCredit()) {
+            return;
+        }
+        int resultAmount = payload.amount * Math.random() <= 0.49 ? 1 : -1;
+        fishingCard.addCredit(resultAmount);
+        ServerPlayNetworking.send(context.player(), new CoinFlipResultPayload(resultAmount));
+        //ServerPacketSender.sendCardUpdate(player, fishingCard);
     }
 }

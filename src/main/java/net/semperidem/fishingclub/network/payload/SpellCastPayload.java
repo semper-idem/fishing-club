@@ -28,9 +28,7 @@ public record SpellCastPayload(String spellName, UUID targetUUID) implements Cus
 
     public static void consumePayload(SpellCastPayload payload, ServerPlayNetworking.Context context) {
         try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                FishingCard.of(context.player()).useSpell(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
-            });
+            FishingCard.of(context.player()).useSpell(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
         }
     }
 }

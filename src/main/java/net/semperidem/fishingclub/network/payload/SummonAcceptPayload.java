@@ -20,11 +20,7 @@ public record SummonAcceptPayload() implements CustomPayload{
         return ID;
     }
     public static void consumePayload(SummonAcceptPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                FishingCard.of(context.player()).acceptSummonRequest();
-            });
-        }
+        FishingCard.of(context.player()).acceptSummonRequest();
     }
 
 }

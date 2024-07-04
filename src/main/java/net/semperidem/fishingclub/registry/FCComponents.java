@@ -35,6 +35,7 @@ public class FCComponents {
                         ComponentType.<RodConfigurationComponent>builder()
                                 .codec(RodConfigurationComponent.CODEC)
                                 .packetCodec(RodConfigurationComponent.PACKET_CODEC)
+                                .cache()
                                 .build());
 
         ROD_PART =
@@ -44,6 +45,7 @@ public class FCComponents {
                         ComponentType.<RodPartComponent>builder()
                                 .codec(RodPartComponent.CODEC)
                                 .packetCodec(RodPartComponent.PACKET_CODEC)
+                                .cache()
                                 .build());
 
         LINE_LENGTH =
@@ -53,6 +55,7 @@ public class FCComponents {
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
+                                .cache()
                                 .build());
 
         CAST_POWER =

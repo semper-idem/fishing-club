@@ -25,20 +25,16 @@ public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
     }
 
     public static void consumePayload(SellFishPayload payload, ServerPlayNetworking.Context context) {
-        try (MinecraftServer server = context.server()) {
-            server.execute(() -> {
-                if (payload.fish().isEmpty()) {
-                    return;
-                }
-                
-                int totalValue = 0;                
-                for(ItemStack fishStack : payload.fish()) {
-                    totalValue += fishStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
-                    fishStack.setCount(0);
-                }
-                FishingCard fishingCard = FishingCard.of(context.player());
-                fishingCard.addCredit(totalValue);
-            });
+        if (payload.fish().isEmpty()) {
+            return;
         }
+
+        int totalValue = 0;
+        for(ItemStack fishStack : payload.fish()) {
+            totalValue += fishStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
+            fishStack.setCount(0);
+        }
+        FishingCard fishingCard = FishingCard.of(context.player());
+        fishingCard.addCredit(totalValue);
     }
 }
