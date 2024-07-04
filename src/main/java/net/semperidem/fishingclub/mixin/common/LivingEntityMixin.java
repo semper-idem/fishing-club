@@ -47,11 +47,9 @@ public abstract class LivingEntityMixin extends Entity{
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
         int power;
-        if (activeStack.isOf(MEMBER_FISHING_ROD)){
+        if (activeStack.isOf(MEMBER_FISHING_ROD) || activeStack.isOf(FCItems.HARPOON_ROD)){
             power = MemberFishingRodItem.getChargePower(getItemUseTime());
             tickPullPower(power);
-        } else if (activeStack.isOf(FCItems.HARPOON_ROD)) {
-            power = HarpoonRodItem.getPower(getItemUseTime());
         } else {
             return;
         }

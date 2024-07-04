@@ -10,9 +10,11 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
+import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 
 public class HarpoonRodItem extends FishingRodItem {
   public HarpoonRodItem(Settings settings) {
@@ -27,11 +29,7 @@ public class HarpoonRodItem extends FishingRodItem {
       return;
     }
     PlayerEntity playerEntity = (PlayerEntity) user;
-    int usePower = getPower(this.getMaxUseTime(stack, playerEntity) - remainingUseTicks);
-    if (usePower < 1) {
-      return;
-    }
-
+    float usePower = 1 + (1 - MemberFishingRodItem.getChargePower(user.getItemUseTime())) * 0.2f;
     stack.damage(1, playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
     HarpoonEntity harpoonEntity = new HarpoonEntity(world, playerEntity, stack);
     harpoonEntity.setVelocity(
@@ -39,7 +37,7 @@ public class HarpoonRodItem extends FishingRodItem {
         playerEntity.getPitch(),
         playerEntity.getYaw(),
         0.0f,
-        Math.min(4f, 1.5f + usePower * 0.5f),
+        Math.min(4f, 1.5f *usePower),
         1.0f);
     world.spawnEntity(harpoonEntity);
     world.playSoundFromEntity(
@@ -74,9 +72,5 @@ public class HarpoonRodItem extends FishingRodItem {
   @Override
   public UseAction getUseAction(ItemStack stack) {
     return UseAction.SPEAR;
-  }
-
-  public static int getPower(int useTime) {
-    return useTime / 40;
   }
 }
