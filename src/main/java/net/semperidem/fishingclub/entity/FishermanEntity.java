@@ -58,6 +58,7 @@ public class FishermanEntity extends PassiveEntity {
     private UUID summonerUUID;
     private final static int DESPAWN_TIME = 6000;
     private int despawnTimer;
+    private int outOfWaterTicks;
 
     public FishermanEntity(World world) {
         super(FCEntityTypes.DEREK_ENTITY, world);
@@ -103,6 +104,10 @@ public class FishermanEntity extends PassiveEntity {
 
     private boolean isPaddleMoving() {
         return this.limbAnimator.isLimbMoving();
+    }
+
+    public int getOutOfWaterTicks() {
+        return outOfWaterTicks;
     }
 
     @Override
@@ -169,8 +174,10 @@ public class FishermanEntity extends PassiveEntity {
 
     private void tickBuoyancy() {
         if (!isInWater()) {
+            outOfWaterTicks++;
            return;
         }
+        outOfWaterTicks = 0;
         ShapeContext shapeContext = ShapeContext.of(this);
         if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.getWorld().getFluidState(this.getBlockPos().up()).isIn(FluidTags.WATER)) {
             this.setOnGround(true);

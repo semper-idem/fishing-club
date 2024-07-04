@@ -21,29 +21,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Inject(method = "tickMovement", at = @At("RETURN"))
     private void afterTickMovement(CallbackInfo ci) {
-        if (this.getWorld().isClient()) {
+
+        if (!(this.fishHook instanceof HookEntity hookEntity)) {
             return;
         }
-        if (this.fishHook instanceof HookEntity hookEntity) {
-            this.onLanding();
-            Vec3d lineVector = hookEntity.getPos().subtract(this.getEyePos());
-            double currentLineLength = lineVector.length();
-            if (currentLineLength > hookEntity.getLineLength()) {
-                double tensionForce = currentLineLength / hookEntity.getLineLength() * 0.1;
-                Vec3d appliedMotion = lineVector
-                        .multiply(1.0 / currentLineLength)
-                        .multiply(
-                                tensionForce,
-                                tensionForce * 1.2,
-                                tensionForce
-                        );
-                this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
-                hookEntity.applyTensionFromOwner(appliedMotion);
-            }
+
+        this.onLanding();
+        Vec3d lineVector = hookEntity.getPos().subtract(this.getEyePos());
+        double currentLineLength = lineVector.length();
+
+        if (currentLineLength < hookEntity.getLineLength()) {
+            return;
         }
+
+        double tensionForce = currentLineLength / hookEntity.getLineLength() * 0.1;
+        Vec3d appliedMotion = lineVector.multiply(1.0 / currentLineLength).multiply(tensionForce, tensionForce * 1.2, tensionForce);
+        this.addVelocity(appliedMotion.x, appliedMotion.y, appliedMotion.z);
+        hookEntity.applyTensionFromOwner(appliedMotion);
     }
 
-    @Shadow @Nullable public FishingBobberEntity fishHook;
+    @Shadow
+    @Nullable
+    public FishingBobberEntity fishHook;
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -60,7 +59,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Shadow
-    public void equipStack(EquipmentSlot slot, ItemStack stack) {}
+    public void equipStack(EquipmentSlot slot, ItemStack stack) {
+    }
 
     @Shadow
     public Arm getMainArm() {
