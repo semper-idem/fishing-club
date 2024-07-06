@@ -28,7 +28,6 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
 
 
 public final class FishingCard extends FishingCardInventory implements EntityComponentInitializer, AutoSyncedComponent {

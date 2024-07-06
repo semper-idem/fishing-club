@@ -20,11 +20,12 @@ public class FCNetworking {
         PayloadTypeRegistry.playC2S().register(DialogResponsePayload.ID, DialogResponsePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(DialogPayload.ID, DialogPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CheckoutPayload.ID, CheckoutPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(SpellCastPayload.ID, SpellCastPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SellFishDirectPayload.ID, SellFishDirectPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SummonAcceptPayload.ID, SummonAcceptPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingGameInputPayload.ID, FishingGameInputPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(AddPerkPayload.ID, AddPerkPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ConfigurationPayload.ID, ConfigurationPayload.CODEC);
     }
 
     public static void registerClient() {
@@ -44,9 +45,10 @@ public class FCNetworking {
         ServerPlayNetworking.registerGlobalReceiver(DialogResponsePayload.ID, DialogResponsePayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(DialogPayload.ID, DialogPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CheckoutPayload.ID, CheckoutPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(SpellCastPayload.ID, SpellCastPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishDirectPayload.ID, SellFishDirectPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SummonAcceptPayload.ID, SummonAcceptPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(FishingGameInputPayload.ID, FishingGameInputPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(ConfigurationPayload.ID, ConfigurationPayload::consumePayload);
     }
 }

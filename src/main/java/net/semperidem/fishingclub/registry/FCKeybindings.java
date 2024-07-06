@@ -1,78 +1,90 @@
 package net.semperidem.fishingclub.registry;
 
-import static net.semperidem.fishingclub.FishingClub.MOD_ID;
-
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
+import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
-import net.semperidem.fishingclub.network.payload.SpellCastPayload;
+import net.semperidem.fishingclub.network.payload.SpellCastWithTargetPayload;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.UUID;
+import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
 public class FCKeybindings {
-    private final static KeyBinding FISHER_INFO_SCREEN_KB = registerKeybinding("fisher_info_screen", "misc", GLFW.GLFW_KEY_F);
-    public final static KeyBinding CAST_SPELL_KB = registerKeybinding("cast_spell", "misc", GLFW.GLFW_KEY_N);
-    public final static KeyBinding SPELL_SELECT_KB = registerKeybinding("spell_select", "misc", GLFW.GLFW_KEY_M);
-    public final static KeyBinding MULTIPLY_CART_ACTION_1 = registerKeybinding("multiply_cart_action_1", "misc", GLFW.GLFW_KEY_LEFT_SHIFT);
-    public final static KeyBinding MULTIPLY_CART_ACTION_2 = registerKeybinding("multiply_cart_action_2", "misc", GLFW.GLFW_KEY_LEFT_ALT);
+    private final static KeyBinding CONTEXT_SCREEN = registerKeybinding("fisher_screen", "general", GLFW.GLFW_KEY_F);
+    public final static KeyBinding CAST_SPELL = registerKeybinding("cast_spell", "spell", GLFW.GLFW_KEY_N);
+    public final static KeyBinding SPELL_SELECT = registerKeybinding("spell_select", "spell", GLFW.GLFW_KEY_M);
+    public final static KeyBinding MULTIPLY_CART_ACTION_1 = registerKeybinding("multiply_cart_action_1", "shop", GLFW.GLFW_KEY_LEFT_SHIFT);
+    public final static KeyBinding MULTIPLY_CART_ACTION_2 = registerKeybinding("multiply_cart_action_2", "shop", GLFW.GLFW_KEY_LEFT_ALT);
 
-    public static void registerClient(){
-
-        ClientTickEvents.END_CLIENT_TICK.register(openFisherInfoScreen());
-        ClientTickEvents.END_CLIENT_TICK.register(castSpell());
-        ClientTickEvents.END_CLIENT_TICK.register(openSpellSelect());
+    public static void registerClient() {
+        registerAction(FCKeybindings::openContextFCMenu);
+        registerAction(FCKeybindings::spellCast);
+        registerAction(FCKeybindings::spellSelect);
     }
 
-    private static KeyBinding registerKeybinding(String keyTitle, String keyCategory, int key){
+    private static void registerAction(ClientTickEvents.EndTick endTickAction) {
+        ClientTickEvents.END_CLIENT_TICK.register(endTickAction);
+    }
+
+    private static KeyBinding registerKeybinding(String keyTitle, String keyCategory, int keyCode) {
         return KeyBindingHelper.registerKeyBinding(
                 new KeyBinding(
                         "key." + MOD_ID + "." + keyTitle,
                         InputUtil.Type.KEYSYM,
-                        key,
-                        "category."+ MOD_ID +"." + keyCategory
+                        keyCode,
+                        "category." + MOD_ID + "." + keyCategory
                 )
         );
     }
 
-
-    private static ClientTickEvents.EndTick openFisherInfoScreen(){
-        return client -> {
-            while (FISHER_INFO_SCREEN_KB.wasPressed()) {
-                ClientPlayNetworking.send(new FishingCardPayload());
-            }
-        };
+    private static void openContextFCMenu(MinecraftClient client) {
+        if (!CONTEXT_SCREEN.wasPressed()) {
+            return;
+        }
+        if (client.player == null) {
+            return;
+        }
+        if (client.player.getMainHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
+            ClientPlayNetworking.send(new ConfigurationPayload(true, client.player.getMainHandStack()));
+            return;
+        }
+        if (client.player.getOffHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
+            ClientPlayNetworking.send(new ConfigurationPayload(false, client.player.getOffHandStack()));
+            return;
+        }
+        ClientPlayNetworking.send(new FishingCardPayload());
     }
-    private static ClientTickEvents.EndTick castSpell(){
-        return client -> {
-            while (CAST_SPELL_KB.wasPressed()) {
-                if (SpellListWidget.selectedSpell != null) {
-                    UUID targetUUID = UUID.randomUUID();
-                    if (SpellListWidget.selectedSpell.needsTarget()){
-                        HitResult hitResult = client.player.raycast(5,0,false);
-                        if (hitResult.getType() == HitResult.Type.ENTITY) {
-                            targetUUID = ((EntityHitResult) hitResult).getEntity().getUuid();
-                        }
-                    } else {
-                        targetUUID = client.player.getUuid();
-                    }
-                    ClientPlayNetworking.send(new SpellCastPayload(SpellListWidget.selectedSpell.getKey(), targetUUID));
-                };
-            }
-        };
-    }
-    private static ClientTickEvents.EndTick openSpellSelect(){
-        return client -> {
-            if (SPELL_SELECT_KB.wasPressed()) {
-                SpellListWidget.stickPress();
-            }
 
-        };
+    private static void spellCast(MinecraftClient client) {
+        if (!CAST_SPELL.wasPressed()) {
+            return;
+        }
+        if (SpellListWidget.selectedSpell == null) {
+            return;
+        }
+        if (client.player == null) {
+            return;
+        }
+        if (!SpellListWidget.selectedSpell.needsTarget()) {
+            ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedSpell.getKey(), client.player.getUuid()));
+            return;
+        }
+        HitResult hitResult = client.player.raycast(5, 0, false);
+        if (hitResult.getType() == HitResult.Type.ENTITY) {
+            ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedSpell.getKey(), ((EntityHitResult) hitResult).getEntity().getUuid()));
+        }
+    }
+
+    private static void spellSelect(MinecraftClient client) {
+        if (SPELL_SELECT.wasPressed()) {
+            SpellListWidget.stickPress();
+        }
     }
 }

@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.semperidem.fishingclub.client.FishingClubClient;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.registry.FCKeybindings;
 
@@ -30,7 +29,7 @@ public class SpellListWidget{
             if (pressed) pressed = false;
             return;
         }
-        if (!FCKeybindings.SPELL_SELECT_KB.isPressed()){
+        if (!FCKeybindings.SPELL_SELECT.isPressed()){
             pressed = false;
             return;
         }

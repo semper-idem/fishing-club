@@ -5,6 +5,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.screen.configuration.ConfigurationScreen;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
@@ -62,5 +63,6 @@ public class FCScreenHandlers {
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
         HandledScreens.register(DIALOG_SCREEN, DialogScreen::new);
         HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
+        HandledScreens.register(CONFIGURATION_SCREEN, ConfigurationScreen::new);
     }
 }

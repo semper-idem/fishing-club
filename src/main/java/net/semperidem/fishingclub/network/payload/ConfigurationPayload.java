@@ -1,18 +1,25 @@
 package net.semperidem.fishingclub.network.payload;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreenFactory;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandlerFactory;
 
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
 
-public record ConfigurationPayload() implements CustomPayload {
+public record ConfigurationPayload(boolean isMainHand, ItemStack fishingRod) implements CustomPayload {
     static {
-        ID = new CustomPayload.Id<>(getIdentifier("s2c_configuration"));
-        CODEC = PacketCodec.unit(new ConfigurationPayload());
+        ID = new CustomPayload.Id<>(getIdentifier("c2s_configuration"));
+        CODEC = PacketCodec.tuple(
+                PacketCodecs.BOOL,
+                ConfigurationPayload::isMainHand,
+                ItemStack.PACKET_CODEC,
+                ConfigurationPayload::fishingRod,
+                ConfigurationPayload::new
+        );
     }
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
@@ -20,7 +27,7 @@ public record ConfigurationPayload() implements CustomPayload {
     }
 
     public static void consumePayload(ConfigurationPayload payload, ServerPlayNetworking.Context context) {
-        context.player().openHandledScreen(new ConfigurationScreenHandlerFactory());
+        context.player().openHandledScreen(new ConfigurationScreenHandlerFactory(payload));
     }
 
 
