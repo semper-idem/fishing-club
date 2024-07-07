@@ -46,4 +46,15 @@ public record RodPartComponent(
             e.sendEquipmentBreakStatus(componentItem, EquipmentSlot.MAINHAND);
         });
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RodPartComponent other)) {
+            return false;
+        }
+        boolean areEqual = true;
+        areEqual &= partItem.equals(other.partItem);
+        areEqual &= ItemStack.areEqual(other.partStack.orElse(ItemStack.EMPTY), partStack.orElse(ItemStack.EMPTY));
+        return areEqual;
+    }
 }
