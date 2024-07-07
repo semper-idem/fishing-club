@@ -52,11 +52,7 @@ public class FCKeybindings {
             return;
         }
         if (client.player.getMainHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
-            ClientPlayNetworking.send(new ConfigurationPayload(true, client.player.getMainHandStack()));
-            return;
-        }
-        if (client.player.getOffHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
-            ClientPlayNetworking.send(new ConfigurationPayload(false, client.player.getOffHandStack()));
+            ClientPlayNetworking.send(new ConfigurationPayload());
             return;
         }
         ClientPlayNetworking.send(new FishingCardPayload());

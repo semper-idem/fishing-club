@@ -124,7 +124,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void init(RodConfigurationComponent configuration) {
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.configuration = configuration;
-        this.fishingRod = configuration.fishingRod().orElseThrow();
         this.maxLineLength = configuration.maxLineLength();
         this.maxEntityMagnitude = configuration.weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, 8);

@@ -18,34 +18,31 @@ import net.semperidem.fishingclub.registry.FCScreenHandlers;
 import net.semperidem.fishingclub.screen.fishing_card.TabSlot;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
+
+import static net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent.*;
+import static net.semperidem.fishingclub.registry.FCComponents.*;
+
 public class ConfigurationScreenHandler extends ScreenHandler {
-    private final static int SLOT_COUNT = 5;
     private final static int SLOTS_PER_ROW = 9;
     private final static int SLOT_SIZE = 20;
-    private Inventory playerInventory;
-    private final ItemStack fishingRod;
-    RodConfigurationComponent configuration;
+    private final PlayerInventory playerInventory;
+    final RodConfigurationComponent configuration;
 
     public ConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, ConfigurationPayload payload) {
         super(FCScreenHandlers.CONFIGURATION_SCREEN, syncId);
         this.playerInventory = playerInventory;
         this.addPlayerInventorySlots();
-        this.fishingRod = payload.fishingRod();
-        this.configuration = payload.fishingRod().getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.DEFAULT);
-        SimpleInventory rodInventory = configuration.getParts();
-        addSlot(new PartSlot(rodInventory, 0,83, 46, FCItems.CORE_WOODEN_OAK, coreStack -> {
-            this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack));
-            this.fishingRod.set(FCComponents.ROD_CONFIGURATION, this.configuration);
-            if (payload.isMainHand()) {
-                playerInventory.getMainHandStack().set(FCComponents.ROD_CONFIGURATION, this.configuration);
-            }
-        }));
-        addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.LINE_SPIDER, lineStack -> this.configuration = this.configuration.equipLine(RodPartComponent.of(lineStack))));
-        addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
-        addSlot(new PartSlot(rodInventory, 3,92, 115, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
-        addSlot(new PartSlot(rodInventory, 4,48, 115, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
+        this.configuration = playerInventory.getMainHandStack().getOrDefault(ROD_CONFIGURATION, DEFAULT);
+        SimpleInventory rodInventory = this.configuration.getParts();
+        addSlot(new PartSlot(rodInventory, 0,83, 46, FCItems.CORE_WOODEN_OAK, coreStack -> playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, o -> o.equipCore(RodPartComponent.of(coreStack)))));
+        addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.LINE_SPIDER, lineStack -> playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, o -> o.equipLine(RodPartComponent.of(lineStack)))));
+        addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.EMPTY_COMPONENT, coreStack -> playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, o -> o.equipCore(RodPartComponent.of(coreStack)))));
+        addSlot(new PartSlot(rodInventory, 3,92, 115, FCItems.EMPTY_COMPONENT, coreStack -> playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, o -> o.equipCore(RodPartComponent.of(coreStack)))));
+        addSlot(new PartSlot(rodInventory, 4,48, 115, FCItems.EMPTY_COMPONENT, coreStack -> playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, o -> o.equipCore(RodPartComponent.of(coreStack)))));
     }
-
 
     public void addPlayerInventorySlots(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {

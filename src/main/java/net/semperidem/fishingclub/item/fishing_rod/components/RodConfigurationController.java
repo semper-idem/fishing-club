@@ -13,7 +13,6 @@ public class RodConfigurationController {
 
     public RodConfigurationComponent toRecord() {
         return new RodConfigurationComponent(
-                this.fromRecord.fishingRod(),
                 this.fromRecord.coreComponent(),
                 this.fromRecord.lineComponent(),
                 this.maxLineLength,

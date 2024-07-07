@@ -10,11 +10,6 @@ import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import org.jetbrains.annotations.Nullable;
 
 public class ConfigurationScreenHandlerFactory implements ExtendedScreenHandlerFactory<ConfigurationPayload> {
-    private final ConfigurationPayload payload;
-
-    public ConfigurationScreenHandlerFactory(ConfigurationPayload payload) {
-        this.payload = payload;
-    }
     @Override
     public Text getDisplayName() {
         return Text.literal("Configuration");
@@ -23,11 +18,11 @@ public class ConfigurationScreenHandlerFactory implements ExtendedScreenHandlerF
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new ConfigurationScreenHandler(syncId, inv, new ConfigurationPayload(payload.isMainHand(), payload.fishingRod()));
+        return new ConfigurationScreenHandler(syncId, inv, new ConfigurationPayload());
     }
 
     @Override
     public ConfigurationPayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new ConfigurationPayload(payload.isMainHand(), payload.fishingRod());
+        return new ConfigurationPayload();
     }
 }

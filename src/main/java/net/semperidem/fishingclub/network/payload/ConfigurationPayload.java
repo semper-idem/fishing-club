@@ -10,16 +10,10 @@ import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandle
 
 import static net.semperidem.fishingclub.FishingClub.getIdentifier;
 
-public record ConfigurationPayload(boolean isMainHand, ItemStack fishingRod) implements CustomPayload {
+public record ConfigurationPayload() implements CustomPayload {
     static {
         ID = new CustomPayload.Id<>(getIdentifier("c2s_configuration"));
-        CODEC = PacketCodec.tuple(
-                PacketCodecs.BOOL,
-                ConfigurationPayload::isMainHand,
-                ItemStack.PACKET_CODEC,
-                ConfigurationPayload::fishingRod,
-                ConfigurationPayload::new
-        );
+        CODEC = PacketCodec.unit(new ConfigurationPayload());
     }
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
@@ -27,7 +21,7 @@ public record ConfigurationPayload(boolean isMainHand, ItemStack fishingRod) imp
     }
 
     public static void consumePayload(ConfigurationPayload payload, ServerPlayNetworking.Context context) {
-        context.player().openHandledScreen(new ConfigurationScreenHandlerFactory(payload));
+        context.player().openHandledScreen(new ConfigurationScreenHandlerFactory());
     }
 
 
