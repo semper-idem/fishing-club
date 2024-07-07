@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -89,6 +90,16 @@ public record RodConfigurationComponent(
     public void damage(int amount, PartItem.DamageSource damageSource, LivingEntity entity){
         coreComponent.damage(amount, damageSource, entity);
         lineComponent.damage(amount, damageSource, entity);
+    }
+
+    public SimpleInventory getParts() {
+        SimpleInventory parts = new SimpleInventory(5);
+        parts.setStack(0, coreComponent.partStack().orElse(ItemStack.EMPTY));
+        parts.setStack(1, lineComponent.partStack().orElse(ItemStack.EMPTY));
+        parts.setStack(2, ItemStack.EMPTY);
+        parts.setStack(3, ItemStack.EMPTY);
+        parts.setStack(4, ItemStack.EMPTY);
+        return parts;
     }
 }
 

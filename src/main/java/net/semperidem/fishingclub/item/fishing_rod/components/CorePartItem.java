@@ -26,4 +26,9 @@ public class CorePartItem extends PartItem {
         super.applyComponent(configuration, partStack);
         configuration.castPower *= castPowerMultiplier;
     }
+
+    @Override
+    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
+        configuration.equipCore(RodPartComponent.of(componentStack));
+    }
 }

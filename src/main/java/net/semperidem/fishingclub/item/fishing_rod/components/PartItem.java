@@ -80,4 +80,7 @@ public class PartItem extends Item {
             configuration.setWeightCapacity(weightCapacity);
         }
     }
+
+    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
+    }
 }

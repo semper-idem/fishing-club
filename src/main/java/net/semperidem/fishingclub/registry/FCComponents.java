@@ -28,16 +28,6 @@ public class FCComponents {
     public static ComponentType<UUID> CAUGHT_BY;
 
     public static void register() {
-        ROD_CONFIGURATION =
-                Registry.register(
-                        Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("rod_configuration"),
-                        ComponentType.<RodConfigurationComponent>builder()
-                                .codec(RodConfigurationComponent.CODEC)
-                                .packetCodec(RodConfigurationComponent.PACKET_CODEC)
-                                .cache()
-                                .build());
-
         ROD_PART =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
@@ -45,6 +35,15 @@ public class FCComponents {
                         ComponentType.<RodPartComponent>builder()
                                 .codec(RodPartComponent.CODEC)
                                 .packetCodec(RodPartComponent.PACKET_CODEC)
+                                .cache()
+                                .build());
+        ROD_CONFIGURATION =
+                Registry.register(
+                        Registries.DATA_COMPONENT_TYPE,
+                        FishingClub.getIdentifier("rod_configuration"),
+                        ComponentType.<RodConfigurationComponent>builder()
+                                .codec(RodConfigurationComponent.CODEC)
+                                .packetCodec(RodConfigurationComponent.PACKET_CODEC)
                                 .cache()
                                 .build());
 

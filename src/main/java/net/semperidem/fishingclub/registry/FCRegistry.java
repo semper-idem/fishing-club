@@ -12,6 +12,8 @@ public class FCRegistry {
 
 // in the initializer
     public static void register(){
+        FCComponents.register();
+        FCTags.register();
         FCItems.register();
         FCEntityTypes.register();
         FCNetworking.registerServer();
@@ -20,8 +22,6 @@ public class FCRegistry {
         LevelRewardRule.initDefaultRewards();
         FishingPerks.register();
         DialogUtil.register();
-        FCComponents.register();
-        FCTags.register();
     }
 
     public static void registerClient(){

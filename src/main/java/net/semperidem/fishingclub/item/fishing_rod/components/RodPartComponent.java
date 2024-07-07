@@ -6,6 +6,7 @@ import java.util.Optional;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -17,7 +18,7 @@ public record RodPartComponent(
         Optional<ItemStack> partStack
 ){
     public static final RodPartComponent DEFAULT = new RodPartComponent(
-            ItemVariant.of(FCItems.EMPTY_COMPONENT),
+            ItemVariant.blank(),
             Optional.empty()
     );
 
@@ -28,6 +29,9 @@ public record RodPartComponent(
 
     public static PacketCodec<RegistryByteBuf, RodPartComponent> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
+    public static RodPartComponent of(ItemStack partStack) {
+        return new RodPartComponent(ItemVariant.of(partStack), partStack.isEmpty() ? Optional.empty() : Optional.of(partStack));
+    }
     public void apply(RodConfigurationController configurationController) {
         if (partItem instanceof PartItem componentItem && partStack.isPresent()) {
             componentItem.applyComponent(configurationController, partStack.get());

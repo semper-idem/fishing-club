@@ -28,4 +28,9 @@ public class LinePartItem extends PartItem {
         super.applyComponent(configuration, part);
         configuration.maxLineLength = this.maxLineLength;
     }
+
+    @Override
+    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
+        configuration.equipLine(RodPartComponent.of(componentStack));
+    }
 }

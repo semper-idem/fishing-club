@@ -9,7 +9,11 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.perks.Path;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodPartComponent;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
 import net.semperidem.fishingclub.screen.fishing_card.TabSlot;
 import org.jetbrains.annotations.Nullable;
@@ -19,18 +23,29 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private final static int SLOTS_PER_ROW = 9;
     private final static int SLOT_SIZE = 20;
     private Inventory playerInventory;
+    private final ItemStack fishingRod;
+    RodConfigurationComponent configuration;
 
     public ConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, ConfigurationPayload payload) {
         super(FCScreenHandlers.CONFIGURATION_SCREEN, syncId);
         this.playerInventory = playerInventory;
         this.addPlayerInventorySlots();
-        SimpleInventory rodInventory = new SimpleInventory(SLOT_COUNT);
-        addSlot(new Slot(rodInventory, 0,83, 46));
-        addSlot(new Slot(rodInventory, 1,41, 64));
-        addSlot(new Slot(rodInventory, 2,147, 84));
-        addSlot(new Slot(rodInventory, 3,92, 115));
-        addSlot(new Slot(rodInventory, 4,48, 115));
+        this.fishingRod = payload.fishingRod();
+        this.configuration = payload.fishingRod().getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.DEFAULT);
+        SimpleInventory rodInventory = configuration.getParts();
+        addSlot(new PartSlot(rodInventory, 0,83, 46, FCItems.CORE_WOODEN_OAK, coreStack -> {
+            this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack));
+            this.fishingRod.set(FCComponents.ROD_CONFIGURATION, this.configuration);
+            if (payload.isMainHand()) {
+                playerInventory.getMainHandStack().set(FCComponents.ROD_CONFIGURATION, this.configuration);
+            }
+        }));
+        addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.LINE_SPIDER, lineStack -> this.configuration = this.configuration.equipLine(RodPartComponent.of(lineStack))));
+        addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
+        addSlot(new PartSlot(rodInventory, 3,92, 115, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
+        addSlot(new PartSlot(rodInventory, 4,48, 115, FCItems.EMPTY_COMPONENT, coreStack -> this.configuration = this.configuration.equipCore(RodPartComponent.of(coreStack))));
     }
+
 
     public void addPlayerInventorySlots(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
@@ -45,8 +60,6 @@ public class ConfigurationScreenHandler extends ScreenHandler {
             }
         }
     }
-
-
     @Override
     public ItemStack quickMove(PlayerEntity player, int index) {
         return null;
