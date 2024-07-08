@@ -1,16 +1,25 @@
 package net.semperidem.fishingclub.item.fishing_rod;
 
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
@@ -19,6 +28,8 @@ import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.registry.FCComponents;
+
+import java.util.List;
 
 public class MemberFishingRodItem extends FishingRodItem {
 
@@ -34,7 +45,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(fishingRod, world.isClient());
         }
 
-        if (!canCast(fishingRod)) {
+        if (fishingRod.getOrDefault(FCComponents.BROKEN, false) || !user.getOffHandStack().isEmpty()) {
             return TypedActionResult.fail(fishingRod);
         }
 
@@ -52,19 +63,20 @@ public class MemberFishingRodItem extends FishingRodItem {
         castHook(world, (PlayerEntity) user, fishingRod);
     }
 
+    private void updateClientInventory(ServerPlayerEntity user) {
+            List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
+            list.add(Pair.of(EquipmentSlot.MAINHAND, user.getEquippedStack(EquipmentSlot.MAINHAND)));
+            user.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(user.getId(), list));
+    }
+
     private void castHook(World world, PlayerEntity user, ItemStack fishingRod) {
-        if (fishingRod.getMaxDamage() - fishingRod.getDamage() == 1) {
-            return;
-        }
         if (!world.isClient) {
-            RodConfigurationComponent configuration = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
-            float power = 1 + (1 - getChargePower(user.getItemUseTime())) * 0.15f;
+            float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (user.isSneaking() ? 1 : -1) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
-            configuration.damage(2, PartItem.DamageSource.CAST, user);
-            world.spawnEntity(new HookEntity(user, world, configuration));
+            world.spawnEntity(new HookEntity(user, world, fishingRod));
         }
         world.playSound(
-                null,
+                user,
                 user.getX(),
                 user.getY(),
                 user.getZ(),
@@ -76,14 +88,13 @@ public class MemberFishingRodItem extends FishingRodItem {
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
     }
 
-    private void serverReelRod(World world, PlayerEntity user, Hand hand, ItemStack itemStack) {
-        user.fishHook.use(itemStack);
-    }
-
     private void reelRod(World world, PlayerEntity user, Hand hand, ItemStack fishingRod) {
-        serverReelRod(world, user, hand, fishingRod);
+        if (user.fishHook == null) {
+            return;
+        }
+        user.fishHook.use(fishingRod);
         world.playSound(
-                null,
+                user,
                 user.getX(),
                 user.getY(),
                 user.getZ(),
@@ -94,12 +105,8 @@ public class MemberFishingRodItem extends FishingRodItem {
         user.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
     }
 
-    public boolean canCast(ItemStack fishingRod) {
-        return fishingRod.getMaxDamage() - fishingRod.getDamage() > 1;
-    }
-
-    public RodConfigurationComponent getRodConfiguration(ItemStack fishingRod) {
-        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.of(fishingRod));
+    public boolean canCast(PlayerEntity user, ItemStack fishingRod) {
+        return fishingRod.getMaxDamage() - fishingRod.getDamage() > 1 && user.getOffHandStack().isEmpty();
     }
 
     @Override
@@ -120,6 +127,18 @@ public class MemberFishingRodItem extends FishingRodItem {
         return user.fishHook != null;
     }
 
+    public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
+        RodConfigurationComponent configuration = RodConfigurationComponent.of(fishingRod);
+        int maxLineLength = configuration.maxLineLength();
+        int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
+        fishingRod.set(FCComponents.LINE_LENGTH, length);
+        if (user instanceof ServerPlayerEntity serverPlayerEntity) {
+            updateClientInventory(serverPlayerEntity);
+        }
+
+        user.sendMessage(Text.literal("Line length:" + length), true);
+        return length;
+    }
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.SPEAR;
@@ -128,4 +147,5 @@ public class MemberFishingRodItem extends FishingRodItem {
     public boolean holdsFishingRod(PlayerEntity playerEntity) {
         return playerEntity.getMainHandStack().isOf(this) || playerEntity.getOffHandStack().isOf(this);
     }
+
 }

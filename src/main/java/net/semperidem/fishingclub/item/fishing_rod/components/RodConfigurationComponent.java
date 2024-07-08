@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.Optional;
 
@@ -44,15 +45,7 @@ public record RodConfigurationComponent(
     public static PacketCodec<RegistryByteBuf, RodConfigurationComponent>  PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
     public static RodConfigurationComponent of(ItemStack fishingRod) {
-        return new RodConfigurationComponent(
-                RodPartComponent.DEFAULT,
-                RodPartComponent.DEFAULT,
-                8,
-                1f,
-                10,
-                0,
-                true
-        );
+        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, DEFAULT);
     }
 
     public RodConfigurationComponent equipCore(RodPartComponent core) {

@@ -59,9 +59,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private float weightRatio = 1;
     private int maxEntityMagnitude = 0;
 
-    private float castCharge = 1;
-    private float maxLineLength = 8;
-    private float lineLength = this.maxLineLength;
+    private float castCharge = 0.25f;
+    private float lineLength;
 
     private Vec3d airResistance = new Vec3d(1, 1, 1);
     private Vec3d waterResistance = this.airResistance;
@@ -78,56 +77,45 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     public HookEntity(EntityType<? extends HookEntity> entityEntityType, World world) {
         super(entityEntityType, world);
+
     }
 
-    public HookEntity(PlayerEntity owner, World world, RodConfigurationComponent configuration) {
+    public HookEntity(PlayerEntity owner, World world, ItemStack fishingRod) {
         this(FCEntityTypes.HOOK_ENTITY, world);
         this.setOwner(owner);
-        this.init(configuration);
-    }
-
-    public ItemStack getFishingRod() {
-        return this.fishingRod;
+        this.init(fishingRod);
     }
 
     public float getLineLength() {
         return this.lineLength;
     }
 
-    public void scrollLine(float amount) {
-        this.lineLength = MathHelper.clamp(lineLength + amount, 4, maxLineLength);
-        this.fishingRod.set(FCComponents.LINE_LENGTH, (int) this.lineLength);
-        if (this.getWorld().isClient) {
-            this.playerOwner.sendMessage(Text.literal(String.format("Line length: %.2f", lineLength)), true);
-        }
+    public void setLineLength(int amount) {
+        this.lineLength = amount;
     }
 
     @Override
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
-        if (this.playerOwner.getMainHandStack().isOf(MEMBER_FISHING_ROD)) {
-            initClient(this.playerOwner.getMainHandStack());
-            return;
-        }
-        if (this.playerOwner.getOffHandStack().isOf(MEMBER_FISHING_ROD)) {
-            initClient(this.playerOwner.getOffHandStack());
-            return;
-        }
-
-        //todo request fishing rod itemstack add flag to block skip ticking until fishingrod populated
+        init(this.playerOwner.getMainHandStack());
     }
 
-    public void initClient(ItemStack fishingRod) {
-        this.init(MEMBER_FISHING_ROD.getRodConfiguration(fishingRod));
-    }
-
-    private void init(RodConfigurationComponent configuration) {
+    public void init(ItemStack fishingRod) {
+        if (!fishingRod.isOf(MEMBER_FISHING_ROD)) {
+            this.discard();
+            return;
+        }
+        this.fishingRod = fishingRod;
         this.fishingCard = FishingCard.of(this.playerOwner);
-        this.configuration = configuration;
-        this.maxLineLength = configuration.maxLineLength();
-        this.maxEntityMagnitude = configuration.weightMagnitude();
-        this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, 8);
+        /*
+            todo client uses itemStack BEFORE rod was cast thus using previously stored cast charge value
+            but initial velocity is calculated from server so it doesn't matter
+            still should fix it
+         */
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
+        this.configuration = RodConfigurationComponent.of(this.fishingRod);
+        this.maxEntityMagnitude = this.configuration.weightMagnitude();
+        this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.maxLineLength());
         this.calculateResistance();
         this.setCastAngle();
         this.updateHookEntity(this);

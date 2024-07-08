@@ -2,25 +2,15 @@ package net.semperidem.fishingclub.screen.configuration;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodPartComponent;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
-import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
-import net.semperidem.fishingclub.screen.fishing_card.TabSlot;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 import static net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent.*;
 import static net.semperidem.fishingclub.registry.FCComponents.*;
