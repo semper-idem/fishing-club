@@ -33,7 +33,7 @@ public record RodPartComponent(
         return new RodPartComponent(ItemVariant.of(partStack), partStack.isEmpty() ? Optional.empty() : Optional.of(partStack));
     }
     public void apply(RodConfigurationController configurationController) {
-        if (partItem instanceof PartItem componentItem && partStack.isPresent()) {
+        if (!partItem.isBlank() && partItem.getItem() instanceof PartItem componentItem && partStack.isPresent()) {
             componentItem.applyComponent(configurationController, partStack.get());
         }
     }

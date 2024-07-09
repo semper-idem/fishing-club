@@ -44,6 +44,12 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         matrixStack.push();
         matrixStack.translate(0,0, 200);
         super.render(context, mouseX, mouseY, delta);
+        String[] configurationText = this.handler.getConfiguration().toString().split("\n");
+        int textY = 12;
+        for(String configurationEntry : configurationText) {
+            context.drawTextWithShadow(textRenderer, configurationEntry, 0, textY, 0xFFFFFF);
+            textY += 12;
+        }
         RenderSystem.enableBlend();
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 82, 182, 22);
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 62, 182, 22);

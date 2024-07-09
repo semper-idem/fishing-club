@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.screen.configuration;
 
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,5 +30,10 @@ public class PartSlot extends Slot {
     @Override
     public boolean canInsert(ItemStack stack) {
         return boundItem.getClass().isAssignableFrom(stack.getItem().getClass());
+    }
+
+    @Override
+    public boolean canTakeItems(PlayerEntity playerEntity) {
+        return !(boundItem instanceof CorePartItem);
     }
 }

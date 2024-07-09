@@ -7,7 +7,7 @@ public class RodConfigurationController {
 
     int weightCapacity = DEFAULT.weightCapacity();
     int weightMagnitude = DEFAULT.weightMagnitude();
-    int maxLineLength = DEFAULT.weightCapacity();
+    int maxLineLength = DEFAULT.maxLineLength();
     float castPower = DEFAULT.castPower();
     boolean canCast = DEFAULT.canCast();
 
@@ -25,10 +25,14 @@ public class RodConfigurationController {
 
     public RodConfigurationController(RodConfigurationComponent fromRecord) {
         this.fromRecord = fromRecord;
+        this.fromRecord.coreComponent().apply(this);
+        this.fromRecord.lineComponent().apply(this);
     }
 
     void setWeightCapacity(int weightCapacity) {
-        this.weightCapacity = weightCapacity;
+        if (this.weightCapacity > weightCapacity || weightCapacity == DEFAULT.weightCapacity()){
+            this.weightCapacity = weightCapacity;
+        }
         this.weightMagnitude = getWeightMagnitude();
     }
 

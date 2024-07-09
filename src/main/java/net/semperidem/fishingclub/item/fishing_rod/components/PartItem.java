@@ -76,9 +76,7 @@ public class PartItem extends Item {
     }
 
     void validateWeightCapacity(RodConfigurationController configuration, int weightCapacity) {
-        if (configuration.weightCapacity > weightCapacity || configuration.weightCapacity == 0) {
-            configuration.setWeightCapacity(weightCapacity);
-        }
+        configuration.setWeightCapacity(weightCapacity);
     }
 
     public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {

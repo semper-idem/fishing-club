@@ -27,7 +27,7 @@ public record RodConfigurationComponent(
             RodPartComponent.DEFAULT,
             8,
             1f,
-            10,
+            9999,
             0,
             true
     );
@@ -49,15 +49,11 @@ public record RodConfigurationComponent(
     }
 
     public RodConfigurationComponent equipCore(RodPartComponent core) {
-        RodConfigurationController controller = equip(core, this.lineComponent);
-        core.apply(controller);
-        return controller.toRecord();
+        return equip(core, this.lineComponent).toRecord();
     }
 
     public RodConfigurationComponent equipLine(RodPartComponent line) {
-        RodConfigurationController controller = equip(this.coreComponent, line);
-        line.apply(controller);
-        return controller.toRecord();
+        return equip(this.coreComponent, line).toRecord();
     }
 
     private RodConfigurationController equip(
@@ -104,6 +100,17 @@ public record RodConfigurationComponent(
         areEqual &= coreComponent.equals(other.coreComponent);
         areEqual &= lineComponent.equals(other.lineComponent);
         return areEqual;
+    }
+
+    @Override
+    public String toString() {
+        return """
+                        maxLineLength: %s
+                        castPower: %s
+                        weightCapacity: %s
+                        weightMagnitude: %s
+                        canCast: %s
+                """.formatted(maxLineLength, castPower, weightCapacity, weightMagnitude, canCast);
     }
 }
 
