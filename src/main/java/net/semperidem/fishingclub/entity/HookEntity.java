@@ -465,7 +465,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isOwnerValid(PlayerEntity playerEntity) {
-        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || !MEMBER_FISHING_ROD.holdsFishingRod(playerEntity);
+        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || MEMBER_FISHING_ROD.hasNoFishingRod(playerEntity);
     }
 
     @Override
@@ -506,8 +506,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return this.ownerVector.normalize().multiply(-configuration.castPower() * getTension());
     }
 
-    @SuppressWarnings("all")//For this implementation hookedEntity is never null
     private void pullEntity() {
+        if(this.hookedEntity == null) {
+            return;
+        }
         VelocityUtil.addVelocity(this.hookedEntity, this.getPullVector().multiply(-1));
         this.configuration.damage(2, PartItem.DamageSource.REEL_FISH, this.playerOwner);
         if (!(this.playerOwner instanceof ServerPlayerEntity)) {

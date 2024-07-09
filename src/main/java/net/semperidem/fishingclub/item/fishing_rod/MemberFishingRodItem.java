@@ -2,15 +2,12 @@ package net.semperidem.fishingclub.item.fishing_rod;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -25,7 +22,6 @@ import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
 import net.semperidem.fishingclub.registry.FCComponents;
 
@@ -40,12 +36,12 @@ public class MemberFishingRodItem extends FishingRodItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack fishingRod = user.getStackInHand(hand);
-        if (isCast(user)) {
-            reelRod(world, user, hand, fishingRod);
+        if (user.fishHook != null) {
+            this.reelRod(world, user, fishingRod);
             return TypedActionResult.success(fishingRod, world.isClient());
         }
 
-        if (fishingRod.getOrDefault(FCComponents.BROKEN, false) || !user.getOffHandStack().isEmpty()) {
+        if (fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }
 
@@ -54,25 +50,26 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.consume(fishingRod);
         }
 
-        castHook(world, user, fishingRod);
+        this.castHook(world, user, fishingRod);
         return TypedActionResult.success(fishingRod, world.isClient());
     }
 
     @Override
     public void onStoppedUsing(ItemStack fishingRod, World world, LivingEntity user, int remainingUseTicks) {
-        castHook(world, (PlayerEntity) user, fishingRod);
+        this.castHook(world, (PlayerEntity) user, fishingRod);
     }
 
     private void updateClientInventory(ServerPlayerEntity user) {
-            List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
-            list.add(Pair.of(EquipmentSlot.MAINHAND, user.getEquippedStack(EquipmentSlot.MAINHAND)));
-            user.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(user.getId(), list));
+        List<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
+        list.add(Pair.of(EquipmentSlot.MAINHAND, user.getEquippedStack(EquipmentSlot.MAINHAND)));
+        user.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(user.getId(), list));
     }
 
     private void castHook(World world, PlayerEntity user, ItemStack fishingRod) {
         if (!world.isClient) {
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (user.isSneaking() ? 1 : -1) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
+            updateClientInventory((ServerPlayerEntity) user);
             world.spawnEntity(new HookEntity(user, world, fishingRod));
         }
         world.playSound(
@@ -83,12 +80,13 @@ public class MemberFishingRodItem extends FishingRodItem {
                 SoundEvents.ENTITY_FISHING_BOBBER_THROW,
                 SoundCategory.NEUTRAL,
                 0.5f,
-                0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f)
+        );
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
     }
 
-    private void reelRod(World world, PlayerEntity user, Hand hand, ItemStack fishingRod) {
+    private void reelRod(World world, PlayerEntity user, ItemStack fishingRod) {
         if (user.fishHook == null) {
             return;
         }
@@ -101,17 +99,14 @@ public class MemberFishingRodItem extends FishingRodItem {
                 SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE,
                 SoundCategory.NEUTRAL,
                 1.0f,
-                0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
+                0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f)
+        );
         user.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
-    }
-
-    public boolean canCast(PlayerEntity user, ItemStack fishingRod) {
-        return fishingRod.getMaxDamage() - fishingRod.getDamage() > 1 && user.getOffHandStack().isEmpty();
     }
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        return true;
+        return true;//FishingCard.of(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE)
     }
 
     public static int getChargePower(int usageTick) {
@@ -123,29 +118,22 @@ public class MemberFishingRodItem extends FishingRodItem {
         return 12000;
     }
 
-    private boolean isCast(PlayerEntity user) {
-        return user.fishHook != null;
-    }
-
     public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
         RodConfigurationComponent configuration = RodConfigurationComponent.of(fishingRod);
         int maxLineLength = configuration.maxLineLength();
         int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
         fishingRod.set(FCComponents.LINE_LENGTH, length);
-        if (user instanceof ServerPlayerEntity serverPlayerEntity) {
-            updateClientInventory(serverPlayerEntity);
-        }
-
         user.sendMessage(Text.literal("Line length:" + length), true);
         return length;
     }
+
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.SPEAR;
     }
 
-    public boolean holdsFishingRod(PlayerEntity playerEntity) {
-        return playerEntity.getMainHandStack().isOf(this) || playerEntity.getOffHandStack().isOf(this);
+    public boolean hasNoFishingRod(PlayerEntity playerEntity) {
+        return !playerEntity.getMainHandStack().isOf(this) || !playerEntity.getOffHandStack().isEmpty();
     }
 
 }
