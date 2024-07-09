@@ -2,13 +2,16 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCItems;
 
 import java.util.Optional;
 
@@ -22,15 +25,22 @@ public record RodConfigurationComponent(
         Boolean canCast
 ) {
 
-    public static final RodConfigurationComponent DEFAULT = new RodConfigurationComponent(
+    static RodConfigurationComponent DEFAULT;
+    public static final RodConfigurationComponent EMPTY = new RodConfigurationComponent(
             RodPartComponent.DEFAULT,
             RodPartComponent.DEFAULT,
             8,
             1f,
             9999,
-            0,
-            true
-    );
+            1,
+            true);
+
+    public static RodConfigurationComponent getDefault() {
+        if (DEFAULT == null) {
+            DEFAULT = EMPTY.equipCore(RodPartComponent.of(FCItems.CORE_WOODEN_OAK.getDefaultStack()));
+        }
+        return DEFAULT;
+    }
 
     public static Codec<RodConfigurationComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             RodPartComponent.CODEC.fieldOf("coreComponent").forGetter(RodConfigurationComponent::coreComponent),
@@ -45,7 +55,7 @@ public record RodConfigurationComponent(
     public static PacketCodec<RegistryByteBuf, RodConfigurationComponent>  PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
     public static RodConfigurationComponent of(ItemStack fishingRod) {
-        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, DEFAULT);
+        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, getDefault());
     }
 
     public RodConfigurationComponent equipCore(RodPartComponent core) {
@@ -63,11 +73,11 @@ public record RodConfigurationComponent(
         return new RodConfigurationController(new RodConfigurationComponent(
                 core,
                 line,
-                DEFAULT.maxLineLength,
-                DEFAULT.castPower,
-                DEFAULT.weightCapacity,
-                DEFAULT.weightMagnitude,
-                DEFAULT.canCast
+                EMPTY.maxLineLength,
+                EMPTY.castPower,
+                EMPTY.weightCapacity,
+                EMPTY.weightMagnitude,
+                EMPTY.canCast
         ));
     }
 

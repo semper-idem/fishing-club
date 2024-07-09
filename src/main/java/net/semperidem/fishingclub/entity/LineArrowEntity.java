@@ -106,7 +106,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
 
     @Override
     public RodConfigurationComponent getCaughtUsing() {
-        return RodConfigurationComponent.DEFAULT;
+        return RodConfigurationComponent.getDefault();
     }
 
     @Override

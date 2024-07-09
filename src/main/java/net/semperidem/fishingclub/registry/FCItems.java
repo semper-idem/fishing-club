@@ -47,10 +47,11 @@ public class FCItems {
     }
 
     public static void register() {
+        registerParts();
         FISHING_NET = registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
         DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new DoubleFishingNetItem(new Item.Settings().maxCount(1).maxDamage(64)));
         EMPTY_COMPONENT = registerItem("empty_component", new PartItem(new Item.Settings()));
-        MEMBER_FISHING_ROD = registerItem(("member_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.DEFAULT)));
+        MEMBER_FISHING_ROD = registerItem(("member_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(FCComponents.ROD_CONFIGURATION, RodConfigurationComponent.getDefault())));
         FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
         FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
         FISHER_VEST = registerItem(("fisher_vest"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
@@ -60,7 +61,6 @@ public class FCItems {
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(Rarity.RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
-        registerParts();
         registerItemGroup();
     }
 

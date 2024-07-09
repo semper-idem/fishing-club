@@ -1,15 +1,15 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
-import static net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent.DEFAULT;
+import static net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent.EMPTY;
 
 public class RodConfigurationController {
     private final RodConfigurationComponent fromRecord;
 
-    int weightCapacity = DEFAULT.weightCapacity();
-    int weightMagnitude = DEFAULT.weightMagnitude();
-    int maxLineLength = DEFAULT.maxLineLength();
-    float castPower = DEFAULT.castPower();
-    boolean canCast = DEFAULT.canCast();
+    int weightCapacity = EMPTY.weightCapacity();
+    int weightMagnitude = EMPTY.weightMagnitude();
+    int maxLineLength = EMPTY.maxLineLength();
+    float castPower = EMPTY.castPower();
+    boolean canCast = EMPTY.canCast();
 
     public RodConfigurationComponent toRecord() {
         return new RodConfigurationComponent(
@@ -30,7 +30,7 @@ public class RodConfigurationController {
     }
 
     void setWeightCapacity(int weightCapacity) {
-        if (this.weightCapacity > weightCapacity || weightCapacity == DEFAULT.weightCapacity()){
+        if (this.weightCapacity > weightCapacity || weightCapacity == EMPTY.weightCapacity()){
             this.weightCapacity = weightCapacity;
         }
         this.weightMagnitude = getWeightMagnitude();

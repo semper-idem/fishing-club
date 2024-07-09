@@ -24,7 +24,7 @@ public class FishingExplosionEntity implements IHookEntity{
 
     @Override
     public RodConfigurationComponent getCaughtUsing() {
-        return RodConfigurationComponent.DEFAULT;
+        return RodConfigurationComponent.getDefault();
     }
 
     @Override

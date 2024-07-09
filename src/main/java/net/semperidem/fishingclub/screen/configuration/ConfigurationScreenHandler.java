@@ -30,11 +30,11 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         super(FCScreenHandlers.CONFIGURATION_SCREEN, syncId);
         this.playerInventory = playerInventory;
         this.addPlayerInventorySlots();
-        this.configuration = playerInventory.getMainHandStack().getOrDefault(ROD_CONFIGURATION, DEFAULT);
+        this.configuration = RodConfigurationComponent.of(playerInventory.getMainHandStack());
         SimpleInventory rodInventory = this.configuration.getParts();
         addSlot(new PartSlot(rodInventory, 0,83, 46, FCItems.CORE_WOODEN_OAK, equipPart(this::equipCore)));
-        addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.LINE_SPIDER, equipPart(this::equipLine)));
-        addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.EMPTY_COMPONENT, equipPart(this::equipCore)));
+        addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.EMPTY_COMPONENT, equipPart(this::equipCore)));
+        addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.LINE_SPIDER, equipPart(this::equipLine)));
         addSlot(new PartSlot(rodInventory, 3,92, 115, FCItems.EMPTY_COMPONENT, equipPart(this::equipCore)));
         addSlot(new PartSlot(rodInventory, 4,48, 115, FCItems.EMPTY_COMPONENT, equipPart(this::equipCore)));
     }
@@ -45,8 +45,8 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
     public Consumer<ItemStack> equipPart(Function<ItemStack, UnaryOperator<RodConfigurationComponent>> equipFunction){
         return itemStack -> {
-            this.playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, DEFAULT, equipFunction.apply(itemStack));
-            this.configuration = this.playerInventory.getMainHandStack().getOrDefault(ROD_CONFIGURATION, DEFAULT);
+            this.playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, RodConfigurationComponent.getDefault(), equipFunction.apply(itemStack));
+            this.configuration = RodConfigurationComponent.of(this.playerInventory.getMainHandStack());
         };
     }
 
