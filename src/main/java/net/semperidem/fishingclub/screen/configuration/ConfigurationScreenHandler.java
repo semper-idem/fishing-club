@@ -11,6 +11,7 @@ import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static net.semperidem.fishingclub.registry.FCComponents.*;
@@ -26,7 +27,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         this.playerInventory = playerInventory;
         this.addPlayerInventorySlots();
         this.configuration = RodConfiguration.of(playerInventory.getMainHandStack());
-        SimpleInventory rodInventory = this.configuration.getParts();
+        RodInventory rodInventory = this.configuration.getParts(this.playerInventory.player);
         addSlot(new PartSlot(rodInventory, 0,83, 46, FCItems.CORE_WOODEN_OAK, equipPart()));
         addSlot(new PartSlot(rodInventory, 1,41, 64, FCItems.EMPTY_COMPONENT, equipPart()));
         addSlot(new PartSlot(rodInventory, 2,147, 84, FCItems.LINE_SPIDER, equipPart()));
@@ -38,9 +39,9 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         return configuration;
     }
 
-    public Consumer<ItemStack> equipPart(){
-        return partStack -> {
-            this.playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, RodConfiguration.getDefault(), configurationComponent -> configurationComponent.equip(partStack));
+    public BiConsumer<ItemStack, RodConfiguration.PartType> equipPart(){
+        return (partStack, partType) -> {
+            this.playerInventory.getMainHandStack().apply(ROD_CONFIGURATION, RodConfiguration.getDefault(), configurationComponent -> configurationComponent.equip(partStack, partType));
             this.configuration = RodConfiguration.of(this.playerInventory.getMainHandStack());
         };
     }
@@ -65,7 +66,12 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return true;
+        boolean hasCore = configuration.core().isPresent();
+        if (!hasCore) {
+            configuration.line().ifPresent(playerInventory::insertStack);
+            player.getMainHandStack().setCount(0);
+        }
+        return hasCore;
     }
 
     @Override

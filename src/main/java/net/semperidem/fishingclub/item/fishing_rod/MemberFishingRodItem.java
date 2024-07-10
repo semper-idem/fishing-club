@@ -41,7 +41,8 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(fishingRod, world.isClient());
         }
 
-        if (fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
+        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).canCast();
+        if (!canCast || fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }
 

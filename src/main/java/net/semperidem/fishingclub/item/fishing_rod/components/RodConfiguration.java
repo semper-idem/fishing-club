@@ -11,6 +11,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public record RodConfiguration(
 
     public static RodConfiguration getDefault() {
         if (DEFAULT == null) {
-            DEFAULT = EMPTY.equip(FCItems.CORE_WOODEN_OAK.getDefaultStack());
+            DEFAULT = EMPTY.equip(FCItems.CORE_WOODEN_OAK.getDefaultStack(), PartType.CORE);
         }
         return DEFAULT;
     }
@@ -45,8 +46,8 @@ public record RodConfiguration(
     public static RodConfiguration of(ItemStack core, ItemStack line) {
         Controller result = Controller.process(core, line);
         return new RodConfiguration(
-                Optional.ofNullable(core),
-                Optional.ofNullable(line),
+                core.isEmpty() ? Optional.empty() : Optional.of(core),
+                line.isEmpty() ? Optional.empty() : Optional.of(line),
                 result.weightCapacity,
                 result.weightMagnitude,
                 result.maxLineLength,
@@ -66,8 +67,7 @@ public record RodConfiguration(
         return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, getDefault());
     }
 
-    public RodConfiguration equip(ItemStack part) {
-        PartType partType = PartType.of(part);
+    public RodConfiguration equip(ItemStack part, PartType partType) {
         return of(
                 partType == PartType.CORE ? part : this.core.orElse(ItemStack.EMPTY),
                 partType == PartType.LINE ? part : this.line.orElse(ItemStack.EMPTY)
@@ -75,8 +75,8 @@ public record RodConfiguration(
     }
 
 
-    public SimpleInventory getParts() {
-        SimpleInventory parts = new SimpleInventory(5);
+    public RodInventory getParts(PlayerEntity playerEntity) {
+        RodInventory parts = new RodInventory(playerEntity);
         parts.setStack(0, core.orElse(ItemStack.EMPTY));
         parts.setStack(1, ItemStack.EMPTY);
         parts.setStack(2, line.orElse(ItemStack.EMPTY));
@@ -116,7 +116,7 @@ public record RodConfiguration(
         }
 
         boolean validateAndApply(ItemStack part) {
-            if (!part.getOrDefault(FCComponents.BROKEN, false)) {
+            if (part.getOrDefault(FCComponents.BROKEN, false)) {
                 return false;
             }
             if (!(part.getItem() instanceof PartItem partItem)) {
@@ -126,12 +126,12 @@ public record RodConfiguration(
             return true;
         }
     }
-    enum PartType {
+    public enum PartType {
         CORE,
         LINE,
         INVALID;
 
-        static PartType of(ItemStack part) {
+        public static PartType of(ItemStack part) {
             Item partItem = part.getItem();
             if (partItem instanceof CorePartItem) {
                 return CORE;

@@ -45,7 +45,7 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         matrixStack.translate(0,0, 200);
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
-        String[] configurationText = this.handler.getConfiguration().toString().split("\n");
+        String[] configurationText = this.handler.getConfiguration().toString().split(",");
         int textY = 12;
         for(String configurationEntry : configurationText) {
             context.drawTextWithShadow(textRenderer, configurationEntry, 0, textY, 0xFFFFFF);

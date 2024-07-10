@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.semperidem.fishingclub.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
