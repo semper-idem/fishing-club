@@ -42,25 +42,23 @@ public record RodConfiguration(
         return DEFAULT;
     }
 
-    public RodConfiguration(ItemStack core, ItemStack line) {
+    public static RodConfiguration of(ItemStack core, ItemStack line) {
         Controller result = Controller.process(core, line);
-        this(
+        return new RodConfiguration(
                 Optional.ofNullable(core),
                 Optional.ofNullable(line),
                 result.weightCapacity,
                 result.weightMagnitude,
                 result.maxLineLength,
                 result.castPower,
-                result.canCast);
+                result.canCast
+        );
     }
 
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemStack.CODEC.optionalFieldOf("core").forGetter(RodConfiguration::core),
             ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line)
-    ).apply(instance, (core, line)-> new RodConfiguration(
-            core.orElse(ItemStack.EMPTY),
-            line.orElse(ItemStack.EMPTY)
-    )));
+    ).apply(instance, (core, line)-> of(core.orElse(ItemStack.EMPTY), line.orElse(ItemStack.EMPTY))));
 
     public static PacketCodec<RegistryByteBuf, RodConfiguration>  PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
@@ -70,7 +68,7 @@ public record RodConfiguration(
 
     public RodConfiguration equip(ItemStack part) {
         PartType partType = PartType.of(part);
-        return new RodConfiguration(
+        return of(
                 partType == PartType.CORE ? part : this.core.orElse(ItemStack.EMPTY),
                 partType == PartType.LINE ? part : this.line.orElse(ItemStack.EMPTY)
         );
@@ -78,15 +76,10 @@ public record RodConfiguration(
 
 
     public SimpleInventory getParts() {
-        SimpleInventory parts = new SimpleInventory(5) {
-            @Override
-            public void markDirty() {
-                super.markDirty();
-            }
-        };
+        SimpleInventory parts = new SimpleInventory(5);
         parts.setStack(0, core.orElse(ItemStack.EMPTY));
-        parts.setStack(1, line.orElse(ItemStack.EMPTY));
-        parts.setStack(2, ItemStack.EMPTY);
+        parts.setStack(1, ItemStack.EMPTY);
+        parts.setStack(2, line.orElse(ItemStack.EMPTY));
         parts.setStack(3, ItemStack.EMPTY);
         parts.setStack(4, ItemStack.EMPTY);
         return parts;
