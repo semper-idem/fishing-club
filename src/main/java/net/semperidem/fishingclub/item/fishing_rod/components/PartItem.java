@@ -63,22 +63,28 @@ public class PartItem extends Item {
         componentStack.setDamage(currentDamage + amount);
     }
 
-    void applyComponent(RodConfigurationController configuration, ItemStack componentStack) {
-        if (isBroken(componentStack)) {
-            configuration.canCast = false;
-            return;
+    void applyComponent(RodConfiguration.Controller configuration) {
+        validateWeightCapacity(configuration);
+    }
+
+    public int getWeightMagnitude() {
+        if (weightCapacity < 25) {
+            return 1;
         }
-        validateWeightCapacity(configuration, weightCapacity);
+        if (weightCapacity < 100) {
+            return 0;
+        }
+        if (weightCapacity < 250) {
+            return -1;
+        }
+        return -4;
     }
 
-    boolean isBroken(ItemStack componentStack) {
-        return componentStack.getOrDefault(FCComponents.BROKEN, false);
-    }
+    void validateWeightCapacity(RodConfiguration.Controller configuration) {
+        if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0){
+            configuration.weightCapacity = this.weightCapacity;
+            configuration.weightMagnitude = this.getWeightMagnitude();
+        }
 
-    void validateWeightCapacity(RodConfigurationController configuration, int weightCapacity) {
-        configuration.setWeightCapacity(weightCapacity);
-    }
-
-    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
     }
 }

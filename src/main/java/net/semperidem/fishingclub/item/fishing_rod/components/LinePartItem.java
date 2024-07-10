@@ -1,7 +1,5 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
-import net.minecraft.item.ItemStack;
-
 public class LinePartItem extends PartItem {
     int maxLineLength;
     public LinePartItem(Settings settings) {
@@ -19,18 +17,12 @@ public class LinePartItem extends PartItem {
 
     public LinePartItem maxLineLength(int maxLineLength) {
         this.maxLineLength = maxLineLength;
-
         return this;
     }
 
     @Override
-    void applyComponent(RodConfigurationController configuration, ItemStack part) {
-        super.applyComponent(configuration, part);
+    void applyComponent(RodConfiguration.Controller configuration) {
+        super.applyComponent(configuration);
         configuration.maxLineLength = this.maxLineLength;
-    }
-
-    @Override
-    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
-        configuration.equipLine(RodPartComponent.of(componentStack));
     }
 }

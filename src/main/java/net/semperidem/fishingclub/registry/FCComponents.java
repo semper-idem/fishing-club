@@ -4,8 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.Uuids;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishComponent;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodPartComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
@@ -15,8 +14,7 @@ import net.minecraft.util.dynamic.Codecs;
 import java.util.UUID;
 
 public class FCComponents {
-    public static ComponentType<RodConfigurationComponent> ROD_CONFIGURATION;
-    public static ComponentType<RodPartComponent> ROD_PART;
+    public static ComponentType<RodConfiguration> ROD_CONFIGURATION;
     public static ComponentType<Integer> LINE_LENGTH;
     public static ComponentType<Float> CAST_POWER;
     public static ComponentType<Boolean> BROKEN;
@@ -28,22 +26,13 @@ public class FCComponents {
     public static ComponentType<UUID> CAUGHT_BY;
 
     public static void register() {
-        ROD_PART =
-                Registry.register(
-                        Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("rod_part"),
-                        ComponentType.<RodPartComponent>builder()
-                                .codec(RodPartComponent.CODEC)
-                                .packetCodec(RodPartComponent.PACKET_CODEC)
-                                .cache()
-                                .build());
         ROD_CONFIGURATION =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.getIdentifier("rod_configuration"),
-                        ComponentType.<RodConfigurationComponent>builder()
-                                .codec(RodConfigurationComponent.CODEC)
-                                .packetCodec(RodConfigurationComponent.PACKET_CODEC)
+                        ComponentType.<RodConfiguration>builder()
+                                .codec(RodConfiguration.CODEC)
+                                .packetCodec(RodConfiguration.PACKET_CODEC)
                                 .cache()
                                 .build());
 

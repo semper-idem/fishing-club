@@ -1,13 +1,9 @@
 package net.semperidem.fishingclub.entity;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
-
-import javax.swing.text.html.parser.Entity;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 
 public class FishingExplosionEntity implements IHookEntity{
     PlayerEntity causingEntity;
@@ -23,8 +19,8 @@ public class FishingExplosionEntity implements IHookEntity{
     }
 
     @Override
-    public RodConfigurationComponent getCaughtUsing() {
-        return RodConfigurationComponent.getDefault();
+    public RodConfiguration getCaughtUsing() {
+        return RodConfiguration.getDefault();
     }
 
     @Override

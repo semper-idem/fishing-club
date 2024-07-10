@@ -1,7 +1,5 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
-import net.minecraft.item.ItemStack;
-
 public class CorePartItem extends PartItem {
     float castPowerMultiplier;
 
@@ -22,13 +20,8 @@ public class CorePartItem extends PartItem {
     }
 
     @Override
-    void applyComponent(RodConfigurationController configuration, ItemStack partStack) {
-        super.applyComponent(configuration, partStack);
+    void applyComponent(RodConfiguration.Controller configuration) {
+        super.applyComponent(configuration);
         configuration.castPower *= castPowerMultiplier;
-    }
-
-    @Override
-    public void equip(RodConfigurationComponent configuration, ItemStack componentStack) {
-        configuration.equipCore(RodPartComponent.of(componentStack));
     }
 }

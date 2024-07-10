@@ -7,15 +7,15 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.FishComponent;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGamePayload;
 import org.jetbrains.annotations.Nullable;
 
 public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGamePayload> {
     private final FishComponent fish;
-    private final RodConfigurationComponent rodConfiguration;
+    private final RodConfiguration rodConfiguration;
 
-    public FishingGameScreenHandlerFactory(FishComponent fish, RodConfigurationComponent rodConfiguration) {
+    public FishingGameScreenHandlerFactory(FishComponent fish, RodConfiguration rodConfiguration) {
         this.fish = fish;
         this.rodConfiguration = rodConfiguration;
     }

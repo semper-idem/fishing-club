@@ -6,8 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fish.FishComponent;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class FishingGameController {
@@ -15,13 +14,13 @@ public class FishingGameController {
     public final PlayerEntity player;
     public final FishingCard fishingCard;
     public final FishComponent hookedFish;
-    public final RodConfigurationComponent hookedUsing;
+    public final RodConfiguration hookedUsing;
 
     public float reelForce = 0;
     private boolean isReeling;
     private boolean isPulling;
 
-    public FishingGameController(PlayerEntity playerEntity, FishComponent hookedFish, RodConfigurationComponent hookedUsing){
+    public FishingGameController(PlayerEntity playerEntity, FishComponent hookedFish, RodConfiguration hookedUsing){
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.fishingCard = FishingCard.of(playerEntity);
@@ -161,7 +160,7 @@ public class FishingGameController {
     }
 
     public void loseGame() {
-        this.hookedUsing.damage(4, PartItem.DamageSource.BITE, this.player);
+        //this.hookedUsing.damage(4, PartItem.DamageSource.BITE, this.player);
         if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }

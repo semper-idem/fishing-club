@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCEntityTypes;
 
 public class HarpoonEntity extends TridentEntity implements IHookEntity{
@@ -95,8 +95,8 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
     }
 
     @Override
-    public RodConfigurationComponent getCaughtUsing() {
-        return RodConfigurationComponent.getDefault();
+    public RodConfiguration getCaughtUsing() {
+        return RodConfiguration.getDefault();
     }
 
     @Override

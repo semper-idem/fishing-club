@@ -22,7 +22,7 @@ import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.List;
@@ -119,7 +119,7 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
     public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
-        RodConfigurationComponent configuration = RodConfigurationComponent.of(fishingRod);
+        RodConfiguration configuration = RodConfiguration.of(fishingRod);
         int maxLineLength = configuration.maxLineLength();
         int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
         fishingRod.set(FCComponents.LINE_LENGTH, length);

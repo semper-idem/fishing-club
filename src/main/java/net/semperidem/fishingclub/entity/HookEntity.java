@@ -28,7 +28,7 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCEntityTypes;
@@ -70,7 +70,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private PlayerEntity playerOwner;
     private FishingCard fishingCard;
     private ItemStack fishingRod;
-    private RodConfigurationComponent configuration;
+    private RodConfiguration configuration;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
     private FishComponent caughtFish;
@@ -113,7 +113,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             still should fix it
          */
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
-        this.configuration = RodConfigurationComponent.of(this.fishingRod);
+        this.configuration = RodConfiguration.of(this.fishingRod);
         this.maxEntityMagnitude = this.configuration.weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.maxLineLength());
         this.calculateResistance();
@@ -562,7 +562,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     @Override
-    public RodConfigurationComponent getCaughtUsing() {
+    public RodConfiguration getCaughtUsing() {
         return this.configuration;
     }
 

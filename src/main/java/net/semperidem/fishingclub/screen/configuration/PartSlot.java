@@ -1,15 +1,12 @@
 package net.semperidem.fishingclub.screen.configuration;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodPartComponent;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PartSlot extends Slot {

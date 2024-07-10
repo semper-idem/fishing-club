@@ -14,7 +14,7 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 
 public record FishComponent(
     String name,
@@ -56,7 +56,7 @@ public record FishComponent(
   public static FishComponent create(IHookEntity caughtWith) {
     FishingCard caughtByCard = caughtWith.getFishingCard();
     PlayerEntity caughtBy = caughtByCard.getHolder();
-    RodConfigurationComponent caughtUsing = caughtWith.getCaughtUsing();
+    RodConfiguration caughtUsing = caughtWith.getCaughtUsing();
     Species species = SpeciesLibrary.COD; // todo caughtWith position and world based
     int level = getLevel(species, caughtByCard.getLevel());
     int quality =

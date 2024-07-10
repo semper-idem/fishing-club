@@ -6,10 +6,10 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.fish.FishComponent;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfigurationComponent;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 
 public record FishingGamePayload(
-    FishComponent fishComponent, RodConfigurationComponent configurationComponent)
+    FishComponent fishComponent, RodConfiguration configurationComponent)
     implements CustomPayload {
   public static final CustomPayload.Id<FishingGamePayload> ID =
       new CustomPayload.Id<>(getIdentifier("s2c_fishing_game_open"));
@@ -17,7 +17,7 @@ public record FishingGamePayload(
       PacketCodec.tuple(
           FishComponent.PACKET_CODEC,
           FishingGamePayload::fishComponent,
-          RodConfigurationComponent.PACKET_CODEC,
+          RodConfiguration.PACKET_CODEC,
           FishingGamePayload::configurationComponent,
           FishingGamePayload::new);
 
