@@ -13,14 +13,14 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "net.semperidem.fishingclub.client.FishingClubClient"
+      "net.semperidem.fishing_club.client.FishingClubClient"
     ],
     "main": [
-      "net.semperidem.fishingclub.FishingClub"
+      "net.semperidem.fishing_club.FishingClub"
     ],
     "cardinal-components": [
-      "net.semperidem.fishingclub.fisher.FishingCard",
-      "net.semperidem.fishingclub.fisher.FishingKing"
+      "net.semperidem.fishing_club.fisher.FishingCard",
+      "net.semperidem.fishing_club.fisher.FishingKing"
     ]
   },
   "depends": {
