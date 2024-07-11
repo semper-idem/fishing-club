@@ -21,8 +21,12 @@ public class CorePartItem extends PartItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+
+        ItemStack coreStack = user.getStackInHand(hand);
         ItemStack fishingRod = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
-        fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.of(user.getStackInHand(hand), ItemStack.EMPTY));
+        fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.of(coreStack, ItemStack.EMPTY));
+        float rodDamage = getPartDamagePercentage(coreStack);
+        fishingRod.setDamage((int) (fishingRod.getMaxDamage() * rodDamage));
         //user.getStackInHand(hand).setCount(0);
         user.setStackInHand(hand, fishingRod);
         return super.use(world, user, hand);

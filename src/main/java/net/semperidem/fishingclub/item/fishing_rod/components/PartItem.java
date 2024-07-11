@@ -1,8 +1,10 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.registry.FCComponents;
 
@@ -40,27 +42,43 @@ public class PartItem extends Item {
     }
 
 
+    public static float getPartDamagePercentage(ItemStack partStack) {
+
+        return (float) partStack.getDamage() / partStack.getMaxDamage();
+    }
+
+
     private boolean shouldDamage(int quality) {
+
         return Math.random() > MathHelper.clamp((quality - 1) * 0.25f, 0, 1);
     }
 
-    public <T extends LivingEntity> void damage(ItemStack componentStack, int amount, DamageSource damageSource, T entity, Consumer<T> breakCallback) {
-        damage(componentStack, (int) Math.ceil(getDamageMultiplier(damageSource) * amount), entity, breakCallback);
+    public <T extends LivingEntity> void damage(ItemStack componentStack, int amount, DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
+
+        damage(componentStack, (int) Math.ceil(getDamageMultiplier(damageSource) * amount), player, fishingRod);
     }
 
-    <T extends LivingEntity> void damage(ItemStack componentStack, int amount, T entity, Consumer<T> breakCallback) {
+    <T extends LivingEntity> void damage(ItemStack componentStack, int amount, PlayerEntity player, ItemStack fishingRod) {
+
         int quality = componentStack.getOrDefault(FCComponents.PART_QUALITY, 1);
         if (!shouldDamage(quality)) {
             return;
         }
+
         int currentDamage = componentStack.getDamage();
-        if (currentDamage + amount >= componentStack.getMaxDamage() && !destroyOnBreak) {
-            componentStack.setDamage(componentStack.getMaxDamage() - 1);
-            componentStack.set(FCComponents.BROKEN, true);
-            breakCallback.accept(entity);
+        if (currentDamage + amount <= componentStack.getMaxDamage()) {
+            componentStack.setDamage(currentDamage + amount);
             return;
         }
-        componentStack.setDamage(currentDamage + amount);
+
+        player.playSound(SoundEvents.ENTITY_ITEM_BREAK);
+        if (!destroyOnBreak) {
+            componentStack.set(FCComponents.BROKEN, true);
+            return;
+        }
+
+        componentStack.setCount(0);
+        fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.valid(fishingRod));
     }
 
     void applyComponent(RodConfiguration.Controller configuration) {

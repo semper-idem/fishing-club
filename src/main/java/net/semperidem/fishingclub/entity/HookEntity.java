@@ -107,11 +107,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         this.fishingRod = fishingRod;
         this.fishingCard = FishingCard.of(this.playerOwner);
-        /*
-            todo client uses itemStack BEFORE rod was cast thus using previously stored cast charge value
-            but initial velocity is calculated from server so it doesn't matter
-            still should fix it
-         */
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
         this.configuration = RodConfiguration.of(this.fishingRod);
         this.maxEntityMagnitude = this.configuration.weightMagnitude();
@@ -268,7 +263,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (tension <= 1 || this.maxEntityMagnitude < this.weightRatio) {
             return;
         }
-        this.configuration.damage(10, PartItem.DamageSource.REEL_ENTITY, this.playerOwner);
+        this.configuration.damage(10, PartItem.DamageSource.REEL_ENTITY, this.playerOwner, this.fishingRod);
         this.discard();
     }
 
@@ -336,7 +331,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.waitCountdown = 0;
             this.fishTravelCountdown = 0;
             this.caughtFish = null;
-            this.configuration.damage(4, PartItem.DamageSource.BITE, this.playerOwner);
+            this.damageRod(4, PartItem.DamageSource.BITE);
         }
     }
 
@@ -511,7 +506,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
         VelocityUtil.addVelocity(this.hookedEntity, this.getPullVector().multiply(-1));
-        this.configuration.damage(2, PartItem.DamageSource.REEL_FISH, this.playerOwner);
+        this.damageRod(2, PartItem.DamageSource.REEL_FISH);
         if (!(this.playerOwner instanceof ServerPlayerEntity)) {
             return;
         }
@@ -525,13 +520,13 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 //        if (reactionBonus > 0) {
 //            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
 //        }
-        this.configuration.damage(2, PartItem.DamageSource.REEL_FISH, this.playerOwner);
+        this.damageRod(2, PartItem.DamageSource.REEL_FISH);
         this.playerOwner.openHandledScreen(new FishingGameScreenHandlerFactory(this.caughtFish, this.configuration));
         this.discard();
     }
 
     private void reelWater() {
-        this.configuration.damage(2, PartItem.DamageSource.REEL_WATER, this.playerOwner);
+        this.damageRod(2, PartItem.DamageSource.REEL_WATER);
         this.discard();
     }
 
@@ -547,7 +542,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (this.hookedEntity != this.playerOwner) {
             this.pullOwner();
         }
-        this.configuration.damage(2, PartItem.DamageSource.REEL_GROUND, this.playerOwner);
+        this.damageRod(2, PartItem.DamageSource.REEL_GROUND);
         this.discard();
     }
 
@@ -555,6 +550,9 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         VelocityUtil.addVelocity(this.playerOwner, this.getPullVector());
     }
 
+    private void damageRod(int amount, PartItem.DamageSource damageSource) {
+        this.configuration.damage(amount, damageSource, this.playerOwner, this.fishingRod);
+    }
 
     @Override
     public FishingCard getFishingCard() {

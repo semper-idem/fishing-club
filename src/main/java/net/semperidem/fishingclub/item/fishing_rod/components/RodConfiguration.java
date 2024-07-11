@@ -56,6 +56,14 @@ public record RodConfiguration(
         );
     }
 
+    public static RodConfiguration valid(ItemStack fishingRod) {
+        RodConfiguration configuration = of(fishingRod);
+        return of(
+          configuration.core.orElse(ItemStack.EMPTY),
+          configuration.line.orElse(ItemStack.EMPTY)
+        );
+    }
+
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemStack.CODEC.optionalFieldOf("core").forGetter(RodConfiguration::core),
             ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line)
@@ -87,20 +95,81 @@ public record RodConfiguration(
 
     @Override
     public boolean equals(Object obj) {
+
         if (!(obj instanceof RodConfiguration other)) {
+
             return false;
         }
+
         boolean areEqual = true;
         areEqual &= this.core.equals(other.core);
         areEqual &= this.line.equals(other.line);
         return areEqual;
     }
 
-    public void damage(int i, PartItem.DamageSource damageSource, PlayerEntity playerOwner) {
-        //todo
+    public void calculateRodDurability(ItemStack fishingRod) {
+
+        float partDamagePercentage = 0;
+        float maxDamage = 0;
+
+        if (core.isPresent()) {
+            partDamagePercentage += PartItem.getPartDamagePercentage(core.get());
+            maxDamage++;
+        }
+
+        if (line.isPresent()) {
+            partDamagePercentage += PartItem.getPartDamagePercentage(line.get());
+            maxDamage++;
+        }
+
+        calculateRodDurability(fishingRod, partDamagePercentage / maxDamage);
+    }
+
+    public void calculateRodDurability(ItemStack fishingRod, float partDamagePercentage) {
+
+        if (!fishingRod.isDamageable()) {
+            return;
+        }
+
+        fishingRod.setDamage((int) (fishingRod.getMaxDamage() * partDamagePercentage));
+    }
+
+    public void damage(int amount, PartItem.DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
+
+        float partDamagePercentage = 0;
+        float maxDamage = 0;
+
+        if (core.isPresent()) {
+            partDamagePercentage += damagePart(amount, damageSource, core.get(), player, fishingRod);
+            maxDamage++;
+        }
+
+        if (line.isPresent()) {
+            partDamagePercentage += damagePart(amount, damageSource, line.get(), player, fishingRod);
+            maxDamage++;
+        }
+
+        calculateRodDurability(fishingRod, partDamagePercentage / maxDamage);
+    }
+
+
+    private float damagePart(int amount, PartItem.DamageSource damageSource, ItemStack partStack, PlayerEntity player, ItemStack fishingRod) {
+
+        if (!(partStack.getItem() instanceof PartItem partItem)) {
+
+            return 1;
+        }
+        if (partStack.getOrDefault(FCComponents.BROKEN, false)) {
+
+            return 1;
+        }
+
+        partItem.damage(partStack, amount, damageSource, player, fishingRod);
+        return partStack.getDamage() * 1f / partStack.getMaxDamage();
     }
 
     static class Controller {
+
         int weightCapacity = 0;
         int weightMagnitude = 2;
         int maxLineLength = 0;
@@ -109,6 +178,7 @@ public record RodConfiguration(
 
 
         public static Controller process(ItemStack core, ItemStack line) {
+
             Controller processor = new Controller();
             processor.canCast = processor.validateAndApply(core);
             processor.canCast &= processor.validateAndApply(line);
@@ -116,12 +186,15 @@ public record RodConfiguration(
         }
 
         boolean validateAndApply(ItemStack part) {
+
             if (part.getOrDefault(FCComponents.BROKEN, false)) {
                 return false;
             }
+
             if (!(part.getItem() instanceof PartItem partItem)) {
                 return false;
             }
+
             partItem.applyComponent(this);
             return true;
         }
