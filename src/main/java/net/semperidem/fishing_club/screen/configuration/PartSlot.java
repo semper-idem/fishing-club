@@ -23,6 +23,10 @@ public class PartSlot extends Slot {
     public void setStack(ItemStack stack, ItemStack previousStack) {
         if (previousStack.getItem() instanceof CorePartItem coreItem) {
             this.parent.configuration.line().ifPresent(this.parent.playerInventory::insertStack);
+            this.parent.configuration.reel().ifPresent(this.parent.playerInventory::insertStack);
+            this.parent.configuration.hook().ifPresent(this.parent.playerInventory::insertStack);
+            this.parent.configuration.bait().ifPresent(this.parent.playerInventory::insertStack);
+            this.parent.configuration.bobber().ifPresent(this.parent.playerInventory::insertStack);
             this.parent.fishingRod.setCount(0);
         }
         RodConfiguration.PartType partType = stack.isEmpty() ? RodConfiguration.PartType.of(previousStack) : RodConfiguration.PartType.of(stack);

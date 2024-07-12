@@ -22,7 +22,7 @@ public class CorePartItem extends PartItem {
 
         ItemStack coreStack = user.getStackInHand(hand);
         ItemStack fishingRod = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
-        fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.of(coreStack, ItemStack.EMPTY));
+        fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.EMPTY.equip(coreStack, RodConfiguration.PartType.CORE));
         float rodDamage = getPartDamagePercentage(coreStack);
         fishingRod.setDamage((int) (fishingRod.getMaxDamage() * rodDamage));
         //user.getStackInHand(hand).setCount(0);

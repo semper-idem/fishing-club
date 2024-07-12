@@ -6,7 +6,7 @@ import net.minecraft.inventory.SimpleInventory;
 public class RodInventory extends SimpleInventory {
     PlayerEntity playerEntity;
     public RodInventory(PlayerEntity playerEntity) {
-        super(5);
+        super(6);
         this.playerEntity = playerEntity;
     }
 }

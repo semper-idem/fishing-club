@@ -51,9 +51,11 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 82, 182, 22);
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 62, 182, 22);
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 42, 182, 22);
+        RenderSystem.disableBlend();
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 22, 182, 22);
+        RenderSystem.enableBlend();
         matrixStack.translate(this.x, this.y, 200);
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < 6; i++) {
           Slot slot = this.handler.slots.get(i + 36);
             context.fill(slot.x, slot.y, slot.x+16, slot.y+16, 0x88888888);
         }
