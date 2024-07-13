@@ -14,6 +14,25 @@ public class BobberPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_GROUND, 2);
     }
 
+    public BobberPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public BobberPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public BobberPartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
     public BobberPartItem bobberWidth(float bobberWidth) {
 
         this.bobberWidth = bobberWidth;

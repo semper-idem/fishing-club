@@ -69,7 +69,7 @@ public record FishComponent(
         MathHelper.clamp(
             getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f),
             0,
-            caughtUsing.weightCapacity());
+            caughtUsing.stats().weightCapacity());
     return new FishComponent(
         species.name, // for rare variant names
         species.name,

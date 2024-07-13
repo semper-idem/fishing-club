@@ -17,6 +17,25 @@ public class CorePartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 2.5f);
     }
 
+    public CorePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public CorePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public CorePartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 
@@ -28,11 +47,6 @@ public class CorePartItem extends PartItem {
         //user.getStackInHand(hand).setCount(0);
         user.setStackInHand(hand, fishingRod);
         return super.use(world, user, hand);
-    }
-
-    public CorePartItem weightCapacity(int weightCapacity) {
-        this.weightCapacity = weightCapacity;
-        return this;
     }
 
     public CorePartItem castPowerMultiplier(float castPowerMultiplier) {

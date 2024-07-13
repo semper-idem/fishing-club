@@ -13,6 +13,25 @@ public class HookPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
+    public HookPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public HookPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public HookPartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
 
     @Override
     void applyComponent(RodConfiguration.Controller configuration) {

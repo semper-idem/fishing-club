@@ -10,9 +10,24 @@ public class LinePartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
     }
 
-    public LinePartItem weightCapacity(int weightCapacity) {
+
+    public LinePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public LinePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public LinePartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
         this.weightCapacity = weightCapacity;
-        return this;
     }
 
     public LinePartItem maxLineLength(int maxLineLength) {

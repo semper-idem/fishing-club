@@ -13,6 +13,25 @@ public class BaitPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
+    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public BaitPartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
 
     @Override
     void applyComponent(RodConfiguration.Controller configuration) {

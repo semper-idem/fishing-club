@@ -10,7 +10,12 @@ import net.semperidem.fishing_club.registry.FCComponents;
 
 public class PartItem extends Item {
     int weightCapacity;
+    int minOperatingTemperature = 0;
+    int maxOperatingTemperature = 0;
+    float fishQuality = 0;
     boolean destroyOnBreak = false;
+
+
     public enum DamageSource {
         CAST(0),
         BITE(1),
@@ -35,16 +40,34 @@ public class PartItem extends Item {
         return durabilityMultiplier[source.value];
     }
 
-    public PartItem(Settings settings) {
-        super(settings);
+    public PartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
     }
 
+    public PartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public PartItem(Settings settings,int weightCapacity) {
+
+        super(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
+    public PartItem(Settings settings) {
+
+        super(settings);
+    }
 
     public static float getPartDamagePercentage(ItemStack partStack) {
 
         return (float) partStack.getDamage() / partStack.getMaxDamage();
     }
-
 
     private boolean shouldDamage(int quality) {
 
@@ -80,26 +103,45 @@ public class PartItem extends Item {
     }
 
     void applyComponent(RodConfiguration.Controller configuration) {
+        configuration.fishQuality += this.fishQuality;
         validateWeightCapacity(configuration);
+        validateTemperature(configuration);
     }
 
     public int getWeightMagnitude() {
+
         if (weightCapacity < 25) {
             return 1;
         }
+
         if (weightCapacity < 100) {
             return 0;
         }
+
         if (weightCapacity < 250) {
             return -1;
         }
+
         return -4;
     }
 
     void validateWeightCapacity(RodConfiguration.Controller configuration) {
+
         if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0){
+
             configuration.weightCapacity = this.weightCapacity;
             configuration.weightMagnitude = this.getWeightMagnitude();
+        }
+    }
+
+    void validateTemperature(RodConfiguration.Controller configuration) {
+
+        if (configuration.minOperatingTemperature() < this.minOperatingTemperature) {
+            configuration.minOperatingTemperature = this.minOperatingTemperature;
+        }
+
+        if (configuration.maxOperatingTemperature() > this.maxOperatingTemperature) {
+            configuration.maxOperatingTemperature = this.maxOperatingTemperature;
         }
 
     }

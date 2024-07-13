@@ -70,21 +70,17 @@ public class FCItems {
     public static void registerParts() {
 
         CORE_WOODEN_OAK = registerItem("core_wooden_oak", new CorePartItem(new Item.Settings()
-          .maxDamage(64).rarity(COMMON))
-          .weightCapacity(10)
+          .maxDamage(64).rarity(COMMON), 10)
           .castPowerMultiplier(0.9f));
         CORE_IRON = registerItem("core_iron", new CorePartItem(new Item.Settings()
-          .maxDamage(128).rarity(COMMON))
-          .weightCapacity(15)
+          .maxDamage(128).rarity(COMMON), 15, -1, 0)
           .castPowerMultiplier(0.9f));
 
         LINE_SPIDER = registerItem("line_spider", new LinePartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
-          .weightCapacity(15)
+          .maxDamage(32).rarity(COMMON), 15)
           .maxLineLength(8));
         LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
-          .weightCapacity(10)
+          .maxDamage(32).rarity(COMMON), 10)
           .maxLineLength(64));
 
         BOBBER_PLANT = registerItem("bobber_plant", new BobberPartItem(new Item.Settings()
@@ -96,11 +92,13 @@ public class FCItems {
           );
 
         BAIT_WORM = registerItem("bait_worm", new BaitPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
+          .maxDamage(32).rarity(COMMON),
+            50, 0, 1)//todo change later this is incorrect
           );
 
         HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
+          .maxDamage(32).rarity(COMMON),
+            50, -1, 0)
           );
     }
 

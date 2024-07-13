@@ -41,7 +41,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(fishingRod, world.isClient());
         }
 
-        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).canCast();
+        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).stats().canCast();
         if (!canCast || fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }
@@ -107,7 +107,7 @@ public class MemberFishingRodItem extends FishingRodItem {
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        return true;//FishingCard.of(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE)
+        return true;//FishingCard.of(user).hasPerk(FishingPerks.BOBBER_THROW_CHARGE) untested but should be correct
     }
 
     public static int getChargePower(int usageTick) {
@@ -121,7 +121,7 @@ public class MemberFishingRodItem extends FishingRodItem {
 
     public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
         RodConfiguration configuration = RodConfiguration.of(fishingRod);
-        int maxLineLength = configuration.maxLineLength();
+        int maxLineLength = configuration.stats().maxLineLength();
         int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
         fishingRod.set(FCComponents.LINE_LENGTH, length);
         user.sendMessage(Text.literal("Line length:" + length), true);

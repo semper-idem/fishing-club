@@ -13,6 +13,7 @@ import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 import net.semperidem.fishing_club.screen.configuration.RodInventory;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 public record RodConfiguration(
@@ -22,12 +23,7 @@ public record RodConfiguration(
   Optional<ItemStack> reel,
   Optional<ItemStack> bait,
   Optional<ItemStack> hook,
-  int weightCapacity,
-  int weightMagnitude,
-  int maxLineLength,
-  float castPower,
-  float bobberWidth,
-  boolean canCast
+  Controller stats
 ) {
 
     private static RodConfiguration DEFAULT;
@@ -38,12 +34,7 @@ public record RodConfiguration(
       Optional.empty(),
       Optional.empty(),
       Optional.empty(),
-      0,
-      1,
-      0,
-      1,
-      1,
-      false
+      new Controller()
     );
 
     public static RodConfiguration getDefault() {
@@ -54,9 +45,8 @@ public record RodConfiguration(
     }
 
 
-
     public static RodConfiguration of(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-        Controller result = Controller.process(core, line, bobber, reel, bait, hook);
+        Controller stats = Controller.process(core, line, bobber, reel, bait, hook);
         return new RodConfiguration(
           core.isEmpty() ? Optional.empty() : Optional.of(core),
           line.isEmpty() ? Optional.empty() : Optional.of(line),
@@ -64,12 +54,7 @@ public record RodConfiguration(
           reel.isEmpty() ? Optional.empty() : Optional.of(reel),
           bait.isEmpty() ? Optional.empty() : Optional.of(bait),
           hook.isEmpty() ? Optional.empty() : Optional.of(hook),
-          result.weightCapacity,
-          result.weightMagnitude,
-          result.maxLineLength,
-          result.castPower,
-          result.bobberWidth,
-          result.canCast
+          stats
         );
     }
 
@@ -150,36 +135,9 @@ public record RodConfiguration(
         float partDamagePercentage = 0;
         float maxDamage = 0;
 
-        if (core.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(core.get());
-            maxDamage++;
-        }
+        for(ItemStack part : this.stats().parts) {
 
-        if (line.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(line.get());
-            maxDamage++;
-        }
-
-        if (bobber.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(bobber.get());
-            maxDamage++;
-        }
-
-
-        if (reel.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(reel.get());
-            maxDamage++;
-        }
-
-
-        if (bait.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(bait.get());
-            maxDamage++;
-        }
-
-
-        if (hook.isPresent()) {
-            partDamagePercentage += PartItem.getPartDamagePercentage(hook.get());
+            partDamagePercentage += PartItem.getPartDamagePercentage(part);
             maxDamage++;
         }
 
@@ -200,33 +158,9 @@ public record RodConfiguration(
         float partDamagePercentage = 0;
         float maxDamage = 0;
 
-        if (core.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, core.get(), player, fishingRod);
-            maxDamage++;
-        }
-
-        if (line.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, line.get(), player, fishingRod);
-            maxDamage++;
-        }
-
-        if (bobber.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, bobber.get(), player, fishingRod);
-            maxDamage++;
-        }
-
-        if (reel.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, reel.get(), player, fishingRod);
-            maxDamage++;
-        }
-
-        if (bait.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, bait.get(), player, fishingRod);
-            maxDamage++;
-        }
-
-        if (hook.isPresent()) {
-            partDamagePercentage += damagePart(amount, damageSource, hook.get(), player, fishingRod);
+        for(ItemStack part : this.stats().parts) {
+            
+            partDamagePercentage += damagePart(amount, damageSource, part, player, fishingRod);
             maxDamage++;
         }
 
@@ -249,7 +183,7 @@ public record RodConfiguration(
         return partStack.getDamage() * 1f / partStack.getMaxDamage();
     }
 
-    static class Controller {
+    public static class Controller {
 
         int weightCapacity = 0;
         int weightMagnitude = 2;
@@ -257,18 +191,25 @@ public record RodConfiguration(
         float castPower = 1;
         float bobberWidth = 1;
         boolean canCast = false;
+        int minOperatingTemperature = -1;
+        int maxOperatingTemperature = 1;
+        float fishQuality = 0;
+        HashSet<ItemStack> parts = new HashSet<>();
 
+        Controller() {
+        }
+
+        Controller(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
+            this.canCast = this.validateAndApply(core);
+            this.canCast &= this.validateAndApply(line);
+            this.validateAndApply(bobber);
+            this.validateAndApply(reel);
+            this.validateAndApply(bait);
+            this.validateAndApply(hook);
+        }
 
         public static Controller process(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-
-            Controller processor = new Controller();
-            processor.canCast = processor.validateAndApply(core);
-            processor.canCast &= processor.validateAndApply(line);
-            processor.validateAndApply(bobber);
-            processor.validateAndApply(reel);
-            processor.validateAndApply(bait);
-            processor.validateAndApply(hook);
-            return processor;
+            return new Controller(core, line, bobber, reel, bait, hook);
         }
 
         boolean validateAndApply(ItemStack part) {
@@ -282,7 +223,56 @@ public record RodConfiguration(
             }
 
             partItem.applyComponent(this);
+            parts.add(part);
             return true;
+        }
+
+
+        public int weightCapacity() {
+            return weightCapacity;
+        }
+
+        public int weightMagnitude() {
+            return weightMagnitude;
+        }
+
+        public int maxLineLength() {
+            return maxLineLength;
+        }
+
+        public float castPower() {
+            return castPower;
+        }
+
+        public float bobberWidth() {
+            return bobberWidth;
+        }
+
+        public boolean canCast() {
+            return canCast;
+        }
+
+        public int minOperatingTemperature() {
+            return minOperatingTemperature;
+        }
+
+        public int maxOperatingTemperature() {
+            return maxOperatingTemperature;
+        }
+
+        @Override
+        public String toString() {
+            return ":" +
+              ", weightCapacity=" + weightCapacity +
+              ", minOperatingTemperature=" + minOperatingTemperature +
+              ", maxOperatingTemperature=" + maxOperatingTemperature +
+              ", fishQuality=" + fishQuality +
+              ", weightMagnitude=" + weightMagnitude +
+              ", maxLineLength=" + maxLineLength +
+              ", castPower=" + castPower +
+              ", bobberWidth=" + bobberWidth +
+              ", canCast=" + canCast +
+              ',';
         }
 
     }

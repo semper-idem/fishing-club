@@ -10,6 +10,25 @@ public class ReelPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 3);
     }
 
+    public ReelPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+
+        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
+        this.fishQuality = fishQuality;
+    }
+
+    public ReelPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+
+        this(settings, weightCapacity);
+        this.minOperatingTemperature = minOperatingTemperature;
+        this.maxOperatingTemperature = maxOperatingTemperature;
+    }
+
+    public ReelPartItem(Settings settings,int weightCapacity) {
+
+        this(settings);
+        this.weightCapacity = weightCapacity;
+    }
+
     @Override
     void applyComponent(RodConfiguration.Controller configuration) {
 
