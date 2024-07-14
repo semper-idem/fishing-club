@@ -54,7 +54,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private float fishAngle;
     private int lastHookCountdown;
 
-    private boolean isInWater = false;
+    private boolean isInFluid = false;
 
     private float weightRatio = 1;
     private int maxEntityMagnitude = 0;
@@ -184,7 +184,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.discard();
             return;
         }
-        this.isInWater = this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.WATER);
+        this.isInFluid = this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.WATER) || this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA);
         this.tickEntityCollision();
         this.tickFishingLogic();
         this.tickMotion();
@@ -227,7 +227,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickBuoyancy() {
-        if (this.isInWater) {
+        if (this.isInFluid) {
             double buoyancy = 0.03 + this.random.nextGaussian() * 0.005 + Math.sin(Util.getEntityDepth(this)) * -0.1f;
             VelocityUtil.addVelocityY(this, buoyancy);
         }
@@ -253,7 +253,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             float slipperiness = this.getSteppingBlockState().getBlock().getSlipperiness();
             return new Vec3d(slipperiness, slipperiness, slipperiness);
         }
-        return this.isInWater ? this.waterResistance : this.airResistance;
+        return this.isInFluid ? this.waterResistance : this.airResistance;
     }
 
     private void tickTensionWear(double tension) {
@@ -322,7 +322,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isValidFishing() {
-        return this.hookedEntity == null && this.isInWater && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
+        return this.hookedEntity == null && this.isInFluid && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
     }
 
     private void tickHookedFish() {
@@ -387,7 +387,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         double e = ((float) MathHelper.floor(this.getY()) + 1.0f);
         double d = this.getX() + (double) (g * (float) this.fishTravelCountdown * 0.1f);
         BlockState blockState = serverWorld.getBlockState(new BlockPos((int) d, (int) (e - 1.0), (int) j));
-        if (blockState.isOf(Blocks.WATER)) {
+        if (blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
             if (this.random.nextFloat() < 0.15f) {
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - (double) 0.1f, j, 1, g, 0.1, h, 0.0);
             }
@@ -420,7 +420,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             double e = ((float) MathHelper.floor(this.getY()) + 1.0f);
             double j = this.getZ() + (double) (MathHelper.cos(g) * h) * 0.1;
             BlockState blockState = serverWorld.getBlockState(new BlockPos((int) d, (int) (e - 1.0), (int) j));
-            if (blockState.isOf(Blocks.WATER)) {
+            if (blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
                 serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 1 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
             }
         }
@@ -463,13 +463,17 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || MEMBER_FISHING_ROD.hasNoFishingRod(playerEntity);
     }
 
+    private boolean hasHookEntity() {
+        return this.hookedEntity != null && this.hookedEntity != this;
+    }
+
     @Override
     public int use(ItemStack fishingRod) {//Return value is damage to fishingRod
         if (this.playerOwner == null) {
             this.discard();
             return 0;
         }
-        if (this.hookedEntity != null) {
+        if (this.hasHookEntity()) {
             this.reelEntity();
             return 0;
         }
@@ -481,7 +485,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.reelWater();
             return 0;
         }
-        if (this.isOnGround()) {
+        if (this.isOnGround() || getVelocity().y == 0) {
             this.reelGround();
             return 0;
         }
@@ -498,15 +502,12 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private Vec3d getPullVector() {
-        return this.ownerVector.normalize().multiply(-configuration.stats().castPower() * getTension());
+        return this.ownerVector.normalize().multiply(configuration.stats().castPower() * getTension());
     }
 
     private void pullEntity() {
-        if(this.hookedEntity == null) {
-            return;
-        }
         VelocityUtil.addVelocity(this.hookedEntity, this.getPullVector().multiply(-1));
-        this.damageRod(2, PartItem.DamageSource.REEL_FISH);
+        this.damageRod(2, PartItem.DamageSource.REEL_ENTITY);
         if (!(this.playerOwner instanceof ServerPlayerEntity)) {
             return;
         }
@@ -547,7 +548,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void pullOwner() {
-        VelocityUtil.addVelocity(this.playerOwner, this.getPullVector());
+        VelocityUtil.addVelocity(this.playerOwner, this.getPullVector().multiply(3));
     }
 
     private void damageRod(int amount, PartItem.DamageSource damageSource) {

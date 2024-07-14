@@ -8,7 +8,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.registry.FCComponents;
 
+import java.util.HashSet;
+
 public class PartItem extends Item {
+
     int weightCapacity;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
@@ -17,22 +20,36 @@ public class PartItem extends Item {
 
 
     public enum DamageSource {
-        CAST(0),
-        BITE(1),
-        REEL_FISH(2),
-        REEL_ENTITY(3),
-        REEL_WATER(4),
-        REEL_GROUND(5);
+        CAST(0), BITE(1), REEL_FISH(2), REEL_ENTITY(3), REEL_WATER(4), REEL_GROUND(5);
 
         public final int value;
+
         DamageSource(int value) {
             this.value = value;
         }
 
     }
-    float[] durabilityMultiplier = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 
-    protected void setDamageMultiplier(DamageSource source, float value){
+    private static HashSet<DamageSource> TEMPERATURE_INFLUENCED_DAMAGE_SOURCES = new HashSet<>();
+
+    static {
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.BITE);
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_FISH);
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_WATER);
+    }
+
+    ;
+
+    float[] durabilityMultiplier = {
+      0.5f,
+      0.5f,
+      0.5f,
+      0.5f,
+      0.5f,
+      0.5f
+    };
+
+    protected void setDamageMultiplier(DamageSource source, float value) {
         durabilityMultiplier[source.value] = value;
     }
 
@@ -40,20 +57,20 @@ public class PartItem extends Item {
         return durabilityMultiplier[source.value];
     }
 
-    public PartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
+    public PartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
 
         this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
         this.fishQuality = fishQuality;
     }
 
-    public PartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+    public PartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature) {
 
         this(settings, weightCapacity);
         this.minOperatingTemperature = minOperatingTemperature;
         this.maxOperatingTemperature = maxOperatingTemperature;
     }
 
-    public PartItem(Settings settings,int weightCapacity) {
+    public PartItem(Settings settings, int weightCapacity) {
 
         super(settings);
         this.weightCapacity = weightCapacity;
@@ -76,7 +93,37 @@ public class PartItem extends Item {
 
     public <T extends LivingEntity> void damage(ItemStack componentStack, int amount, DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
 
-        damage(componentStack, (int) Math.ceil(getDamageMultiplier(damageSource) * amount), player, fishingRod);
+        damage(componentStack,
+          getTemperatureAdjustedDamage(
+            damageSource,
+            player,
+            Math.ceil(
+              getDamageMultiplier(damageSource) * amount)
+          ),
+          player,
+          fishingRod);
+    }
+
+    int getTemperatureAdjustedDamage(DamageSource damageSource, PlayerEntity player, double amount) {
+
+        if (!TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.contains(damageSource)) {
+            return (int) amount;
+        }
+
+        boolean isNegativeTemperatureArea = player.getWorld().getBiome(player.getBlockPos()).value().getTemperature() <= 0f;
+        boolean isUltraWarm = player.getWorld().getDimension().ultrawarm();
+        int positionTemperature = isNegativeTemperatureArea ? -1 : isUltraWarm ? 1 : 0;
+
+        if (positionTemperature > maxOperatingTemperature) {
+            int maxDiff = positionTemperature - maxOperatingTemperature;
+            amount *= maxDiff * 20;
+        }
+
+        if (positionTemperature < minOperatingTemperature) {
+            int minDiff = positionTemperature - minOperatingTemperature;
+            amount *= minDiff * 10;
+        }
+        return (int) amount;
     }
 
     <T extends LivingEntity> void damage(ItemStack componentStack, int amount, PlayerEntity player, ItemStack fishingRod) {
@@ -127,7 +174,7 @@ public class PartItem extends Item {
 
     void validateWeightCapacity(RodConfiguration.Controller configuration) {
 
-        if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0){
+        if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0) {
 
             configuration.weightCapacity = this.weightCapacity;
             configuration.weightMagnitude = this.getWeightMagnitude();
@@ -145,4 +192,5 @@ public class PartItem extends Item {
         }
 
     }
+
 }
