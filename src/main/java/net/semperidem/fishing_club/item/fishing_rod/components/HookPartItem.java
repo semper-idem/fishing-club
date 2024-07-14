@@ -5,6 +5,9 @@ import net.minecraft.entity.LivingEntity;
 public class HookPartItem extends PartItem {
     private float biteFailChance = 0;
     private float autoHookChance = 0;
+    private boolean piercing = false;
+    private float damage = 0;
+    private float reelDamage = 0;
 
     public HookPartItem(Settings settings) {
 
@@ -45,7 +48,7 @@ public class HookPartItem extends PartItem {
     }
 
     public float getBiteFailChance() {
-        return biteFailChance;
+        return this.biteFailChance;
     }
 
     public HookPartItem biteFailChance(float biteFailChance) {
@@ -54,11 +57,38 @@ public class HookPartItem extends PartItem {
     }
 
     public float getAutoHookChance() {
-        return autoHookChance;
+        return this.autoHookChance;
     }
 
     public HookPartItem autoHookChance(float autoHookChance) {
         this.autoHookChance = autoHookChance;
+        return this;
+    }
+
+    public boolean isPiercing() {
+        return this.piercing;
+    }
+
+    public HookPartItem piercing(boolean piercing) {
+        this.piercing = piercing;
+        return this;
+    }
+
+    public float getDamage() {
+        return this.damage;
+    }
+
+    public HookPartItem damage(float damage) {
+        this.damage = damage;
+        return this;
+    }
+
+    public float getReelDamage() {
+        return this.reelDamage;
+    }
+
+    public HookPartItem reelDamage(float reelDamage) {
+        this.reelDamage = reelDamage;
         return this;
     }
 

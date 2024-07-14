@@ -105,11 +105,14 @@ public class FCItems {
         HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings()
           .maxDamage(320).rarity(COMMON),
           50, -1, 0)
+          .reelDamage(4)
         );
         HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings()
           .maxDamage(320).rarity(COMMON),
           50)
           .autoHookChance(1f)
+          .piercing(true)
+          .damage(5)
         );
     }
 

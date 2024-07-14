@@ -7,11 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -72,6 +76,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private FishingCard fishingCard;
     private ItemStack fishingRod;
     private RodConfiguration configuration;
+    private HookPartItem hookPartItem;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
     private FishComponent caughtFish;
@@ -110,6 +115,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
         this.configuration = RodConfiguration.of(this.fishingRod);
+        this.configuration.hook().ifPresent(hookStack -> {
+            if (hookStack.getItem() instanceof HookPartItem aHookPartItem) {
+                this.hookPartItem = aHookPartItem;
+            }
+        });
         this.maxEntityMagnitude = this.configuration.stats().weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.stats().maxLineLength());
         this.calculateResistance();
@@ -126,6 +136,16 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.hookedEntity = hookedEntity;
         ((FishingBobberEntityAccessor) this).invokeUpdateHookedEntityId(hookedEntity);
         this.weightRatio = (float) (1 + EntityWeights.getEntityMagnitude(hookedEntity.getType()) * 0.067f);
+        if (this.hookedEntity == this) {
+            return;
+        }
+        if (this.hookPartItem == null) {
+            return;
+        }
+        if (this.hookPartItem.getDamage() == 0) {
+            return;
+        }
+        this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
     }
 
     @Override
@@ -194,6 +214,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        if (this.hookPartItem != null && this.hookPartItem.isPiercing() && entityHitResult.getEntity() != this) {
+            entityHitResult.getEntity().damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
+            return;
+        }
         this.updateHookEntity(entityHitResult.getEntity());
     }
 
@@ -327,17 +351,15 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean tickAutoHookedFish() {
-        if (configuration.hook().isEmpty()) {
+
+        if (this.hookPartItem == null) {
             return false;
         }
 
-        if (!(configuration.hook().get().getItem() instanceof HookPartItem hookPartItem)) {
+        if (this.hookPartItem.getAutoHookChance() < Math.random()) {
             return false;
         }
 
-        if (hookPartItem.getAutoHookChance() < Math.random()) {
-            return false;
-        }
 
         reelFish();
         return true;
@@ -540,8 +562,15 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return this.ownerVector.normalize().multiply(configuration.stats().castPower() * getTension());
     }
 
+    private Vec3d getPullVectorNT() {
+        return this.ownerVector.normalize().multiply(configuration.stats().castPower());
+    }
+
     private void pullEntity() {
-        VelocityUtil.addVelocity(this.hookedEntity, this.getPullVector().multiply(-1));
+        if (this.hookPartItem != null && this.hookPartItem.getReelDamage() > 0) {
+            this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getReelDamage());
+        }
+        VelocityUtil.addVelocity(this.hookedEntity, this.getPullVectorNT().multiply(-1));
         this.damageRod(2, PartItem.DamageSource.REEL_ENTITY);
         if (!(this.playerOwner instanceof ServerPlayerEntity)) {
             return;
