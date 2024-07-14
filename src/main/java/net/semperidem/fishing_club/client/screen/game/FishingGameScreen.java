@@ -16,6 +16,7 @@ import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.game.FishingGameController;
 import net.semperidem.fishing_club.network.payload.FishingGameInputPayload;
 import net.semperidem.fishing_club.network.payload.FishingGameTickPayload;
+import net.semperidem.fishing_club.registry.FCKeybindings;
 import net.semperidem.fishing_club.screen.fishing_game.FishingGameScreenHandler;
 import org.lwjgl.glfw.GLFW;
 
@@ -99,7 +100,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     private boolean keyPressed(int keyCode){
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);//todo use vanila keybindings
     }
 
     public void consumeTick(FishingGameTickPayload fishingGameTickPayload) {

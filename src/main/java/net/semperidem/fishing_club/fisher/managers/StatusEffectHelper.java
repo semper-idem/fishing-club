@@ -1,5 +1,6 @@
 package net.semperidem.fishing_club.fisher.managers;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -21,18 +22,16 @@ public class StatusEffectHelper {
     private static final int ONE_TIME_BUFF_LENGTH = 2400;
 
     FishingCard trackedFor;
-    PlayerEntity holder;
 
     public StatusEffectHelper(FishingCard trackedFor) {
         this.trackedFor = trackedFor;
-        this.holder = trackedFor.getHolder();
     }
 
     public int getMinGrade() {
         int minGrade = 0;
-        if (this.holder.hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
+        if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
-        } else if (this.holder.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
+        } else if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
         return minGrade;
@@ -46,7 +45,7 @@ public class StatusEffectHelper {
     public float getExpMultiplier() {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = holder.getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = this.trackedFor.getHolder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
              multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
@@ -56,16 +55,16 @@ public class StatusEffectHelper {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
-                !holder.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+                !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
     public int spreadStatusEffect(ProgressionManager progressionManager, FishComponent fish) {
         int xpBuffAffectedCount = 0;
-        Box box = new Box(holder.getBlockPos());
+        Box box = new Box(this.trackedFor.getHolder().getBlockPos());
         box.expand(SPREAD_EFFECT_RANGE);
 
-        List<ServerPlayerEntity> nearPlayers = holder.getEntityWorld()
-                .getOtherEntities(holder, box)
+        List<ServerPlayerEntity> nearPlayers = this.trackedFor.getHolder().getEntityWorld()
+                .getOtherEntities(this.trackedFor.getHolder(), box)
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
@@ -88,11 +87,11 @@ public class StatusEffectHelper {
             return;
         }
 
-        if (!this.holder.hasVehicle()) {
+        if (!this.trackedFor.getHolder().hasVehicle()) {
             return;
         }
 
-        if (!(this.holder.getVehicle() instanceof BoatEntity boatEntity)) {
+        if (!(this.trackedFor.getHolder().getVehicle() instanceof BoatEntity boatEntity)) {
             return;
         }
 
@@ -119,12 +118,12 @@ public class StatusEffectHelper {
     }
 
     private void consumeOneTimeBuff(){
-        StatusEffectInstance sei = holder.getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        StatusEffectInstance sei = this.trackedFor.getHolder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
-        holder.removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        this.trackedFor.getHolder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
         if (effectPower > 0) {
             StatusEffectInstance lowerSei = new StatusEffectInstance(sei.getEffectType(), sei.getDuration(), effectPower - 1);
-            holder.addStatusEffect(lowerSei);
+            this.trackedFor.getHolder().addStatusEffect(lowerSei);
         }
     }
 }

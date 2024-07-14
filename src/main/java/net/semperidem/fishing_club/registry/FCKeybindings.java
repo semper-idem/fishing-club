@@ -22,11 +22,14 @@ public class FCKeybindings {
     public final static KeyBinding SPELL_SELECT = registerKeybinding("spell_select", "spell", GLFW.GLFW_KEY_M);
     public final static KeyBinding MULTIPLY_CART_ACTION_1 = registerKeybinding("multiply_cart_action_1", "shop", GLFW.GLFW_KEY_LEFT_SHIFT);
     public final static KeyBinding MULTIPLY_CART_ACTION_2 = registerKeybinding("multiply_cart_action_2", "shop", GLFW.GLFW_KEY_LEFT_ALT);
+    public final static KeyBinding REEL = registerKeybinding("reel", "game", GLFW.GLFW_KEY_SPACE);//useless
+    public final static KeyBinding PULL = registerKeybinding("pull", "game", GLFW.GLFW_KEY_ENTER);
 
     public static void registerClient() {
         registerAction(FCKeybindings::openContextFCMenu);
         registerAction(FCKeybindings::spellCast);
         registerAction(FCKeybindings::spellSelect);
+        registerAction(o -> {});
     }
 
     private static void registerAction(ClientTickEvents.EndTick endTickAction) {
@@ -43,6 +46,7 @@ public class FCKeybindings {
                 )
         );
     }
+
 
     private static void openContextFCMenu(MinecraftClient client) {
         if (!CONTEXT_SCREEN.wasPressed()) {

@@ -35,12 +35,18 @@ public class FCItems {
 
     public static CorePartItem CORE_WOODEN_OAK;
     public static CorePartItem CORE_IRON;
+
     public static LinePartItem LINE_SPIDER;
     public static LinePartItem LINE_WOOL;
+
     public static BobberPartItem BOBBER_PLANT;
+
     public static ReelPartItem REEL_WOODEN;
+
     public static BaitPartItem BAIT_WORM;
+
     public static HookPartItem HOOK_IRON;
+    public static AutoHookPartItem HOOK_AUTO_GOLD;
 
 
     public static <T extends Item> T registerItem(String id, T item) {
@@ -70,36 +76,40 @@ public class FCItems {
     public static void registerParts() {
 
         CORE_WOODEN_OAK = registerItem("core_wooden_oak", new CorePartItem(new Item.Settings()
-          .maxDamage(64).rarity(COMMON), 10)
+          .maxDamage(640).rarity(COMMON), 10)
           .castPowerMultiplier(0.9f));
         CORE_IRON = registerItem("core_iron", new CorePartItem(new Item.Settings()
-          .maxDamage(128).rarity(COMMON), 15, -1, 0)
+          .maxDamage(1280).rarity(COMMON), 15, -1, 0)
           .castPowerMultiplier(0.9f));
 
         LINE_SPIDER = registerItem("line_spider", new LinePartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON), 15)
+          .maxDamage(320).rarity(COMMON), 15)
           .maxLineLength(8));
         LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON), 10)
+          .maxDamage(320).rarity(COMMON), 10)
           .maxLineLength(64));
 
         BOBBER_PLANT = registerItem("bobber_plant", new BobberPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
+          .maxDamage(320).rarity(COMMON))
           .bobberWidth(1.2f));
 
         REEL_WOODEN = registerItem("reel_wooden", new ReelPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON))
+          .maxDamage(320).rarity(COMMON))
           );
 
         BAIT_WORM = registerItem("bait_worm", new BaitPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON),
+          .maxDamage(320).rarity(COMMON),
             50, 0, 1)//todo change later this is incorrect
           );
 
         HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings()
-          .maxDamage(32).rarity(COMMON),
-            50, -1, 0)
-          );
+          .maxDamage(320).rarity(COMMON),
+          50, -1, 0)
+        );
+        HOOK_AUTO_GOLD = registerItem("hook_gold", new AutoHookPartItem(new Item.Settings()
+          .maxDamage(320).rarity(COMMON),
+          50)
+        );
     }
 
     private static void registerItemGroup() {

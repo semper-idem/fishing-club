@@ -43,10 +43,8 @@ public record FishingGameTickPayload(
         return ID;
     }
     public static void consumePayload(FishingGameTickPayload payload, ClientPlayNetworking.Context context) {
-        try (MinecraftClient client = context.client()) {
-            if (client.currentScreen instanceof FishingGameScreen fishingGameScreen) {
+            if (MinecraftClient.getInstance().currentScreen instanceof FishingGameScreen fishingGameScreen) {
                 fishingGameScreen.consumeTick(payload);
             }
-        }
     }
 }

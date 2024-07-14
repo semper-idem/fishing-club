@@ -27,6 +27,8 @@ import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
+import net.semperidem.fishing_club.item.fishing_rod.components.AutoHookPartItem;
+import net.semperidem.fishing_club.item.fishing_rod.components.HookPartItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.PartItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishing_club.mixin.common.FishingBobberEntityAccessor;
@@ -322,30 +324,63 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isValidFishing() {
-        return this.hookedEntity == null && this.isInFluid && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
+        return this.hookedEntity == this && this.isInFluid && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
+    }
+
+    private boolean tickAutoHookedFish() {
+        if (configuration.hook().isEmpty()) {
+            return false;
+        }
+
+        if (!(configuration.hook().get().getItem() instanceof AutoHookPartItem autoHookPartItem)) {
+            return false;
+        }
+
+        if (autoHookPartItem.getAutoHookChance() < Math.random()) {
+            return false;
+        }
+
+        reelFish();
+        return true;
     }
 
     private void tickHookedFish() {
+
         --this.hookCountdown;
-        if (this.hookCountdown <= 0) {
-            this.waitCountdown = 0;
-            this.fishTravelCountdown = 0;
-            this.caughtFish = null;
-            this.damageRod(4, PartItem.DamageSource.BITE);
+
+        if (this.hookCountdown > 0) {
+            return;
         }
+
+        this.waitCountdown = 0;
+        this.fishTravelCountdown = 0;
+        this.damageRod(4, PartItem.DamageSource.BITE);
+
+        if (tickAutoHookedFish()) {
+            return;
+        }
+        this.caughtFish = null;
+
     }
 
     private void tickFish(ServerWorld serverWorld) {
         this.fishTravelCountdown -= 1;
         if (this.fishTravelCountdown > 0) {
             this.tickFishReeling(serverWorld);
-        } else {
-            this.handleFishOnHook(serverWorld);
         }
+        this.handleFishOnHook(serverWorld);
     }
 
     private void handleFishOnHook(ServerWorld serverWorld) {
         float fishTypeRarityMultiplier = 1;
+        float failChance = 0;
+        if (this.configuration.hook().isPresent() && this.configuration.hook().get().getItem() instanceof HookPartItem hookPartItem) {
+            hookPartItem.onFishBiteEffect();
+            failChance = hookPartItem.getBiteFailChance();
+        }
+        if (Math.random() < failChance) {
+            return;
+        }
         if (fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
             fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
         }
@@ -375,6 +410,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 //        } else if (FishingRodPartController.hasBait(fishingRod)) {
 //            MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, PartItem.DamageSource.BITE, this.playerOwner);
         }
+
     }
 
     private void tickFishReeling(ServerWorld serverWorld) {

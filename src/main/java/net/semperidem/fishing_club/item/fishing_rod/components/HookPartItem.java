@@ -1,6 +1,9 @@
 package net.semperidem.fishing_club.item.fishing_rod.components;
 
+import net.minecraft.entity.LivingEntity;
+
 public class HookPartItem extends PartItem {
+    private float biteFailChance = 0;
 
     public HookPartItem(Settings settings) {
 
@@ -32,6 +35,22 @@ public class HookPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
+    public void onEntityHit(LivingEntity entity){
+
+    }
+
+    public void onFishBiteEffect() {
+
+    }
+
+    public float getBiteFailChance() {
+        return biteFailChance;
+    }
+
+    public HookPartItem biteFailChance(float biteFailChance) {
+        this.biteFailChance = biteFailChance;
+        return this;
+    }
 
     @Override
     void applyComponent(RodConfiguration.Controller configuration) {
