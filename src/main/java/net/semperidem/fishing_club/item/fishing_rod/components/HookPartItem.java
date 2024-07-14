@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 
 public class HookPartItem extends PartItem {
     private float biteFailChance = 0;
+    private float autoHookChance = 0;
 
     public HookPartItem(Settings settings) {
 
@@ -49,6 +50,15 @@ public class HookPartItem extends PartItem {
 
     public HookPartItem biteFailChance(float biteFailChance) {
         this.biteFailChance = biteFailChance;
+        return this;
+    }
+
+    public float getAutoHookChance() {
+        return autoHookChance;
+    }
+
+    public HookPartItem autoHookChance(float autoHookChance) {
+        this.autoHookChance = autoHookChance;
         return this;
     }
 

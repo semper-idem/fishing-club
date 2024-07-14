@@ -46,7 +46,7 @@ public class FCItems {
     public static BaitPartItem BAIT_WORM;
 
     public static HookPartItem HOOK_IRON;
-    public static AutoHookPartItem HOOK_AUTO_GOLD;
+    public static HookPartItem HOOK_GOLD;
 
 
     public static <T extends Item> T registerItem(String id, T item) {
@@ -106,9 +106,10 @@ public class FCItems {
           .maxDamage(320).rarity(COMMON),
           50, -1, 0)
         );
-        HOOK_AUTO_GOLD = registerItem("hook_gold", new AutoHookPartItem(new Item.Settings()
+        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings()
           .maxDamage(320).rarity(COMMON),
           50)
+          .autoHookChance(1f)
         );
     }
 
