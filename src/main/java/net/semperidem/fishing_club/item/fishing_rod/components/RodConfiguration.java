@@ -1,6 +1,5 @@
 package net.semperidem.fishing_club.item.fishing_rod.components;
 
-import com.mojang.datafixers.types.templates.Hook;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +22,7 @@ public record RodConfiguration(
   Optional<ItemStack> reel,
   Optional<ItemStack> bait,
   Optional<ItemStack> hook,
-  Controller stats
+  AttributeProcessor attributes
 ) {
 
     private static RodConfiguration DEFAULT;
@@ -34,7 +33,7 @@ public record RodConfiguration(
       Optional.empty(),
       Optional.empty(),
       Optional.empty(),
-      new Controller()
+      new AttributeProcessor()
     );
 
     public static RodConfiguration getDefault() {
@@ -46,7 +45,7 @@ public record RodConfiguration(
 
 
     public static RodConfiguration of(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-        Controller stats = Controller.process(core, line, bobber, reel, bait, hook);
+        AttributeProcessor stats = AttributeProcessor.process(core, line, bobber, reel, bait, hook);
         return new RodConfiguration(
           core.isEmpty() ? Optional.empty() : Optional.of(core),
           line.isEmpty() ? Optional.empty() : Optional.of(line),
@@ -135,7 +134,7 @@ public record RodConfiguration(
         float partDamagePercentage = 0;
         float maxDamage = 0;
 
-        for(ItemStack part : this.stats().parts) {
+        for(ItemStack part : this.attributes().parts) {
 
             partDamagePercentage += PartItem.getPartDamagePercentage(part);
             maxDamage++;
@@ -158,7 +157,7 @@ public record RodConfiguration(
         float partDamagePercentage = 0;
         float maxDamage = 0;
 
-        for(ItemStack part : this.stats().parts) {
+        for(ItemStack part : this.attributes().parts) {
             
             partDamagePercentage += damagePart(amount, damageSource, part, player, fishingRod);
             maxDamage++;
@@ -183,7 +182,7 @@ public record RodConfiguration(
         return partStack.getDamage() * 1f / partStack.getMaxDamage();
     }
 
-    public static class Controller {
+    public static class AttributeProcessor {
 
         int weightCapacity = 0;
         int weightMagnitude = 2;
@@ -196,10 +195,10 @@ public record RodConfiguration(
         float fishQuality = 0;
         HashSet<ItemStack> parts = new HashSet<>();
 
-        Controller() {
+        AttributeProcessor() {
         }
 
-        Controller(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
+        AttributeProcessor(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
             this.canCast = this.validateAndApply(core);
             this.canCast &= this.validateAndApply(line);
             this.validateAndApply(bobber);
@@ -208,8 +207,8 @@ public record RodConfiguration(
             this.validateAndApply(hook);
         }
 
-        public static Controller process(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-            return new Controller(core, line, bobber, reel, bait, hook);
+        public static AttributeProcessor process(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
+            return new AttributeProcessor(core, line, bobber, reel, bait, hook);
         }
 
         boolean validateAndApply(ItemStack part) {

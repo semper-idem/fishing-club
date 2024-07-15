@@ -149,7 +149,7 @@ public class PartItem extends Item {
         fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.valid(fishingRod));
     }
 
-    void applyComponent(RodConfiguration.Controller configuration) {
+    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
         configuration.fishQuality += this.fishQuality;
         validateWeightCapacity(configuration);
         validateTemperature(configuration);
@@ -172,7 +172,7 @@ public class PartItem extends Item {
         return -4;
     }
 
-    void validateWeightCapacity(RodConfiguration.Controller configuration) {
+    void validateWeightCapacity(RodConfiguration.AttributeProcessor configuration) {
 
         if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0) {
 
@@ -181,7 +181,7 @@ public class PartItem extends Item {
         }
     }
 
-    void validateTemperature(RodConfiguration.Controller configuration) {
+    void validateTemperature(RodConfiguration.AttributeProcessor configuration) {
 
         if (configuration.minOperatingTemperature() < this.minOperatingTemperature) {
             configuration.minOperatingTemperature = this.minOperatingTemperature;

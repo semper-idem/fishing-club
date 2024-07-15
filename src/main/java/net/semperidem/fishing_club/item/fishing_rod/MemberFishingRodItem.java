@@ -41,7 +41,7 @@ public class MemberFishingRodItem extends FishingRodItem {
             return TypedActionResult.success(fishingRod, world.isClient());
         }
 
-        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).stats().canCast();
+        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast || fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }
@@ -121,7 +121,7 @@ public class MemberFishingRodItem extends FishingRodItem {
 
     public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
         RodConfiguration configuration = RodConfiguration.of(fishingRod);
-        int maxLineLength = configuration.stats().maxLineLength();
+        int maxLineLength = configuration.attributes().maxLineLength();
         int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
         fishingRod.set(FCComponents.LINE_LENGTH, length);
         user.sendMessage(Text.literal("Line length:" + length), true);

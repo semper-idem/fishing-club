@@ -103,7 +103,7 @@ public class HookPartItem extends PartItem {
     }
 
     @Override
-    void applyComponent(RodConfiguration.Controller configuration) {
+    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
         super.applyComponent(configuration);
     }

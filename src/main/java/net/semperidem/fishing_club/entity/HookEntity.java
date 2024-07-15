@@ -116,8 +116,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
                 this.hookPartItem = aHookPartItem;
             }
         });
-        this.maxEntityMagnitude = this.configuration.stats().weightMagnitude();
-        this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.stats().maxLineLength());
+        this.maxEntityMagnitude = this.configuration.attributes().weightMagnitude();
+        this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.attributes().maxLineLength());
         this.calculateResistance();
         this.setCastAngle();
         this.updateHookEntity(this);
@@ -612,11 +612,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private Vec3d getPullVector() {
-        return this.ownerVector.normalize().multiply(configuration.stats().castPower() * getTension());
+        return this.ownerVector.normalize().multiply(configuration.attributes().castPower() * getTension());
     }
 
     private Vec3d getPullVectorNT() {
-        return this.ownerVector.normalize().multiply(configuration.stats().castPower());
+        return this.ownerVector.normalize().multiply(configuration.attributes().castPower());
     }
 
     private void pullEntity() {

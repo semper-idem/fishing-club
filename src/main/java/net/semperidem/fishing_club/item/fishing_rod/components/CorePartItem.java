@@ -55,7 +55,7 @@ public class CorePartItem extends PartItem {
     }
 
     @Override
-    void applyComponent(RodConfiguration.Controller configuration) {
+    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
         super.applyComponent(configuration);
         configuration.castPower *= castPowerMultiplier;
     }
