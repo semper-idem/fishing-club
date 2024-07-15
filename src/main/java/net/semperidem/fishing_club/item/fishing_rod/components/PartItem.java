@@ -30,7 +30,7 @@ public class PartItem extends Item {
 
     }
 
-    private static HashSet<DamageSource> TEMPERATURE_INFLUENCED_DAMAGE_SOURCES = new HashSet<>();
+    private static final HashSet<DamageSource> TEMPERATURE_INFLUENCED_DAMAGE_SOURCES = new HashSet<>();
 
     static {
         TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.BITE);

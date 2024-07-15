@@ -7,25 +7,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishUtil;
@@ -71,6 +65,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private Vec3d waterResistance = this.airResistance;
 
     private Vec3d ownerVector = Vec3d.ZERO;
+    private BlockState stickToBlockState;
+    private BlockPos stickToBlockPos;
 
     private PlayerEntity playerOwner;
     private FishingCard fishingCard;
@@ -146,6 +142,28 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
         this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
+    }
+
+    @Override
+    protected void onBlockHit(BlockHitResult blockHitResult) {
+        super.onBlockHit(blockHitResult);
+
+        if (this.hookedEntity != this) {
+            return;
+        }
+
+        if (this.hookPartItem == null) {
+            return;
+        }
+
+        if (!this.hookPartItem.isSticky()) {
+            return;
+        }
+
+        this.stickToBlockPos = blockHitResult.getBlockPos();
+        this.stickToBlockState = this.getWorld().getBlockState(this.stickToBlockPos);
+        this.setPosition(blockHitResult.getPos().add(this.ownerVector.normalize().multiply(-0.02)));
+        this.setVelocity(Vec3d.ZERO);
     }
 
     @Override
@@ -244,6 +262,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickMotion() {
+        this.tickStickBlock();
         this.tickBuoyancy();
         this.tickGravity();
         this.move(MovementType.SELF, this.getVelocity());
@@ -251,7 +270,26 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.tickTension();
     }
 
+    private void tickStickBlock() {
+
+        if (this.stickToBlockPos == null) {
+            return;
+        }
+
+        if (this.stickToBlockState == this.getWorld().getBlockState(this.stickToBlockPos)) {
+            return;
+        }
+
+        this.stickToBlockPos = null;
+        this.stickToBlockState = null;
+    }
+
     private void tickBuoyancy() {
+
+        if (this.stickToBlockPos != null) {
+            return;
+        }
+
         if (this.isInFluid) {
             double buoyancy = 0.03 + this.random.nextGaussian() * 0.005 + Math.sin(Util.getEntityDepth(this)) * -0.1f;
             VelocityUtil.addVelocityY(this, buoyancy);
@@ -259,6 +297,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickGravity() {
+
+        if (this.stickToBlockPos != null) {
+            return;
+        }
+
         VelocityUtil.addVelocityY(this, this.isOnGround() ? 0 : -0.03);
     }
 
@@ -303,7 +346,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private double getTension() {
-        return MathHelper.clamp(getRawTension(), 0, 2);
+        return MathHelper.clamp(getRawTension(), 0, 1.5);
     }
 
     private double getRawTension() {
@@ -311,6 +354,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void applyTension(double tension) {
+
+        if (this.stickToBlockPos != null) {
+            return;
+        }
+
         VelocityUtil.addVelocity(
                 this.hookedEntity,
                 this.ownerVector.normalize().multiply(tension * -1f * this.weightRatio)
@@ -318,6 +366,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     public void applyTensionFromOwner(Vec3d tensionVector) {
+
+        if (this.stickToBlockPos != null) {
+            return;
+        }
+
         VelocityUtil.addVelocity(
                 this.hookedEntity,
                 tensionVector.multiply(-0.5f * this.weightRatio)
@@ -612,7 +665,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void pullOwner() {
-        VelocityUtil.addVelocity(this.playerOwner, this.getPullVector().multiply(3));
+        VelocityUtil.addVelocity(this.playerOwner, this.getPullVector().multiply(0.5f));
     }
 
     private void damageRod(int amount, PartItem.DamageSource damageSource) {

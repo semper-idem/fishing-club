@@ -72,8 +72,10 @@ public abstract class LivingEntityMixin extends Entity{
             @Local(ordinal = 1) Vec3d vec3d6
     ) {
         if ((LivingEntity)(Object)this instanceof PlayerEntity player) {
-            if (player.fishHook instanceof HookEntity bobber) {
-                if (!this.isOnGround()) {
+            if (player.fishHook instanceof HookEntity hookEntity) {
+                Vec3d lineVector = hookEntity.getPos().subtract(this.getEyePos());
+                double currentLineLength = lineVector.length();
+                if (!this.isOnGround() && currentLineLength > hookEntity.getLineLength()) {
                     double reverseGravity = 1.015f * y;
                     float g = 0.95F;
                     this.setVelocity(

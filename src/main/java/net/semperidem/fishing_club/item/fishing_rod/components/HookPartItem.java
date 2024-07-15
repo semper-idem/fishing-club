@@ -8,6 +8,7 @@ public class HookPartItem extends PartItem {
     private boolean piercing = false;
     private float damage = 0;
     private float reelDamage = 0;
+    private boolean sticky = false;
 
     public HookPartItem(Settings settings) {
 
@@ -89,6 +90,15 @@ public class HookPartItem extends PartItem {
 
     public HookPartItem reelDamage(float reelDamage) {
         this.reelDamage = reelDamage;
+        return this;
+    }
+
+    public boolean isSticky() {
+        return this.sticky;
+    }
+
+    public HookPartItem sticky(boolean sticky) {
+        this.sticky = sticky;
         return this;
     }
 

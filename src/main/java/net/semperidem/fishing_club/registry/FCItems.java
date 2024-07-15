@@ -106,6 +106,7 @@ public class FCItems {
           .maxDamage(320).rarity(COMMON),
           50, -1, 0)
           .reelDamage(4)
+          .sticky(true)
         );
         HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings()
           .maxDamage(320).rarity(COMMON),
