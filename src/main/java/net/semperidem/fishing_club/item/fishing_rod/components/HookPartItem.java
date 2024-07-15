@@ -1,14 +1,27 @@
 package net.semperidem.fishing_club.item.fishing_rod.components;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.semperidem.fishing_club.fisher.managers.StatusEffectHelper;
+
+import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
     private float biteFailChance = 0;
     private float autoHookChance = 0;
-    private boolean piercing = false;
+    private boolean sharp = false;
     private float damage = 0;
     private float reelDamage = 0;
     private boolean sticky = false;
+    private Consumer<LivingEntity> onEntityHit;
+
+    public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
+        targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
+    };
+    public static final Consumer<LivingEntity> ON_HIT_FIRE = targetEntity -> {
+        targetEntity.setOnFireForTicks(200);
+    };
 
     public HookPartItem(Settings settings) {
 
@@ -40,9 +53,17 @@ public class HookPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
-    public void onEntityHit(LivingEntity entity){
-
+    public HookPartItem setOnEntityHit(Consumer<LivingEntity> livingEntityConsumer) {
+        this.onEntityHit = livingEntityConsumer;
+        return this;
     }
+
+    public void onEntityHit(LivingEntity entity){
+        if (onEntityHit != null) {
+            onEntityHit.accept(entity);
+        }
+    }
+
 
     public void onFishBiteEffect() {
 
@@ -66,12 +87,12 @@ public class HookPartItem extends PartItem {
         return this;
     }
 
-    public boolean isPiercing() {
-        return this.piercing;
+    public boolean isSharp() {
+        return this.sharp;
     }
 
-    public HookPartItem piercing(boolean piercing) {
-        this.piercing = piercing;
+    public HookPartItem sharp(boolean sharp) {
+        this.sharp = sharp;
         return this;
     }
 

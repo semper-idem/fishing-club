@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.fisher.managers;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -39,18 +40,20 @@ public class LinkingManager extends DataManager {
         return 0;
     }
 
-    public void shareStatusEffect(StatusEffectInstance sei) {
+    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source) {
         if (sei.getDuration() < MIN_LENGTH_TO_SHARE) {
             return;
         }
-        trackedFor.getHolder().addStatusEffect(sei);
+        if (trackedFor.getHolder() != source) {
+            trackedFor.getHolder().addStatusEffect(sei);
+        }
         linkedFishers.forEach(linkedFisher -> FishingCard.of(
                         trackedFor
                                 .getHolder()
                                 .getServer()
                                 .getPlayerManager()
                                 .getPlayer(linkedFisher)
-                ).shareStatusEffect(getWeakerEffect(sei))//this is prob too complicated todo verify
+                ).shareStatusEffect(getWeakerEffect(sei), source)//this is prob too complicated todo verify
         );
     }
 

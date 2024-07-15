@@ -112,7 +112,8 @@ public class FCItems {
           .maxDamage(320).rarity(COMMON),
           50)
           .autoHookChance(1f)
-          .piercing(true)
+          .sharp(true)
+          .setOnEntityHit(HookPartItem.ON_HIT_POISON)
           .damage(5)
         );
     }

@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.fisher;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -190,8 +191,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return holder;
     }
 
-    public void shareStatusEffect(StatusEffectInstance sei){
-        linkingManager.shareStatusEffect(sei);
+    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source){
+        linkingManager.shareStatusEffect(sei, source);
     }
 
     public void setSummonRequest(ServerPlayerEntity target){

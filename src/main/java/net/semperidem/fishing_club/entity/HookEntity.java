@@ -3,10 +3,7 @@ package net.semperidem.fishing_club.entity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -232,11 +229,23 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        if (this.hookPartItem != null && this.hookPartItem.isPiercing() && entityHitResult.getEntity() != this) {
-            entityHitResult.getEntity().damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
-            return;
+        if (this.hookPartItem != null  && entityHitResult.getEntity() != this && this.hookPartItem.getDamage() > 0) {
         }
         this.updateHookEntity(entityHitResult.getEntity());
+        if (this.hookedEntity == this || this.hookedEntity == null) {
+            return;
+        }
+        if (this.hookPartItem == null) {
+            return;
+        }
+
+        if (this.hookedEntity instanceof LivingEntity livingHookedEntity) {
+            this.hookPartItem.onEntityHit(livingHookedEntity);
+        }
+
+        if (this.hookPartItem.getDamage() > 0) {
+            entityHitResult.getEntity().damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
+        }
     }
 
     private boolean isHookedEntityInvalid() {
@@ -622,6 +631,9 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void pullEntity() {
         if (this.hookPartItem != null && this.hookPartItem.getReelDamage() > 0) {
             this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getReelDamage());
+        }
+        if (this.hookPartItem != null && this.hookPartItem.isSharp()) {
+            return;
         }
         VelocityUtil.addVelocity(this.hookedEntity, this.getPullVectorNT().multiply(-1));
         this.damageRod(2, PartItem.DamageSource.REEL_ENTITY);
