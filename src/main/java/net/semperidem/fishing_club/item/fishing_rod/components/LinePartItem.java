@@ -35,6 +35,20 @@ public class LinePartItem extends PartItem {
         return this;
     }
 
+
+    @Override
+    public LinePartItem fishControl(float fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    @Override
+    public LinePartItem fishControlMultiplier(float fishControlMultiplier) {
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
+
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
         super.applyComponent(configuration);

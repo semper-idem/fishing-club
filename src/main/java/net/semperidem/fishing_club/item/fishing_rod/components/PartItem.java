@@ -16,6 +16,9 @@ public class PartItem extends Item {
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
     float fishQuality = 0;
+    float fishControl = 0;
+    float fishControlMultiplier = 1;
+
     boolean destroyOnBreak = false;
 
 
@@ -80,6 +83,17 @@ public class PartItem extends Item {
 
         super(settings);
     }
+
+    public PartItem fishControl(float fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    public PartItem fishControlMultiplier(float fishControlMultiplier) {
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
 
     public static float getPartDamagePercentage(ItemStack partStack) {
 
@@ -150,7 +164,11 @@ public class PartItem extends Item {
     }
 
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+
         configuration.fishQuality += this.fishQuality;
+        configuration.fishControl += this.fishControl;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier;
+
         validateWeightCapacity(configuration);
         validateTemperature(configuration);
     }

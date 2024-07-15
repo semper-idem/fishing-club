@@ -1,6 +1,8 @@
 package net.semperidem.fishing_club.item.fishing_rod.components;
 
 public class ReelPartItem extends PartItem {
+    float bobberControl;
+    float timeHookedMultiplier;
 
     public ReelPartItem(Settings settings) {
 
@@ -29,8 +31,38 @@ public class ReelPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
+
+    @Override
+    public ReelPartItem fishControl(float fishControl) {
+
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    @Override
+    public ReelPartItem fishControlMultiplier(float fishControlMultiplier) {
+
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
+    public ReelPartItem bobberControl(float bobberControl) {
+
+        this.bobberControl = bobberControl;
+        return this;
+    }
+
+    public ReelPartItem timeHookedMultiplier(float timeHookedMultiplier) {
+
+        this.timeHookedMultiplier = timeHookedMultiplier;
+        return this;
+    }
+
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+
+        configuration.bobberControl += this.bobberControl;
+        configuration.timeUntilHookedMultiplier *= this.timeHookedMultiplier;
 
         super.applyComponent(configuration);
     }

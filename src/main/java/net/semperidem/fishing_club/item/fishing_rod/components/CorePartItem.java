@@ -10,6 +10,7 @@ import net.semperidem.fishing_club.registry.FCItems;
 
 public class CorePartItem extends PartItem {
     float castPowerMultiplier;
+    float bobberControl;
 
     public CorePartItem(Settings settings) {
         super(settings);
@@ -37,6 +38,24 @@ public class CorePartItem extends PartItem {
     }
 
     @Override
+    public CorePartItem fishControl(float fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    @Override
+    public CorePartItem fishControlMultiplier(float fishControlMultiplier) {
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
+    public CorePartItem bobberControl(float bobberControl) {
+
+        this.bobberControl = bobberControl;
+        return this;
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 
         ItemStack coreStack = user.getStackInHand(hand);
@@ -56,7 +75,9 @@ public class CorePartItem extends PartItem {
 
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
-        super.applyComponent(configuration);
+
+        configuration.bobberControl += this.bobberControl;
         configuration.castPower *= castPowerMultiplier;
+        super.applyComponent(configuration);
     }
 }

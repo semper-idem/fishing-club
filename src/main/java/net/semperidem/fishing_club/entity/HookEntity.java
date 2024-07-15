@@ -22,6 +22,7 @@ import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
+import net.semperidem.fishing_club.item.fishing_rod.components.BobberPartItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.HookPartItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.PartItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
@@ -457,8 +458,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void handleFishOnHook(ServerWorld serverWorld) {
         float fishTypeRarityMultiplier = 1;
         float failChance = 0;
-        if (this.configuration.hook().isPresent() && this.configuration.hook().get().getItem() instanceof HookPartItem hookPartItem) {
-            hookPartItem.onFishBiteEffect();
+        if (this.configuration.bobber().isPresent() && this.configuration.bobber().get().getItem() instanceof BobberPartItem bobberPartItem) {
+            bobberPartItem.onFishBiteEffect();
+        }
+        if (this.hookPartItem != null) {
             failChance = hookPartItem.getBiteFailChance();
         }
         if (Math.random() < failChance) {

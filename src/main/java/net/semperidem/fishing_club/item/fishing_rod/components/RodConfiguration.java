@@ -188,11 +188,21 @@ public record RodConfiguration(
         int weightMagnitude = 2;
         int maxLineLength = 0;
         float castPower = 1;
+        float bobberControl = 0;
         float bobberWidth = 1;
         boolean canCast = false;
         int minOperatingTemperature = -1;
         int maxOperatingTemperature = 1;
         float fishQuality = 0;
+        float fishRarity = 0;
+        float fishRarityMultiplier = 1;
+        float fishControl = 0;
+        float fishControlMultiplier = 0;
+        float treasureBonus = 0;
+        float treasureRarityBonus = 0;
+        float timeHookedMultiplier = 1;
+        float timeUntilHookedMultiplier = 1;
+
         HashSet<ItemStack> parts = new HashSet<>();
 
         AttributeProcessor() {
@@ -259,6 +269,26 @@ public record RodConfiguration(
             return maxOperatingTemperature;
         }
 
+        public float fishQuality() {
+            return fishQuality;
+        }
+
+        public float fishControl() {
+            return fishControl;
+        }
+
+        public float fishControlMultiplier() {
+            return fishControlMultiplier;
+        }
+
+        public float treasureBonus() {
+            return this.treasureBonus;
+        }
+
+        public float treasureRarityBonus() {
+            return this.treasureRarityBonus;
+        }
+
         @Override
         public String toString() {
             return ":" +
@@ -271,7 +301,11 @@ public record RodConfiguration(
               ", castPower=" + castPower +
               ", bobberWidth=" + bobberWidth +
               ", canCast=" + canCast +
-              ',';
+              ", fishControl=" + fishControl +
+              ", fishControlMultiplier=" + fishControlMultiplier +
+              ", treasureBonus=" + treasureBonus +
+              ", treasureRarityBonus=" + treasureRarityBonus +
+              ",";
         }
 
     }

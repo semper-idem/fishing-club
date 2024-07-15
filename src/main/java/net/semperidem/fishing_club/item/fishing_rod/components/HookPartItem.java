@@ -15,6 +15,12 @@ public class HookPartItem extends PartItem {
     private float reelDamage = 0;
     private boolean sticky = false;
     private Consumer<LivingEntity> onEntityHit;
+    private float treasureBonus = 0;
+    private float treasureRarityBonus = 0;
+    private float fishRarity = 0;
+    private float fishRarityMultiplier = 1;
+    private float timeHookedMultiplier = 1;
+    private float timeUntilHookedMultiplier = 1;
 
     public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
         targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
@@ -64,10 +70,6 @@ public class HookPartItem extends PartItem {
         }
     }
 
-
-    public void onFishBiteEffect() {
-
-    }
 
     public float getBiteFailChance() {
         return this.biteFailChance;
@@ -123,9 +125,64 @@ public class HookPartItem extends PartItem {
         return this;
     }
 
+
+    @Override
+    public HookPartItem fishControl(float fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    @Override
+    public HookPartItem fishControlMultiplier(float fishControlMultiplier) {
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
+
+    public HookPartItem treasureBonus(float treasureBonus) {
+
+        this.treasureBonus = treasureBonus;
+        return this;
+    }
+
+    public HookPartItem treasureRarityBonus(float treasureRarityBonus) {
+
+        this.treasureRarityBonus = treasureRarityBonus;
+        return this;
+    }
+
+    public HookPartItem fishRarity(float fishRarity) {
+
+        this.fishRarity = fishRarity;
+        return this;
+    }
+
+    public HookPartItem fishRarityMultiplier(float fishRarityMultiplier) {
+
+        this.fishRarityMultiplier = fishRarityMultiplier;
+        return this;
+    }
+
+    public HookPartItem timeUntilHookedMultiplier(float timeUntilHookedMultiplier) {
+
+        this.timeUntilHookedMultiplier = timeUntilHookedMultiplier;
+        return this;
+    }
+
+    public HookPartItem timeHookedMultiplier(float timeHookedMultiplier) {
+
+        this.timeHookedMultiplier = timeHookedMultiplier;
+        return this;
+    }
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
+        configuration.timeHookedMultiplier *= this.timeHookedMultiplier;
+        configuration.timeUntilHookedMultiplier *= this.timeUntilHookedMultiplier;
+        configuration.fishRarity += this.fishRarity;
+        configuration.fishRarityMultiplier += this.fishRarityMultiplier;
+        configuration.treasureBonus += this.treasureBonus;
+        configuration.treasureRarityBonus += this.treasureRarityBonus;
         super.applyComponent(configuration);
     }
 }
