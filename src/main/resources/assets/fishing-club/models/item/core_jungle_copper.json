@@ -1,6 +1,6 @@
 ﻿{
     "parent": "item/generated",
     "textures": {
-        "layer0": "fishing-club:item/core_iron"
+        "layer0": "fishing-club:item/core_jungle_copper"
     }
 }

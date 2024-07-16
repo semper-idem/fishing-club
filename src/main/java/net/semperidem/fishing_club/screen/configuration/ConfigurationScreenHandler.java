@@ -38,12 +38,12 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private void addRodInventorySlots() {
 
         RodInventory rodInventory = this.configuration.getParts(this.playerInventory.player);
-        addPartSlot(rodInventory,83, 46, FCItems.CORE_WOODEN_OAK);
-        addPartSlot(rodInventory,41, 64, FCItems.REEL_WOODEN);
+        addPartSlot(rodInventory,83, 46, FCItems.CORE_OAK_WOOD);
+        addPartSlot(rodInventory,41, 64, FCItems.REEL_WOOD);
         addPartSlot(rodInventory,147, 84, FCItems.LINE_SPIDER);
-        addPartSlot(rodInventory,84, 115, FCItems.BOBBER_PLANT);
+        addPartSlot(rodInventory,84, 115, FCItems.BOBBER_PLANT_SLIME);
         addPartSlot(rodInventory,64, 115, FCItems.HOOK_IRON);
-        addPartSlot(rodInventory,44, 115, FCItems.BAIT_WORM);
+        addPartSlot(rodInventory,44, 115, FCItems.BAIT_ROTTEN_FLESH);
     }
 
     private void addPartSlot(RodInventory rodInventory, int x, int y, Item boundItem){

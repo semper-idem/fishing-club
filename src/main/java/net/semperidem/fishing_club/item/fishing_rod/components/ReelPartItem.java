@@ -39,6 +39,11 @@ public class ReelPartItem extends PartItem {
         return this;
     }
 
+    public ReelPartItem fishQuality(float fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
+    }
+
     @Override
     public ReelPartItem fishControlMultiplier(float fishControlMultiplier) {
 

@@ -1,4 +1,4 @@
-{
+﻿{
     "parent": "item/generated",
     "textures": {
         "layer0": "fishing-club:item/core_netherite"

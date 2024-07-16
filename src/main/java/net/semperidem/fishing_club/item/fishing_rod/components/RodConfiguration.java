@@ -38,7 +38,7 @@ public record RodConfiguration(
 
     public static RodConfiguration getDefault() {
         if (DEFAULT == null) {
-            DEFAULT = EMPTY.equip(FCItems.CORE_WOODEN_OAK.getDefaultStack(), PartType.CORE);
+            DEFAULT = EMPTY.equip(FCItems.CORE_OAK_WOOD.getDefaultStack(), PartType.CORE);
         }
         return DEFAULT;
     }
