@@ -10,10 +10,11 @@ import net.semperidem.fishing_club.registry.FCItems;
 
 public class CorePartItem extends PartItem {
     float castPowerMultiplier;
-    float bobberControl;
+    float bobberControl = 25;
 
     public CorePartItem(Settings settings) {
         super(settings);
+        this.fishControl = 25;
         setDamageMultiplier(DamageSource.REEL_FISH, 1);
         setDamageMultiplier(DamageSource.REEL_ENTITY, 2.5f);
     }
@@ -35,6 +36,11 @@ public class CorePartItem extends PartItem {
 
         this(settings);
         this.weightCapacity = weightCapacity;
+    }
+
+    public CorePartItem fishQuality(int fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
     }
 
     @Override

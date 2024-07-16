@@ -14,7 +14,7 @@ import net.semperidem.fishing_club.item.fishing_rod.components.*;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import static net.minecraft.util.Rarity.COMMON;
+import static net.minecraft.util.Rarity.*;
 
 public class FCItems {
 
@@ -34,7 +34,51 @@ public class FCItems {
     public static PartItem EMPTY_COMPONENT;
 
     public static CorePartItem CORE_WOODEN_OAK;
+;
+    public static CorePartItem CORE_BAMBOO_SHOOT;
+    public static CorePartItem CORE_BAMBOO_WOOD;
+    public static CorePartItem CORE_OAK_WOOD;
+    public static CorePartItem CORE_BIRCH_WOOD;
+    public static CorePartItem CORE_SPRUCE_WOOD;
+    public static CorePartItem CORE_ACACIA_WOOD;
+    public static CorePartItem CORE_JUNGLE_WOOD;
+    public static CorePartItem CORE_CHERRY_WOOD;
+    public static CorePartItem CORE_DARK_OAK_WOOD;
+    public static CorePartItem CORE_MANGROVE_WOOD;
+    public static CorePartItem CORE_CRIMSON_WOOD;
+    public static CorePartItem CORE_WARPED_WOOD;
+
+    public static CorePartItem CORE_BONE;
+    public static CorePartItem CORE_WITHER_BONE;
     public static CorePartItem CORE_IRON;
+    public static CorePartItem CORE_BAMBOO_IRON;
+    public static CorePartItem CORE_OAK_IRON;
+    public static CorePartItem CORE_BIRCH_IRON;
+    public static CorePartItem CORE_SPRUCE_IRON;
+    public static CorePartItem CORE_ACACIA_IRON;
+    public static CorePartItem CORE_JUNGLE_IRON;
+    public static CorePartItem CORE_CHERRY_IRON;
+    public static CorePartItem CORE_DARK_OAK_IRON;
+    public static CorePartItem CORE_MANGROVE_IRON;
+    public static CorePartItem CORE_CRIMSON_IRON;
+    public static CorePartItem CORE_WARPED_IRON;
+    public static CorePartItem CORE_COPPER;
+    public static CorePartItem CORE_BAMBOO_COPPER;
+    public static CorePartItem CORE_OAK_COPPER;
+    public static CorePartItem CORE_BIRCH_COPPER;
+    public static CorePartItem CORE_SPRUCE_COPPER;
+    public static CorePartItem CORE_ACACIA_COPPER;
+    public static CorePartItem CORE_JUNGLE_COPPER;
+    public static CorePartItem CORE_CHERRY_COPPER;
+    public static CorePartItem CORE_DARK_OAK_COPPER;
+    public static CorePartItem CORE_MANGROVE_COPPER;
+    public static CorePartItem CORE_CRIMSON_COPPER;
+    public static CorePartItem CORE_WARPED_COPPER;
+    public static CorePartItem CORE_PRISMARINE_BLAZE;
+    public static CorePartItem CORE_NETHERITE;
+    public static CorePartItem CORE_NAUTILUS_BREEZE;
+    public static CorePartItem CORE_NAUTILUS_BLAZE;
+    public static CorePartItem CORE_NAUTILUS_END;
 
     public static LinePartItem LINE_SPIDER;
     public static LinePartItem LINE_WOOL;
@@ -47,7 +91,6 @@ public class FCItems {
 
     public static HookPartItem HOOK_IRON;
     public static HookPartItem HOOK_GOLD;
-
 
     public static <T extends Item> T registerItem(String id, T item) {
         Registry.register(Registries.ITEM, FishingClub.getIdentifier(id), item);
@@ -67,20 +110,151 @@ public class FCItems {
         HARPOON_ROD = registerItem(("harpoon_rod"), new HarpoonRodItem(new Item.Settings().maxCount(1).maxDamage(64)));
         LINE_ARROW = registerItem(("line_arrow"), new LineArrowItem(new Item.Settings()));
         CLONED_ROD = registerItem(("cloned_rod"), new ClonedFishingRod(new Item.Settings().maxCount(1).maxDamage(128)));
-        ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(Rarity.RARE).maxCount(1)));
+        ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
         registerItemGroup();
     }
 
-    public static void registerParts() {
-
+    public static void registerCore() {
         CORE_WOODEN_OAK = registerItem("core_wooden_oak", new CorePartItem(new Item.Settings()
           .maxDamage(640).rarity(COMMON), 10)
           .castPowerMultiplier(0.9f));
-        CORE_IRON = registerItem("core_iron", new CorePartItem(new Item.Settings()
-          .maxDamage(1280).rarity(COMMON), 15, -1, 0)
-          .castPowerMultiplier(0.9f));
+        CORE_BAMBOO_SHOOT = registerItem("core_bamboo_shoot",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 5)
+          .castPowerMultiplier(0.6f)
+          .bobberControl(37.5f)
+          .fishControl(37.5f));
+        CORE_BAMBOO_WOOD = registerItem("core_bamboo_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 15)
+          .castPowerMultiplier(0.8f)
+          .bobberControl(12.5f)
+          .fishControl(12.5f));
+        CORE_OAK_WOOD = registerItem("core_oak_wood",  new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_BIRCH_WOOD = registerItem("core_birch_wood",  new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_SPRUCE_WOOD = registerItem("core_spruce_wood",  new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_ACACIA_WOOD = registerItem("core_acacia_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_JUNGLE_WOOD = registerItem("core_jungle_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_CHERRY_WOOD = registerItem("core_cherry_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f));
+        CORE_DARK_OAK_WOOD = registerItem("core_dark_oak_wood",  new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25)
+          .castPowerMultiplier(0.8f)
+          .bobberControl(0)
+          .fishControl(0));
+        CORE_MANGROVE_WOOD = registerItem("core_mangrove_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10)
+          .castPowerMultiplier(0.8f)
+          .fishControl(37.5f)
+          .bobberControl(37.5f));
+        CORE_CRIMSON_WOOD = registerItem("core_crimson_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10, 0 ,1)
+          .castPowerMultiplier(0.8f));
+        CORE_WARPED_WOOD = registerItem("core_warped_wood",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 10, 0, 1)
+          .castPowerMultiplier(0.8f));
+        CORE_BONE = registerItem("core_bone",  new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 5, -1, 0)
+          .castPowerMultiplier(0.6f)
+          .fishControl(12.5f));
+        CORE_WITHER_BONE = registerItem("core_wither_bone",  new CorePartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 15, -1, 1)
+          .castPowerMultiplier(0.8f)
+          .fishControl(12.5f));
+        CORE_IRON = registerItem("core_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(COMMON), 15, -1, 0)
+          .castPowerMultiplier(0.8f)
+          .fishControl(12.5f));
+        CORE_BAMBOO_IRON = registerItem("core_bamboo_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25, -1, 0)
+            .castPowerMultiplier(0.8f)
+          .fishControl(12.5f)
+        );
+        CORE_OAK_IRON = registerItem("core_oak_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, -1, 0)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1)
+        );
+        CORE_BIRCH_IRON = registerItem("core_birch_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, -1, 0)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1)
+        );
+        CORE_SPRUCE_IRON = registerItem("core_spruce_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, -1, 0)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1)
+        );
+        CORE_ACACIA_IRON = registerItem("core_acacia_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25, -1, 0)
+          .castPowerMultiplier(0.8f)
+        );
+        CORE_JUNGLE_IRON = registerItem("core_jungle_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25, -1, 0)
+          .castPowerMultiplier(0.8f)
+        );
+        CORE_CHERRY_IRON = registerItem("core_cherry_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25, -1, 0)
+          .castPowerMultiplier(0.8f)
+        );
+        CORE_DARK_OAK_IRON = registerItem("core_dark_oak_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 50, -1, 0)
+          .bobberControl(0)
+          .fishControl(0)
+        );
+        CORE_MANGROVE_IRON = registerItem("core_mangrove_iron",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25, -1, 0)
+          .castPowerMultiplier(0.8f)
+          .bobberControl(37.5f)
+          .fishControl(37.5f)
+        );
+        CORE_CRIMSON_IRON = registerItem("core_crimson_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, -1, 1)
+          .castPowerMultiplier(0.8f)
+        );
+        CORE_WARPED_IRON = registerItem("core_warped_iron",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, -1, 1)
+          .castPowerMultiplier(0.8f)
+        );
+        CORE_COPPER = registerItem("core_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(COMMON), 15)
+          .castPowerMultiplier(0.8f));
+        CORE_BAMBOO_COPPER = registerItem("core_bamboo_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15)
+          .castPowerMultiplier(0.8f));
+        CORE_OAK_COPPER = registerItem("core_oak_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1));
+        CORE_BIRCH_COPPER = registerItem("core_birch_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1));
+        CORE_SPRUCE_COPPER = registerItem("core_spruce_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15)
+          .castPowerMultiplier(0.8f)
+          .fishQuality(1));
+        CORE_ACACIA_COPPER = registerItem("core_acacia_copper",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25)
+          );
+        CORE_JUNGLE_COPPER = registerItem("core_jungle_copper",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25)
+          );
+        CORE_CHERRY_COPPER = registerItem("core_cherry_copper",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25)
+          );
+        CORE_DARK_OAK_COPPER = registerItem("core_dark_oak_copper",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 50)
+          .bobberControl(12.5f)
+          .fishControl(12.5f));
+        CORE_MANGROVE_COPPER = registerItem("core_mangrove_copper",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON), 25)
+          .castPowerMultiplier(0.8f)
+          .bobberControl(37.5f)
+          .fishControl(37.5f));
+        CORE_CRIMSON_COPPER = registerItem("core_crimson_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, 0 ,1)
+          .castPowerMultiplier(0.8f));
+        CORE_WARPED_COPPER = registerItem("core_warped_copper",  new CorePartItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON), 15, 0, 1)
+          .castPowerMultiplier(0.8f));
+        CORE_PRISMARINE_BLAZE = registerItem("core_prismarine_blaze",  new CorePartItem(new Item.Settings().maxDamage(5120).rarity(RARE), 25, 0, 1)
+          .fishQuality(3));
+        CORE_NETHERITE = registerItem("core_netherite",  new CorePartItem(new Item.Settings().maxDamage(20480).rarity(RARE), 75, -1, 1)
+          .castPowerMultiplier(1.2f)
+          .fishQuality(1));
+        CORE_NAUTILUS_BREEZE = registerItem("core_nautilus_breeze",  new CorePartItem(new Item.Settings().maxDamage(10240).rarity(EPIC), 75, -1, 1)
+          .castPowerMultiplier(1.4f)
+          .bobberControl(37.5f)
+          .fishControl(37.5f)
+          .fishQuality(2));
+        CORE_NAUTILUS_BLAZE = registerItem("core_nautilus_blaze",  new CorePartItem(new Item.Settings().maxDamage(10240).rarity(EPIC), 75, -1, 1)
+          .castPowerMultiplier(1.2f)
+          .bobberControl(37.5f)
+          .fishControl(37.5f)
+          .fishQuality(4));
+        CORE_NAUTILUS_END = registerItem("core_nautilus_end",  new CorePartItem(new Item.Settings().maxDamage(20480).rarity(EPIC), 150, -1, 1)
+          .castPowerMultiplier(1.2f)
+          .fishControl(50)
+          .bobberControl(50)
+          .fishQuality(1));
+    }
+
+    public static void registerParts() {
+        registerCore();
 
         LINE_SPIDER = registerItem("line_spider", new LinePartItem(new Item.Settings()
           .maxDamage(320).rarity(COMMON), 15)
