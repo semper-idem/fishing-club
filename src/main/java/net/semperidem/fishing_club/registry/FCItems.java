@@ -109,7 +109,7 @@ public class FCItems {
     public static LinePartItem LINE_HEART;
     public static LinePartItem LINE_HEART_PIGLIN;
     public static LinePartItem LINE_HEART_EVOKER;
-    public static LinePartItem HOOK_FLINT;
+    public static HookPartItem HOOK_FLINT;
     public static HookPartItem HOOK_FLINT_POISON;
     public static HookPartItem HOOK_FLINT_SHARP;
     public static HookPartItem HOOK_FLINT_SERRATED;
@@ -121,34 +121,32 @@ public class FCItems {
     public static HookPartItem HOOK_COPPER_POISON;
     public static HookPartItem HOOK_COPPER_SHARP;
     public static HookPartItem HOOK_COPPER_SERRATED;
-    public static HookPartItem HOOK_COPPER_DOUBLE;
+    public static HookPartItem HOOK_COPPER_AUTO;
     public static HookPartItem HOOK_IRON;
     public static HookPartItem HOOK_IRON_POISON;
     public static HookPartItem HOOK_IRON_SHARP;
     public static HookPartItem HOOK_IRON_SERRATED;
-    public static HookPartItem HOOK_IRON_DOUBLE;
+    public static HookPartItem HOOK_IRON_AUTO;
     public static HookPartItem HOOK_GOLD;
     public static HookPartItem HOOK_GOLD_POISON;
     public static HookPartItem HOOK_GOLD_SHARP;
     public static HookPartItem HOOK_GOLD_SERRATED;
-    public static HookPartItem HOOK_GOLD_DOUBLE;
+    public static HookPartItem HOOK_GOLD_AUTO;
     public static HookPartItem HOOK_PRISMARINE;
     public static HookPartItem HOOK_PRISMARINE_POISON;
     public static HookPartItem HOOK_PRISMARINE_SHARP;
     public static HookPartItem HOOK_PRISMARINE_SERRATED;
-    public static HookPartItem HOOK_PRISMARINE_DOUBLE;
+    public static HookPartItem HOOK_PRISMARINE_AUTO;
     public static HookPartItem HOOK_NAUTILUS;
     public static HookPartItem HOOK_NAUTILUS_POISON;
     public static HookPartItem HOOK_NAUTILUS_SHARP;
     public static HookPartItem HOOK_NAUTILUS_SERRATED;
-    public static HookPartItem HOOK_NAUTILUS_DOUBLE;
-    public static HookPartItem HOOK_NAUTILUS_TRIPLE;
+    public static HookPartItem HOOK_NAUTILUS_AUTO;
     public static HookPartItem HOOK_NETHERITE;
     public static HookPartItem HOOK_NETHERITE_POISON;
     public static HookPartItem HOOK_NETHERITE_SHARP;
     public static HookPartItem HOOK_NETHERITE_SERRATED;
-    public static HookPartItem HOOK_NETHERITE_DOUBLE;
-    public static HookPartItem HOOK_NETHERITE_TRIPLE;
+    public static HookPartItem HOOK_NETHERITE_AUTO;
     public static BaitPartItem BAIT_PLANT;
     public static BaitPartItem BAIT_ROTTEN_FLESH;
     public static BaitPartItem BAIT_MEAT;
@@ -514,11 +512,312 @@ public class FCItems {
         );
     }
 
+    private static void registerHook() {
+        HOOK_FLINT = registerItem("hook_flint", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10, -1, 0)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+        );
+        HOOK_FLINT_POISON = registerItem("hook_flint_poison", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10, -1, 0)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .timeHookedMultiplier(1.25f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_FLINT_SHARP = registerItem("hook_flint_sharp", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10, -1, 0)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .damage(2)
+          .biteFailChance(0.1f)
+        );
+        HOOK_FLINT_SERRATED = registerItem("hook_flint_serrated", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10, -1, 0)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(-1)
+          .timeHookedMultiplier(1.2f)
+          .reelDamage(3)
+        );
+        HOOK_BONE = registerItem("hook_bone", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+        );
+        HOOK_BONE_POISON = registerItem("hook_bone_poison", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .timeHookedMultiplier(1.25f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_BONE_SHARP = registerItem("hook_bone_sharp", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .damage(2)
+          .biteFailChance(0.1f)
+        );
+        HOOK_BONE_SERRATED = registerItem("hook_bone_serrated", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .fishQuality(-1)
+          .timeHookedMultiplier(1.2f)
+          .reelDamage(3)
+        );
+        HOOK_COPPER = registerItem("hook_copper", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+        );
+        HOOK_COPPER_POISON = registerItem("hook_copper_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .timeHookedMultiplier(1.5f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_COPPER_SHARP = registerItem("hook_copper_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .damage(3)
+          .biteFailChance(0.125f)
+        );
+        HOOK_COPPER_SERRATED = registerItem("hook_copper_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .fishQuality(-1)
+          .timeHookedMultiplier(1.3f)
+          .reelDamage(4)
+        );
+        HOOK_COPPER_AUTO = registerItem("hook_copper_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(0)
+          .fishControlMultiplier(0.6f)
+          .autoHookChance(0.6f)
+        );
+        HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 50, -1, 1)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+        );
+        HOOK_IRON_POISON = registerItem("hook_iron_poison", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 50, -1, 1)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .timeHookedMultiplier(1.5f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_IRON_SHARP = registerItem("hook_iron_sharp", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 50, -1, 1)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .damage(3)
+          .biteFailChance(0.125f)
+        );
+        HOOK_IRON_SERRATED = registerItem("hook_iron_serrated", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 50, -1, 1)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .fishQuality(-1)
+          .timeHookedMultiplier(1.3f)
+          .reelDamage(4)
+        );
+        HOOK_IRON_AUTO = registerItem("hook_iron_auto",  new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON), 50, -1, 1)
+          .fishRarity(0)
+          .fishRarityMultiplier(0.6f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .autoHookChance(0.6f)
+        );
+        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(1)
+        );
+        HOOK_GOLD_POISON = registerItem("hook_gold_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(1)
+          .timeHookedMultiplier(1.75f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_GOLD_SHARP = registerItem("hook_gold_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(1)
+          .damage(4)
+          .biteFailChance(0.15f)
+        );
+        HOOK_GOLD_SERRATED = registerItem("hook_gold_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .timeHookedMultiplier(1.4f)
+          .reelDamage(5)
+        );
+        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(1)
+          .autoHookChance(0.8f)
+        );
+        HOOK_PRISMARINE = registerItem("hook_prismarine", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+        );
+        HOOK_PRISMARINE_POISON = registerItem("hook_prismarine_poison", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .timeHookedMultiplier(1.75f)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+        );
+        HOOK_PRISMARINE_SHARP = registerItem("hook_prismarine_sharp", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .damage(4)
+          .biteFailChance(0.15f)
+        );
+        HOOK_PRISMARINE_SERRATED = registerItem("hook_prismarine_serrated", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .timeHookedMultiplier(1.4f)
+          .reelDamage(5)
+        );
+        HOOK_PRISMARINE_AUTO = registerItem("hook_prismarine_auto", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .fishRarity(12.5f)
+          .fishRarityMultiplier(0.8f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .autoHookChance(0.8f)
+        );
+        HOOK_NAUTILUS = registerItem("hook_nautilus", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 100, -1, 1)
+          .fishRarity(50)
+          .fishRarityMultiplier(1.4f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .fishQuality(2)
+        );
+        HOOK_NAUTILUS_POISON = registerItem("hook_nautilus_poison", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC), 100, -1, 1)
+          .fishRarity(50)
+          .fishRarityMultiplier(1.4f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .fishQuality(2)
+          .timeHookedMultiplier(2)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_WITHER)
+        );
+        HOOK_NAUTILUS_SHARP = registerItem("hook_nautilus_sharp", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC), 100, -1, 1)
+          .fishRarity(50)
+          .fishRarityMultiplier(1.4f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .fishQuality(2)
+          .damage(6)
+          .biteFailChance(0.1f)
+        );
+        HOOK_NAUTILUS_SERRATED = registerItem("hook_nautilus_serrated", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC), 100, -1, 1)
+          .fishRarity(50)
+          .fishRarityMultiplier(1.4f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .timeHookedMultiplier(2f)
+          .reelDamage(7)
+        );
+        HOOK_NAUTILUS_AUTO = registerItem("hook_nautilus_auto", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC), 100, -1, 1)
+          .fishRarity(50)
+          .fishRarityMultiplier(1.4f)
+          .fishControl(25)
+          .fishControlMultiplier(1)
+          .fishQuality(2)
+          .autoHookChance(1)
+        );
+        HOOK_NETHERITE = registerItem("hook_netherite", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(RARE), 300, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+        );
+        HOOK_NETHERITE_POISON = registerItem("hook_netherite_poison", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .timeHookedMultiplier(2)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
+          .addOnEntityHitEffects(HookPartItem.ON_HIT_FIRE)
+        );
+        HOOK_NETHERITE_SHARP = registerItem("hook_netherite_sharp", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .damage(9)
+          .biteFailChance(0.2f)
+        );
+        HOOK_NETHERITE_SERRATED = registerItem("hook_netherite_serrated", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .fishQuality(-2)
+          .timeHookedMultiplier(2f)
+          .reelDamage(10)
+        );
+        HOOK_NETHERITE_AUTO = registerItem("hook_netherite_auto", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .fishRarity(25)
+          .fishRarityMultiplier(1)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .autoHookChance(1)
+        );
+    }
+
     public static void registerParts() {
         registerCore();
         registerReel();
         registerBobber();
         registerLine();
+        registerHook();
     }
 
     private static void registerItemGroup() {

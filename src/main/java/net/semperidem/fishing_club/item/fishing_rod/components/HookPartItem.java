@@ -3,8 +3,8 @@ package net.semperidem.fishing_club.item.fishing_rod.components;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.semperidem.fishing_club.fisher.managers.StatusEffectHelper;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
@@ -14,7 +14,7 @@ public class HookPartItem extends PartItem {
     private float damage = 0;
     private float reelDamage = 0;
     private boolean sticky = false;
-    private Consumer<LivingEntity> onEntityHit;
+    private ArrayList<Consumer<LivingEntity>> onEntityHitEffects;
     private float treasureBonus = 0;
     private float treasureRarityBonus = 0;
     private float fishRarity = 0;
@@ -24,6 +24,9 @@ public class HookPartItem extends PartItem {
 
     public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
         targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
+    };
+    public static final Consumer<LivingEntity> ON_HIT_WITHER = targetEntity -> {
+        targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 100));
     };
     public static final Consumer<LivingEntity> ON_HIT_FIRE = targetEntity -> {
         targetEntity.setOnFireForTicks(200);
@@ -59,15 +62,18 @@ public class HookPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
-    public HookPartItem setOnEntityHit(Consumer<LivingEntity> livingEntityConsumer) {
-        this.onEntityHit = livingEntityConsumer;
+    public HookPartItem fishQuality(float fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
+    }
+
+    public HookPartItem addOnEntityHitEffects(Consumer<LivingEntity> livingEntityConsumer) {
+        this.onEntityHitEffects.add(livingEntityConsumer);
         return this;
     }
 
     public void onEntityHit(LivingEntity entity){
-        if (onEntityHit != null) {
-            onEntityHit.accept(entity);
-        }
+        this.onEntityHitEffects.forEach(o -> o.accept(entity));
     }
 
 
