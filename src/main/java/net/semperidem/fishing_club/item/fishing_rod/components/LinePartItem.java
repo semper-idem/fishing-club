@@ -36,6 +36,12 @@ public class LinePartItem extends PartItem {
     }
 
 
+    public LinePartItem fishQuality(float fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
+    }
+
+
     @Override
     public LinePartItem fishControl(float fishControl) {
         this.fishControl = fishControl;

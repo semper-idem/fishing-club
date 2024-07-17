@@ -346,34 +346,34 @@ public class FCItems {
           .fishControlMultiplier(0.8f)
           .timeHookedMultiplier(0.8f)
         );
-        REEL_IRON_PRISMARINE = registerItem("reel_iron_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 50, -1, 0)
+        REEL_IRON_PRISMARINE = registerItem("reel_iron_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 50, -1, 0)
           .bobberControl(25)
           .fishControl(25)
         );
-        REEL_AMETHYST_PRISMARINE = registerItem("reel_amethyst_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25, -1, 1)
+        REEL_AMETHYST_PRISMARINE = registerItem("reel_amethyst_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, -1, 1)
           .bobberControl(12.5f)
           .fishControl(25)
           .timeHookedMultiplier(0.8f)
           .fishQuality(1)
         );
-        REEL_NAUTILUS_ECHO = registerItem("reel_nautilus_echo", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(COMMON), 100, -1, 1)
+        REEL_NAUTILUS_ECHO = registerItem("reel_nautilus_echo", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 100, -1, 1)
           .bobberControl(25)
           .fishControl(37.5f)
           .fishControlMultiplier(1.2f)
           .timeHookedMultiplier(1.2f)
         );
-        REEL_NAUTILUS_AMETHYST = registerItem("reel_nautilus_amethyst", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(COMMON), 100, -1, 1)
+        REEL_NAUTILUS_AMETHYST = registerItem("reel_nautilus_amethyst", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 100, -1, 1)
           .bobberControl(25)
           .fishControl(25)
           .fishQuality(1)
         );
-        REEL_HEART_AMETHYST = registerItem("reel_heart_amethyst", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(COMMON), 300, -1, 1)
+        REEL_HEART_AMETHYST = registerItem("reel_heart_amethyst", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
           .bobberControl(50)
           .fishControl(25)
           .timeHookedMultiplier(1.4f)
           .fishQuality(3)
         );
-        REEL_HEART_ECHO = registerItem("reel_heart_echo", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(COMMON), 300, -1, 1)
+        REEL_HEART_ECHO = registerItem("reel_heart_echo", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
           .bobberControl(25)
           .fishControl(50)
           .fishControlMultiplier(1.4f)
@@ -382,9 +382,143 @@ public class FCItems {
         );
     }
 
+    public static void registerBobber() {
+        BOBBER_PLANT_SLIME = registerItem("bobber_plant_slime", new BobberPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 5)
+          .timeHookedMultiplier(1.2f)
+          .timeUntilHookedMultiplier(0.8f)
+          .fishControlMultiplier(0.6f)
+          .bobberWidth(0.6f)
+        );
+        BOBBER_LEATHER_SLIME = registerItem("bobber_leather_slime", new BobberPartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 15)
+          .timeHookedMultiplier(1.2f)
+          .timeUntilHookedMultiplier(0.8f)
+          .fishControlMultiplier(0.6f)
+          .bobberWidth(0.6f)
+        );
+        BOBBER_TURTLE_SLIME = registerItem("bobber_turtle_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25)
+          .fishControlMultiplier(0.6f)
+          .bobberControl(12.5f)
+        );
+        BOBBER_ARMADILLO_SLIME = registerItem("bobber_armadillo_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 25)
+          .bobberWidth(0.8f)
+          .fishControl(12.5f)
+        );
+        BOBBER_TURTLE_ENDER = registerItem("bobber_turtle_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 25, -1, 0)
+          .fishControlMultiplier(0.8f)
+          .bobberWidth(1.2f)
+          .bobberControl(25)
+        );
+        BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 25, 0, 1)
+          .timeUntilHookedMultiplier(0.6f)
+          .bobberWidth(0.8f)
+          .fishControl(25)
+        );
+        BOBBER_AMETHYST_ENDER = registerItem("bobber_amethyst_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 50, -1, 0)
+          .timeHookedMultiplier(1.2f)
+          .bobberControl(12.5f)
+          .fishControl(12.5f)
+          .fishQuality(2)
+        );
+        BOBBER_NAUTILUS = registerItem("bobber_nautilus", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE), 100, -1, 0)
+          .timeHookedMultiplier(1.4f)
+          .bobberControl(25)
+          .fishControl(25)
+        );
+        BOBBER_TURTLE_ECHO = registerItem("bobber_turtle_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE), 75, -1, 1)
+          .fishControlMultiplier(0.8f)
+          .bobberWidth(1.2f)
+          .bobberControl(37.5f)
+          .fishControl(12.5f)
+          .fishQuality(1)
+        );
+        BOBBER_ARMADILLO_ECHO = registerItem("bobber_armadillo_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE), 75, -1, 1)
+          .fishControlMultiplier(1.2f)
+          .bobberWidth(0.8f)
+          .bobberControl(12.5f)
+          .fishControl(37.5f)
+          .fishQuality(1)
+        );
+        BOBBER_AMETHYST_ECHO = registerItem("bobber_amethyst_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE), 75, -1, 1)
+          .bobberControl(25)
+          .fishControl(25)
+          .fishQuality(1));
+        BOBBER_NAUTILUS_ECHO = registerItem("bobber_nautilus_echo", new BobberPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .timeHookedMultiplier(1.2f)
+          .timeUntilHookedMultiplier(0.6f)
+          .fishControlMultiplier(1.4f)
+          .bobberWidth(1.4f)
+          .bobberControl(50)
+          .fishControl(50)
+          .fishQuality(2));
+        BOBBER_HEART  = registerItem("bobber_heart", new BobberPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .timeHookedMultiplier(1.4f)
+          .timeUntilHookedMultiplier(0.6f)
+          .fishControlMultiplier(1.2f)
+          .bobberWidth(1.2f)
+          .bobberControl(25)
+          .fishControl(25)
+          .fishQuality(4));
+    }
+
+    public static void registerLine() {
+
+        LINE_PLANT = registerItem("line_plant", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 5)
+          .maxLineLength(4)
+          .fishControlMultiplier(0.6f)
+        );
+        LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10)
+          .maxLineLength(8)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+        );
+        LINE_SPIDER = registerItem("line_spider", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15)
+          .maxLineLength(16)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+        );
+        LINE_STRIDER = registerItem("line_strider", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 1, 1)
+          .maxLineLength(16)
+          .fishControl(25)
+        );
+        LINE_PHANTOM = registerItem("line_phantom", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, -1, 0)
+          .maxLineLength(32)
+          .fishControl(12.5f)
+          .fishControlMultiplier(0.8f)
+          .fishQuality(1)
+        );
+        LINE_EVOKER = registerItem("line_evoker", new LinePartItem(new Item.Settings().maxDamage(1280).rarity(RARE), 50)
+          .maxLineLength(64)
+          .fishControl(25)
+          .fishQuality(1)
+        );
+        LINE_PIGLIN = registerItem("line_piglin", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 100, 0, 1)
+          .maxLineLength(64)
+          .fishControl(25)
+        );
+        LINE_HEART = registerItem("line_heart", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 50, -1, 1)
+          .maxLineLength(128)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+        );
+        LINE_HEART_PIGLIN = registerItem("line_heart_piglin", new LinePartItem(new Item.Settings().maxDamage(5120).rarity(EPIC), 300, -1, 1)
+          .maxLineLength(128)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .fishQuality(1)
+        );
+        LINE_HEART_EVOKER = registerItem("line_heart_evoker", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(EPIC), 100, -1, 1)
+          .maxLineLength(256)
+          .fishControl(50)
+          .fishControlMultiplier(1.4f)
+          .fishQuality(3)
+        );
+    }
+
     public static void registerParts() {
         registerCore();
         registerReel();
+        registerBobber();
+        registerLine();
     }
 
     private static void registerItemGroup() {

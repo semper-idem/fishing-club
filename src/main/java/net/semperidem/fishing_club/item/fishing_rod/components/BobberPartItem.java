@@ -60,6 +60,12 @@ public class BobberPartItem extends PartItem {
         return this;
     }
 
+
+    public BobberPartItem fishQuality(int fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
+    }
+
     @Override
     public BobberPartItem fishControl(float fishControl) {
         this.fishControl = fishControl;
