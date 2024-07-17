@@ -213,12 +213,21 @@ public record RodConfiguration(
             this.canCast &= this.validateAndApply(line);
             this.validateAndApply(bobber);
             this.validateAndApply(reel);
-            this.validateAndApply(bait);
+            if (!this.validateAndApply(bait)) {
+                this.applyBaitDeBuff();
+            }
             this.validateAndApply(hook);
         }
 
         public static AttributeProcessor process(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
             return new AttributeProcessor(core, line, bobber, reel, bait, hook);
+        }
+
+        void applyBaitDeBuff() {
+            this.timeUntilHookedMultiplier *= 4f;
+            this.timeHookedMultiplier *= 0.5f;
+            this.fishRarity -= 50;
+            this.fishRarityMultiplier *= 0.5f;
         }
 
         boolean validateAndApply(ItemStack part) {

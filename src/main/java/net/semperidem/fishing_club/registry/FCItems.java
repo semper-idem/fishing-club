@@ -152,7 +152,7 @@ public class FCItems {
     public static BaitPartItem BAIT_MEAT;
     public static BaitPartItem BAIT_ORCHID;
     public static BaitPartItem BAIT_GLOW_BERRIES;
-    public static BaitPartItem BAIT_BLADE_POWDER;
+    public static BaitPartItem BAIT_BLAZE_POWDER;
     public static BaitPartItem BAIT_IRON;
     public static BaitPartItem BAIT_GHAST;
     public static BaitPartItem BAIT_RABBIT;
@@ -812,12 +812,113 @@ public class FCItems {
         );
     }
 
+    private static void registerBait() {
+       BAIT_PLANT = registerItem("bait_plant", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(0)
+         .fishRarityMultiplier(1)
+         .plant()
+         .timeUntilHookedMultiplier(1)
+       );
+       BAIT_ROTTEN_FLESH = registerItem("bait_rotten_flesh", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(0)
+         .fishRarityMultiplier(1)
+         .meat()
+         .timeUntilHookedMultiplier(1)
+       );
+       BAIT_MEAT = registerItem("bait_meat", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(12.5f)
+         .fishRarityMultiplier(1.2f)
+         .meat()
+         .timeUntilHookedMultiplier(0.8f)
+       );
+       BAIT_ORCHID = registerItem("bait_orchid", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(12.5f)
+         .fishRarityMultiplier(1.2f)
+         .plant()
+         .timeUntilHookedMultiplier(0.8f)
+       );
+       BAIT_GLOW_BERRIES = registerItem("bait_glow_berries", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(25)
+         .fishRarityMultiplier(1.2f)
+         .plant()
+         .timeHookedMultiplier(1.2f)
+         .fishQuantityBonus(12.5f)
+         .fishQuality(1)
+       );
+       BAIT_BLAZE_POWDER = registerItem("bait_blaze_powder", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, 1, 1)
+         .fishQuality(1)
+         .fishRarityMultiplier(1.5f)
+       );//todo add nether species bonuses
+       BAIT_IRON = registerItem("bait_iron", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .treasureBonus(25)
+         .treasureRarityBonus(25)
+         .timeUntilHookedMultiplier(8f)
+         .fishQuality(-1)
+         .fishRarityMultiplier(0.6f)
+       );
+       BAIT_GHAST = registerItem("bait_ghast", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 1)
+         .fishQuality(2)
+         .fishRarityMultiplier(2f)
+       );//todo add nether species bonuses
+       BAIT_RABBIT = registerItem("bait_rabbit", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 0)
+         .fishRarity(25)
+         .fishRarityMultiplier(1.2f)
+         .meat()
+         .timeUntilHookedMultiplier(0.5f)
+         .timeHookedMultiplier(2)
+         .fishQuality(1)
+       );
+       BAIT_CHORUS = registerItem("bait_chorus", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, -1, 1)
+         .fishRarity(25)
+         .fishRarityMultiplier(1.4f)
+         .plant()
+         .timeHookedMultiplier(2)
+         .fishQuantityBonus(25)
+         .fishQuality(2)
+       );
+       BAIT_BREEZE_BLAZE = registerItem("bait_breeze_blaze", new BaitPartItem(new Item.Settings().maxDamage(32).rarity(COMMON), 300, -1, 1)
+         .treasureBonus(100)
+         .treasureRarityBonus(100)
+         .timeUntilHookedMultiplier(4f)
+         .fishQuality(-1)
+         .fishRarityMultiplier(0.6f)
+       );
+       BAIT_TORCHFLOWER = registerItem("bait_torchflower", new BaitPartItem(new Item.Settings().maxDamage(128).rarity(COMMON), 300, -1, 1)
+         .fishRarity(50)
+         .fishRarityMultiplier(2)
+         .meat()
+         .plant()
+         .timeHookedMultiplier(1.2f)
+         .timeUntilHookedMultiplier(0.8f)
+         .fishQuantityBonus(25)
+         .fishQuality(5)
+         .treasureBonus(12.5f)
+         .treasureRarityBonus(12.5f)
+       );
+       BAIT_PITCHER_PLANT = registerItem("bait_pitcher_plant", new BaitPartItem(new Item.Settings().maxDamage(32).rarity(COMMON), 300, -1, 1)
+         .fishRarity(50)
+         .fishRarityMultiplier(2)
+         .meat()
+         .plant()
+         .timeHookedMultiplier(2f)
+         .timeUntilHookedMultiplier(0.5f)
+         .fishQuantityBonus(50)
+         .fishQuality(5)
+         .treasureBonus(12.5f)
+         .treasureRarityBonus(12.5f)
+       );
+       BAIT_SPECIAL = registerItem("bait_special", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(UNCOMMON), 300)
+       );
+
+    }
+
     public static void registerParts() {
         registerCore();
         registerReel();
         registerBobber();
         registerLine();
         registerHook();
+        registerBait();
     }
 
     private static void registerItemGroup() {

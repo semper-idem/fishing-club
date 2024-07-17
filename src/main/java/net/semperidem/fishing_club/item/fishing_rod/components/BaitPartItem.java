@@ -11,6 +11,7 @@ public class BaitPartItem extends PartItem {
     float fishRarity = 0;
     float fishRarityMultiplier = 1;
     boolean isMeat = false;
+    boolean isPlant = false;
     float timeUntilHookedMultiplier = 1;
     float timeHookedMultiplier = 1;
     float fishQuantityBonus = 0;
@@ -90,6 +91,11 @@ public class BaitPartItem extends PartItem {
         return this;
     }
 
+    public BaitPartItem fishQuality(int fishQuality) {
+        this.fishQuality = fishQuality;
+        return this;
+    }
+
     public BaitPartItem timeUntilHookedMultiplier(float timeUntilHookedMultiplier) {
 
         this.timeUntilHookedMultiplier = timeUntilHookedMultiplier;
@@ -116,7 +122,7 @@ public class BaitPartItem extends PartItem {
 
     public BaitPartItem plant() {
 
-        this.isMeat = false;
+        this.isPlant = false;
         return this;
     }
 

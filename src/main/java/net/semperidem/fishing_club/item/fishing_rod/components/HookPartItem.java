@@ -14,7 +14,7 @@ public class HookPartItem extends PartItem {
     private float damage = 0;
     private float reelDamage = 0;
     private boolean sticky = false;
-    private ArrayList<Consumer<LivingEntity>> onEntityHitEffects;
+    private final ArrayList<Consumer<LivingEntity>> onEntityHitEffects = new ArrayList<>();
     private float treasureBonus = 0;
     private float treasureRarityBonus = 0;
     private float fishRarity = 0;
