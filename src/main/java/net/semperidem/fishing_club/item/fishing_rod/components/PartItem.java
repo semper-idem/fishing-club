@@ -11,13 +11,12 @@ import net.semperidem.fishing_club.registry.FCComponents;
 import java.util.HashSet;
 
 public class PartItem extends Item {
-
     int weightCapacity;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
-    float fishQuality = 0;
-    float fishControl = 0;
-    float fishControlMultiplier = 1;
+    int fishQuality = 0;
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
 
     boolean destroyOnBreak = false;
 
@@ -60,36 +59,17 @@ public class PartItem extends Item {
         return durabilityMultiplier[source.value];
     }
 
-    public PartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
-
-        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
-        this.fishQuality = fishQuality;
-    }
-
-    public PartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    public PartItem(Settings settings, int weightCapacity) {
-
-        super(settings);
-        this.weightCapacity = weightCapacity;
-    }
-
     public PartItem(Settings settings) {
 
         super(settings);
     }
 
-    public PartItem fishControl(float fishControl) {
+    public PartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
-    public PartItem fishControlMultiplier(float fishControlMultiplier) {
+    public PartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
@@ -166,8 +146,8 @@ public class PartItem extends Item {
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
         configuration.fishQuality += this.fishQuality;
-        configuration.fishControl += this.fishControl;
-        configuration.fishControlMultiplier *= this.fishControlMultiplier;
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
 
         validateWeightCapacity(configuration);
         validateTemperature(configuration);

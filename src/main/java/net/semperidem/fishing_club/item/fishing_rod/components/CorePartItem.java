@@ -9,20 +9,13 @@ import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 
 public class CorePartItem extends PartItem {
-    float castPowerMultiplier;
-    float bobberControl = 25;
+    ItemStat castPowerMultiplier;
+    ItemStat bobberControl;
 
     public CorePartItem(Settings settings) {
         super(settings);
-        this.fishControl = 25;
         setDamageMultiplier(DamageSource.REEL_FISH, 1);
         setDamageMultiplier(DamageSource.REEL_ENTITY, 2.5f);
-    }
-
-    public CorePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
-
-        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
-        this.fishQuality = fishQuality;
     }
 
     public CorePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
@@ -43,19 +36,17 @@ public class CorePartItem extends PartItem {
         return this;
     }
 
-    @Override
-    public CorePartItem fishControl(float fishControl) {
+    public CorePartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
-    @Override
-    public CorePartItem fishControlMultiplier(float fishControlMultiplier) {
+    public CorePartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
 
-    public CorePartItem bobberControl(float bobberControl) {
+    public CorePartItem bobberControl(ItemStat bobberControl) {
 
         this.bobberControl = bobberControl;
         return this;
@@ -74,7 +65,7 @@ public class CorePartItem extends PartItem {
         return super.use(world, user, hand);
     }
 
-    public CorePartItem castPowerMultiplier(float castPowerMultiplier) {
+    public CorePartItem castPowerMultiplier(ItemStat castPowerMultiplier) {
         this.castPowerMultiplier = castPowerMultiplier;
         return this;
     }
@@ -82,8 +73,8 @@ public class CorePartItem extends PartItem {
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
-        configuration.bobberControl += this.bobberControl;
-        configuration.castPower *= castPowerMultiplier;
+        configuration.bobberControl += this.bobberControl.value;
+        configuration.castPower *= castPowerMultiplier.value;
         super.applyComponent(configuration);
     }
 }

@@ -8,19 +8,19 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
-    private float biteFailChance = 0;
-    private float autoHookChance = 0;
+    private ItemStat biteFailChance = ItemStat.MULTIPLIER_T3;
+    private ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
     private boolean sharp = false;
     private float damage = 0;
     private float reelDamage = 0;
     private boolean sticky = false;
     private final ArrayList<Consumer<LivingEntity>> onEntityHitEffects = new ArrayList<>();
-    private float treasureBonus = 0;
-    private float treasureRarityBonus = 0;
-    private float fishRarity = 0;
-    private float fishRarityMultiplier = 1;
-    private float timeHookedMultiplier = 1;
-    private float timeUntilHookedMultiplier = 1;
+    private ItemStat treasureBonus = ItemStat.BASE_T1;
+    private ItemStat treasureRarityBonus = ItemStat.BASE_T1;
+    private ItemStat fishRarity = ItemStat.BASE_T1;
+    private ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
+    private ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
+    private ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
 
     public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
         targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
@@ -43,12 +43,6 @@ public class HookPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
-    public HookPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
-
-        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
-        this.fishQuality = fishQuality;
-    }
-
     public HookPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
 
         this(settings, weightCapacity);
@@ -62,7 +56,7 @@ public class HookPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
-    public HookPartItem fishQuality(float fishQuality) {
+    public HookPartItem fishQuality(int fishQuality) {
         this.fishQuality = fishQuality;
         return this;
     }
@@ -78,19 +72,19 @@ public class HookPartItem extends PartItem {
 
 
     public float getBiteFailChance() {
-        return this.biteFailChance;
+        return this.biteFailChance.value;
     }
 
-    public HookPartItem biteFailChance(float biteFailChance) {
+    public HookPartItem biteFailChance(ItemStat biteFailChance) {
         this.biteFailChance = biteFailChance;
         return this;
     }
 
     public float getAutoHookChance() {
-        return this.autoHookChance;
+        return this.autoHookChance.value;
     }
 
-    public HookPartItem autoHookChance(float autoHookChance) {
+    public HookPartItem autoHookChance(ItemStat autoHookChance) {
         this.autoHookChance = autoHookChance;
         return this;
     }
@@ -133,49 +127,49 @@ public class HookPartItem extends PartItem {
 
 
     @Override
-    public HookPartItem fishControl(float fishControl) {
+    public HookPartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
     @Override
-    public HookPartItem fishControlMultiplier(float fishControlMultiplier) {
+    public HookPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
 
 
-    public HookPartItem treasureBonus(float treasureBonus) {
+    public HookPartItem treasureBonus(ItemStat treasureBonus) {
 
         this.treasureBonus = treasureBonus;
         return this;
     }
 
-    public HookPartItem treasureRarityBonus(float treasureRarityBonus) {
+    public HookPartItem treasureRarityBonus(ItemStat treasureRarityBonus) {
 
         this.treasureRarityBonus = treasureRarityBonus;
         return this;
     }
 
-    public HookPartItem fishRarity(float fishRarity) {
+    public HookPartItem fishRarity(ItemStat fishRarity) {
 
         this.fishRarity = fishRarity;
         return this;
     }
 
-    public HookPartItem fishRarityMultiplier(float fishRarityMultiplier) {
+    public HookPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
 
         this.fishRarityMultiplier = fishRarityMultiplier;
         return this;
     }
 
-    public HookPartItem timeUntilHookedMultiplier(float timeUntilHookedMultiplier) {
+    public HookPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
 
-        this.timeUntilHookedMultiplier = timeUntilHookedMultiplier;
+        this.waitTimeReductionMultiplier = waitTimeReductionMultiplier  ;
         return this;
     }
 
-    public HookPartItem timeHookedMultiplier(float timeHookedMultiplier) {
+    public HookPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
 
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
@@ -183,12 +177,13 @@ public class HookPartItem extends PartItem {
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
-        configuration.timeHookedMultiplier *= this.timeHookedMultiplier;
-        configuration.timeUntilHookedMultiplier *= this.timeUntilHookedMultiplier;
-        configuration.fishRarity += this.fishRarity;
-        configuration.fishRarityMultiplier += this.fishRarityMultiplier;
-        configuration.treasureBonus += this.treasureBonus;
-        configuration.treasureRarityBonus += this.treasureRarityBonus;
+        configuration.baitFailChance = this.biteFailChance.value;
+        configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
+        configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
+        configuration.fishRarity += this.fishRarity.value;
+        configuration.fishRarityMultiplier += this.fishRarityMultiplier.value;
+        configuration.treasureBonus += this.treasureBonus.value;
+        configuration.treasureRarityBonus += this.treasureRarityBonus.value;
         super.applyComponent(configuration);
     }
 }

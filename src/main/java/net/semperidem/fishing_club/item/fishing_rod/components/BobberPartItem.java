@@ -4,10 +4,10 @@ import java.util.function.Consumer;
 
 public class BobberPartItem extends PartItem {
 
-    float bobberWidth;
-    float bobberControl;
-    float timeUntilHookedMultiplier;
-    float timeHookedMultiplier;
+    ItemStat bobberWidth;
+    ItemStat bobberControl;
+    ItemStat waitTimeReductionMultiplier;
+    ItemStat timeHookedMultiplier;
     Runnable fishBiteEffect = () -> {};
 
     public BobberPartItem(Settings settings) {
@@ -18,12 +18,6 @@ public class BobberPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 0);
         setDamageMultiplier(DamageSource.REEL_WATER, 1);
         setDamageMultiplier(DamageSource.REEL_GROUND, 2);
-    }
-
-    public BobberPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
-
-        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
-        this.fishQuality = fishQuality;
     }
 
     public BobberPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
@@ -39,13 +33,13 @@ public class BobberPartItem extends PartItem {
         this.weightCapacity = weightCapacity;
     }
 
-    public BobberPartItem bobberControl(float bobberControl) {
+    public BobberPartItem bobberControl(ItemStat bobberControl) {
 
         this.bobberControl = bobberControl;
         return this;
     }
 
-    public BobberPartItem bobberWidth(float bobberWidth) {
+    public BobberPartItem bobberWidth(ItemStat bobberWidth) {
 
         this.bobberWidth = bobberWidth;
         return this;
@@ -67,24 +61,24 @@ public class BobberPartItem extends PartItem {
     }
 
     @Override
-    public BobberPartItem fishControl(float fishControl) {
+    public BobberPartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
     @Override
-    public BobberPartItem fishControlMultiplier(float fishControlMultiplier) {
+    public BobberPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
 
-    public BobberPartItem timeUntilHookedMultiplier(float timeUntilHookedMultiplier) {
+    public BobberPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
 
-        this.timeUntilHookedMultiplier = timeUntilHookedMultiplier;
+        this.waitTimeReductionMultiplier = waitTimeReductionMultiplier;
         return this;
     }
 
-    public BobberPartItem timeHookedMultiplier(float timeHookedMultiplier) {
+    public BobberPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
 
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
@@ -92,10 +86,10 @@ public class BobberPartItem extends PartItem {
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
-        configuration.bobberControl += this.bobberControl;
-        configuration.timeHookedMultiplier *= this.timeHookedMultiplier;
-        configuration.timeUntilHookedMultiplier *= this.timeUntilHookedMultiplier;
-        configuration.bobberWidth = this.bobberWidth;
+        configuration.bobberControl += this.bobberControl.value;
+        configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
+        configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
+        configuration.bobberWidth = this.bobberWidth.value;
         super.applyComponent(configuration);
     }
 }

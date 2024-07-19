@@ -6,15 +6,15 @@ import java.util.HashMap;
 
 public class BaitPartItem extends PartItem {
     HashMap<Species, Float> speciesBoost = new HashMap<>();
-    float treasureBonus = 0;
-    float treasureRarityBonus = 0;
-    float fishRarity = 0;
-    float fishRarityMultiplier = 1;
+    ItemStat treasureBonus = ItemStat.BASE_T1;
+    ItemStat treasureRarityBonus = ItemStat.BASE_T1;
+    ItemStat fishRarity = ItemStat.BASE_T1;
+    ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
     boolean isMeat = false;
     boolean isPlant = false;
-    float timeUntilHookedMultiplier = 1;
-    float timeHookedMultiplier = 1;
-    float fishQuantityBonus = 0;
+    ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat fishQuantityBonus = ItemStat.BASE_T1;
 
     public BaitPartItem(Settings settings) {
 
@@ -25,12 +25,6 @@ public class BaitPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 1);
         setDamageMultiplier(DamageSource.REEL_WATER, 1.5f);
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
-    }
-
-    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature, float fishQuality) {
-
-        this(settings, weightCapacity, minOperatingTemperature, maxOperatingTemperature);
-        this.fishQuality = fishQuality;
     }
 
     public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
@@ -57,7 +51,7 @@ public class BaitPartItem extends PartItem {
         return speciesBoost;
     }
 
-    public BaitPartItem treasureBonus(float treasureBonus) {
+    public BaitPartItem treasureBonus(ItemStat treasureBonus) {
 
         this.treasureBonus = treasureBonus;
         return this;
@@ -65,10 +59,10 @@ public class BaitPartItem extends PartItem {
 
     public float getTreasureBonus() {
 
-        return treasureBonus;
+        return treasureBonus.value;
     }
 
-    public BaitPartItem treasureRarityBonus(float treasureRarityBonus) {
+    public BaitPartItem treasureRarityBonus(ItemStat treasureRarityBonus) {
 
         this.treasureRarityBonus = treasureRarityBonus;
         return this;
@@ -76,16 +70,16 @@ public class BaitPartItem extends PartItem {
 
     public float getTreasureRarityBonus() {
 
-        return treasureRarityBonus;
+        return treasureRarityBonus.value;
     }
 
-    public BaitPartItem fishRarity(float fishRarity) {
+    public BaitPartItem fishRarity(ItemStat fishRarity) {
 
         this.fishRarity = fishRarity;
         return this;
     }
 
-    public BaitPartItem fishRarityMultiplier(float fishRarityMultiplier) {
+    public BaitPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
 
         this.fishRarityMultiplier = fishRarityMultiplier;
         return this;
@@ -96,19 +90,19 @@ public class BaitPartItem extends PartItem {
         return this;
     }
 
-    public BaitPartItem timeUntilHookedMultiplier(float timeUntilHookedMultiplier) {
+    public BaitPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
 
-        this.timeUntilHookedMultiplier = timeUntilHookedMultiplier;
+        this.waitTimeReductionMultiplier = waitTimeReductionMultiplier;
         return this;
     }
 
-    public BaitPartItem timeHookedMultiplier(float timeHookedMultiplier) {
+    public BaitPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
 
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
     }
 
-    public BaitPartItem fishQuantityBonus(float fishQuantityBonus) {
+    public BaitPartItem fishQuantityBonus(ItemStat fishQuantityBonus) {
 
         this.fishQuantityBonus = fishQuantityBonus;
         return this;
@@ -129,12 +123,12 @@ public class BaitPartItem extends PartItem {
     @Override
     void applyComponent(RodConfiguration.AttributeProcessor configuration) {
 
-        configuration.timeUntilHookedMultiplier *= this.timeUntilHookedMultiplier;
-        configuration.timeHookedMultiplier *= this.timeHookedMultiplier;
-        configuration.fishRarity += this.fishRarity;
-        configuration.fishRarityMultiplier += this.fishRarityMultiplier;
-        configuration.treasureBonus += this.treasureBonus;
-        configuration.treasureRarityBonus += this.treasureRarityBonus;
+        configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
+        configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
+        configuration.fishRarity += this.fishRarity.value;
+        configuration.fishRarityMultiplier += this.fishRarityMultiplier.value;
+        configuration.treasureBonus += this.treasureBonus.value;
+        configuration.treasureRarityBonus += this.treasureRarityBonus.value;
         super.applyComponent(configuration);
     }
 

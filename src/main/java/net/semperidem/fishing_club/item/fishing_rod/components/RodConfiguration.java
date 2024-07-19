@@ -189,7 +189,7 @@ public record RodConfiguration(
         int maxLineLength = 0;
         float castPower = 1;
         float bobberControl = 0;
-        float bobberWidth = 1;
+        float bobberWidth = 0;
         boolean canCast = false;
         int minOperatingTemperature = -1;
         int maxOperatingTemperature = 1;
@@ -201,7 +201,8 @@ public record RodConfiguration(
         float treasureBonus = 0;
         float treasureRarityBonus = 0;
         float timeHookedMultiplier = 1;
-        float timeUntilHookedMultiplier = 1;
+        float waitTimeReductionMultiplier = 1;
+        float baitFailChance = 0;
 
         HashSet<ItemStack> parts = new HashSet<>();
 
@@ -212,22 +213,34 @@ public record RodConfiguration(
             this.canCast = this.validateAndApply(core);
             this.canCast &= this.validateAndApply(line);
             this.validateAndApply(bobber);
-            this.validateAndApply(reel);
             if (!this.validateAndApply(bait)) {
-                this.applyBaitDeBuff();
+                this.applyNoBaitPenalty();
             }
-            this.validateAndApply(hook);
+            if (this.validateAndApply(reel)) {
+                applyNoReelPenalty();
+            }
+            if (!this.validateAndApply(hook)) {
+                this.applyNoHookPenalty();
+            }
         }
 
         public static AttributeProcessor process(ItemStack core, ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
             return new AttributeProcessor(core, line, bobber, reel, bait, hook);
         }
 
-        void applyBaitDeBuff() {
-            this.timeUntilHookedMultiplier *= 4f;
-            this.timeHookedMultiplier *= 0.5f;
-            this.fishRarity -= 50;
-            this.fishRarityMultiplier *= 0.5f;
+        void applyNoReelPenalty() {
+            this.fishControl -= ItemStat.BASE_T5.value;
+        }
+
+        void applyNoHookPenalty() {
+            this.baitFailChance = 0.3f;
+        }
+
+        void applyNoBaitPenalty() {
+            this.waitTimeReductionMultiplier *= ItemStat.MULTIPLIER_T025.value;
+            this.timeHookedMultiplier *=  ItemStat.MULTIPLIER_T05.value;
+            this.fishRarity -= ItemStat.BASE_T5.value;
+            this.fishRarityMultiplier *=  ItemStat.MULTIPLIER_T05.value;
         }
 
         boolean validateAndApply(ItemStack part) {
@@ -276,6 +289,10 @@ public record RodConfiguration(
 
         public int maxOperatingTemperature() {
             return maxOperatingTemperature;
+        }
+
+        public float baitFailChance() {
+            return this.baitFailChance;
         }
 
         public float fishQuality() {

@@ -457,14 +457,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private void handleFishOnHook(ServerWorld serverWorld) {
         float fishTypeRarityMultiplier = 1;
-        float failChance = 0;
         if (this.configuration.bobber().isPresent() && this.configuration.bobber().get().getItem() instanceof BobberPartItem bobberPartItem) {
             bobberPartItem.onFishBiteEffect();
         }
-        if (this.hookPartItem != null) {
-            failChance = hookPartItem.getBiteFailChance();
-        }
-        if (Math.random() < failChance) {
+        if (Math.random() < configuration.attributes().baitFailChance()) {
             return;
         }
         if (fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
