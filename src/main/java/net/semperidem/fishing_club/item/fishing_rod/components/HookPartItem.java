@@ -1,10 +1,16 @@
 package net.semperidem.fishing_club.item.fishing_rod.components;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
@@ -31,6 +37,40 @@ public class HookPartItem extends PartItem {
     public static final Consumer<LivingEntity> ON_HIT_FIRE = targetEntity -> {
         targetEntity.setOnFireForTicks(200);
     };
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
+            tooltip.add(Text.of("§8Left Shift for additional info"));
+            return;
+        }
+        if (this.sticky) {
+            tooltip.add(Text.of("§aSticky"));
+        }
+        if (this.damage > 0) {
+            tooltip.add(Text.of("§7Sharp [ >> §4" + (int)this.damage + "§7]"));
+        }
+        if (this.reelDamage > 0) {
+            tooltip.add(Text.of("§7Serrated [ << §4" + (int)this.reelDamage + "§7]"));
+        }
+        for(Consumer<LivingEntity> onhit : onEntityHitEffects) {
+            if (onhit == ON_HIT_POISON) {
+                tooltip.add(Text.of("§2Poison I"));
+
+            }
+            if (onhit == ON_HIT_FIRE) {
+                tooltip.add(Text.of("§4Flame I"));
+
+            }
+            if (onhit == ON_HIT_WITHER) {
+                tooltip.add(Text.of("§0Wither I"));
+            }
+        }
+        if (this.autoHookChance.value > 0) {
+            tooltip.add(Text.of("§7Auto-hook [" + (int)(this.autoHookChance.value * 100) + "%]"));
+        }
+        super.appendTooltip(stack, context, tooltip, type);
+    }
 
     public HookPartItem(Settings settings) {
 

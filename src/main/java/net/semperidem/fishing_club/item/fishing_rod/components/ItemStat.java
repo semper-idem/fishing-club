@@ -6,7 +6,7 @@ public class ItemStat {
     public static final ItemStat BASE_T3 = new ItemStat(25, 3);
     public static final ItemStat BASE_T4 = new ItemStat(37.5f, 4);
     public static final ItemStat BASE_T5 = new ItemStat(50, 5);
-    public static final ItemStat BASE_T6 = new ItemStat(100, 6);
+    public static final ItemStat BASE_T6 = new ItemStat(100, 10);
     public static final ItemStat MULTIPLIER_T0 = new ItemStat(0, 0);
     public static final ItemStat MULTIPLIER_T01 = new ItemStat(0.1f, 0.1f);
     public static final ItemStat MULTIPLIER_T0125 = new ItemStat(0.125f, 0.125f);

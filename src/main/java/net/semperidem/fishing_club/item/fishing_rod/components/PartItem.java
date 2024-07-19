@@ -4,11 +4,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.registry.FCComponents;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class PartItem extends Item {
     int weightCapacity;
@@ -50,6 +53,15 @@ public class PartItem extends Item {
       0.5f,
       0.5f
     };
+
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        tooltip.add(Text.of("Durability " + this.getRatingText(this.getDurabilityRating(stack.getMaxDamage()))));
+        if (fishQuality != 0) {
+            tooltip.add(Text.of("Quality " + (this.fishQuality > 0 ? "§a+" : "§c") + fishQuality));
+        }
+    }
 
     protected void setDamageMultiplier(DamageSource source, float value) {
         durabilityMultiplier[source.value] = value;
@@ -189,6 +201,22 @@ public class PartItem extends Item {
             configuration.maxOperatingTemperature = this.maxOperatingTemperature;
         }
 
+    }
+
+    public int getDurabilityRating(int maxDamage) {
+        int rating = 0;
+        float maxDamageTrimmed = maxDamage / 10f;
+        while((maxDamageTrimmed *= 0.5f) > 1) {
+            rating++;
+        }
+        return rating;
+    }
+
+    public String getRatingText(int rating) {
+        String ratingString = "[§6";
+        String value = "■■■■■■■■■■";
+        ratingString += value.substring(0, rating) + "§r" + value.substring(rating);
+        return ratingString + "]";
     }
 
 }
