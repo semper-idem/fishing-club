@@ -3,11 +3,27 @@ package net.semperidem.fishing_club.leaderboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fisher.FishingCard;
+import net.semperidem.fishing_club.fisher.FishingKing;
+import org.ladysnake.cca.api.v3.component.Component;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
+import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 
-public class LeaderboardTracker {
+public class LeaderboardTracker implements ScoreboardComponentInitializer, Component {
+    private static final String LEADERBOARD_TRACKER_KEY = "leaderboard_tracker";
+    public static final ComponentKey<LeaderboardTracker> LEADERBOARD_TRACKER = ComponentRegistry.getOrCreate(FishingClub.getIdentifier(LEADERBOARD_TRACKER_KEY), LeaderboardTracker.class);
+    private Scoreboard scoreboard;
+
     private static final float DISCOUNT_PER_TITLE = 0.1f;
     public final Leaderboard<FishComponent> bestWeight;
     public final Leaderboard<FishComponent> worstWeight;
@@ -15,6 +31,12 @@ public class LeaderboardTracker {
     public final Leaderboard<FishComponent> worstLength;
     public final Leaderboard<FishingCard> highestCredit;
     public final Leaderboard<FishingCard> highestLevel;
+
+    public LeaderboardTracker(Scoreboard scoreboard, MinecraftServer server) {
+        this();
+        this.scoreboard = scoreboard;
+    }
+
     public LeaderboardTracker() {
         bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, FishComponent::weight);
         worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, FishComponent::weight);
@@ -66,10 +88,6 @@ public class LeaderboardTracker {
                 highestLevel
         ));
     }
-    public static void tick() {
-
-    }
-
 
     private static final long MC_DAILY = 24000;
     private static final long MC_WEEKLY = MC_DAILY * 7;
@@ -80,4 +98,41 @@ public class LeaderboardTracker {
     private static final long HOURLY = 3600 * TICKS_IN_SECOND;
     private static final long DAILY = HOURLY * 24;
     private static final long WEEKLY = DAILY * 7;//TODO IMPLEMENT TIMED LEADERBOARDS
+
+    public static LeaderboardTracker of(Scoreboard scoreboard) {
+        return LEADERBOARD_TRACKER.get(scoreboard);
+    }
+
+    @Override
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+        if (scoreboard == null) {
+            return;
+        }
+        Leaderboard.readNbt(tag, bestWeight);
+        Leaderboard.readNbt(tag, worstWeight);
+        Leaderboard.readNbt(tag, bestLength);
+        Leaderboard.readNbt(tag, worstLength);
+        Leaderboard.readNbt(tag, highestCredit);
+        Leaderboard.readNbt(tag, highestLevel);
+    }
+
+    @Override
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+        if (scoreboard == null) {
+            return;
+        }
+
+        Leaderboard.writeNbt(tag, bestWeight);
+        Leaderboard.writeNbt(tag, worstWeight);
+        Leaderboard.writeNbt(tag, bestLength);
+        Leaderboard.writeNbt(tag, worstLength);
+        Leaderboard.writeNbt(tag, highestCredit);
+        Leaderboard.writeNbt(tag, highestLevel);
+    }
+
+    @Override
+    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
+            registry.registerScoreboardComponent(LEADERBOARD_TRACKER, LeaderboardTracker::new);
+    }
+
 }

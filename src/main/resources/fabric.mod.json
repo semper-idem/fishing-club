@@ -20,7 +20,8 @@
     ],
     "cardinal-components": [
       "net.semperidem.fishing_club.fisher.FishingCard",
-      "net.semperidem.fishing_club.fisher.FishingKing"
+      "net.semperidem.fishing_club.fisher.FishingKing",
+      "net.semperidem.fishing_club.leaderboard.LeaderboardTracker"
     ]
   },
   "depends": {
@@ -31,7 +32,8 @@
   "custom": {
     "cardinal-components": [
       "fishing-club:fishing_card",
-      "fishing-club:fishing_king"
+      "fishing-club:fishing_king",
+      "fishing-club:leaderboard_tracker"
     ]
   },
   "mixins": [

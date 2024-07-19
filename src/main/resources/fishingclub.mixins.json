@@ -8,7 +8,6 @@
     "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
     "common.LivingEntityMixin",
-    "common.MinecraftServerMixin",
     "common.PlayerEntityMixin",
     "common.ServerWorldMixin"
   ],

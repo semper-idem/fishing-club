@@ -43,14 +43,15 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
     private ServerWorld serverWorld;
     private ScoreboardObjective objective;
 
+    private static final int REFRESH_TICK_RATE = 200;
+    private int refreshTick = 0;
+
     //Serialized
     private UUID uuid;
     private String name = "";
     private int price = MIN_PRICE;
     private long timestamp = 0;
 
-    private static final int REFRESH_TICK_RATE = 200;
-    private int refreshTick = 0;
 
     public static FishingKing of(Scoreboard scoreboard) {
         return FISHING_KING.get(scoreboard);

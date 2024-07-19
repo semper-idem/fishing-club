@@ -1,9 +1,21 @@
 package net.semperidem.fishing_club.leaderboard;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.scoreboard.number.FixedNumberFormat;
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -81,21 +93,20 @@ public class Leaderboard<T> {
         return standings.size();
     }
 
-    //TODO Test leaderboard with 1000 records
-    public static void writeToPacket(PacketByteBuf packet, Leaderboard<?> leaderboard) {
-        packet.writeInt(leaderboard.standings.size());
+    public static void writeNbt(NbtCompound tag, Leaderboard<?> leaderboard) {
+        NbtList leaderboardEntryList = new NbtList();
         for(Iterator<Entry> i = leaderboard.getIterator(); i.hasNext();) {
-            i.next().toPacket(packet);
+            leaderboardEntryList.add(i.next().toNbt());
         }
+        tag.put(leaderboard.name, leaderboardEntryList);
     }
 
-    public static void readStandings(PacketByteBuf packet, Leaderboard<?> leaderboard) {
-        int size = packet.readInt();
-        for(int i = 0; i < size; i++) {
-            Entry e = new Entry(packet);
+    public static void readNbt(NbtCompound tag, Leaderboard<?> leaderboard) {
+        tag.getList(leaderboard.name, NbtElement.COMPOUND_TYPE).forEach(entryTag -> {
+            Entry e = new Entry((NbtCompound) entryTag);
             leaderboard.standings.add(e);
             leaderboard.unorderedStandings.put(e.key, e);
-        }
+        });
     }
 
     private String getFilePath(String path) {
@@ -106,39 +117,6 @@ public class Leaderboard<T> {
         return ascending ? standings.iterator() : standings.descendingIterator();
     }
 
-    public void loadFromPath(String path) {
-//        try {
-//            if (!Files.exists(Path.of(path))) {
-//                return;
-//            }
-//            //TODO Possible performance hit on game load
-//            Gson gson = new GsonBuilder().create();
-//            FileReader fileReader = new FileReader(getFilePath(path));
-//            JsonReader jsonReader = new JsonReader(fileReader);
-//            Entry[] entries = gson.fromJson(jsonReader, Entry[].class);
-//            for(Entry entry : entries) {
-//                standings.add(entry);
-//                unorderedStandings.put(entry.key, entry);
-//            }
-//            fileReader.close();
-//            jsonReader.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-    public void saveToPath(String path) {
-//        try {
-//            Gson gson = new Gson();
-//            Files.createDirectories(Path.of(path));
-//            FileWriter fileWriter = new FileWriter(getFilePath(path));
-//            gson.toJson(standings, fileWriter);
-//            fileWriter.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
 
     public static class Entry implements Comparable<Entry> {
         public final UUID key;
@@ -146,18 +124,20 @@ public class Leaderboard<T> {
         public final String playerName;
         public final String context;
 
-        private Entry(PacketByteBuf packet) {
-            this.key = packet.readUuid();
-            this.value = packet.readFloat();
-            this.playerName = packet.readString();
-            this.context = packet.readString();
+        private Entry(NbtCompound entryTag) {
+            this.key = entryTag.getUuid("key");
+            this.value = entryTag.getFloat("value");
+            this.playerName = entryTag.getString("playerName");
+            this.context = entryTag.getString("context");
         }
 
-        void toPacket(PacketByteBuf packet) {
-            packet.writeUuid(this.key);
-            packet.writeFloat(this.value);
-            packet.writeString(this.playerName);
-            packet.writeString(this.context);
+        NbtCompound toNbt() {
+            NbtCompound tag = new NbtCompound();
+            tag.putUuid("key", this.key);
+            tag.putFloat("value", this.value);
+            tag.putString("playerName", this.playerName);
+            tag.putString("context", this.context);
+            return tag;
         }
 
         private Entry(UUID key, float value, String playerName, String context) {

@@ -11,7 +11,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.LeaderboardTrackingServer;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.entity.IHookEntity;
 import net.semperidem.fishing_club.fish.FishComponent;
@@ -234,11 +233,9 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         historyManager.fishCaught(fish);
         statusEffectHelper.fishCaught(progressionManager);
 
-        if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
-            LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
-            tracker.record(holder, fish);
-            tracker.record(holder, this, tracker.highestLevel);
-        }
+        LeaderboardTracker tracker = LeaderboardTracker.of(holder.getScoreboard());
+        tracker.record(holder, fish);
+        tracker.record(holder, this, tracker.highestLevel);
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -266,11 +263,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
             return false;
         }
         this.credit += credit;
-        if (holder.getServer() instanceof LeaderboardTrackingServer leaderboardTrackingServer) {
-            LeaderboardTracker tracker = leaderboardTrackingServer.getLeaderboardTracker();
-            tracker.record(holder, this, tracker.highestCredit);
-        }
-
+        LeaderboardTracker tracker = LeaderboardTracker.of(this.getHolder().getWorld().getScoreboard());
+        tracker.record(holder, this, tracker.highestCredit);
         FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
         return true;
     }
