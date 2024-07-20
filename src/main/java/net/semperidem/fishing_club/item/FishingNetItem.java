@@ -1,20 +1,25 @@
 package net.semperidem.fishing_club.item;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.BundleItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.fish.FishUtil;
+import net.semperidem.fishing_club.registry.FCComponents;
+
+import java.util.List;
 
 public class FishingNetItem extends BundleItem {
     public int size;
-
     public FishingNetItem(Settings settings) {
         super(settings);
     }
@@ -24,12 +29,12 @@ public class FishingNetItem extends BundleItem {
         if (clickType != ClickType.RIGHT) {
             return false;
         } else {
-            BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
+            FishingNetContentComponent bundleContentsComponent = getContent(stack);
             if (bundleContentsComponent == null) {
                 return false;
             } else {
                 ItemStack itemStack = slot.getStack();
-                BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
+                FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(bundleContentsComponent);
                 if (itemStack.isEmpty()) {
                     this.playRemoveOneSound(player);
                     ItemStack itemStack2 = builder.removeFirst();
@@ -44,20 +49,29 @@ public class FishingNetItem extends BundleItem {
                     }
                 }
 
-                stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+                setContent(stack, builder.build(bundleContentsComponent.stackCount()));
                 return true;
             }
         }
     }
 
+
+    public FishingNetContentComponent getContent(ItemStack stack) {
+        return stack.getOrDefault(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT);
+    }
+
+    public void setContent(ItemStack stack, FishingNetContentComponent bundleContentsComponent) {
+        stack.set(FCComponents.FISHING_NET_CONTENT, bundleContentsComponent);
+    }
+
     @Override
     public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
         if (clickType == ClickType.RIGHT && slot.canTakePartial(player)) {
-            BundleContentsComponent bundleContentsComponent = stack.get(DataComponentTypes.BUNDLE_CONTENTS);
+            FishingNetContentComponent bundleContentsComponent = getContent(stack);
             if (bundleContentsComponent == null) {
                 return false;
             } else {
-                BundleContentsComponent.Builder builder = new BundleContentsComponent.Builder(bundleContentsComponent);
+                FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(bundleContentsComponent);
                 if (otherStack.isEmpty()) {
                     ItemStack itemStack = builder.removeFirst();
                     if (itemStack != null) {
@@ -71,13 +85,14 @@ public class FishingNetItem extends BundleItem {
                     }
                 }
 
-                stack.set(DataComponentTypes.BUNDLE_CONTENTS, builder.build());
+                setContent(stack, builder.build(bundleContentsComponent.stackCount()));
                 return true;
             }
         } else {
             return false;
         }
     }
+
 
 
     private void playRemoveOneSound(Entity entity) {
@@ -91,4 +106,15 @@ public class FishingNetItem extends BundleItem {
     private void playDropContentsSound(Entity entity) {
         entity.playSound(SoundEvents.ITEM_BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getWorld().getRandom().nextFloat() * 0.4F);
     }
+
+
+    @Override
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
+        FishingNetContentComponent bundleContentsComponent = getContent(stack);
+        if (bundleContentsComponent != null) {
+            int i = MathHelper.multiplyFraction(bundleContentsComponent.getOccupancy(), bundleContentsComponent.stackCount() * 64);
+            tooltip.add(Text.translatable("item.minecraft.bundle.fullness", i, bundleContentsComponent.stackCount() * 64).formatted(Formatting.GRAY));
+        }
+    }
+
 }

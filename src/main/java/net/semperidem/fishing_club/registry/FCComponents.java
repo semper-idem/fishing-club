@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.Uuids;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.item.FishingNetContentComponent;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
@@ -24,6 +25,8 @@ public class FCComponents {
     public static ComponentType<Long> CREATION_TICK;
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
+    public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
+    public static ComponentType<FishingNetContentComponent> DOUBLE_FISHING_NET_CONTENT;
 
     public static void register() {
         ROD_CONFIGURATION =
@@ -108,12 +111,30 @@ public class FCComponents {
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
         CAUGHT_BY =
-                Registry.register(
-                        Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("caught_by"),
-                        ComponentType.<UUID>builder()
-                                .codec(Uuids.CODEC)
-                                .packetCodec(Uuids.PACKET_CODEC)
-                                .build());
+          Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            FishingClub.getIdentifier("caught_by"),
+            ComponentType.<UUID>builder()
+              .codec(Uuids.CODEC)
+              .packetCodec(Uuids.PACKET_CODEC)
+              .build());
+
+        FISHING_NET_CONTENT =
+          Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            FishingClub.getIdentifier("fishing_net_content"),
+            ComponentType.<FishingNetContentComponent>builder()
+              .codec(FishingNetContentComponent.CODEC)
+              .packetCodec(FishingNetContentComponent.PACKET_CODEC)
+              .build());
+
+        DOUBLE_FISHING_NET_CONTENT =
+          Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            FishingClub.getIdentifier("double_fishing_net_content"),
+            ComponentType.<FishingNetContentComponent>builder()
+              .codec(FishingNetContentComponent.CODEC)
+              .packetCodec(FishingNetContentComponent.PACKET_CODEC)
+              .build());
     }
 }
