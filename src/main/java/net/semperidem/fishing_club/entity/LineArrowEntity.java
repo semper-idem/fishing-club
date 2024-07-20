@@ -110,7 +110,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
     }
 
     @Override
-    public ChunkPos getFishedInChunk() {
+    public ChunkPos getChunkPos() {
         return getChunkPos();
     }
 

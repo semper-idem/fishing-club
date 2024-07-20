@@ -7,11 +7,9 @@ import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 
 public class FishingExplosionEntity implements IHookEntity{
     PlayerEntity causingEntity;
-    ChunkPos chunkPos;
 
-    public FishingExplosionEntity(PlayerEntity causingEntity, ChunkPos chunkPos) {
+    public FishingExplosionEntity(PlayerEntity causingEntity) {
         this.causingEntity = causingEntity;
-        this.chunkPos = chunkPos;
     }
     @Override
     public FishingCard getFishingCard() {
@@ -23,10 +21,6 @@ public class FishingExplosionEntity implements IHookEntity{
         return RodConfiguration.getDefault();
     }
 
-    @Override
-    public ChunkPos getFishedInChunk() {
-        return chunkPos;
-    }
     @Override
     public float getFishMethodDebuff() {
         return 0.35f;

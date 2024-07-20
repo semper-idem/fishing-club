@@ -63,7 +63,7 @@ public record FishComponent(
         getQuality(
             caughtByCard.getLevel(),
             caughtWith.getWaitTime(),
-            caughtByCard.getMinGrade(),
+            caughtByCard.getMinGrade(caughtWith),
             Math.pow(caughtWith.getFishMethodDebuff(), 2));
     float weight =
         MathHelper.clamp(

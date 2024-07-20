@@ -694,11 +694,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     @Override
-    public ChunkPos getFishedInChunk() {
-        return this.getChunkPos();
-    }
-
-    @Override
     public float getFishMethodDebuff() {
         return 1f;
     }

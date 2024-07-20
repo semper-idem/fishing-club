@@ -218,10 +218,7 @@ public class FishUtil {
     }
 
     public static FishComponent getFishOnHook(IHookEntity hookEntity) {
-        FishingCard fishingCard = hookEntity.getFishingCard();
-        FishComponent fishOnHook = FishComponent.create(hookEntity);
-        fishingCard.fishHooked(hookEntity);
-        return fishOnHook;
+        return FishComponent.create(hookEntity);
     }
 
         public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){

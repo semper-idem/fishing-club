@@ -65,7 +65,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
         }
 
         int fishCount = (int) (Math.random() * power);
-        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity, getWorldChunk(explosionPos).getPos());
+        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity);
         for(int i = 0; i < fishCount; i++) {
             FishUtil.fishCaughtAt(
                     causingEntity,

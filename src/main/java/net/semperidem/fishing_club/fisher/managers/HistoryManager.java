@@ -1,5 +1,6 @@
 package net.semperidem.fishing_club.fisher.managers;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -25,7 +26,6 @@ public class HistoryManager extends DataManager {
     private final ArrayList<Chunk> usedChunks = new ArrayList<>();
     private long lastCatchTime = 0;
     private long firstCatchOfTheDay = 0;
-    private boolean firstCatchInChunk = false;
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<String> derekMet = new ArrayList<>();
     private boolean gaveDerekFish = false;
@@ -75,12 +75,6 @@ public class HistoryManager extends DataManager {
         return gaveDerekFish;
     }
 
-    public void fishHooked(IHookEntity hookEntity) {
-       //lastUsedBait = FishingRodPartController.getPart(hookEntity.getCaughtUsing(), FishingRodPartType.BAIT);
-        checkChunk(hookEntity.getFishedInChunk());
-        sync();//checkChunk writes
-    }
-
     private void recordFishCaught(FishComponent fish) {
         String speciesName = fish.speciesName();
         SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
@@ -115,7 +109,16 @@ public class HistoryManager extends DataManager {
         return getCurrentTime() + DAY_LENGTH > firstCatchOfTheDay;
     }
 
-    public boolean isFirstCatchInChunk() {
+    public boolean isFirstCatchInChunk(IHookEntity caughtWith) {
+        if (!(caughtWith instanceof Entity caughtWithEntity)) {
+            return false;
+        }
+        ChunkPos chunkPos = caughtWithEntity.getChunkPos();
+        boolean firstCatchInChunk = usedChunks.stream().noneMatch(usedChunk -> usedChunk.matches(chunkPos));
+        if (firstCatchInChunk) {
+            usedChunks.add(Chunk.create(chunkPos));
+            sync();//checkChunk writes
+        }
         return firstCatchInChunk;
     }
 
@@ -123,9 +126,9 @@ public class HistoryManager extends DataManager {
         return (int) Math.floor((lastCatchTime - getCurrentTime()) / (1f * DAY_LENGTH));
     }
 
-    public int getMinGrade(ProgressionManager progressionManager) {
+    public int getMinGrade(IHookEntity caughtWith, ProgressionManager progressionManager) {
         int minGrade = 0;
-        if (isFirstCatchInChunk()) {
+        if (isFirstCatchInChunk(caughtWith)) {
             minGrade++;
         }
         if (isFirstCatchOfTheDay()) {
@@ -142,13 +145,6 @@ public class HistoryManager extends DataManager {
             }
         }
         return minGrade;
-    }
-
-
-    private void checkChunk(ChunkPos chunkPos) {
-        firstCatchInChunk = usedChunks.stream().anyMatch(usedChunk -> usedChunk.matches(chunkPos));
-        usedChunks.add(Chunk.create(chunkPos));
-        //markDirty();
     }
 
     private long getCurrentTime() {

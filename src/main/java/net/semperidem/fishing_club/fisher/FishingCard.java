@@ -212,15 +212,11 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public boolean isFishingFromBoat(){
         return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
     }
-    public int getMinGrade(){
+    public int getMinGrade(IHookEntity caughtWith){
         int minGrade = 1;
-        minGrade += historyManager.getMinGrade(progressionManager);
+        minGrade += historyManager.getMinGrade(caughtWith, progressionManager);
         minGrade += statusEffectHelper.getMinGrade();
         return Math.min(5, minGrade);
-    }
-
-    public void fishHooked(IHookEntity hookEntity){;
-        historyManager.fishHooked(hookEntity);
     }
 
     public void fishCaught(FishComponent fish){

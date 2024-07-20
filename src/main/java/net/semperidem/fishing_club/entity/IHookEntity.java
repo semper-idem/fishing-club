@@ -9,8 +9,6 @@ public interface IHookEntity {
 
     RodConfiguration getCaughtUsing();
 
-    ChunkPos getFishedInChunk();
-
     float getFishMethodDebuff();
 
     default int getWaitTime() {
