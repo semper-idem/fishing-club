@@ -83,22 +83,19 @@ public class HistoryManager extends DataManager {
         }
         speciesStatistics.record(fish);
         fishAtlas.put(speciesName, speciesStatistics);
-        sync(); //technically not needed cause we always call "fishCaught"
     }
 
     public void fishCaught(FishComponent fish) {
         recordFishCaught(fish);
-        if (isFirstCatchOfTheDay()) {
+        firstFishCaught();
+        sync();
+    }
+
+    private void firstFishCaught() {
+        if (!isFirstCatchOfTheDay()) {
             return;
         }
         firstCatchOfTheDay = getCurrentTime();
-        if (trackedFor.hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
-        }
-        if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
-        }
-        sync();
     }
 
     public ItemStack getLastUsedBait() {
@@ -115,11 +112,19 @@ public class HistoryManager extends DataManager {
         }
         ChunkPos chunkPos = caughtWithEntity.getChunkPos();
         boolean firstCatchInChunk = usedChunks.stream().noneMatch(usedChunk -> usedChunk.matches(chunkPos));
-        if (firstCatchInChunk) {
-            usedChunks.add(Chunk.create(chunkPos));
-            sync();//checkChunk writes
+        if (!firstCatchInChunk) {
+            return false;
         }
-        return firstCatchInChunk;
+
+        usedChunks.add(Chunk.create(chunkPos));
+        sync();//checkChunk writes
+        if (trackedFor.hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
+            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
+        }
+        if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
+            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
+        }
+        return true;
     }
 
     public int getDaysSinceLastCatch() {
