@@ -174,7 +174,7 @@ public record FishingNetContentComponent(
 
         public int add(ItemStack stack) {
 
-            if (stack.isEmpty() || stack.getItem().canBeNested()) {
+            if (stack.isEmpty() || !stack.getItem().canBeNested()) {
                 return 0;
             }
             int i = Math.min(stack.getCount(), this.getMaxAllowed(stack));
