@@ -6,7 +6,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FishUtil {
-    public static final Item FISH_ITEM = Items.TROPICAL_FISH;
+    public static final Item FISH_ITEM = FCItems.FISH;
     private static final Random RANDOM = new Random(42L);
     private static final String CAUGHT_BY_TAG = "caught_by";
 

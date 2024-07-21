@@ -7,13 +7,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.semperidem.fishing_club.FishingClub;
-import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 
-public class FishComponent implements EntityComponentInitializer, Component {
+public class FishComponent implements EntityComponentInitializer, AutoSyncedComponent {
 
     FishEntity fishEntity;
     FishRecord fishRecord;
@@ -29,6 +29,7 @@ public class FishComponent implements EntityComponentInitializer, Component {
 
     public FishComponent(Entity entity) {
         this.fishEntity = (FishEntity) entity;
+
     }
 
     public void set(FishRecord fishRecord) {

@@ -1,8 +1,7 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -30,6 +29,7 @@ public class FCItems {
     public static Item ILLEGAL_GOODS;
     public static Item GOLD_FISH;
     public static Item DEBUG;
+    public static Item FISH;
     public static ItemGroup FISHING_CLUB_GROUP;
 
     public static CorePartItem CORE_BAMBOO;
@@ -191,6 +191,7 @@ public class FCItems {
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
+        FISH = registerItem("fish", new Item(new Item.Settings().food(FoodComponents.TROPICAL_FISH)));
         registerItemGroup();
     }
 

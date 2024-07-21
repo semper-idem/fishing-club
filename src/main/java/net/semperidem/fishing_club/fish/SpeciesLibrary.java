@@ -23,6 +23,7 @@ public class SpeciesLibrary {
     public static Species CATFISH;
     public static Species RAINBOW_TROUT;
     public static Species WALLEYE;
+    public static Species BUTTERFISH;
 
     public static ArrayList<Species> getSpeciesForLevel(int level){
         return  new ArrayList<>(
@@ -201,15 +202,26 @@ public class SpeciesLibrary {
         );
 
         WALLEYE = new Species(
-                "Walleye",
-                MovementPatterns.MID1,
-                10,
-                2,
-                30,
-                61,
-                0.5f,
-                10.5f,
-                65
+          "Walleye",
+          MovementPatterns.MID1,
+          10,
+          2,
+          30,
+          61,
+          0.5f,
+          10.5f,
+          65
+        );
+        BUTTERFISH = new Species(
+          "Butterfish",
+          MovementPatterns.MID1,
+          10,
+          2,
+          30,
+          61,
+          0.5f,
+          10.5f,
+          65
         );
 
     }

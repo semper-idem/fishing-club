@@ -4,7 +4,6 @@ package net.semperidem.fishing_club.mixin.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
@@ -14,11 +13,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.semperidem.fishing_club.entity.FCFishEntity;
 import net.semperidem.fishing_club.entity.FishermanEntity;
-import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
+import net.semperidem.fishing_club.registry.FCEntityTypes;
 import net.semperidem.fishing_club.registry.FCItems;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -75,7 +75,7 @@ public abstract class ItemEntityMixin extends Entity{
         }
     }
 
-    @Unique private void trash() {
+    @Unique private void validateAndTrash() {
         if (this.fallDistance > this.maxFallDistance) {
             this.maxFallDistance = fallDistance;
         }
@@ -113,7 +113,12 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        trash();
+        validateAndTrash();
+        validateAndSummonDerek();
+    }
+
+    @Unique
+    private void validateAndSummonDerek() {
         if (!isSubmergedInWater()) {
             return;
         }
@@ -145,13 +150,9 @@ public abstract class ItemEntityMixin extends Entity{
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-        TropicalFishEntity fishEntity = new TropicalFishEntity(EntityType.TROPICAL_FISH, serverWorld);
+        FCFishEntity fishEntity = new FCFishEntity(FCEntityTypes.FISH_ENTITY, serverWorld, this.fish);
         fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
         serverWorld.spawnEntity(fishEntity);
-        if (this.fish == null) {
-            return;
-        }
-        FishComponent.of(fishEntity).set(this.fish);
         fishEntity.setCustomName(Text.of(this.fish.name()));
         fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
     }

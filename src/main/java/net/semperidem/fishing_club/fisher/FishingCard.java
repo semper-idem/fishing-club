@@ -33,7 +33,6 @@ import java.util.HashSet;
 public final class FishingCard extends FishingCardInventory implements EntityComponentInitializer, AutoSyncedComponent {
     public static final ComponentKey<FishingCard> FISHING_CARD = ComponentRegistry.getOrCreate(FishingClub.getIdentifier("fishing_card"), FishingCard.class);
     private PlayerEntity holder;
-
     private final ProgressionManager progressionManager;
     private final SummonRequestManager summonRequestManager;
     private final HistoryManager historyManager;

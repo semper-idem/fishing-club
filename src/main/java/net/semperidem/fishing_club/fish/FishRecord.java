@@ -58,6 +58,38 @@ public record FishRecord(
     public static PacketCodec<RegistryByteBuf, FishRecord> PACKET_CODEC =
       PacketCodecs.registryCodec(CODEC);
 
+    private static final int DEFAULT_LEVEL = 10;
+    private static final int DEFAULT_MIN_GRADE = 1;
+    private static final double DEFAULT_MULTIPLIER = 0.9D;
+    public static FishRecord create(Species species) {
+        int level = getLevel(species, DEFAULT_LEVEL);
+        int quality = getQuality(
+          DEFAULT_LEVEL,
+          0,
+          DEFAULT_MIN_GRADE,
+          DEFAULT_MULTIPLIER);
+        float weight =
+          MathHelper.clamp(
+            getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f),
+            0,
+            9999);
+        return new FishRecord(
+          species.name, // for rare variant names
+          species.name, // for rare variant names
+          level,
+          quality,
+          getExperience(DEFAULT_MULTIPLIER, species, level, quality),
+          weight,
+          getPseudoRandomValue(species.fishMinLength, species.fishRandomLength, level * 0.01f),
+          getValue(weight, quality, species),
+          getDamage(level),
+          UUID.randomUUID(),
+          UUID.randomUUID(),
+          "unknown",
+          System.currentTimeMillis()
+        );
+    }
+
     public static FishRecord create(IHookEntity caughtWith) {
         FishingCard caughtByCard = caughtWith.getFishingCard();
         PlayerEntity caughtBy = caughtByCard.getHolder();
@@ -80,7 +112,7 @@ public record FishRecord(
           species.name,
           level,
           quality,
-          getExperience(caughtWith, species, level, quality),
+          getExperience(Math.pow(caughtWith.getFishMethodDebuff(), 2), species, level, quality),
           weight,
           getPseudoRandomValue(species.fishMinLength, species.fishRandomLength, level * 0.01f),
           getValue(weight, quality, species),
@@ -128,14 +160,14 @@ public record FishRecord(
     }
 
     private static int getExperience(
-      IHookEntity caughtWith, Species species, int level, int quality) {
+      double multiplier, Species species, int level, int quality) {
         float fishRarityMultiplier = (200 - species.fishRarity) / 100;
         float fishExpValue = (float) Math.pow(level, 1.3);
         float fishGradeMultiplier = quality > 3 ? (float) Math.pow(2, quality - 3) : 1;
         int fishExp =
           (int)
             ((fishGradeMultiplier * fishRarityMultiplier * (5 + fishExpValue))
-              * Math.pow(caughtWith.getFishMethodDebuff(), 2));
+              * multiplier);
         return MathHelper.clamp(fishExp, 3, 99999);
     }
 
