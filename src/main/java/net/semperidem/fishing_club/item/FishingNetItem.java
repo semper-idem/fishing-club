@@ -15,13 +15,15 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
+import org.apache.commons.lang3.math.Fraction;
 
 import java.util.List;
 
 public class FishingNetItem extends BundleItem {
-    public int size;
-    public FishingNetItem(Settings settings) {
+    public int stackCount;
+    public FishingNetItem(Settings settings, int stackCount) {
         super(settings);
+        this.stackCount = stackCount;
     }
 //overide component builder maxAllowedOcc method and change Fraction from ONE to X
     @Override
@@ -57,7 +59,7 @@ public class FishingNetItem extends BundleItem {
 
 
     public FishingNetContentComponent getContent(ItemStack stack) {
-        return stack.getOrDefault(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT);
+        return FishingNetContentComponent.of(stack);
     }
 
     public void setContent(ItemStack stack, FishingNetContentComponent bundleContentsComponent) {

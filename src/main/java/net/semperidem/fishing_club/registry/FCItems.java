@@ -18,9 +18,9 @@ import static net.minecraft.util.Rarity.*;
 
 public class FCItems {
 
-    public static DoubleFishingNetItem DOUBLE_FISHING_NET;
     public static MemberFishingRodItem MEMBER_FISHING_ROD;
     public static FishingNetItem FISHING_NET;
+    public static FishingNetItem DOUBLE_FISHING_NET;
     public static Item FISH_COIN_BUNDLE;
     public static Item FISHER_HAT;
     public static Item FISHER_VEST;
@@ -179,8 +179,8 @@ public class FCItems {
 
     public static void register() {
         registerParts();
-        DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new DoubleFishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.DOUBLE_FISHING_NET_CONTENT, FishingNetContentComponent.DOUBLE)));
-        FISHING_NET = registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT)));
+        DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT), 4));
+        FISHING_NET = registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT), 2));
         MEMBER_FISHING_ROD = registerItem(("member_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault())));
         FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
         FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));

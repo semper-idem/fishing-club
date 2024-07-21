@@ -26,7 +26,6 @@ public class FCComponents {
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
     public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
-    public static ComponentType<FishingNetContentComponent> DOUBLE_FISHING_NET_CONTENT;
 
     public static void register() {
         ROD_CONFIGURATION =
@@ -123,15 +122,6 @@ public class FCComponents {
           Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             FishingClub.getIdentifier("fishing_net_content"),
-            ComponentType.<FishingNetContentComponent>builder()
-              .codec(FishingNetContentComponent.CODEC)
-              .packetCodec(FishingNetContentComponent.PACKET_CODEC)
-              .build());
-
-        DOUBLE_FISHING_NET_CONTENT =
-          Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            FishingClub.getIdentifier("double_fishing_net_content"),
             ComponentType.<FishingNetContentComponent>builder()
               .codec(FishingNetContentComponent.CODEC)
               .packetCodec(FishingNetContentComponent.PACKET_CODEC)
