@@ -18,7 +18,9 @@ import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -28,11 +30,11 @@ public class FishUtil {
     private static final String CAUGHT_BY_TAG = "caught_by";
 
 
-    public static ItemStack getStackFromFish(FishComponent fish){
+    public static ItemStack getStackFromFish(FishRecord fish){
         return getStackFromFish(fish, 1);
     }
 
-    public static ItemStack getStackFromFish(FishComponent fish, int count){
+    public static ItemStack getStackFromFish(FishRecord fish, int count){
         ItemStack fishReward = new ItemStack(FISH_ITEM);
         fishReward.set(FCComponents.FISH, fish);
         fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
@@ -41,13 +43,13 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void fishCaught(ServerPlayerEntity player, FishComponent fish){
+    public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         giveItemStack(player, getStackFromFish(fish, getRewardMultiplier(fishingCard)));
     }
 
-    public static void fishCaughtAt(ServerPlayerEntity player, FishComponent fish, BlockPos caughtAt) {
+    public static void fishCaughtAt(ServerPlayerEntity player, FishRecord fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
@@ -97,17 +99,18 @@ public class FishUtil {
     }
 
 
-    private static void setLore(ItemStack stack, FishComponent fish){
+    private static void setLore(ItemStack stack, FishRecord fish){
         stack.set(DataComponentTypes.LORE, new LoreComponent(getDetailsAsLore(fish)));
     }
-    private static List<Text> getDetailsAsLore(FishComponent fish){
+    private static List<Text> getDetailsAsLore(FishRecord fish){
         int weightGrade = getWeightGrade(fish);
         int lengthGrade = getLengthGrade(fish);
         return Arrays.asList(
                 getGradeText(Math.max(lengthGrade, weightGrade)),
                 getWeightText(fish.weight(), weightGrade),
                 getLengthText(fish.length(), lengthGrade),
-                getCaughtText(),
+                getCaughtBy(fish.caughtBy()),
+                getCaughtAt(fish.caughtAt()),
                 getValueText(fish.value())
         );
     }
@@ -156,7 +159,7 @@ public class FishUtil {
         };
     }
 
-    public static int getWeightGrade(FishComponent fish){
+    public static int getWeightGrade(FishRecord fish){
         Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
         if (fishType == null) {
             return 1;
@@ -164,7 +167,7 @@ public class FishUtil {
         float percentile = (fish.weight()) / (fishType.fishMinWeight + fishType.fishRandomWeight);
         return getGrade(percentile);
     }
-    public static int getLengthGrade(FishComponent fish){
+    public static int getLengthGrade(FishRecord fish){
         Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
         if (fishType == null) {
             return 1;
@@ -187,11 +190,19 @@ public class FishUtil {
         }
     }
 
-    private static Text getCaughtText(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE, dd LLL yyyy HH:mm");
-        LocalDateTime now = LocalDateTime.now();
-        String caughtDate = (dtf.format(now));
-        return Text.of("§3Caught: §f" + caughtDate);
+    private static Text getCaughtBy(String caughtBy){
+        return Text.of("§3Caught by: §f"+ caughtBy);
+    }
+
+
+    private static Text getCaughtAt(long caughtAtEpoch) {
+        String caughtAt = DateTimeFormatter
+          .ofPattern("HH:mm, dd.MM.yyyy")
+          .format(LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(caughtAtEpoch),
+            ZoneOffset.systemDefault()
+          ));
+        return Text.of("§3Caught at: §f" + caughtAt);
     }
 
     private static void setLore(ItemStack stack, List<Text> lore) {
@@ -217,8 +228,8 @@ public class FishUtil {
         return randomSpecies;
     }
 
-    public static FishComponent getFishOnHook(IHookEntity hookEntity) {
-        return FishComponent.create(hookEntity);
+    public static FishRecord getFishOnHook(IHookEntity hookEntity) {
+        return FishRecord.create(hookEntity);
     }
 
         public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){

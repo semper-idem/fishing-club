@@ -3,7 +3,7 @@ package net.semperidem.fishing_club.registry;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.Uuids;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.item.FishingNetContentComponent;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 import net.minecraft.component.ComponentType;
@@ -21,7 +21,7 @@ public class FCComponents {
     public static ComponentType<Boolean> BROKEN;
     public static ComponentType<Integer> PART_QUALITY;
     public static ComponentType<Integer> TIER;
-    public static ComponentType<FishComponent> FISH;
+    public static ComponentType<FishRecord> FISH;
     public static ComponentType<Long> CREATION_TICK;
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
@@ -87,9 +87,9 @@ public class FCComponents {
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.getIdentifier("fish"),
-                        ComponentType.<FishComponent>builder()
-                                .codec(FishComponent.CODEC)
-                                .packetCodec(FishComponent.PACKET_CODEC)
+                        ComponentType.<FishRecord>builder()
+                                .codec(FishRecord.CODEC)
+                                .packetCodec(FishRecord.PACKET_CODEC)
                                 .build());
         CREATION_TICK =
                 Registry.register(

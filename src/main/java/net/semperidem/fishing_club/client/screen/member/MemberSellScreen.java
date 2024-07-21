@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.client.screen.Texture;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.network.payload.SellFishPayload;
 import net.semperidem.fishing_club.registry.FCComponents;
@@ -173,7 +173,7 @@ public class MemberSellScreen extends MemberSubScreen{
         public int getTotalAvailable() {
             int total = 0;
             for(GridEntry entry : entries) {
-                    total += entry.itemStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT).value();
             }
             return total;
         }
@@ -182,7 +182,7 @@ public class MemberSellScreen extends MemberSubScreen{
             int total = 0;
             for(GridEntry entry : entries) {
                 if (entry.isSelected) {
-                    total += entry.itemStack.getOrDefault(FCComponents.FISH, FishComponent.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT).value();
                 }
             }
             return total;

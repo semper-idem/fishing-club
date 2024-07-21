@@ -20,6 +20,7 @@
     ],
     "cardinal-components": [
       "net.semperidem.fishing_club.fisher.FishingCard",
+      "net.semperidem.fishing_club.fish.FishComponent",
       "net.semperidem.fishing_club.fisher.FishingKing",
       "net.semperidem.fishing_club.leaderboard.LeaderboardTracker"
     ]
@@ -32,6 +33,7 @@
   "custom": {
     "cardinal-components": [
       "fishing-club:fishing_card",
+      "fishing-club:fish_component",
       "fishing-club:fishing_king",
       "fishing-club:leaderboard_tracker"
     ]

@@ -7,13 +7,16 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
@@ -25,40 +28,22 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Random;
 import java.util.UUID;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity{
+    @Shadow private @Nullable Entity thrower;
+    @Shadow private int itemAge;
     @Unique UUID summonerUUID;
     @Unique boolean isSummonItem;
-    @Unique boolean isFishItem;
+    @Unique FishRecord fish;
     @Unique int escapeAge;
-    @Unique boolean initialized = false;
+    @Unique float maxFallDistance;
 
-    public ItemEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
+    @Inject(method = "<init>(Lnet/minecraft/world/World;DDDLnet/minecraft/item/ItemStack;)V", at = @At("TAIL"))
+    private void onInit(World world, double x, double y, double z, ItemStack stack, CallbackInfo ci) {
 
-    @Shadow public abstract ItemStack getStack();
-
-    @Shadow private int itemAge;
-
-    @Shadow public abstract void setStack(ItemStack stack);
-
-    @Shadow private @Nullable Entity thrower;
-
-    @Override
-    public void setOnGround(boolean onGround) {
-        super.setOnGround(onGround);
-    }
-
-    @Unique
-    private void initialize() {
-        ItemStack stack = this.getStack();
-        if (initialized || stack == null) {
-            return;
-        }
-        initialized = true;
         if (stack.isOf(FCItems.GOLD_FISH)) {
             summonerUUID = stack.getOrDefault(FCComponents.CAUGHT_BY, UUID.randomUUID());
             isSummonItem = true;
@@ -68,35 +53,67 @@ public abstract class ItemEntityMixin extends Entity{
         if (!stack.isOf(FishUtil.FISH_ITEM)) {
             return;
         }
-        FishComponent fish = stack.get(FCComponents.FISH);
-        this.isFishItem = true;
+
+        this.fish = stack.get(FCComponents.FISH);
+
         if (fish != null && fish.quality() >= 4) {
             summonerUUID = fish.caughtByUUID();
             isSummonItem = true;
             return;
         }
-        this.escapeAge = (int) (20 + 80 * Math.abs(random.nextGaussian()));
+
+        this.escapeAge = (int) (20 + 80 * Math.abs(new Random(this.getId()).nextGaussian()));
+    }
+
+
+    @Unique protected void produceParticles(ServerWorld serverWorld, ParticleEffect parameters) {
+        for (int i = 0; i < 5; i++) {
+            double d = this.random.nextGaussian() * 0.02;
+            double e = this.random.nextGaussian() * 0.02;
+            double f = this.random.nextGaussian() * 0.02;
+            serverWorld.spawnParticles(parameters, this.getParticleX(this.getWidth()), this.getRandomBodyY() + 1.0, this.getParticleZ(this.getWidth()), 1, d, e, f, 1);
+        }
+    }
+
+    @Unique private void trash() {
+        if (this.fallDistance > this.maxFallDistance) {
+            this.maxFallDistance = fallDistance;
+        }
+        if (!isOnGround()) {
+            return;
+        }
+        if (this.isSubmergedInWater()) {
+            return;
+        }
+        if (this.maxFallDistance < 2) {
+            return;
+        }
+        if (this.supportingBlockPos.isEmpty()) {
+            return;
+        }
+        if (this.getWorld().getBlockState(this.supportingBlockPos.get()).getHardness(null ,null) < 1.5f) {
+            return;
+        }
+
+        if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
+            return;
+        }
+        this.fish = null;
+        this.setStack(this.getStack().getItem().getDefaultStack());
+        this.playSound(SoundEvents.ENTITY_TROPICAL_FISH_FLOP, 0.2F, 0.2F + serverWorld.random.nextFloat() * 0.4F);
+        this.produceParticles(serverWorld, ParticleTypes.SCRAPE);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
         private void onTick(CallbackInfo ci) {
-        initialize();
-        if (!this.isFishItem) {
+        if (this.getWorld().isClient) {
             return;
         }
-        if (isOnGround() && !this.isSubmergedInWater()) {
-            if (thrower == null ) {
-                return;
-            }
-            this.isFishItem = false;
-            Vec3d pos = this.getPos();
-            this.setStack(this.getStack().getItem().getDefaultStack());
-            this.playSound(SoundEvents.ENTITY_TROPICAL_FISH_FLOP, 0.2F, 0.2F + this.getWorld().random.nextFloat() * 0.4F);
-            if (this.getWorld() instanceof ServerWorld serverWorld) {
-                serverWorld.spawnParticles(ParticleTypes.SCRAPE,  pos.x, pos.y + 0.5, pos.z, 5,0.25,0.01,0.25,0.01);
-            }
+        if (this.fish == null) {
+            return;
         }
 
+        trash();
         if (!isSubmergedInWater()) {
             return;
         }
@@ -129,8 +146,13 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
         TropicalFishEntity fishEntity = new TropicalFishEntity(EntityType.TROPICAL_FISH, serverWorld);
-        fishEntity.setPosition(this.getPos());
+        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
         serverWorld.spawnEntity(fishEntity);
+        if (this.fish == null) {
+            return;
+        }
+        FishComponent.of(fishEntity).set(this.fish);
+        fishEntity.setCustomName(Text.of(this.fish.name()));
         fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
     }
 
@@ -142,4 +164,11 @@ public abstract class ItemEntityMixin extends Entity{
         FishermanEntity.summonDerek(getPos(), serverWorld, getStack(), summonerUUID);
         discard();
     }
+
+
+    public ItemEntityMixin(EntityType<?> type, World world) {
+        super(type, world);
+    }
+    @Shadow public abstract ItemStack getStack();
+    @Shadow public abstract void setStack(ItemStack stack);
 }

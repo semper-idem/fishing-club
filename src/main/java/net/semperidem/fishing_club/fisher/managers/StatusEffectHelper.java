@@ -1,12 +1,11 @@
 package net.semperidem.fishing_club.fisher.managers;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.registry.FCStatusEffects;
@@ -51,14 +50,14 @@ public class StatusEffectHelper {
         return multiplier;
     }
 
-    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, FishComponent fish) {
+    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, FishRecord fish) {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
                 !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
-    public int spreadStatusEffect(ProgressionManager progressionManager, FishComponent fish) {
+    public int spreadStatusEffect(ProgressionManager progressionManager, FishRecord fish) {
         int xpBuffAffectedCount = 0;
         Box box = new Box(this.trackedFor.getHolder().getBlockPos());
         box.expand(SPREAD_EFFECT_RANGE);

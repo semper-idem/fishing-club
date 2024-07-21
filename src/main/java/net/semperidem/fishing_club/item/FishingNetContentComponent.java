@@ -1,10 +1,7 @@
 package net.semperidem.fishing_club.item;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
@@ -30,7 +27,8 @@ public record FishingNetContentComponent(
     public static final FishingNetContentComponent DEFAULT = new FishingNetContentComponent(List.of(), Fraction.ZERO, 1);
     public static final Codec<FishingNetContentComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(FishingNetContentComponent::stacks),
-        Codec.INT.fieldOf("occupancy").forGetter(o -> o.occupancy.getDenominator()),
+      Codec.INT.fieldOf("occupancy").forGetter(o -> o.occupancy.getNumerator()),
+      Codec.INT.fieldOf("occupancy").forGetter(o -> o.occupancy.getDenominator()),
         Codec.INT.fieldOf("stackCount").forGetter(FishingNetContentComponent::stackCount)
       ).apply(instance, FishingNetContentComponent::new)
     );
@@ -47,9 +45,9 @@ public record FishingNetContentComponent(
         return new FishingNetContentComponent(component.stacks, stackCount);
     }
 
-    public FishingNetContentComponent(List<ItemStack> stacks, int denominator, Integer size) {
+    public FishingNetContentComponent(List<ItemStack> stacks, int numerator, int denominator, Integer size) {
 
-        this(stacks, Fraction.getFraction(1, denominator), size);
+        this(stacks, Fraction.getFraction(numerator, denominator), size);
     }
 
     public FishingNetContentComponent(List<ItemStack> stacks, Integer size) {

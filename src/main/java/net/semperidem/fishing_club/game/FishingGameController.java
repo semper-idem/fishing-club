@@ -3,7 +3,7 @@ package net.semperidem.fishing_club.game;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
@@ -13,14 +13,14 @@ public class FishingGameController {
 
     public final PlayerEntity player;
     public final FishingCard fishingCard;
-    public final FishComponent hookedFish;
+    public final FishRecord hookedFish;
     public final RodConfiguration hookedUsing;
 
     public float reelForce = 0;
     private boolean isReeling;
     private boolean isPulling;
 
-    public FishingGameController(PlayerEntity playerEntity, FishComponent hookedFish, RodConfiguration hookedUsing){
+    public FishingGameController(PlayerEntity playerEntity, FishRecord hookedFish, RodConfiguration hookedUsing){
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.fishingCard = FishingCard.of(playerEntity);

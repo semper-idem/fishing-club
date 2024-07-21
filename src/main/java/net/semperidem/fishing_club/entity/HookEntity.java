@@ -18,7 +18,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
@@ -73,7 +73,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private HookPartItem hookPartItem;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
-    private FishComponent caughtFish;
+    private FishRecord caughtFish;
 
     public HookEntity(EntityType<? extends HookEntity> entityEntityType, World world) {
         super(entityEntityType, world);

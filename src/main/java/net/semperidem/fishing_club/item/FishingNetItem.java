@@ -25,7 +25,29 @@ public class FishingNetItem extends BundleItem {
         super(settings);
         this.stackCount = stackCount;
     }
-//overide component builder maxAllowedOcc method and change Fraction from ONE to X
+
+    public boolean insertStack(ItemStack fishingNetStack, ItemStack fish, PlayerEntity player) {
+
+        if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
+            return false;
+        }
+
+        FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(fishingNetContentComponent);
+        if (!fish.isOf(FishUtil.FISH_ITEM)) {
+            return false;
+        }
+
+        int i = builder.add(fish);
+        if (i == 0) {
+            return false;
+        }
+
+        setContent(fishingNetStack, builder.build(fishingNetContentComponent.stackCount()));
+        this.playInsertSound(player);
+        return true;
+
+    }
+
     @Override
     public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
         if (clickType != ClickType.RIGHT) {
@@ -38,9 +60,9 @@ public class FishingNetItem extends BundleItem {
                 ItemStack itemStack = slot.getStack();
                 FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(bundleContentsComponent);
                 if (itemStack.isEmpty()) {
-                    this.playRemoveOneSound(player);
                     ItemStack itemStack2 = builder.removeFirst();
                     if (itemStack2 != null) {
+                        this.playRemoveOneSound(player);
                         ItemStack itemStack3 = slot.insertStack(itemStack2);
                         builder.add(itemStack3);
                     }
@@ -111,11 +133,23 @@ public class FishingNetItem extends BundleItem {
 
 
     @Override
+    public boolean isItemBarVisible(ItemStack stack) {
+        FishingNetContentComponent fishingNetContent = getContent(stack);
+        return fishingNetContent.getOccupancy().compareTo(Fraction.ZERO) > 0;
+    }
+
+    @Override
+    public int getItemBarStep(ItemStack stack) {
+        FishingNetContentComponent fishingNetContent = getContent(stack);
+        return Math.min(1 + MathHelper.multiplyFraction(fishingNetContent.getOccupancy(), 12), 13);
+    }
+
+    @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
-        FishingNetContentComponent bundleContentsComponent = getContent(stack);
-        if (bundleContentsComponent != null) {
-            int i = MathHelper.multiplyFraction(bundleContentsComponent.getOccupancy(), bundleContentsComponent.stackCount() * 64);
-            tooltip.add(Text.translatable("item.minecraft.bundle.fullness", i, bundleContentsComponent.stackCount() * 64).formatted(Formatting.GRAY));
+        FishingNetContentComponent fishingNetContent = getContent(stack);
+        if (fishingNetContent != null) {
+            int i = MathHelper.multiplyFraction(fishingNetContent.getOccupancy(), fishingNetContent.stackCount() * 64);
+            tooltip.add(Text.translatable("item.minecraft.bundle.fullness", i, fishingNetContent.stackCount() * 64).formatted(Formatting.GRAY));
         }
     }
 
