@@ -13,6 +13,7 @@ public class FCRegistry {
     public static void register(){
         FCComponents.register();
         FCTags.register();
+        FCBlocks.register();
         FCItems.register();
         FCEntityTypes.register();
         FCNetworking.registerServer();

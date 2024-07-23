@@ -18,10 +18,8 @@ import java.util.HashMap;
 
 public class FCFishEntityRenderer extends MobEntityRenderer<FCFishEntity, FCFishEntityModel<FCFishEntity>> {
     private static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/fish/fc_fish.png");
-    private Pair<FCFishEntityModel<FCFishEntity>, Identifier> defaultPair;
     private final HashMap<String, Pair<FCFishEntityModel<FCFishEntity>, Identifier>> speciesToTexture = new HashMap<>();
     private void init(EntityRendererFactory.Context context) {
-        //this could get weird with a lot of fish
         speciesToTexture.put(SpeciesLibrary.BUTTERFISH.name, new Pair<>(
           new FCFishEntityModel<>(context.getPart(FCEntityTypes.MODEL_BUTTERFISH_LAYER)), FishingClub.getIdentifier("textures/entity/fish/butterfish.png")));
 

@@ -5,6 +5,7 @@ import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.item.*;
@@ -30,6 +31,10 @@ public class FCItems {
     public static Item GOLD_FISH;
     public static Item DEBUG;
     public static Item FISH;
+    public static Item TACKLE_BOX;
+
+    public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
+
     public static ItemGroup FISHING_CLUB_GROUP;
 
     public static CorePartItem CORE_BAMBOO;
@@ -192,7 +197,30 @@ public class FCItems {
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
         FISH = registerItem("fish", new Item(new Item.Settings().food(FoodComponents.TROPICAL_FISH)));
+        TACKLE_BOX = registerItem("tackle_box", new TackleBoxItem(FCBlocks.TACKLE_BOX_BLOCK, new Item.Settings()));
         registerItemGroup();
+    }
+
+    public static void registerParts() {
+        registerCore();
+        registerReel();
+        registerBobber();
+        registerLine();
+        registerHook();
+        registerBait();
+    }
+
+    private static void registerItemGroup() {
+        FISHING_CLUB_GROUP = Registry.register(Registries.ITEM_GROUP, FISHING_CLUB_GROUP_KEY,
+          FabricItemGroup.builder()
+            .displayName(Text.literal("Fishing Club"))
+            .icon(Items.COD::getDefaultStack)
+            .entries((displayContext, entries) -> entries.addAll(FISHING_ITEMS
+//              .stream().sorted(
+//              Comparator.comparing(o -> o.getName().getString(), String.CASE_INSENSITIVE_ORDER)).toList()
+            ))
+            .build());
+
     }
 
     public static void registerCore() {
@@ -1062,26 +1090,6 @@ public class FCItems {
 
     }
 
-    public static void registerParts() {
-        registerCore();
-        registerReel();
-        registerBobber();
-        registerLine();
-        registerHook();
-        registerBait();
-    }
-
-    private static void registerItemGroup() {
-        FISHING_CLUB_GROUP = Registry.register(Registries.ITEM_GROUP, FishingClub.getIdentifier("fishing_club"),
-          FabricItemGroup.builder()
-            .displayName(Text.literal("Fishing Club"))
-            .icon(Items.COD::getDefaultStack)
-            .entries((displayContext, entries) -> entries.addAll(FISHING_ITEMS
-//              .stream().sorted(
-//              Comparator.comparing(o -> o.getName().getString(), String.CASE_INSENSITIVE_ORDER)).toList()
-            ))
-            .build());
-    }
 
     private static final ArrayList<ItemStack> FISHING_ITEMS = new ArrayList<>();
 

@@ -5,5 +5,6 @@
   "effect.fishing-club.slow_fish_buff": "Fish Slow-Mo",
   "effect.fishing-club.bobber_buff": "Bobber Width+",
   "effect.fishing-club.one_time_quality_buff": "One-time Fish Quality+",
-  "effect.fishing-club.shared_bait_buff": "Shared Bait"
+  "effect.fishing-club.shared_bait_buff": "Shared Bait",
+  "block.fishing-club.tackle_box": "Tackle Box"
 }
