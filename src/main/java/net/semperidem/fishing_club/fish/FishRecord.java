@@ -35,7 +35,7 @@ public record FishRecord(
 
     //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
     public static final FishRecord DEFAULT =
-      new FishRecord("Cod", "Cod", 1, 1, 3, 0, 0, 1, 0, UUID.randomUUID(), UUID.randomUUID(), "Herobrain", System.currentTimeMillis());
+      new FishRecord("Cod", "Cod", 0, 1, 3, 0, 0, 1, 0, UUID.randomUUID(), UUID.randomUUID(), "Herobrain", System.currentTimeMillis());
     public static Codec<FishRecord> CODEC =
       RecordCodecBuilder.create(
         instance ->

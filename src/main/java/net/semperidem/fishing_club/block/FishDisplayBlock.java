@@ -8,18 +8,15 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -27,10 +24,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishing_club.entity.FishDisplayBlockEntity;
-import net.semperidem.fishing_club.fish.FishComponent;
-import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCBlocks;
-import net.semperidem.fishing_club.registry.FCComponents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -97,69 +91,22 @@ public class FishDisplayBlock extends BlockWithEntity {
         if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity)) {
             return super.onBreak(world, pos, state, player);
         }
-        if (!(world instanceof ServerWorld serverWorld)) {
-            return super.onBreak(world, pos, state, player);
-        }
-
-        FishComponent fishComponent = FishComponent.FISH_COMPONENT.get(displayBlockEntity);
-        Box soundBox = new Box(pos);
-        soundBox.expand(16);
-        if (fishComponent.record() == null) {
-            return super.onBreak(world, pos, state, player);
-        }
-
-        if (fishComponent.record() != null) {
-            displayBlockEntity.stopPlaying();
-            world.spawnEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, FishUtil.getStackFromFish(fishComponent.record())));
-            return super.onBreak(world, pos, state, player);
-        }
+        displayBlockEntity.drop();
         return super.onBreak(world, pos, state, player);
     }
 
     @Override
     protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).isSolid();
-    }
-
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-
-        if (!FishUtil.isFish(stack)) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-        if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity)) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-        if (displayBlockEntity.getFishEntity() != null) {
-            return ItemActionResult.CONSUME;
-        }
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) {
-            return ItemActionResult.CONSUME;
-        }
-        FishComponent.FISH_COMPONENT.get(displayBlockEntity).set(stack.get(FCComponents.FISH));
-        stack.decrement(1);
-        return ItemActionResult.CONSUME;
+        return world.getBlockState(pos.offset(state.get(FACING).getOpposite())).isSolid();
     }
 
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-
         if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity)) {
-            return ActionResult.CONSUME;
+            return ActionResult.PASS;
         }
-        FishComponent fishComponent = FishComponent.FISH_COMPONENT.get(displayBlockEntity);
-        if (fishComponent.record() == null) {
-            return super.onUse(state, world, pos, player, hit);
-        }
-        if (player.isSneaking() && fishComponent.record() != null) {
-            player.giveItemStack(FishUtil.getStackFromFish(fishComponent.record()));
-            displayBlockEntity.stopPlaying();
-            fishComponent.set(null);
-            return ActionResult.CONSUME;
-        }
-        displayBlockEntity.startPlaying();
-        return ActionResult.CONSUME;
+        return displayBlockEntity.use(player, player.getMainHandStack()) ? ActionResult.CONSUME : ActionResult.PASS;
     }
 
     public WoodType getWoodType() {

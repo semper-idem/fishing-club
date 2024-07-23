@@ -33,6 +33,10 @@ public class FishComponent implements BlockComponentInitializer, EntityComponent
         return FISH_COMPONENT.get(fishEntity);
     }
 
+    public static FishComponent of(FishDisplayBlockEntity displayBlock) {
+        return FISH_COMPONENT.get(displayBlock);
+    }
+
     @Override
     public void applySyncPacket(RegistryByteBuf buf) {
         AutoSyncedComponent.super.applySyncPacket(buf);
