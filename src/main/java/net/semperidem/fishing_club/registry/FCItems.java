@@ -1,12 +1,14 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.block.jukebox.JukeboxSongs;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.Rarity;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.item.*;
 import net.semperidem.fishing_club.item.fishing_rod.MemberFishingRodItem;
@@ -32,6 +34,8 @@ public class FCItems {
     public static Item DEBUG;
     public static Item FISH;
     public static Item TACKLE_BOX;
+    public static Item FISH_DISPLAY_BAMBOO;
+    public static Item YELLOW_FISH_TUNE;
 
     public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
 
@@ -198,6 +202,8 @@ public class FCItems {
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
         FISH = registerItem("fish", new Item(new Item.Settings().food(FoodComponents.TROPICAL_FISH)));
         TACKLE_BOX = registerItem("tackle_box", new TackleBoxItem(FCBlocks.TACKLE_BOX_BLOCK, new Item.Settings()));
+        FISH_DISPLAY_BAMBOO = registerItem("fish_display_bamboo", new FishDisplayItem(FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, new Item.Settings().maxCount(16)));
+        YELLOW_FISH_TUNE = registerItem("yellow_fish_tune",  new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN)));
         registerItemGroup();
     }
 

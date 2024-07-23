@@ -3,7 +3,10 @@ package net.semperidem.fishing_club.entity.renderer.model;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 
+import java.util.HashMap;
+
 public class FishModels {
+    public static final HashMap<String, TexturedModelData> NAME_TO_MODEL = new HashMap<>();
 
     public static TexturedModelData getDefaultModelData() {
         ModelData modelData = new ModelData();
@@ -55,13 +58,13 @@ public class FishModels {
           EntityModelPartNames.BODY,
           ModelPartBuilder.create()
               .uv(0, 0).cuboid(-2.0F, -3.0F, -2.0F, 4.0F, 2.0F, 6.0F)
-              .uv(7, 5).cuboid(0.0F, -4.0F, 1.0F, 0.0F, 1.0F, 2.0F),
+              .uv(7, 5).cuboid(0.0F, -4.0F, 1.0F, 0.001F, 1.0F, 2.0F),
           ModelTransform.pivot(0.0F, 24.0F, 0.0F)
         );
 
         body.addChild(
           EntityModelPartNames.TAIL_FIN,
-          ModelPartBuilder.create().uv(8, 10).cuboid(0.0F, -4.0F, 4.0F, 0.0F, 4.0F, 2.0F),
+          ModelPartBuilder.create().uv(8, 10).cuboid(0.0F, -4.0F, 4.0F, 0.001F, 4.0F, 2.0F),
           ModelTransform.pivot(0, 0, 0)
         );
 

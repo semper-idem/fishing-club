@@ -94,7 +94,7 @@ public record FishRecord(
         FishingCard caughtByCard = caughtWith.getFishingCard();
         PlayerEntity caughtBy = caughtByCard.getHolder();
         RodConfiguration caughtUsing = caughtWith.getCaughtUsing();
-        Species species = SpeciesLibrary.COD; // todo caughtWith position and world based
+        Species species = SpeciesLibrary.BUTTERFISH; // todo caughtWith position and world based
         int level = getLevel(species, caughtByCard.getLevel());
         int quality =
           getQuality(

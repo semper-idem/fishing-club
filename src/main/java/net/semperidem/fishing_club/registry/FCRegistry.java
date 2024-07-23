@@ -1,13 +1,35 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
+import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.entity.renderer.FishDisplayEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
+import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.screen.dialog.DialogUtil;
 
+import java.util.HashMap;
+
 public class FCRegistry {
+
+    public static HashMap<String, SoundEvent> SPECIES_TO_TUNE = new HashMap<>();
+    public static final SoundEvent YELLOW_FISH_TUNE = registerSoundEvent("yellow_fish_tune");
+    static {
+        SPECIES_TO_TUNE.put(SpeciesLibrary.BUTTERFISH.name, YELLOW_FISH_TUNE);
+    }
+
+
+      private static SoundEvent registerSoundEvent(String name) {
+        Identifier id = FishingClub.getIdentifier(name);
+        return Registry.register(Registries.SOUND_EVENT, FishingClub.getIdentifier(name), SoundEvent.of(id));
+      }
 
 // in the initializer
     public static void register(){
@@ -31,5 +53,6 @@ public class FCRegistry {
         FCModelPredicateProvider.registerClient();
         EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
+        BlockEntityRendererFactories.register(FCBlocks.FISH_DISPLAY, FishDisplayEntityRenderer::new);
     }
 }

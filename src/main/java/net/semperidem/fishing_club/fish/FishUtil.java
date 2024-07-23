@@ -68,7 +68,7 @@ public class FishUtil {
         }
     }
 
-    private static void throwRandomly(World world, BlockPos pos, ItemStack stack){
+    public static void throwRandomly(World world, BlockPos pos, ItemStack stack){
         if (stack.isEmpty()) {
             return;
         }
@@ -77,6 +77,7 @@ public class FishUtil {
         float f = world.random.nextFloat() * 0.25f;
         float g = world.random.nextFloat() * ((float)Math.PI * 2);
         itemEntity.setVelocity(-MathHelper.sin(g) * f, 0.75f, MathHelper.cos(g) * f);
+        world.spawnEntity(itemEntity);
     }
 
     private static int getRewardMultiplier(FishingCard fishingCard){

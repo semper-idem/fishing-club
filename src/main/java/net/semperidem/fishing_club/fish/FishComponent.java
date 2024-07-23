@@ -5,24 +5,37 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.entity.FishDisplayBlockEntity;
+import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 
-public class FishComponent implements EntityComponentInitializer, AutoSyncedComponent {
-
+public class FishComponent implements BlockComponentInitializer, EntityComponentInitializer, AutoSyncedComponent {
+    FishDisplayBlockEntity displayBlockEntity;
     FishEntity fishEntity;
     FishRecord fishRecord;
     public static final ComponentKey<FishComponent> FISH_COMPONENT = ComponentRegistry.getOrCreate(
       FishingClub.getIdentifier("fish_component"), FishComponent.class);
 
+    public FishComponent(FishDisplayBlockEntity displayBlockEntity) {
+        this.displayBlockEntity = displayBlockEntity;
+    }
+
 
     public static FishComponent of(FishEntity fishEntity) {
         return FISH_COMPONENT.get(fishEntity);
+    }
+
+    @Override
+    public void applySyncPacket(RegistryByteBuf buf) {
+        AutoSyncedComponent.super.applySyncPacket(buf);
     }
 
     public FishComponent() {}
@@ -34,10 +47,17 @@ public class FishComponent implements EntityComponentInitializer, AutoSyncedComp
 
     public void set(FishRecord fishRecord) {
         this.fishRecord = fishRecord;
-        FISH_COMPONENT.sync(this.fishEntity);
+        if (this.fishEntity != null) {
+            FISH_COMPONENT.sync(this.fishEntity);
+        }
+        if (this.displayBlockEntity != null) {
+            FISH_COMPONENT.sync(this.displayBlockEntity);
+        }
     }
 
-    public FishRecord get() {
+
+
+    public FishRecord record() {
         return this.fishRecord;
     }
 
@@ -64,6 +84,12 @@ public class FishComponent implements EntityComponentInitializer, AutoSyncedComp
         FishRecord.CODEC.encodeStart(NbtOps.INSTANCE, this.fishRecord).resultOrPartial().ifPresent(fishTag -> {
             tag.put("fish", fishTag);
         });
+    }
+
+    @Override
+    public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
+        registry.registerFor(FishDisplayBlockEntity.class, FISH_COMPONENT, FishComponent::new);
+
     }
 
 }

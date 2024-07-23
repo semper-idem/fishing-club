@@ -8,22 +8,23 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishRecord;
-import net.semperidem.fishing_club.fish.SpeciesLibrary;
+import net.semperidem.fishing_club.registry.FCEntityTypes;
 
 public class FCFishEntity extends SchoolingFishEntity {
-    public final FishRecord fishRecord;
 
-    public FCFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world, FishRecord fishRecord) {
+    public FCFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
         super(entityType, world);
-        this.fishRecord = fishRecord;
     }
 
-    public FCFishEntity(EntityType<? extends FCFishEntity> entityType, World world) {
-        super(entityType, world);
-        this.fishRecord = FishRecord.create(SpeciesLibrary.BUTTERFISH);
+    public FCFishEntity(World world) {
+        super(FCEntityTypes.FISH_ENTITY, world);
     }
-
+    public FCFishEntity(World world, FishRecord fishRecord) {
+        super(FCEntityTypes.FISH_ENTITY, world);
+        FishComponent.of(this).set(fishRecord);
+    }
 
     @Override
     public ItemStack getBucketItem() {
