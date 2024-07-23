@@ -24,6 +24,7 @@ public class FCEntityTypes {
     public static EntityType<HarpoonEntity> HARPOON_ENTITY;
     public static EntityType<LineArrowEntity> LINE_ARROW_ENTITY;
     public static EntityType<FCFishEntity> FISH_ENTITY;
+    public static FCFishEntityRenderer FISH_ENTITY_RENDERER;
 
     public static final EntityModelLayer MODEL_HARPOON_LAYER =
       new EntityModelLayer(FishingClub.getIdentifier("harpoon_rod"), "main");
@@ -33,6 +34,8 @@ public class FCEntityTypes {
       new EntityModelLayer(FishingClub.getIdentifier("fish/fc_fish"), "main");
     public static final EntityModelLayer MODEL_BUTTERFISH_LAYER =
       new EntityModelLayer(FishingClub.getIdentifier("fish/butterfish"), "main");
+    public static final EntityModelLayer MODEL_FISH_DISPLAY_LAYER =
+      new EntityModelLayer(FishingClub.getIdentifier("sign/bamboo"), "main");
 
     public static void register() {
         EntityModelLayerRegistry.registerModelLayer(
@@ -43,6 +46,8 @@ public class FCEntityTypes {
           MODEL_FC_FISH_LAYER, FishModels::getDefaultModelData);
         EntityModelLayerRegistry.registerModelLayer(
           MODEL_BUTTERFISH_LAYER, FishModels::getButterfishModelData);
+        EntityModelLayerRegistry.registerModelLayer(
+          MODEL_FISH_DISPLAY_LAYER, FishDisplayEntityRenderer::getTexturedModelData);
 
         DEREK_ENTITY =
           Registry.register(
@@ -98,12 +103,14 @@ public class FCEntityTypes {
               .build());
         FabricDefaultAttributeRegistry.register(FISH_ENTITY, FCFishEntity.createMobAttributes());
 
-
         EntityRendererRegistry.register(DEREK_ENTITY, FishermanEntityRenderer::new);
         EntityRendererRegistry.register(HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
         EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
-        EntityRendererRegistry.register(FISH_ENTITY, FCFishEntityRenderer::new);
+        EntityRendererRegistry.register(FISH_ENTITY, ctx -> {
+            FISH_ENTITY_RENDERER = new FCFishEntityRenderer(ctx);
+            return FISH_ENTITY_RENDERER;
+        });
     }
 
 }

@@ -11,6 +11,8 @@ import net.minecraft.util.math.RotationAxis;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.FCFishEntity;
 import net.semperidem.fishing_club.entity.renderer.model.FCFishEntityModel;
+import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.registry.FCEntityTypes;
 
@@ -32,7 +34,11 @@ public class FCFishEntityRenderer extends MobEntityRenderer<FCFishEntity, FCFish
 
     @Override
     public void render(FCFishEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        if (speciesToTexture.get(livingEntity.fishRecord.speciesName()) instanceof Pair<FCFishEntityModel<FCFishEntity>, Identifier> pair) {
+        if (!(FishComponent.of(livingEntity).record() instanceof FishRecord fishRecord)) {
+            return;
+        }
+
+        if (speciesToTexture.get(fishRecord.speciesName()) instanceof Pair<FCFishEntityModel<FCFishEntity>, Identifier> pair) {
             this.model = pair.getLeft();
         }
         super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
@@ -40,7 +46,10 @@ public class FCFishEntityRenderer extends MobEntityRenderer<FCFishEntity, FCFish
 
     @Override
     public Identifier getTexture(FCFishEntity entity) {
-        return speciesToTexture.getOrDefault(entity.fishRecord.speciesName(), new Pair<>(null, TEXTURE)).getRight();
+        if (!(FishComponent.of(entity).record() instanceof FishRecord fishRecord)) {
+            return TEXTURE;
+        }
+        return speciesToTexture.getOrDefault(fishRecord.speciesName(), new Pair<>(null, TEXTURE)).getRight();
     }
 
 

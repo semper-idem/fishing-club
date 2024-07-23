@@ -1,0 +1,10 @@
+{
+  "yellow_fish_tune": {
+    "sounds": [
+      {
+        "name": "fishing-club:yellow_fish_tune",
+        "stream": true
+      }
+    ]
+  }
+}

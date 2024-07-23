@@ -36,7 +36,7 @@ public class FishEntityMixin extends Entity {
         if (fishComponent == null) {
             return;
         }
-        ItemStack fishStack = FishUtil.getStackFromFish( fishComponent.get(), 1);
+        ItemStack fishStack = FishUtil.getStackFromFish( fishComponent.record(), 1);
         if (fishingNetItem.insertStack(stackInHand, fishStack, player)) {
             this.discard();
         }

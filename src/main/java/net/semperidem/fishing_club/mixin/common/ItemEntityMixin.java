@@ -18,7 +18,6 @@ import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
-import net.semperidem.fishing_club.registry.FCEntityTypes;
 import net.semperidem.fishing_club.registry.FCItems;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -150,7 +149,7 @@ public abstract class ItemEntityMixin extends Entity{
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-        FCFishEntity fishEntity = new FCFishEntity(FCEntityTypes.FISH_ENTITY, serverWorld, this.fish);
+        FCFishEntity fishEntity = new FCFishEntity(serverWorld, this.fish);
         fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
         serverWorld.spawnEntity(fishEntity);
         fishEntity.setCustomName(Text.of(this.fish.name()));

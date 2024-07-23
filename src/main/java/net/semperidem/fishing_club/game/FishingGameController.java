@@ -68,7 +68,7 @@ public class FishingGameController {
         fishController.tick();
         bobberComponent.tick();
         progressComponent.tick();
-        healthComponent.tick();
+       //healthComponent.tick();
         treasureComponent.tick();
     }
 
