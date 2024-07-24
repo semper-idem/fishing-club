@@ -34,20 +34,18 @@ public class FishDisplayBlock extends BlockWithEntity {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 
     public static final MapCodec<WallSignBlock> CODEC = RecordCodecBuilder.mapCodec(
-      instance -> instance.group(WoodType.CODEC.fieldOf("wood_type").forGetter(FishDisplayBlock::getWoodType), createSettingsCodec())
-        .apply(instance, WallSignBlock::new)
+      instance -> instance.group(
+        WoodType.CODEC.fieldOf("wood_type").forGetter(FishDisplayBlock::getWoodType),
+          createSettingsCodec()
+        ).apply(instance, WallSignBlock::new)
     );
 
     private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
       ImmutableMap.of(
-        Direction.NORTH,
-        Block.createCuboidShape(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
-        Direction.SOUTH,
-        Block.createCuboidShape(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
-        Direction.EAST,
-        Block.createCuboidShape(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
-        Direction.WEST,
-        Block.createCuboidShape(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
+        Direction.NORTH, Block.createCuboidShape(0.0, 4.5, 14.0, 16.0, 12.5, 16.0),
+        Direction.SOUTH, Block.createCuboidShape(0.0, 4.5, 0.0, 16.0, 12.5, 2.0),
+        Direction.EAST, Block.createCuboidShape(0.0, 4.5, 0.0, 2.0, 12.5, 16.0),
+        Direction.WEST, Block.createCuboidShape(14.0, 4.5, 0.0, 16.0, 12.5, 16.0)
       )
     );
 
@@ -62,18 +60,18 @@ public class FishDisplayBlock extends BlockWithEntity {
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockState blockState = this.getDefaultState();
-        WorldView worldView = ctx.getWorld();
-        BlockPos blockPos = ctx.getBlockPos();
-        Direction[] directions = ctx.getPlacementDirections();
 
-        for (Direction direction : directions) {
-            if (direction.getAxis().isHorizontal()) {
-                Direction direction2 = direction.getOpposite();
-                blockState = blockState.with(FACING, direction2);
-                if (blockState.canPlaceAt(worldView, blockPos)) {
-                    return blockState;
-                }
+        BlockState blockState = this.getDefaultState();
+
+        for (Direction direction : ctx.getPlacementDirections()) {
+
+            if (!direction.getAxis().isHorizontal()) {
+                continue;
+            }
+
+            blockState = blockState.with(FACING, direction.getOpposite());
+            if (blockState.canPlaceAt(ctx.getWorld(), ctx.getBlockPos())) {
+                return blockState;
             }
         }
 
@@ -82,94 +80,115 @@ public class FishDisplayBlock extends BlockWithEntity {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+
         return FACING_TO_SHAPE.get(state.get(FACING));
     }
 
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity)) {
-            return super.onBreak(world, pos, state, player);
+
+        if (world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity) {
+            displayBlockEntity.drop();
         }
-        displayBlockEntity.drop();
+
         return super.onBreak(world, pos, state, player);
     }
 
     @Override
     protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return world.getBlockState(pos.offset(state.get(FACING).getOpposite())).isSolid();
+
+        return world.getBlockState(pos.offset(state.get(FACING).getOpposite())).isSolidBlock(world, pos);
     }
 
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity)) {
+
+        if (!(world.getBlockEntity(pos) instanceof FishDisplayBlockEntity fishDisplayEntity)) {
             return ActionResult.PASS;
         }
-        return displayBlockEntity.use(player, player.getMainHandStack()) ? ActionResult.CONSUME : ActionResult.PASS;
+
+        return fishDisplayEntity.use(player, player.getMainHandStack()) ? ActionResult.CONSUME : ActionResult.PASS;
     }
 
     public WoodType getWoodType() {
+
         return this.type;
     }
 
     public static WoodType getWoodType(Block block) {
-        WoodType woodType;
-        if (block instanceof FishDisplayBlock) {
-            woodType = ((FishDisplayBlock)block).getWoodType();
-        } else {
-            woodType = WoodType.OAK;
-        }
 
-        return woodType;
+        return block instanceof FishDisplayBlock displayBlock ? displayBlock.getWoodType() : WoodType.OAK;
     }
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
+
         return CODEC;
     }
 
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
+
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+
         return validateTicker(type, FCBlocks.FISH_DISPLAY, FishDisplayBlockEntity::tick);
     }
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+
         return new FishDisplayBlockEntity(pos, state);
     }
 
     @Override
     protected BlockState getStateForNeighborUpdate(
-      BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+      BlockState state,
+      Direction direction,
+      BlockState neighborState,
+      WorldAccess world,
+      BlockPos pos,
+      BlockPos neighborPos
     ) {
-        return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
-               ? Blocks.AIR.getDefaultState()
-               : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        if (direction.getOpposite() != state.get(FACING)) {
+
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        }
+
+        if (state.canPlaceAt(world, pos)) {
+
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        }
+
+        return Blocks.AIR.getDefaultState();
     }
 
     @Override
     protected BlockState rotate(BlockState state, BlockRotation rotation) {
+
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
+
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     public float getRotationDegrees(BlockState state) {
+
         return state.get(FACING).asRotation();
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+
         builder.add(FACING);
     }
 
