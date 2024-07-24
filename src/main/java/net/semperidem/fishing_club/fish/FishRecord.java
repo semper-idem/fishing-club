@@ -8,6 +8,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishing_club.entity.FishingExplosionEntity;
 import net.semperidem.fishing_club.entity.IHookEntity;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
@@ -30,12 +31,13 @@ public record FishRecord(
   UUID id,
   UUID caughtByUUID,
   String caughtBy,
-  long caughtAt
+  long caughtAt,
+  boolean isAlive
 ) {
 
     //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
     public static final FishRecord DEFAULT =
-      new FishRecord("Cod", "Cod", 0, 1, 3, 0, 0, 1, 0, UUID.randomUUID(), UUID.randomUUID(), "Herobrain", System.currentTimeMillis());
+      new FishRecord("Cod", "Cod", 0, 1, 3, 0, 0, 1, 0, UUID.randomUUID(), UUID.randomUUID(), "Herobrain", System.currentTimeMillis(), false);
     public static Codec<FishRecord> CODEC =
       RecordCodecBuilder.create(
         instance ->
@@ -53,7 +55,8 @@ public record FishRecord(
               Uuids.INT_STREAM_CODEC.fieldOf("id").forGetter(FishRecord::id),
               Uuids.INT_STREAM_CODEC.fieldOf("caught_by_uuid").forGetter(FishRecord::caughtByUUID),
               Codec.STRING.fieldOf("caught_by").forGetter(FishRecord::caughtBy),
-              Codec.LONG.fieldOf("caught_at").forGetter(FishRecord::caughtAt)
+              Codec.LONG.fieldOf("caught_at").forGetter(FishRecord::caughtAt),
+              Codec.BOOL.fieldOf("is_alive").forGetter(FishRecord::isAlive)
             ).apply(instance, FishRecord::new));
     public static PacketCodec<RegistryByteBuf, FishRecord> PACKET_CODEC =
       PacketCodecs.registryCodec(CODEC);
@@ -72,7 +75,7 @@ public record FishRecord(
           MathHelper.clamp(
             getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f),
             0,
-            9999);
+            999);
         return new FishRecord(
           species.name, // for rare variant names
           species.name, // for rare variant names
@@ -86,7 +89,8 @@ public record FishRecord(
           UUID.randomUUID(),
           UUID.randomUUID(),
           "unknown",
-          System.currentTimeMillis()
+          System.currentTimeMillis(),
+          true
         );
     }
 
@@ -120,7 +124,8 @@ public record FishRecord(
           UUID.randomUUID(),
           caughtBy.getUuid(),
           caughtBy.getNameForScoreboard(),
-          System.currentTimeMillis()
+          System.currentTimeMillis(),
+          !(caughtWith instanceof FishingExplosionEntity)
         );
     }
 
@@ -181,6 +186,7 @@ public record FishRecord(
         isEqual &= (this.length == other.length);
         isEqual &= (this.caughtByUUID.compareTo(other.caughtByUUID) == 0);
         isEqual &= (this.id.compareTo(other.id) == 0);
+        isEqual &= (this.isAlive == other.isAlive);
         return isEqual;
     }
 

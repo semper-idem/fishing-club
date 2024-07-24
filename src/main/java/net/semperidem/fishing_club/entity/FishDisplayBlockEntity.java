@@ -76,6 +76,10 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return false;
         }
 
+        if (this.fishStack == null) {
+            return false;
+        }
+
         if (!player.giveItemStack(this.fishStack)) {
             return false;
         }

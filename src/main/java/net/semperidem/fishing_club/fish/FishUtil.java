@@ -46,7 +46,7 @@ public class FishUtil {
     public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
-        ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
+            ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
         ItemStack fishingNetStack = getFishingNet(player, fishStack);
         if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
             return;
@@ -118,20 +118,24 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
 
-    private static void setLore(ItemStack stack, FishRecord fish){
+    private static void setLore(ItemStack stack, FishRecord fish) {
         stack.set(DataComponentTypes.LORE, new LoreComponent(getDetailsAsLore(fish)));
     }
-    private static List<Text> getDetailsAsLore(FishRecord fish){
+
+    private static List<Text> getDetailsAsLore(FishRecord fish) {
         int weightGrade = getWeightGrade(fish);
         int lengthGrade = getLengthGrade(fish);
-        return Arrays.asList(
-                getGradeText(Math.max(lengthGrade, weightGrade)),
-                getWeightText(fish.weight(), weightGrade),
-                getLengthText(fish.length(), lengthGrade),
-                getCaughtBy(fish.caughtBy()),
-                getCaughtAt(fish.caughtAt()),
-                getValueText(fish.value())
-        );
+        ArrayList<Text> result = new ArrayList<>();
+        result.add(getGradeText(Math.max(lengthGrade, weightGrade)));
+        result.add(getWeightText(fish.weight(), weightGrade));
+        result.add(getLengthText(fish.length(), lengthGrade));
+        result.add(getCaughtBy(fish.caughtBy()));
+        result.add(getCaughtAt(fish.caughtAt()));
+        result.add(getValueText(fish.value()));
+        if (!fish.isAlive()) {
+            result.add(Text.of("[x _ x]"));
+        }
+        return result;
     }
 
 

@@ -81,13 +81,13 @@ public abstract class ItemEntityMixin extends Entity{
         if (!isOnGround()) {
             return;
         }
-        if (this.isSubmergedInWater()) {
-            return;
-        }
         if (this.maxFallDistance < 2) {
             return;
         }
         if (this.supportingBlockPos.isEmpty()) {
+            return;
+        }
+        if (this.getWorld().getFluidState(this.supportingBlockPos.get().up()).getHeight() > 0) {
             return;
         }
         if (this.getWorld().getBlockState(this.supportingBlockPos.get()).getHardness(null ,null) < 1.5f) {
@@ -118,21 +118,24 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Unique
     private void validateAndSummonDerek() {
-        if (!isSubmergedInWater()) {
+        if (!this.isSubmergedInWater()) {
             return;
         }
 
-        if (itemAge < escapeAge) {
+        if (this.itemAge < this.escapeAge) {
             return;
         }
 
-        if (!isSummonItem) {
-            spawnFishEntity();
+        if (!this.isSummonItem && this.fish.isAlive()) {
+            this.spawnFishEntity();
             this.discard();
             return;
         }
 
-        if (itemAge < 100) {//todo configure properly, bigger number
+        if (!this.isSummonItem) {
+            return;
+        }
+        if (this.itemAge < 100) {//todo configure properly, bigger number
             return;
         }
 
@@ -141,7 +144,7 @@ public abstract class ItemEntityMixin extends Entity{
 //            return;
 //        }
 
-        summonDerek();
+        this.summonDerek();
     }
 
     @Unique

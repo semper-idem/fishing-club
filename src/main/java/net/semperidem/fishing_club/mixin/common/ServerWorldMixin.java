@@ -1,7 +1,7 @@
 package net.semperidem.fishing_club.mixin.common;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
@@ -48,14 +48,21 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
 
     @Inject(method = "createExplosion", at = @At("TAIL"))
     private void onCreateExplosion(Entity entity, DamageSource damageSource, ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, World.ExplosionSourceType explosionSourceType, ParticleEffect particle, ParticleEffect emitterParticle, RegistryEntry<SoundEvent> soundEvent, CallbackInfoReturnable<Explosion> cir){
-        if (!(entity instanceof TntEntity tntEntity)) {
+        if (!(entity instanceof Ownable explodingEntity)) {
             return;
         }
-        if (!(tntEntity.getOwner() instanceof ServerPlayerEntity causingEntity)) {
+        if (!(explodingEntity.getOwner() instanceof ServerPlayerEntity causingEntity)) {
             return;
         }
 
-        BlockPos explosionPos = new BlockPos((int) x, (int) y, (int) z);
+
+        /*
+        * Wind charges actually explode inside blocks they hit so this formula is a workaround for it
+        * If it's just wind charges could just wrap if around it, but it's unknown for me atm
+        * It's not usual behaviour but when ceiling is charge hit result it'll not return produce fish
+        * Other way would be to check for per block in explosion radius
+        * */
+        BlockPos explosionPos = new BlockPos((int) x, (int)Math.copySign(Math.ceil(Math.abs(y)), y), (int) z);
         if (!(this.isWater(explosionPos))) {
             return;
         }
@@ -64,7 +71,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
             return;
         }
 
-        int fishCount = (int) (Math.random() * power);
+        int fishCount = (int) (Math.abs(random.nextGaussian()) * 0.5 * power);
         FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity);
         for(int i = 0; i < fishCount; i++) {
             FishUtil.fishCaughtAt(
