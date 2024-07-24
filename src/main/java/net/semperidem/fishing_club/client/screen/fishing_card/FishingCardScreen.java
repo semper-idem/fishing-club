@@ -251,7 +251,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         super.render(context, mouseX, mouseY, delta);
         renderDetails(context);
         renderSelectedPerkDescription(context);
-       // renderTooltip(context, mouseX, mouseY);
+        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
 

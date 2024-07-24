@@ -26,19 +26,30 @@ public class FishingNetItem extends BundleItem {
         this.stackCount = stackCount;
     }
 
-    public boolean insertStack(ItemStack fishingNetStack, ItemStack fish, PlayerEntity player) {
+    public boolean canInsert(ItemStack fishingNetStack, ItemStack fishStack) {
+        if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
+            return false;
+        }
+        if (!fishStack.isOf(FishUtil.FISH_ITEM)) {
+            return false;
+        }
+
+        return new FishingNetContentComponent.Builder(fishingNetContentComponent).getMaxAllowed(fishStack) > 0;
+    }
+
+
+    public boolean insertStack(ItemStack fishingNetStack, ItemStack fishStack, PlayerEntity player) {
 
         if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
             return false;
         }
 
-        FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(fishingNetContentComponent);
-        if (!fish.isOf(FishUtil.FISH_ITEM)) {
+        if (!fishStack.isOf(FishUtil.FISH_ITEM)) {
             return false;
         }
 
-        int i = builder.add(fish);
-        if (i == 0) {
+        FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(fishingNetContentComponent);
+        if (builder.add(fishStack) == 0) {
             return false;
         }
 

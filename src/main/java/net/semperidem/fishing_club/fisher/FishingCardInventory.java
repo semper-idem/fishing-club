@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
+import net.semperidem.fishing_club.item.FishingNetItem;
 
 public class FishingCardInventory implements Inventory{
     public static final int SLOT_COUNT = 5;
@@ -31,6 +32,18 @@ public class FishingCardInventory implements Inventory{
 
     public void setSharedBait(ItemStack baitToShare){
         this.sharedBait = baitToShare;
+    }
+
+    public ItemStack getFishingNet(ItemStack fishStack) {
+        for (ItemStack stack : inventory) {
+            if (!(stack.getItem() instanceof FishingNetItem fishingNetItem)) {
+                continue;
+            }
+            if (fishingNetItem.canInsert(stack, fishStack)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override

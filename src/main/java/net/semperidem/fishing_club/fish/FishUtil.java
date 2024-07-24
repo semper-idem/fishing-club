@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishing_club.entity.IHookEntity;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
+import net.semperidem.fishing_club.item.FishingNetItem;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 
@@ -45,7 +46,25 @@ public class FishUtil {
     public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
-        giveItemStack(player, getStackFromFish(fish, getRewardMultiplier(fishingCard)));
+        ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
+        ItemStack fishingNetStack = getFishingNet(player, fishStack);
+        if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
+            return;
+        }
+        giveItemStack(player, fishStack);
+    }
+
+private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fishStack) {
+        for(int i = 0; i < 9; i++) {
+            ItemStack stackInHotbar = player.getInventory().getStack(i);
+            if (!(stackInHotbar.getItem() instanceof FishingNetItem fishingNetItem)) {
+                continue;
+            }
+            if (fishingNetItem.canInsert(stackInHotbar, fishStack)) {
+                return stackInHotbar;
+            }
+        }
+        return FishingCard.of(player).getFishingNet(fishStack);
     }
 
     public static void fishCaughtAt(ServerPlayerEntity player, FishRecord fish, BlockPos caughtAt) {
