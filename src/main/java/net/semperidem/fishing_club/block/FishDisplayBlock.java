@@ -84,6 +84,14 @@ public class FishDisplayBlock extends BlockWithEntity {
         return FACING_TO_SHAPE.get(state.get(FACING));
     }
 
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity) {
+            displayBlockEntity.drop();
+        }
+
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {

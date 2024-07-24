@@ -7,10 +7,10 @@ public class Species {
     final MovementPattern fishPattern;
     final int minLevel;
     final int staminaLevel;
-    final float fishMinLength;
-    final float fishRandomLength;
-    final float fishMinWeight;
-    final float fishRandomWeight;
+    public final float fishMinLength;
+    public final float fishRandomLength;
+    public final float fishMinWeight;
+    public final float fishRandomWeight;
     final float fishRarity;
 
     //TODO refactor into factory

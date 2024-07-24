@@ -64,6 +64,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         displayFishComponent.set(fishRecord);
+        this.markDirty();
         if (!player.isCreative()) {
             stackInHand.decrement(1);
         }
@@ -183,10 +184,15 @@ public class FishDisplayBlockEntity extends BlockEntity {
 
     private void tickDisplayedFish() {
 
-        FishRecord fishRecord = FishComponent.FISH_COMPONENT.get(this).record();
+        FishRecord fishRecord = FishComponent.of(this).record();
 
         if (fishRecord == null) {
             this.fishEntity = null;
+            this.fishStack = null;
+            this.fishSong = null;
+            return;
+        }
+        if (this.fishEntity != null) {
             return;
         }
 

@@ -84,6 +84,9 @@ public abstract class ItemEntityMixin extends Entity{
         if (this.maxFallDistance < 2) {
             return;
         }
+        if (this.thrower == null) {
+            return;
+        }
         if (this.supportingBlockPos.isEmpty()) {
             return;
         }

@@ -15,13 +15,13 @@ public class FCModelPredicateProvider {
             if (!(livingEntity instanceof PlayerEntity)) {
                 return 0.0F;
             }
-            return ((PlayerEntity)livingEntity).fishHook != null ? 1.0F : 0.0F;
+            return ((PlayerEntity)livingEntity).fishHook != null && itemStack.isOf(FCItems.MEMBER_FISHING_ROD) ? 1.0F : 0.0F;
         });
         register(FCItems.MEMBER_FISHING_ROD, Identifier.ofVanilla("casting"), (itemStack, clientWorld, livingEntity, clamp) -> {
             if (livingEntity == null) {
                 return 0.0F;
             }
-            return livingEntity.isUsingItem() ? 1.0F : 0.0F;
+            return livingEntity.isUsingItem() && itemStack.isOf(FCItems.MEMBER_FISHING_ROD) ? 1.0F : 0.0F;
         });
     }
 }
