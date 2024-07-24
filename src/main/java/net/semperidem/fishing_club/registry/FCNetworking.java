@@ -11,6 +11,7 @@ public class FCNetworking {
         PayloadTypeRegistry.playS2C().register(CoinFlipResultPayload.ID, CoinFlipResultPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(HookLinePayload.ID, HookLinePayload.CODEC);
         PayloadTypeRegistry.playS2C().register(FishingGameTickPayload.ID, FishingGameTickPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(StopPlayingPayload.ID, StopPlayingPayload.CODEC);
 
         PayloadTypeRegistry.playC2S().register(LinePayload.ID, LinePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CoinFlipPayload.ID, CoinFlipPayload.CODEC);
@@ -32,6 +33,7 @@ public class FCNetworking {
         ClientPlayNetworking.registerGlobalReceiver(HookLinePayload.ID, HookLinePayload::consumePayload);
         ClientPlayNetworking.registerGlobalReceiver(CoinFlipResultPayload.ID, CoinFlipResultPayload::consumePayload);
         ClientPlayNetworking.registerGlobalReceiver(FishingGameTickPayload.ID, FishingGameTickPayload::consumePayload);
+        ClientPlayNetworking.registerGlobalReceiver(StopPlayingPayload.ID, StopPlayingPayload::consumePayload);
     }
 
     public static void registerServer() {

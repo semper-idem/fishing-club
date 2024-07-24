@@ -18,7 +18,8 @@
     "client.HeldItemRendererMixin",
     "client.InGameHudMixin",
     "client.MouseMixin",
-    "client.PlayerListEntryMixin"
+    "client.PlayerListEntryMixin",
+    "client.SoundManagerMixin"
   ],
   "server": [
   ],

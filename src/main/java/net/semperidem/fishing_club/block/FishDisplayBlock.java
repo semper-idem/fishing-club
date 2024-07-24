@@ -82,7 +82,7 @@ public class FishDisplayBlock extends BlockWithEntity {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return (VoxelShape)FACING_TO_SHAPE.get(state.get(FACING));
+        return FACING_TO_SHAPE.get(state.get(FACING));
     }
 
 
