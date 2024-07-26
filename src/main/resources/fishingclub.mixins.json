@@ -15,8 +15,12 @@
   "client": [
     "client.BipedEntityModelMixin",
     "client.BoatEntityModelAccessor",
+    "client.HeldItemFeatureRenderer",
     "client.HeldItemRendererMixin",
     "client.InGameHudMixin",
+    "client.ItemRendererAccessor",
+    "client.ItemRendererMixin",
+    "client.ModelLoaderMixin",
     "client.MouseMixin",
     "client.PlayerListEntryMixin",
     "client.SoundManagerMixin"

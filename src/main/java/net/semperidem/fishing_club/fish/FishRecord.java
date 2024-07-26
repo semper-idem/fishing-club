@@ -2,7 +2,6 @@ package net.semperidem.fishing_club.fish;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -14,20 +13,16 @@ import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
-
-import static net.semperidem.fishing_club.fish.FishUtil.getPseudoRandomValue;
 
 public record FishRecord(
   String name,
   String speciesName,
   int level,
   int quality,
-  int experience,
   float weight,
   float length,
-  int value,
-  float damage,
   UUID id,
   UUID caughtByUUID,
   String caughtBy,
@@ -35,185 +30,143 @@ public record FishRecord(
   boolean isAlive,
   boolean isAlbino
 ) {
+    public static FishRecord init() {
 
-    //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
-    public static final FishRecord DEFAULT =
-      new FishRecord("Cod", "Cod", 0, 1, 3, 0, 0, 1, 0, UUID.randomUUID(), UUID.randomUUID(), "Herobrain", System.currentTimeMillis(), false, false);
-    public static Codec<FishRecord> CODEC =
-      RecordCodecBuilder.create(
-        instance ->
-          instance
-            .group(//todo remove values that don't need to be stored like exp, damage etc as the can be calculated on the go
-              Codec.STRING.fieldOf("name").forGetter(FishRecord::name),
-              Codec.STRING.fieldOf("species_name").forGetter(FishRecord::speciesName),
-              Codec.INT.fieldOf("level").forGetter(FishRecord::level),
-              Codec.INT.fieldOf("quality").forGetter(FishRecord::quality),
-              Codec.INT.fieldOf("experience").forGetter(FishRecord::experience),
-              Codec.FLOAT.fieldOf("weight").forGetter(FishRecord::weight),
-              Codec.FLOAT.fieldOf("length").forGetter(FishRecord::length),
-              Codec.INT.fieldOf("value").forGetter(FishRecord::value),
-              Codec.FLOAT.fieldOf("damage").forGetter(FishRecord::damage),
-              Uuids.INT_STREAM_CODEC.fieldOf("id").forGetter(FishRecord::id),
-              Uuids.INT_STREAM_CODEC.fieldOf("caught_by_uuid").forGetter(FishRecord::caughtByUUID),
-              Codec.STRING.fieldOf("caught_by").forGetter(FishRecord::caughtBy),
-              Codec.LONG.fieldOf("caught_at").forGetter(FishRecord::caughtAt),
-              Codec.BOOL.fieldOf("is_alive").forGetter(FishRecord::isAlive),
-              Codec.BOOL.fieldOf("is_albino").forGetter(FishRecord::isAlbino)//this is argument count limit, need to package fields
-            ).apply(instance, FishRecord::new));
-    public static PacketCodec<RegistryByteBuf, FishRecord> PACKET_CODEC =
-      PacketCodecs.registryCodec(CODEC);
-
-    private static final int DEFAULT_LEVEL = 10;
-    private static final int DEFAULT_MIN_GRADE = 1;
-    private static final double DEFAULT_MULTIPLIER = 0.9D;
-    public static FishRecord create(Species species) {
-        int level = getLevel(species, DEFAULT_LEVEL);
-        int quality = getQuality(
-          DEFAULT_LEVEL,
-          0,
-          DEFAULT_MIN_GRADE,
-          DEFAULT_MULTIPLIER);
-        float weight =
-          MathHelper.clamp(
-            getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f),
-            0,
-            999);
-        float length = getPseudoRandomValue(species.fishMinLength, species.fishRandomLength, level * 0.01f);
-        boolean isAlbino = Math.random() < 0.01f;
-        boolean isWeird = isWeird(species, weight, length);
-        String name = (isWeird ? "Weird " : "") +  (isAlbino ? "Albino " : "") + species.name;
-        return new FishRecord(
-          name,
-          species.name,
-          level,
-          quality,
-          getExperience(isWeird, isAlbino, DEFAULT_MULTIPLIER, species, level, quality),
-          weight,
-          length,
-          getValue(isWeird, isAlbino, weight, quality, species),
-          getDamage(level),
-          UUID.randomUUID(),
-          UUID.randomUUID(),
-          "unknown",
-          System.currentTimeMillis(),
-          true,
-          isAlbino
-        );
+        return init(SpeciesLibrary.DEFAULT);
     }
 
-    public static FishRecord create(IHookEntity caughtWith) {
-        FishingCard caughtByCard = caughtWith.getFishingCard();
-        PlayerEntity caughtBy = caughtByCard.getHolder();
-        RodConfiguration caughtUsing = caughtWith.getCaughtUsing();
-        Species species = SpeciesLibrary.BUTTERFISH; // todo caughtWith position and world based
-        int level = getLevel(species, caughtByCard.getLevel());
-        int quality =
-          getQuality(
-            caughtByCard.getLevel(),
-            caughtWith.getWaitTime(),
-            caughtByCard.getMinGrade(caughtWith),
-            Math.pow(caughtWith.getFishMethodDebuff(), 2));
-        float weight =
-          MathHelper.clamp(
-            getPseudoRandomValue(species.fishMinWeight, species.fishRandomWeight, level * 0.01f),
-            0,
-            caughtUsing.attributes().weightCapacity());
-        float length = getPseudoRandomValue(species.fishMinLength, species.fishRandomLength, level * 0.01f);
-        boolean isAlbino = Math.random() < 0.01f;
-        boolean isWeird = isWeird(species, weight, length);
-        String name =(isWeird ? "Weird " : "") +  (isAlbino ? "Albino " : "") + species.name;
+    public static FishRecord init(Species species) {
+
+        return init(new IHookEntity() {}, species);
+    }
+
+    public static FishRecord init(IHookEntity caughtWith) {
+
+        return init(caughtWith, SpeciesLibrary.DEFAULT);
+    }
+
+    public static FishRecord init(IHookEntity caughtWith, Species species) {
+
+        var caughtByCard = caughtWith.getFishingCard();
+        var caughtUsing = caughtWith.getCaughtUsing();
+        var caughtBy = caughtByCard.getHolder();
+
+        var level = calculateLevel(species, caughtByCard.getLevel());
+        var quality = calculateQuality(caughtWith, caughtByCard, caughtUsing);
+        var weight = calculateWeight(species, level, caughtUsing.attributes().weightCapacity());
+        var length = calculateLength(species, level);
+
+        var isAlbino = Math.random() < 0.01f;
+
         return new FishRecord(
-          name,
+          (weird(species, weight, length) ? "Weird " : "") + (isAlbino ? "Albino " : "") + species.name,
           species.name,
           level,
           quality,
-          getExperience(isWeird, isAlbino, Math.pow(caughtWith.getFishMethodDebuff(), 2), species, level, quality),
           weight,
           length,
-          getValue(isWeird, isAlbino, weight, quality, species),
-          getDamage(level),
           UUID.randomUUID(),
-          caughtBy.getUuid(),
-          caughtBy.getNameForScoreboard(),
+          caughtBy == null ? UUID.randomUUID() : caughtBy.getUuid(),
+          caughtBy == null ? "x" : caughtBy.getNameForScoreboard(),
           System.currentTimeMillis(),
           !(caughtWith instanceof FishingExplosionEntity),
           isAlbino
         );
     }
 
-    private static int getLevel(Species species, int fisherLevel) {
-        int adjustedFishLevel =
-          getPseudoRandomValue(
+
+    private static float calculateWeight(Species species, int level, float maxWeight) {
+        return (float) Math.min(getNormalizedRandom(species.fishMinWeight, species.fishRandomWeight, level * 0.01f), maxWeight);
+    }
+
+    private static float calculateLength(Species species, int level) {
+        return (float) getNormalizedRandom(species.fishMinLength, species.fishRandomLength, level * 0.01f);
+    }
+
+    private static int calculateLevel(Species species, int fisherLevel) {
+
+        return (int) MathHelper.clamp(getNormalizedRandom(
             species.minLevel,
-            Math.min(99 - species.minLevel, fisherLevel),
-            Math.min(
-              1, (float) (Math.min(0.5, (fisherLevel / 200f)) + (Math.sqrt(fisherLevel) / 50f))));
-        return MathHelper.clamp(adjustedFishLevel, 1, 99);
+            fisherLevel - species.minLevel,
+            fisherLevel * 0.01
+          ), MIN_LEVEL, MAX_LEVEL
+        );
     }
 
-    private static boolean isWeird(Species species, float weight, float length) {
-        float lengthScale = FishComponent.getLengthScale(species, length);
-        float weightScale = FishComponent.getWeightScale(species, weight);
-        return Math.abs(lengthScale - weightScale) > FishComponent.SCALE_RANGE * 0.7f;
+    private static int calculateQuality(IHookEntity caughtWith, FishingCard fisher, RodConfiguration rod) {
+
+        var fisherMean = MathHelper.clamp(fisher.getLevel() * 0.0025, 0, 0.25);
+        var rodMean = rod.attributes().fishQuality() * 0.025;
+        var circumstanceMean = caughtWith.getFishMethodDebuff(); //todo add method that handle this
+        var mean = fisherMean + rodMean + circumstanceMean;
+
+        return (int) MathHelper.clamp(
+          getNormalizedRandom(MIN_LEVEL, 4, mean),//non-boosting min quality buff impl
+          fisher.getMinGrade(caughtWith),
+          MAX_QUALITY
+        );
     }
 
-    private static int getValue(boolean isWeird, boolean isAlbino, float weight, int quality, Species species) {
-        float gradeMultiplier =
-          (float) (quality <= 3 ? (0.5 + (quality / 3f)) : Math.pow(2, (quality - 2)));
-        float weightMultiplier =
-          1 + (weight < 100 ? (float) Math.sqrt(weight / 0.01f) : weight * 0.01f);
-        float fValue = 1 + ((125 - species.fishRarity) / 100) * 0.5f;
-        fValue *= gradeMultiplier;
-        fValue *= weightMultiplier;
+    public int experience(double xFisher) {
 
-        if (isWeird) {
-            fValue *= 1.5f;
-        }
-        if (isAlbino) {
-            fValue *= 3f;
-        }
-        return (int) MathHelper.clamp(fValue, 1, 99999);
+        var xRarity = this.species().fishRarity * 0.01;
+        var xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;
+        var xWeird = this.weird() ? 3 : 1;
+        var xAlbino = this.isAlbino ? 1.5 : 1;
+        var xLevel = Math.pow(this.level, 1.3);
+
+        return (int) MathHelper.clamp(
+          BASE_EXP + xFisher * xLevel * xRarity * xQuality * xWeird * xAlbino,
+          BASE_EXP, MAX_EXP
+        );
     }
 
-    private static int getQuality(int level, int waitTime, int minQuality, double multiplier) {
-        float levelSkew = level * 0.0025f;
-        float rodSkew = 0.25f; // todo
-        float chunkSkew = 0.25f; // 0.25 for best chunk  TODO CHUNK QUALITY
-        float waitSkew =
-          0.25f * (waitTime / 1200); // make waiting over 60s STILL improve quality (intended)
-        float skew = levelSkew + rodSkew + chunkSkew + waitSkew;
-        return (int) MathHelper.clamp(getPseudoRandomValue(1, 4, skew) * multiplier, minQuality, 5);
+
+    public Species species() {
+
+        return Species.ofName(this.speciesName);
     }
 
-    private static float getDamage(int level) {
-        return MathHelper.clamp((level - 5) * 0.05f, 0, 1);
+    public boolean weird() {
+
+        return weird(
+          this.species(),
+          this.weight,
+          this.length
+        );
     }
 
-    private static int getExperience(boolean isWeird, boolean isAlbino,
-                                     double multiplier, Species species, int level, int quality) {
-        float fishRarityMultiplier = (200 - species.fishRarity) / 100;
-        float fishExpValue = (float) Math.pow(level, 1.3);
-        float fishGradeMultiplier = quality > 3 ? (float) Math.pow(2, quality - 3) : 1;
-        int fishExp =
-          (int)
-            ((fishGradeMultiplier * fishRarityMultiplier * (5 + fishExpValue))
-              * multiplier);
+    private static boolean weird(Species species, float weight, float length) {
 
-        if (isWeird) {
-            fishExp *= (int) 3f;
-        }
-        if (isAlbino) {
-            fishExp = (int) (fishExp * 1.5f);
-        }
-        return MathHelper.clamp(fishExp, 3, 99999);
+        return Math.abs(getWeightScale(species, length) - getLengthScale(species, weight)) > SCALE_RANGE * WEIRD_RANGE;
     }
+
+
+    public int value() {
+        var species = Species.ofName(this.speciesName);
+
+        var xRarity = 1 + species.fishRarity * 0.01;
+        var xQuality = this.quality <= 2 ? (0.5 + this.quality / 4D) : Math.pow(2, (this.quality - 2));
+        var xWeight = 1 + weight * 0.005;
+        var xWeird = this.weird() ? 1.5 : 1;
+        var xAlbino = this.isAlbino() ? 3 : 1;
+
+        return (int) MathHelper.clamp(
+          BASE_VALUE * xRarity * xQuality * xWeight * xWeird * xAlbino
+          , 1, 99999);
+    }
+
+
+    public float damage() {
+        return MathHelper.clamp((this.level - 10) * 0.05f, 0, 1);
+    }
+
 
     public boolean isEqual(FishRecord other) {
         boolean isEqual = (Objects.equals(this.name, other.name));
         isEqual &= (Objects.equals(this.speciesName, other.speciesName));
         isEqual &= (this.level == other.level);
         isEqual &= (this.quality == other.quality);
-        isEqual &= (this.value == other.value);
         isEqual &= (this.weight == other.weight);
         isEqual &= (this.length == other.length);
         isEqual &= (this.caughtByUUID.compareTo(other.caughtByUUID) == 0);
@@ -226,5 +179,72 @@ public record FishRecord(
     public String toString() {
         return name;
     }
+
+
+    private static double getNormalizedRandom(double base, double range, double mean) {
+        return base + range * Math.abs(RANDOM.nextGaussian(mean, 1)) / 4D;
+    }
+
+    public static float getLengthScale(Species species, float length) {
+
+        return 1 - HALF_SCALE_RANGE + ((length - species.fishMinLength) / species.fishRandomLength * SCALE_RANGE);
+    }
+
+    public static float getWeightScale(Species species, float weight) {
+
+        return 1 - HALF_SCALE_RANGE + ((weight - species.fishMinLength) / species.fishRandomLength * SCALE_RANGE);
+    }
+
+
+    public static final float SCALE_RANGE = 0.4f;
+    private static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
+    //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
+    private static final Random RANDOM = new Random(42L);
+
+    private static final int MIN_LEVEL = 1;
+    private static final int MAX_LEVEL = 99;
+
+    public static final int MIN_QUALITY = 1;
+    public static final int MAX_QUALITY = 5;
+
+    public static final int BASE_VALUE = 5;
+
+    public static final int BASE_EXP = 3;
+    public static final int MAX_EXP = 99999;
+
+    public static final double WEIRD_RANGE = 0.7D;
+
+    public static final FishRecord DEFAULT =
+      new FishRecord(SpeciesLibrary.DEFAULT.name,
+        SpeciesLibrary.DEFAULT.name,
+        MIN_LEVEL, MIN_QUALITY,
+        0,
+        0,
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        "x",
+        System.currentTimeMillis(),
+        false, false
+      );
+    public static Codec<FishRecord> CODEC =
+      RecordCodecBuilder.create(
+        instance ->
+          instance
+            .group(
+              Codec.STRING.fieldOf("name").forGetter(FishRecord::name),
+              Codec.STRING.fieldOf("species_name").forGetter(FishRecord::speciesName),
+              Codec.INT.fieldOf("level").forGetter(FishRecord::level),
+              Codec.INT.fieldOf("quality").forGetter(FishRecord::quality),
+              Codec.FLOAT.fieldOf("weight").forGetter(FishRecord::weight),
+              Codec.FLOAT.fieldOf("length").forGetter(FishRecord::length),
+              Uuids.INT_STREAM_CODEC.fieldOf("id").forGetter(FishRecord::id),
+              Uuids.INT_STREAM_CODEC.fieldOf("caught_by_uuid").forGetter(FishRecord::caughtByUUID),
+              Codec.STRING.fieldOf("caught_by").forGetter(FishRecord::caughtBy),
+              Codec.LONG.fieldOf("caught_at").forGetter(FishRecord::caughtAt),
+              Codec.BOOL.fieldOf("is_alive").forGetter(FishRecord::isAlive),
+              Codec.BOOL.fieldOf("is_albino").forGetter(FishRecord::isAlbino)//this is argument count limit, need to package fields
+            ).apply(instance, FishRecord::new)
+      );
+    public static PacketCodec<RegistryByteBuf, FishRecord> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
 }

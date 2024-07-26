@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SpeciesLibrary {
-    public static HashMap<String, Species> ALL_FISH_TYPES = new HashMap<>();
+
+    static HashMap<String, Species> ALL_FISH_TYPES = new HashMap<>();
 
 
     public static Species COD;
@@ -24,6 +25,7 @@ public class SpeciesLibrary {
     public static Species RAINBOW_TROUT;
     public static Species WALLEYE;
     public static Species BUTTERFISH;
+    public static Species DEFAULT;
 
     public static ArrayList<Species> getSpeciesForLevel(int level){
         return  new ArrayList<>(
@@ -224,5 +226,7 @@ public class SpeciesLibrary {
           65
         );
 
+
+        DEFAULT = COD;
     }
 }

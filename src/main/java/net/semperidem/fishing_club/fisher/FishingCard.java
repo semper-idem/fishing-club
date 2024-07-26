@@ -18,6 +18,7 @@ import net.semperidem.fishing_club.fisher.managers.*;
 import net.semperidem.fishing_club.fisher.perks.FishingPerk;
 import net.semperidem.fishing_club.leaderboard.LeaderboardTracker;
 import net.semperidem.fishing_club.screen.dialog.DialogKey;
+import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 
 public final class FishingCard extends FishingCardInventory implements EntityComponentInitializer, AutoSyncedComponent {
     public static final ComponentKey<FishingCard> FISHING_CARD = ComponentRegistry.getOrCreate(FishingClub.getIdentifier("fishing_card"), FishingCard.class);
+    public static final FishingCard DEFAULT = new FishingCard();
     private PlayerEntity holder;
     private final ProgressionManager progressionManager;
     private final SummonRequestManager summonRequestManager;
@@ -185,7 +187,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return progressionManager.getExp();
     }
 
-    public PlayerEntity getHolder(){
+    public @Nullable PlayerEntity getHolder(){
         return holder;
     }
 
@@ -219,12 +221,11 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public void fishCaught(FishRecord fish){
-        int expGained = fish.experience();
-        expGained += (int) statusEffectHelper.getExpMultiplier();
-        float passiveExpMultiplier = 1 + 0.1f * statusEffectHelper.spreadStatusEffect(progressionManager, fish);
-        expGained = (int)(expGained * passiveExpMultiplier);
 
-        progressionManager.grantExperience(expGained);
+        var xEffects = this.statusEffectHelper.getExpMultiplier();
+        var xGroup = 1 + 0.1f * this.statusEffectHelper.spreadStatusEffect(this.progressionManager, fish);
+
+        progressionManager.grantExperience(fish.experience(1 * xGroup * xEffects));
         historyManager.fishCaught(fish);
         statusEffectHelper.fishCaught(progressionManager);
 

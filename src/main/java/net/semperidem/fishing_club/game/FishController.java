@@ -4,7 +4,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.fish.MovementPatternInstance;
 import net.semperidem.fishing_club.fish.Species;
-import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.network.payload.FishingGameTickPayload;
 import net.semperidem.fishing_club.registry.FCStatusEffects;
 
@@ -43,7 +42,7 @@ public class FishController {
     public FishController(FishingGameController parent){
         this.parent = parent;
 
-        Species species = SpeciesLibrary.ALL_FISH_TYPES.get(parent.hookedFish.speciesName());
+        Species species = Species.ofName(parent.hookedFish.speciesName());
         stamina = STAMINA_BASE + species.getStaminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;

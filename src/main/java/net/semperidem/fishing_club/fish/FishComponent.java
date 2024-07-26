@@ -29,8 +29,6 @@ public class FishComponent implements BlockComponentInitializer, EntityComponent
     float weightScale = 1;
     float lengthScale = 1;
     boolean isAlbino = false;
-    public static final float SCALE_RANGE = 0.4f;
-    private static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
     Pair<FCFishEntityModel<FCFishEntity>, Identifier> modelAndTexture;
 
     public static final ComponentKey<FishComponent> FISH_COMPONENT = ComponentRegistry.getOrCreate(
@@ -57,20 +55,11 @@ public class FishComponent implements BlockComponentInitializer, EntityComponent
             return;
         }
         Species species = SpeciesLibrary.ALL_FISH_TYPES.get(fishRecord.speciesName());
-        this.lengthScale = getLengthScale(species, fishRecord.length());
-        this.weightScale = getWeightScale(species, fishRecord.weight());
+        this.lengthScale = FishRecord.getLengthScale(species, fishRecord.length());
+        this.weightScale = FishRecord.getWeightScale(species, fishRecord.weight());
         this.isAlbino = fishRecord.isAlbino();
         this.modelAndTexture = FCFishEntityRenderer.getModelAndTexture(this.fishRecord);
     }
-
-    public static float getLengthScale(Species species, float length) {
-        return  1 - HALF_SCALE_RANGE + ((length - species.fishMinLength) / species.fishRandomLength * SCALE_RANGE);
-    }
-
-    public static float getWeightScale(Species species, float weight) {
-        return  1 - HALF_SCALE_RANGE + ((weight - species.fishMinLength) / species.fishRandomLength * SCALE_RANGE);
-    }
-
 
 
     public static FishComponent of(FishEntity fishEntity) {

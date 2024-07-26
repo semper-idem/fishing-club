@@ -1,15 +1,21 @@
 package net.semperidem.fishing_club.entity;
 
-import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 
 public interface IHookEntity {
-    FishingCard getFishingCard();
 
-    RodConfiguration getCaughtUsing();
+    default FishingCard getFishingCard() {
+        return FishingCard.DEFAULT;
+    }
 
-    float getFishMethodDebuff();
+    default RodConfiguration getCaughtUsing() {
+        return RodConfiguration.EMPTY;
+    }
+
+    default float getFishMethodDebuff() {
+        return 0.5f;
+    }
 
     default int getWaitTime() {
         return 0;

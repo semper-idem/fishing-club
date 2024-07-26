@@ -24,13 +24,31 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
 
     @Shadow @Final public ModelPart rightArm;
 
+    @Shadow @Final public ModelPart head;
+
     @Inject(method = "positionLeftArm", at = @At("TAIL"))
     private void onPositionLeftArm(T entity, CallbackInfo ci) {
-        onPosition(leftArm, leftArmPose, entity);
+        onPositionFishingRod(leftArm, leftArmPose, entity);
+    }
+
+    @Inject(method = "setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
+    private void onSetAngles(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
+        if (!livingEntity.getMainHandStack().isOf(FCItems.FISH)) {
+            return;
+        }
+        if (livingEntity.getMainHandStack().isEmpty()) {
+            return;
+        }
+
+        leftArm.yaw = (0.3F) + head.yaw;
+        leftArm.pitch = -1.5707964F + head.pitch + 0.1F;
+        rightArm.yaw = (-0.6F) + head.yaw;
+        rightArm.pitch = -1.5F + head.pitch;
+
     }
 
     @Unique
-    private void onPosition(ModelPart arm, BipedEntityModel.ArmPose armPose, T entity) {
+    private void onPositionFishingRod(ModelPart arm, BipedEntityModel.ArmPose armPose, T entity) {
         if (armPose != BipedEntityModel.ArmPose.THROW_SPEAR) {
             return;
         }
@@ -43,6 +61,8 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
 
     @Inject(method = "positionRightArm", at = @At("TAIL"))
     private void onPositionRight(T entity, CallbackInfo ci) {
-        onPosition(rightArm, rightArmPose, entity);
+        onPositionFishingRod(rightArm, rightArmPose, entity);
     }
+
+
 }

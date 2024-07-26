@@ -44,4 +44,8 @@ public class Species {
     public int getStaminaLevel() {
         return staminaLevel;
     }
+
+    public static Species ofName(String speciesName) {
+        return SpeciesLibrary.ALL_FISH_TYPES.getOrDefault(speciesName, SpeciesLibrary.DEFAULT);
+    }
 }

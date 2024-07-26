@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.registry;
 
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.semperidem.fishing_club.FishingClub;

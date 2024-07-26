@@ -24,10 +24,13 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static net.semperidem.fishing_club.fish.FishRecord.MAX_QUALITY;
+import static net.semperidem.fishing_club.fish.FishRecord.MIN_QUALITY;
+
 public class FishUtil {
     public static final Item FISH_ITEM = FCItems.FISH;
-    private static final Random RANDOM = new Random(42L);
     private static final String CAUGHT_BY_TAG = "caught_by";
+
 
 
     public static ItemStack getStackFromFish(FishRecord fish){
@@ -123,17 +126,15 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
     private static List<Text> getDetailsAsLore(FishRecord fish) {
-        int weightGrade = getWeightGrade(fish);
-        int lengthGrade = getLengthGrade(fish);
         ArrayList<Text> result = new ArrayList<>();
-        result.add(getGradeText(Math.max(lengthGrade, weightGrade)));
-        result.add(getWeightText(fish.weight(), weightGrade));
-        result.add(getLengthText(fish.length(), lengthGrade));
+        result.add(getQualityText(fish.quality()));
+        result.add(getWeightText(fish.weight(), getWeightGrade(fish)));
+        result.add(getLengthText(fish.length(), getLengthGrade(fish)));
         result.add(getCaughtBy(fish.caughtBy()));
         result.add(getCaughtAt(fish.caughtAt()));
         result.add(getValueText(fish.value()));
         if (!fish.isAlive()) {
-            result.add(Text.of("[x _ x]"));
+            result.add(Text.of("<x)))><"));
         }
         return result;
     }
@@ -148,17 +149,17 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         return Text.of("§3Value: §6" + value + "$");
     }
 
-    private static Text getGradeText(int grade){
-        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + getGradeString(grade));
+    private static Text getQualityText(int grade){
+        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + getQualityString(grade));
     }
 
-    private static String getGradeString(int grade) {
+    private static String getQualityString(int grade) {
         return switch(grade) {
-            case 1 -> "Defect";
+            case MIN_QUALITY -> "Defect";
             case 2 -> "Poor";
             case 3 -> "Standard";
             case 4 -> "Good";
-            case 5 -> "Excellent";
+            case MAX_QUALITY -> "Excellent";
             default -> "Unidentifiable";
         };
     }
@@ -173,11 +174,11 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
     private static String getGradeColor(int grade){
         return switch (grade) {
-            case 1 -> "8";
+            case MIN_QUALITY -> "8";
             case 2 -> "7";
             case 3 -> "f";
             case 4 -> "e";
-            case 5 -> "6";
+            case MAX_QUALITY -> "6";
             default -> "k";
         };
     }
@@ -185,7 +186,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     public static int getWeightGrade(FishRecord fish){
         Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
         if (fishType == null) {
-            return 1;
+            return MIN_QUALITY;
         }
         float percentile = (fish.weight()) / (fishType.fishMinWeight + fishType.fishRandomWeight);
         return getGrade(percentile);
@@ -193,7 +194,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     public static int getLengthGrade(FishRecord fish){
         Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
         if (fishType == null) {
-            return 1;
+            return MIN_QUALITY;
         }
         float percentile = (fish.length()) / (fishType.fishMinLength + fishType.fishRandomLength);
         return getGrade(percentile);
@@ -201,7 +202,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
     private static int getGrade(float percentile){
         if (percentile < 0.25) {
-            return 1;
+            return MIN_QUALITY;
         } else if (percentile < 0.5) {
             return 2;
         } else if (percentile < 0.8) {
@@ -209,7 +210,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         } else if (percentile < 0.9) {
             return 4;
         } else {
-            return 5;
+            return MAX_QUALITY;
         }
     }
 
@@ -241,7 +242,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         }
 
         int randomWeight = (int) (Math.random() * totalWeight);
-        Species randomSpecies = SpeciesLibrary.COD;
+        Species randomSpecies = SpeciesLibrary.DEFAULT;
         for(Species species : speciesToTotalWeight.keySet()) {
             randomSpecies = species;
             if (randomWeight < speciesToTotalWeight.get(randomSpecies)) {
@@ -252,22 +253,9 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
     public static FishRecord getFishOnHook(IHookEntity hookEntity) {
-        return FishRecord.create(hookEntity);
+        return FishRecord.init(hookEntity);
     }
 
-        public static float getPseudoRandomValue(float base, float randomAdjustment, float skew){
-        float skewPercentage = 0.5f;
-        skew = MathHelper.clamp(skew, 0.01f, 1);
-        double skewPart = randomAdjustment * (float) Math.sqrt(skew) * 0.8f * skewPercentage;
-        double nextG = Math.max(-3, Math.min( 3, RANDOM.nextGaussian()));
-        double mappedG = (nextG + 3) / 6;
-        double randomPart = randomAdjustment * mappedG * (1 - skewPercentage);
-        return (float) (base + skewPart + randomPart);
-    }
-
-    public static int getPseudoRandomValue(int base, int randomAdjustment, float skew){
-        return (int) getPseudoRandomValue(Float.valueOf(base), Float.valueOf(randomAdjustment), skew);
-    }
 
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};
