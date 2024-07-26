@@ -42,7 +42,11 @@ public record FishRecord(
 
     public static FishRecord init(IHookEntity caughtWith) {
 
-        return init(caughtWith, SpeciesLibrary.DEFAULT);
+        return init(caughtWith, Math.random() > 0.5f ? SpeciesLibrary.BUTTERFISH : SpeciesLibrary.DEFAULT);
+    }
+
+    public String getTextureName() {
+        return Species.ofName(this.speciesName).getTextureName(this.isAlbino);
     }
 
     public static FishRecord init(IHookEntity caughtWith, Species species) {

@@ -1,8 +1,11 @@
 package net.semperidem.fishing_club.fish;
 
 
+import net.semperidem.fishing_club.entity.renderer.model.FishModels;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class SpeciesLibrary {
 
@@ -34,6 +37,10 @@ public class SpeciesLibrary {
         );
     }
 
+    public static Iterator<Species> iterator() {
+        return ALL_FISH_TYPES.values().iterator();
+    }
+
     static {
         COD = new Species(
                 "Cod",
@@ -45,7 +52,19 @@ public class SpeciesLibrary {
                 2,
                 23,
                 100
-        );
+        ).withModel(FishModels::getCodModelData);
+
+        BUTTERFISH = new Species(
+            "Butterfish",
+            MovementPatterns.MID1,
+            10,
+            2,
+            30,
+            61,
+            0.5f,
+            10.5f,
+            65
+        ).withModel(FishModels::getButterfishModelData);
 
         L_BASS = new Species(
                 "Largemouth Bass",
@@ -205,17 +224,6 @@ public class SpeciesLibrary {
 
         WALLEYE = new Species(
           "Walleye",
-          MovementPatterns.MID1,
-          10,
-          2,
-          30,
-          61,
-          0.5f,
-          10.5f,
-          65
-        );
-        BUTTERFISH = new Species(
-          "Butterfish",
           MovementPatterns.MID1,
           10,
           2,

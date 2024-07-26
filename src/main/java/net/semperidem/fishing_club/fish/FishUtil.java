@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.fish;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,6 +44,7 @@ public class FishUtil {
         fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
         setLore(fishReward, fish);
         fishReward.setCount(count);
+        fishReward.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(fish.species().id));
         return fishReward;
     }
 

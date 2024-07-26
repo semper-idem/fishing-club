@@ -1,5 +1,7 @@
 package net.semperidem.fishing_club.fish;
 
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+
 public class Species {
 
     public String name;
@@ -12,6 +14,10 @@ public class Species {
     public final float fishMinWeight;
     public final float fishRandomWeight;
     final float fishRarity;
+    EntityModelLayerRegistry.TexturedModelDataProvider modelDataProvider;
+
+    public static int idCount = 1;
+    public final int id;
 
     //TODO refactor into factory
     public Species(
@@ -35,6 +41,8 @@ public class Species {
         this.fishRandomWeight = fishRandomWeight;
         this.fishRarity = fishRarity;
         SpeciesLibrary.ALL_FISH_TYPES.put(name, this);
+        this.id = idCount;
+        idCount++;
     }
 
     public MovementPattern getFishPattern() {
@@ -47,5 +55,19 @@ public class Species {
 
     public static Species ofName(String speciesName) {
         return SpeciesLibrary.ALL_FISH_TYPES.getOrDefault(speciesName, SpeciesLibrary.DEFAULT);
+    }
+
+    public EntityModelLayerRegistry.TexturedModelDataProvider model() {
+        return this.modelDataProvider;
+    }
+
+    public Species withModel(EntityModelLayerRegistry.TexturedModelDataProvider modelDataProvider) {
+        this.modelDataProvider = modelDataProvider;
+        return this;
+    }
+
+    public String getTextureName(boolean isAlbino) {
+        String name = this.name.toLowerCase().replace(" ", "_");
+        return "fish/" + name + "/" + name + (isAlbino ? "_albino" : "");
     }
 }

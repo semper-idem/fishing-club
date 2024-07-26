@@ -2,5 +2,10 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "minecraft:item/cod"
-  }
+  },
+  "overrides" : [
+    { "predicate": { "custom_model_data": 1 }, "model": "fishing-club:item/fish/cod/cod_item_2d" },
+    { "predicate": { "custom_model_data": 2 }, "model": "fishing-club:item/fish/butterfish/butterfish_item_2d" },
+    { "predicate": { "custom_model_data": 3 }, "model": "fishing-club:item/fish/cod/cod_item_2d" }
+  ]
 }

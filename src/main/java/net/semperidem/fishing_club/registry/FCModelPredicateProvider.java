@@ -3,7 +3,7 @@ package net.semperidem.fishing_club.registry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-import static net.minecraft.client.item.ModelPredicateProviderRegistry.*;
+import static net.minecraft.client.item.ModelPredicateProviderRegistry.register;
 
 public class FCModelPredicateProvider {
 

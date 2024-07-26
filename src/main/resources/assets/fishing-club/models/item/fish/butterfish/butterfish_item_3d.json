@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "fishing-club:item/butterfish"
+		"1": "fishing-club:item/fish/butterfish/butterfish"
 	},
 	"elements": [
 		{

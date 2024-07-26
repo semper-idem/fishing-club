@@ -7,12 +7,11 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.FCFishEntity;
 import net.semperidem.fishing_club.entity.FishDisplayBlockEntity;
-import net.semperidem.fishing_club.entity.renderer.FCFishEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.model.FCFishEntityModel;
+import net.semperidem.fishing_club.registry.FCModels;
 import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -29,7 +28,8 @@ public class FishComponent implements BlockComponentInitializer, EntityComponent
     float weightScale = 1;
     float lengthScale = 1;
     boolean isAlbino = false;
-    Pair<FCFishEntityModel<FCFishEntity>, Identifier> modelAndTexture;
+    FCFishEntityModel<FCFishEntity> model;
+    Identifier texture;
 
     public static final ComponentKey<FishComponent> FISH_COMPONENT = ComponentRegistry.getOrCreate(
       FishingClub.getIdentifier("fish_component"), FishComponent.class);
@@ -46,19 +46,24 @@ public class FishComponent implements BlockComponentInitializer, EntityComponent
         return this.lengthScale;
     }
 
-    public Pair<FCFishEntityModel<FCFishEntity>, Identifier> getModelAndTexture() {
-        return this.modelAndTexture;
+    public FCFishEntityModel<FCFishEntity> model() {
+        return this.model;
+    }
+
+    public Identifier texture() {
+        return this.texture;
     }
 
     public void calculateModelVariant(FishRecord fishRecord) {
         if (!this.fishEntity.getWorld().isClient()) {
             return;
         }
-        Species species = SpeciesLibrary.ALL_FISH_TYPES.get(fishRecord.speciesName());
+        var species = SpeciesLibrary.ALL_FISH_TYPES.get(fishRecord.speciesName());
         this.lengthScale = FishRecord.getLengthScale(species, fishRecord.length());
         this.weightScale = FishRecord.getWeightScale(species, fishRecord.weight());
         this.isAlbino = fishRecord.isAlbino();
-        this.modelAndTexture = FCFishEntityRenderer.getModelAndTexture(this.fishRecord);
+        this.model = FCModels.getModel(fishRecord);
+        this.texture = FCModels.getTexture(fishRecord);
     }
 
 
