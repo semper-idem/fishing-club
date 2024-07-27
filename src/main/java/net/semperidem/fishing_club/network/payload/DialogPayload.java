@@ -8,7 +8,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandlerFactory;
-import net.semperidem.fishing_club.screen.dialog.DialogUtil;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 
 public record DialogPayload(String openingKeys) implements CustomPayload {
     public static final CustomPayload.Id<DialogPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_dialog"));
@@ -20,6 +20,6 @@ public record DialogPayload(String openingKeys) implements CustomPayload {
     }
 
     public static void consumePayload(DialogPayload payload, ServerPlayNetworking.Context context) {
-        context.player().openHandledScreen(new DialogScreenHandlerFactory(DialogUtil.getKeysFromString(payload.openingKeys)));
+        context.player().openHandledScreen(new DialogScreenHandlerFactory(DialogController.getKeysFromString(payload.openingKeys)));
     }
 }

@@ -1,7 +1,5 @@
 package net.semperidem.fishing_club.screen.dialog;
 
-import java.util.HashSet;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -9,8 +7,10 @@ import net.minecraft.screen.ScreenHandler;
 import net.semperidem.fishing_club.network.payload.DialogPayload;
 import net.semperidem.fishing_club.registry.FCScreenHandlers;
 
+import java.util.HashSet;
+
 public class DialogScreenHandler extends ScreenHandler {
-    HashSet<DialogKey> openingKeys;
+    HashSet<DialogNode.DialogKey> openingKeys;
 
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, DialogPayload dialogPayload) {
         this(syncId, playerInventory, dialogPayload.openingKeys());
@@ -18,10 +18,11 @@ public class DialogScreenHandler extends ScreenHandler {
 
     public DialogScreenHandler(int syncId, PlayerInventory playerInventory, String openingKeyString) {
         super(FCScreenHandlers.DIALOG_SCREEN, syncId);
-        this.openingKeys = DialogUtil.getKeysFromString(openingKeyString);//new HashSet<>(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, UNIQUE, SUMMONER));
+        DialogController.initialize();
+        this.openingKeys = DialogController.getKeysFromString(openingKeyString);//new HashSet<>(Set.of(GOLDEN, NOT_WELCOME, NOT_REPEATED, UNIQUE, SUMMONER));
     }
 
-    public HashSet<DialogKey> getOpeningKeys() {
+    public HashSet<DialogNode.DialogKey> getOpeningKeys() {
         return openingKeys;
     }
 

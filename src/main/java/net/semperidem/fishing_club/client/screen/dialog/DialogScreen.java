@@ -11,7 +11,7 @@ import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.client.screen.Texture;
 import net.semperidem.fishing_club.screen.dialog.DialogNode;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandler;
-import net.semperidem.fishing_club.screen.dialog.DialogUtil;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 
 public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
 
@@ -27,7 +27,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
                 TEXTURE.textureWidth  - TILE_SIZE * 11,
                 TEXTURE.textureHeight  - TILE_SIZE * 2
         );
-        DialogNode startingNode = DialogUtil.getStartQuestion(getScreenHandler().getOpeningKeys());
+        DialogNode startingNode = DialogController.getStartQuestion(getScreenHandler().getOpeningKeys());
         dialogBox.addMessage(startingNode);
      }
 

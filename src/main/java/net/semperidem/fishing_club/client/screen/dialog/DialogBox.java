@@ -1,8 +1,5 @@
 package net.semperidem.fishing_club.client.screen.dialog;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -11,8 +8,12 @@ import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.network.payload.DialogResponsePayload;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 import net.semperidem.fishing_club.screen.dialog.DialogNode;
-import net.semperidem.fishing_club.screen.dialog.DialogUtil;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DialogBox extends ScrollableWidget {
     ArrayList<String> responseLines = new ArrayList<>();
@@ -110,7 +111,7 @@ public class DialogBox extends ScrollableWidget {
         if (finishedRenderingLine() && !responseLinesQueue.isEmpty()) {
             consumeMessage();
         }
-        trailingLine = DialogUtil.getTextForTick(lineInQueue, tick);
+        trailingLine = DialogController.getTextForTick(lineInQueue, tick);
         textSpeed = 1;
         tick+=textSpeed;
     }
@@ -118,19 +119,19 @@ public class DialogBox extends ScrollableWidget {
     public void addMessage(DialogNode nextNode) {
         response = nextNode;
         ArrayList<String> temp = new ArrayList<>();
-        if (response.title != null && !response.title.isEmpty()) {
-            temp.add(" - " + response.title);
+        if (response.playerSays != null && !response.playerSays.isEmpty()) {
+            temp.add(" - " + response.playerSays);
         }
-        temp.addAll(List.of(response.content.split("\n")));
+        temp.addAll(List.of(response.response.split("\n")));
         for(String responseLine : temp) {
             responseLinesQueue.add(responseLine.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
         }
         possibleQuestions.clear();
         for(DialogNode question : response.questions) {
-            possibleQuestions.add(question.title.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
+            possibleQuestions.add(question.playerSays.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
         }
         lineInQueue = responseLinesQueue.get(0);
-        lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
+        lineInQueueFinishTick = DialogController.getTickForText(lineInQueue);
         tick = 0;
         setFocused(true);
     }
@@ -145,17 +146,17 @@ public class DialogBox extends ScrollableWidget {
         setScrollY(getMaxScrollY());
         if (!responseLinesQueue.isEmpty()) {
             lineInQueue = responseLinesQueue.get(0);
-            lineInQueueFinishTick = DialogUtil.getTickForText(lineInQueue);
+            lineInQueueFinishTick = DialogController.getTickForText(lineInQueue);
             tick = -5;
             processAction();
         }
     }
 
     private void processAction() {
-        if (response.specialAction == null) {
+         if (response.action == null) {
             return;
         }
-        ClientPlayNetworking.send(new DialogResponsePayload(response.specialAction));
+        ClientPlayNetworking.send(new DialogResponsePayload(response.action.toString()));
     }
 
     private boolean finishedRenderingLine() {

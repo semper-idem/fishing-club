@@ -12,7 +12,7 @@ import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
 import net.semperidem.fishing_club.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
-import net.semperidem.fishing_club.screen.dialog.DialogUtil;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 
 import java.util.HashMap;
 
@@ -42,7 +42,7 @@ public class FCRegistry {
         FCStatusEffects.register();
         LevelRewardRule.initDefaultRewards();
         FishingPerks.register();
-        DialogUtil.register();
+        DialogController.initialize();
     }
 
     public static void registerClient(){

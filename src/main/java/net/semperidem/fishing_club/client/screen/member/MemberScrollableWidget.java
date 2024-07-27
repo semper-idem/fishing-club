@@ -51,6 +51,9 @@ public class MemberScrollableWidget extends ScrollableWidget {
     protected void renderOverlay(DrawContext context) {
         int i = this.getScrollbarThumbHeight();
         int j = this.getX() + this.width;
+        if (this.getMaxScrollY() <= 0) {
+            return;
+        }
         int k = Math.max(this.getY(), (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.getY());
         RenderSystem.enableBlend();
         context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);

@@ -1,6 +1,5 @@
 package net.semperidem.fishing_club.screen.dialog;
 
-import java.util.HashSet;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -10,10 +9,12 @@ import net.minecraft.text.Text;
 import net.semperidem.fishing_club.network.payload.DialogPayload;
 import org.jetbrains.annotations.Nullable;
 
-public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory<DialogPayload> {
-    private final HashSet<DialogKey> openingKeys;
+import java.util.HashSet;
 
-    public DialogScreenHandlerFactory(HashSet<DialogKey> openingKeys) {
+public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory<DialogPayload> {
+    private final HashSet<DialogNode.DialogKey> openingKeys;
+
+    public DialogScreenHandlerFactory(HashSet<DialogNode.DialogKey> openingKeys) {
         this.openingKeys = openingKeys;
     }
 
@@ -25,11 +26,11 @@ public class DialogScreenHandlerFactory implements ExtendedScreenHandlerFactory<
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new DialogScreenHandler(syncId, inv, DialogUtil.getStringFromKeys(openingKeys));
+        return new DialogScreenHandler(syncId, inv, DialogController.getStringFromKeys(openingKeys));
     }
 
     @Override
     public DialogPayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new DialogPayload(DialogUtil.getStringFromKeys(openingKeys));
+        return new DialogPayload(DialogController.getStringFromKeys(openingKeys));
     }
 }

@@ -33,10 +33,10 @@ import net.semperidem.fishing_club.FishingServerWorld;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.registry.FCEntityTypes;
-import net.semperidem.fishing_club.screen.dialog.DialogKey;
+import net.semperidem.fishing_club.screen.dialog.DialogNode;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandlerFactory;
-import net.semperidem.fishing_club.screen.dialog.DialogUtil;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 import net.semperidem.fishing_club.screen.member.MemberScreenHandler;
 import net.semperidem.fishing_club.util.EffectUtils;
 import org.jetbrains.annotations.Nullable;
@@ -205,7 +205,18 @@ public class FishermanEntity extends PassiveEntity {
         tickDespawnTimer();
         tickPaddles();
         tickBuoyancy();
+
         super.tick();
+        if (!(this.getWorld() instanceof FishingServerWorld fishingWorld)) {
+            return;
+        }
+        if (fishingWorld.getDerek() != this) {
+            fishingWorld.getDerek().discard();
+        }
+        if (fishingWorld.getDerek() == null) {
+            fishingWorld.setDerek(this);
+        }
+
     }
 
     public boolean isInWater() {
@@ -309,11 +320,16 @@ public class FishermanEntity extends PassiveEntity {
 
 
 
-    public HashSet<DialogKey> getKeys(PlayerEntity playerEntity){
-        HashSet<DialogKey> fisherKeys = new HashSet<>();
-        fisherKeys.add(playerEntity.getUuid() == summonerUUID ? DialogKey.SUMMONER : DialogKey.NOT_SUMMONER);
-        fisherKeys.add(talkedTo.contains(playerEntity.getUuid()) ? DialogKey.REPEATED : DialogKey.NOT_REPEATED);
-        fisherKeys.add(DialogKey.valueOf(summonType.name()));
+    public HashSet<DialogNode.DialogKey> getKeys(PlayerEntity playerEntity){
+        HashSet<DialogNode.DialogKey> fisherKeys = new HashSet<>();
+        if (playerEntity.getUuid() == summonerUUID) {
+            fisherKeys.add(DialogNode.DialogKey.SUMMONER);
+        }
+        if (!talkedTo.contains(playerEntity.getUuid())) {
+            fisherKeys.add(DialogNode.DialogKey.FIRST);
+        }
+
+        fisherKeys.add(DialogNode.DialogKey.valueOf(summonType.name()));
         return fisherKeys;
     }
 
@@ -324,7 +340,7 @@ public class FishermanEntity extends PassiveEntity {
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!this.getWorld().isClient && customer == null) {
-            HashSet<DialogKey> keySet = DialogUtil.getKeys(playerEntity, this);
+            HashSet<DialogNode.DialogKey> keySet = DialogController.getKeys(playerEntity, this);
             FishingCard.of(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
             playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));

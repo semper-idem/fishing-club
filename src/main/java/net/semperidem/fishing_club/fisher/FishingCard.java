@@ -17,7 +17,7 @@ import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fisher.managers.*;
 import net.semperidem.fishing_club.fisher.perks.FishingPerk;
 import net.semperidem.fishing_club.leaderboard.LeaderboardTracker;
-import net.semperidem.fishing_club.screen.dialog.DialogKey;
+import net.semperidem.fishing_club.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -203,10 +203,11 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         summonRequestManager.execute();//todo put cooldown on summon
     }
 
-    public HashSet<DialogKey> getKeys(FishermanEntity.SummonType summonType) {
-        HashSet<DialogKey> keys = new HashSet<>();
-        keys.add(historyManager.metDerek(summonType) ? DialogKey.NOT_UNIQUE : DialogKey.UNIQUE);
-        keys.add(historyManager.gaveDerekFish() ? DialogKey.WELCOME: DialogKey.NOT_WELCOME);
+    public HashSet<DialogNode.DialogKey> getKeys() {
+        HashSet<DialogNode.DialogKey> keys = new HashSet<>();
+        if (this.historyManager.gaveDerekFish()) {
+            keys.add(DialogNode.DialogKey.CARD);
+        }
         return keys;
     }
 
