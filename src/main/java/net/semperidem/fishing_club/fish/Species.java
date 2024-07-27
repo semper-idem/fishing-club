@@ -1,8 +1,11 @@
 package net.semperidem.fishing_club.fish;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.semperidem.fishing_club.item.FishItem;
 
 public class Species {
+
+    public FishItem item;
 
     public String name;
 
@@ -57,6 +60,7 @@ public class Species {
         return SpeciesLibrary.ALL_FISH_TYPES.getOrDefault(speciesName, SpeciesLibrary.DEFAULT);
     }
 
+
     public EntityModelLayerRegistry.TexturedModelDataProvider model() {
         return this.modelDataProvider;
     }
@@ -66,8 +70,17 @@ public class Species {
         return this;
     }
 
+    public Species setItem(FishItem item) {
+        this.item = item;
+        return this;
+    }
+
+    public String name() {
+        return this.name.toLowerCase().replace(" ", "_");
+    }
+
     public String getTextureName(boolean isAlbino) {
-        String name = this.name.toLowerCase().replace(" ", "_");
+        String name = name();
         return "fish/" + name + "/" + name + (isAlbino ? "_albino" : "");
     }
 }

@@ -12,6 +12,9 @@
   "icon": "assets/fishing-club/icon32.png",
   "environment": "*",
   "entrypoints": {
+    "fabric-datagen": [
+      "net.semperidem.fishing_club.FishingClubDataGenerator"
+    ],
     "client": [
       "net.semperidem.fishing_club.client.FishingClubClient"
     ],

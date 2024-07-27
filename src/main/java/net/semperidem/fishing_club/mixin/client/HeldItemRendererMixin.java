@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.Species;
+import net.semperidem.fishing_club.item.FishItem;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 import org.spongepowered.asm.mixin.Final;
@@ -49,7 +50,7 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(cancellable = true, method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 6, shift = At.Shift.AFTER))
     private void onRenderFirstPersonFishingRod(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (!item.isOf(FCItems.MEMBER_FISHING_ROD)) {
+        if (!(FishItem.isFish(item))) {
             return;
         }
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) MathHelper.clamp((Math.sqrt(player.getItemUseTime() + tickDelta)* 4f), 0, 50)));
@@ -91,7 +92,7 @@ public abstract class HeldItemRendererMixin {
       )
     )
     private void onRenderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (!item.isOf(FCItems.FISH) || player.isUsingItem()) {
+        if (!FishItem.isFish(item) || player.isUsingItem()) {
             return;
         }
         this.setupItem(item);

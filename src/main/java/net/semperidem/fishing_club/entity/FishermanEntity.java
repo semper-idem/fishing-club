@@ -81,7 +81,7 @@ public class FishermanEntity extends PassiveEntity {
         if (spawnedFrom.isEmpty()) {
             return;
         }
-        this.summonType = spawnedFrom.isOf(FishUtil.FISH_ITEM) ? SummonType.GRADE : SummonType.GOLDEN;
+        this.summonType = spawnedFrom.isOf(FishUtil.DEFAULT_FISH_ITEM) ? SummonType.GRADE : SummonType.GOLDEN;
         this.spawnedFrom = spawnedFrom;
     }
 

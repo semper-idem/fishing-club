@@ -2,7 +2,6 @@ package net.semperidem.fishing_club.mixin.common;
 
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -102,10 +101,11 @@ public abstract class LivingEntityMixin extends Entity{
         }
     }
 
+    @Unique
     private void tickPullPower(int power){
         if (power != this.pullPower && power != 0) {
             this.pullPower = power;
-            MinecraftClient.getInstance().player.sendMessage(Text.of("[" + ">".repeat(power) + "]"), true);
+            this.sendMessage(Text.of("[" + ">".repeat(power) + "]"));
         }
     }
     @Shadow public abstract int getItemUseTime();

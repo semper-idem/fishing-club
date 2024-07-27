@@ -1,14 +1,18 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.FCFishEntity;
-import net.semperidem.fishing_club.entity.renderer.FCFishEntityRenderer;
+import net.semperidem.fishing_club.entity.renderer.*;
 import net.semperidem.fishing_club.entity.renderer.model.FCFishEntityModel;
+import net.semperidem.fishing_club.entity.renderer.model.FishModelGenerator;
+import net.semperidem.fishing_club.entity.renderer.model.FishermanEntityModel;
+import net.semperidem.fishing_club.entity.renderer.model.HarpoonEntityModel;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.Species;
 import net.semperidem.fishing_club.fish.SpeciesLibrary;
@@ -17,6 +21,11 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class FCModels {
+
+	public static final EntityModelLayer MODEL_HARPOON_LAYER = new EntityModelLayer(FishingClub.getIdentifier("harpoon_rod"), "main");
+	public static final EntityModelLayer MODEL_FISHERMAN_LAYER = new EntityModelLayer(FishingClub.getIdentifier("fisherman"), "main");
+	public static final EntityModelLayer MODEL_FISH_DISPLAY_LAYER = new EntityModelLayer(FishingClub.getIdentifier("sign/bamboo"), "main");
+
 
 	private static final HashMap<String, ModelIdentifier> SPECIES_TO_MODEL_ID = new HashMap<>();
 	private static final HashMap<String, EntityModelLayer> SPECIES_TO_MODEL_LAYER = new HashMap<>();
@@ -30,7 +39,6 @@ public class FCModels {
 		if (species.model() == null) {
 			return;
 		}
-		System.out.println(species.name);
 		var speciesName = species.getTextureName(false);
 		var albinoName = species.getTextureName(true);
 
@@ -70,9 +78,24 @@ public class FCModels {
 	}
 
 	public static void initModels() {
+
+		EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
+		EntityModelLayerRegistry.registerModelLayer(MODEL_FISHERMAN_LAYER, FishermanEntityModel::getTextureModelData);
+		EntityModelLayerRegistry.registerModelLayer(MODEL_FISH_DISPLAY_LAYER, FishDisplayEntityRenderer::getTexturedModelData);
+
+		SpeciesLibrary.COD.withModel(FishModelGenerator::getCodModelData);
+		SpeciesLibrary.BUTTERFISH.withModel(FishModelGenerator::getButterfishModelData);
+
 		SpeciesLibrary.iterator().forEachRemaining(FCModels::registerModel);
 		DEFAULT_MODEL_LAYER = SPECIES_TO_MODEL_LAYER.get(SpeciesLibrary.DEFAULT.getTextureName(false));
 		DEFAULT_MODEL = SPECIES_TO_MODEL_ID.get(SpeciesLibrary.DEFAULT.getTextureName(false));
+
+		EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
+		EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
+		EntityRendererRegistry.register(FCEntityTypes.HARPOON_ENTITY, HarpoonEntityRenderer::new);
+		EntityRendererRegistry.register(FCEntityTypes.LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
+		EntityRendererRegistry.register(FCEntityTypes.FISH_ENTITY, FCModels::init);
+
 	}
 
 

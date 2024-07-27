@@ -69,7 +69,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
                 fishingCard, 4, 341, 226,
                 this, Path.GENERAL,
                 fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT),
-                FishUtil.FISH_ITEM);
+                FishUtil.DEFAULT_FISH_ITEM);
         addSlot(instantSellSlot);
     }
 

@@ -1,7 +1,6 @@
 package net.semperidem.fishing_club.fish;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,13 +22,15 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static net.semperidem.fishing_club.fish.FishRecord.MAX_QUALITY;
 import static net.semperidem.fishing_club.fish.FishRecord.MIN_QUALITY;
 
 public class FishUtil {
-    public static final Item FISH_ITEM = FCItems.FISH;
+    public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
     private static final String CAUGHT_BY_TAG = "caught_by";
 
 
@@ -39,12 +40,11 @@ public class FishUtil {
     }
 
     public static ItemStack getStackFromFish(FishRecord fish, int count){
-        ItemStack fishReward = new ItemStack(FISH_ITEM);
+        ItemStack fishReward = new ItemStack(fish.species().item);
         fishReward.set(FCComponents.FISH, fish);
         fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
         setLore(fishReward, fish);
         fishReward.setCount(count);
-        fishReward.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(fish.species().id));
         return fishReward;
     }
 
@@ -143,7 +143,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
 
     public static boolean isFish(ItemStack fish) {
-        return fish.isOf(FISH_ITEM);
+        return fish.isOf(DEFAULT_FISH_ITEM);
     }
 
 

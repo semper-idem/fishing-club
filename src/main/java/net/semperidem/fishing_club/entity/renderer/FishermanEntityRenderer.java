@@ -7,7 +7,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.model.*;
+import net.minecraft.client.render.entity.model.ChestBoatEntityModel;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.ModelWithWaterPatch;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
@@ -18,7 +21,7 @@ import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishing_club.mixin.client.BoatEntityModelAccessor;
-import net.semperidem.fishing_club.registry.FCEntityTypes;
+import net.semperidem.fishing_club.registry.FCModels;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {
     private static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/fisherman.png");
@@ -27,7 +30,7 @@ public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, 
     private final CompositeEntityModel<BoatEntity> boatModel;
 
     public FishermanEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new FishermanEntityModel<>(context.getPart(FCEntityTypes.MODEL_FISHERMAN_LAYER)), 0.5F);
+        super(context, new FishermanEntityModel<>(context.getPart(FCModels.MODEL_FISHERMAN_LAYER)), 0.5F);
         this.boatModel =  new ChestBoatEntityModel(context.getPart(EntityModelLayers.createChestBoat(ChestBoatEntity.Type.MANGROVE)));
     }
 

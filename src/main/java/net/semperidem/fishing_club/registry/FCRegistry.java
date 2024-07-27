@@ -10,7 +10,6 @@ import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.renderer.FishDisplayEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
-import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.screen.dialog.DialogUtil;
@@ -22,7 +21,7 @@ public class FCRegistry {
     public static HashMap<String, SoundEvent> SPECIES_TO_TUNE = new HashMap<>();
     public static final SoundEvent YELLOW_FISH_TUNE = registerSoundEvent("yellow_fish_tune");
     static {
-        SPECIES_TO_TUNE.put(SpeciesLibrary.BUTTERFISH.name, YELLOW_FISH_TUNE);
+      //  SPECIES_TO_TUNE.put(SpeciesLibrary.BUTTERFISH.name, YELLOW_FISH_TUNE);
     }
 
 
@@ -51,6 +50,7 @@ public class FCRegistry {
         FCScreenHandlers.registerClient();
         FCKeybindings.registerClient();
         FCModelPredicateProvider.registerClient();
+        FCModels.initModels();
         EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
         BlockEntityRendererFactories.register(FCBlocks.FISH_DISPLAY, FishDisplayEntityRenderer::new);

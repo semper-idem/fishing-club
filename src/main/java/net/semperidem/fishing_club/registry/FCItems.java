@@ -10,6 +10,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.item.*;
 import net.semperidem.fishing_club.item.fishing_rod.MemberFishingRodItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.*;
@@ -200,11 +201,21 @@ public class FCItems {
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
-        FISH = registerItem("fish", new Item(new Item.Settings().food(FoodComponents.TROPICAL_FISH)));
+        FISH = registerItem("fish", new FishItem(SpeciesLibrary.DEFAULT.name, new Item.Settings().food(FoodComponents.TROPICAL_FISH)));
         TACKLE_BOX = registerItem("tackle_box", new TackleBoxItem(FCBlocks.TACKLE_BOX_BLOCK, new Item.Settings()));
         FISH_DISPLAY_BAMBOO = registerItem("fish_display_bamboo", new FishDisplayItem(FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, new Item.Settings().maxCount(16)));
         YELLOW_FISH_TUNE = registerItem("yellow_fish_tune",  new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN)));
+        registerFish();
         registerItemGroup();
+    }
+
+    private static void registerFish() {
+        SpeciesLibrary.iterator().forEachRemaining(
+            species -> {
+                String speciesName = species.name();
+                species.setItem(registerItem("fish_" + speciesName, new FishItem(speciesName, new Item.Settings().food(FoodComponents.TROPICAL_FISH))));
+            }
+        );
     }
 
     public static void registerParts() {

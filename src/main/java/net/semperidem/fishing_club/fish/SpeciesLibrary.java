@@ -1,8 +1,6 @@
 package net.semperidem.fishing_club.fish;
 
 
-import net.semperidem.fishing_club.entity.renderer.model.FishModels;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,7 +50,7 @@ public class SpeciesLibrary {
                 2,
                 23,
                 100
-        ).withModel(FishModels::getCodModelData);
+        );
 
         BUTTERFISH = new Species(
             "Butterfish",
@@ -64,7 +62,7 @@ public class SpeciesLibrary {
             0.5f,
             10.5f,
             65
-        ).withModel(FishModels::getButterfishModelData);
+        );
 
         L_BASS = new Species(
                 "Largemouth Bass",

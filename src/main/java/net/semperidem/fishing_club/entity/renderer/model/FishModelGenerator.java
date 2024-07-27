@@ -1,9 +1,19 @@
 package net.semperidem.fishing_club.entity.renderer.model;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.data.client.BlockStateModelGenerator;
+import net.minecraft.data.client.ItemModelGenerator;
+import net.minecraft.data.client.Models;
+import net.semperidem.fishing_club.fish.SpeciesLibrary;
 
-public class FishModels {
+public class FishModelGenerator extends FabricModelProvider {
+
+	public FishModelGenerator(FabricDataOutput output) {
+		super(output);
+	}
 
 	public static TexturedModelData getDefaultModelData() {
 		return getCodModelData();
@@ -81,6 +91,16 @@ public class FishModels {
 
 		return TexturedModelData.of(modelData, 32, 32);
 
+	}
+
+	@Override
+	public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
+
+	}
+
+	@Override
+	public void generateItemModels(ItemModelGenerator itemModelGenerator) {
+		SpeciesLibrary.iterator().forEachRemaining(species -> itemModelGenerator.register(species.item, Models.GENERATED));
 	}
 
 }

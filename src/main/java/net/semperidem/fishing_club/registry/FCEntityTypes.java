@@ -1,10 +1,8 @@
 package net.semperidem.fishing_club.registry;
 
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -12,9 +10,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.*;
-import net.semperidem.fishing_club.entity.renderer.*;
-import net.semperidem.fishing_club.entity.renderer.model.FishermanEntityModel;
-import net.semperidem.fishing_club.entity.renderer.model.HarpoonEntityModel;
+import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
+import net.semperidem.fishing_club.entity.renderer.HarpoonEntityRenderer;
+import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
+import net.semperidem.fishing_club.entity.renderer.LineArrowEntityRenderer;
 
 public class FCEntityTypes {
 
@@ -24,14 +23,7 @@ public class FCEntityTypes {
 	public static EntityType<LineArrowEntity> LINE_ARROW_ENTITY;
 	public static EntityType<FCFishEntity> FISH_ENTITY;
 
-	public static final EntityModelLayer MODEL_HARPOON_LAYER = new EntityModelLayer(FishingClub.getIdentifier("harpoon_rod"), "main");
-	public static final EntityModelLayer MODEL_FISHERMAN_LAYER = new EntityModelLayer(FishingClub.getIdentifier("fisherman"), "main");
-	public static final EntityModelLayer MODEL_FISH_DISPLAY_LAYER = new EntityModelLayer(FishingClub.getIdentifier("sign/bamboo"), "main");
-
 	public static void register() {
-		EntityModelLayerRegistry.registerModelLayer(MODEL_HARPOON_LAYER, HarpoonEntityModel::getTexturedModelData);
-		EntityModelLayerRegistry.registerModelLayer(MODEL_FISHERMAN_LAYER, FishermanEntityModel::getTextureModelData);
-		EntityModelLayerRegistry.registerModelLayer(MODEL_FISH_DISPLAY_LAYER, FishDisplayEntityRenderer::getTexturedModelData);
 
 		DEREK_ENTITY =
 			Registry.register(
@@ -87,12 +79,6 @@ public class FCEntityTypes {
 					.build());
 		FabricDefaultAttributeRegistry.register(FISH_ENTITY, FCFishEntity.createMobAttributes());
 
-		FCModels.initModels();
-		EntityRendererRegistry.register(DEREK_ENTITY, FishermanEntityRenderer::new);
-		EntityRendererRegistry.register(HOOK_ENTITY, HookEntityRenderer::new);
-		EntityRendererRegistry.register(HARPOON_ENTITY, HarpoonEntityRenderer::new);
-		EntityRendererRegistry.register(LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
-		EntityRendererRegistry.register(FISH_ENTITY, FCModels::init);
 	}
 
 }
