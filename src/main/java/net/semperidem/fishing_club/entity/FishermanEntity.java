@@ -4,12 +4,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -58,17 +61,58 @@ public class FishermanEntity extends PassiveEntity {
     private final static int DESPAWN_TIME = 6000;
     private int despawnTimer;
     private int outOfWaterTicks;
+    private CustomBoatEntity boat;
 
-    public FishermanEntity(World world) {
-        super(FCEntityTypes.DEREK_ENTITY, world);
+    public FishermanEntity(EntityType<? extends FishermanEntity> entityType, World world) {
+        super(entityType, world);
         this.setCustomName(Text.of("Derek ol'Stinker"));
         this.intersectionChecked = true;
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
         this.despawnTimer = DESPAWN_TIME;
     }
     public FishermanEntity(World world, ItemStack spawnedFrom, UUID summonerUUID) {
-        this(world);
+        this(FCEntityTypes.DEREK_ENTITY, world);
         setSummonDetails(spawnedFrom, summonerUUID);
+    }
+
+    @Override
+    protected float turnHead(float bodyRotation, float headRotation) {
+        return super.turnHead(bodyRotation, headRotation);
+    }
+
+    @Override
+    public void setHeadYaw(float headYaw) {
+        super.setHeadYaw(headYaw);
+    }
+
+    @Override
+    public void setYaw(float yaw) {
+        super.setYaw(yaw);
+    }
+
+    public void tickBoat() {
+        if (this.boat != null) {
+            return;
+        }
+        this.boat = new CustomBoatEntity(FCEntityTypes.BOAT_ENTITY, this.getWorld());
+        this.getWorld().spawnEntity(boat);
+        this.boat.startRiding(this, true);
+    }
+
+
+    @Override
+    protected boolean canAddPassenger(Entity passenger) {
+        return this.getPassengerList().size() <= 2 && !this.isSubmergedIn(FluidTags.WATER);
+    }
+
+    @Override
+    protected boolean hasCollidedSoftly(Vec3d adjustedMovement) {
+        return super.hasCollidedSoftly(adjustedMovement);
+    }
+
+    @Override
+    public boolean collidesWith(Entity other) {
+        return !(other instanceof BoatEntity);
     }
 
     private void setSummonDetails(ItemStack spawnedFrom, UUID summonerUUID) {
@@ -84,12 +128,12 @@ public class FishermanEntity extends PassiveEntity {
     }
 
     protected void initGoals() {
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 1));
-        this.goalSelector.add(2, new WanderAroundGoal(this, 0.35));
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
-        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
-        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
+//        this.goalSelector.add(1, new EscapeDangerGoal(this, 1));
+//        this.goalSelector.add(2, new WanderAroundGoal(this, 0.35));
+//        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.35));
+//        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
+//        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
     }
 
     public void setDespawnTimer(int value) {
@@ -108,10 +152,6 @@ public class FishermanEntity extends PassiveEntity {
         return outOfWaterTicks;
     }
 
-    @Override
-    public boolean hasVehicle() {
-        return isSubmergedInWater();
-    }
 
     protected SoundEvent getPaddleSoundEvent() {
         return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
@@ -141,7 +181,18 @@ public class FishermanEntity extends PassiveEntity {
             }
             return;
         }
+//        double r = 0.3;
+//        double radians = Math.toRadians(headYaw + 90);
+//        double x = Math.cos(radians) * r;
+//        double z = Math.sin(radians) * r;
+//        this.boatBack.setPosition(this.getPos().add(x,0,z));
+//        this.boatFront.setPosition(this.getPos().add(-x,0,-z));
         super.tickMovement();
+    }
+
+    @Override
+    public void move(MovementType movementType, Vec3d movement) {
+        super.move(movementType, movement);
     }
 
     private void tickPaddles() {
@@ -189,6 +240,7 @@ public class FishermanEntity extends PassiveEntity {
 
     @Override
     public void tick() {
+        tickBoat();
         tickDespawnTimer();
         tickPaddles();
         tickBuoyancy();
@@ -197,11 +249,12 @@ public class FishermanEntity extends PassiveEntity {
         if (!(this.getWorld() instanceof FishingServerWorld fishingWorld)) {
             return;
         }
-        if (fishingWorld.getDerek() != this) {
-            fishingWorld.getDerek().discard();
-        }
+
         if (fishingWorld.getDerek() == null) {
             fishingWorld.setDerek(this);
+        }
+        if (fishingWorld.getDerek() != this) {
+            fishingWorld.getDerek().discard();
         }
 
     }

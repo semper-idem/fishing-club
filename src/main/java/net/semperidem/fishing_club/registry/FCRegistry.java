@@ -2,11 +2,13 @@ package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.entity.renderer.CustomBoatEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishDisplayEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
@@ -53,6 +55,7 @@ public class FCRegistry {
         FCModels.initModels();
         EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
+        EntityRendererRegistry.register(FCEntityTypes.BOAT_ENTITY, (EntityRendererFactory.Context ctx) -> new CustomBoatEntityRenderer(ctx, false));
         BlockEntityRendererFactories.register(FCBlocks.FISH_DISPLAY, FishDisplayEntityRenderer::new);
     }
 }
