@@ -4,31 +4,21 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.client.screen.Texture;
-import net.semperidem.fishing_club.screen.dialog.DialogNode;
-import net.semperidem.fishing_club.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishing_club.screen.dialog.DialogController;
+import net.semperidem.fishing_club.screen.dialog.DialogScreenHandler;
 
 public class DialogScreen extends HandledScreen<DialogScreenHandler> implements ScreenHandlerProvider<DialogScreenHandler> {
 
     int x;
     int y;
-    private final DialogBox dialogBox;
+    private DialogBox dialogBox;
 
     public DialogScreen(DialogScreenHandler dialogScreenHandler, PlayerInventory playerInventory, Text title) {
         super(dialogScreenHandler, playerInventory, title);
-        dialogBox = new DialogBox(
-                this.x + TILE_SIZE * 10,
-                this.y + TILE_SIZE,
-                TEXTURE.textureWidth  - TILE_SIZE * 11,
-                TEXTURE.textureHeight  - TILE_SIZE * 2
-        );
-        DialogNode startingNode = DialogController.getStartQuestion(getScreenHandler().getOpeningKeys());
-        dialogBox.addMessage(startingNode);
      }
 
 
@@ -48,12 +38,21 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
         this.titleX = x + TEXTURE.renderWidth - 5 * TILE_SIZE;
         this.titleY = y + 13 * TILE_SIZE;
         addPlayerFaceComponent();
+        dialogBox = new DialogBox(
+            this.x + TILE_SIZE * 10,
+            this.y + TILE_SIZE,
+            TEXTURE.textureWidth  - TILE_SIZE * 11,
+            TEXTURE.textureHeight  - TILE_SIZE * 2,
+            this.textRenderer,
+            DialogController.getStartQuestion(getScreenHandler().getOpeningKeys())
+        );
         dialogBox.resize(
                 this.x + TILE_SIZE * 10,
                 this.y + TILE_SIZE,
                 TEXTURE.textureWidth  - TILE_SIZE * 11,
                 TEXTURE.textureHeight  - TILE_SIZE * 2
         );
+
         addDrawable(dialogBox);
     }
 
@@ -70,11 +69,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputUtil.GLFW_KEY_SPACE) {
-            dialogBox.finishLine();
-            return true;
-        } else if (keyCode > InputUtil.GLFW_KEY_0 && keyCode <= InputUtil.GLFW_KEY_0 + dialogBox.response.questions.size()) {
-            dialogBox.addMessage(dialogBox.response.questions.get(keyCode - InputUtil.GLFW_KEY_0 - 1));
+        if (dialogBox.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

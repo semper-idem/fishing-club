@@ -1,28 +1,28 @@
 package net.semperidem.fishing_club.screen.dialog;
 
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class DialogNode {
-    public String playerSays;
+    public Text playerSays;
     public String response;
+    public DialogNode parent;
     public ArrayList<DialogNode> questions;
+    public List<Text> responseLines = new ArrayList<>();
     public Action action;
+
 
     public DialogNode(String title, String response) {
         this.questions = new ArrayList<>();
-        this.response = response;
-        this.playerSays = title;
+        this.playerSays = Text.of(title);
+        this.hear(response);
     }
 
     public DialogNode(String title, Action action) {
-        this.questions = new ArrayList<>();
+        this(title + " " + action.response, action.response);
         this.action = action;
-        this.response = action.response;
-        this.playerSays = title + " " + action.response;
-    }
-
-    public DialogNode(String response) {
-        this("", response);
     }
 
     public static DialogNode start(String response) {//response to player right click
@@ -35,6 +35,12 @@ public class DialogNode {
 
     public DialogNode hear(String response) {
         this.response = response;
+        for(String line : response.split("\n")) {
+            if (line.isEmpty()) {
+                continue;
+            }
+            this.responseLines.add(Text.of(line));
+        }
         return this;
     }
 
@@ -44,19 +50,28 @@ public class DialogNode {
 
     public DialogNode option(DialogNode question) {
         this.questions.add(question);
+        question.parent = this;
         return this;
     }
 
     public DialogNode next(DialogNode question) {
         this.questions.add(question);
+        question.parent = this;
         return question;
+    }
+
+    public DialogNode root() {
+        if (parent == null) {
+            return this;
+        }
+        return parent.root();
     }
 
     public enum Action {
         EXIT("[EXIT]"),
         TRADE("[TRADE]"),
         ACCEPT("[ACCEPT]"),
-        REFUSE("[REFUSE]");
+        DISMISS("[DISMISS]");
         final String response;
         Action(String response) {
             this.response = response;

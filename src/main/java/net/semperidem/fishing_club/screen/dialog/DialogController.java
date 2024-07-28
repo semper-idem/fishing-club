@@ -4,83 +4,147 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.fisher.FishingCard;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static net.semperidem.fishing_club.screen.dialog.DialogNode.*;
 
 
 public class DialogController {
     private static final HashMap<Set<DialogKey>, DialogNode> DIALOG_START_NODE = new HashMap<>();
-    private static final String CONTINUE_RESPONSE = "hmm";
+    private static final ArrayList<DialogNode> REFUSE_INTERACTION_NODES = new ArrayList<>();
+
 
     public static void initialize() {
-        DialogNode join = start(JOIN_FISHING_CLUB_START);
-        join.next(say(JOIN_FISHING_CLUB_START_RESPONSE).hear(JOIN_FISHING_CLUB_R1))
-            .next(say(JOIN_FISHING_CLUB_R1_RESPONSE).hear(JOIN_FISHING_CLUB_R2))
-                .next(say(JOIN_FISHING_CLUB_R2_RESPONSE).hear(JOIN_FISHING_CLUB_FINAL))
-                    .option(action(JOIN_FISHING_CLUB_FINAL_RESPONSE_TRADE, Action.TRADE))
-                    .option(action(JOIN_FISHING_CLUB_FINAL_RESPONSE_LEAVE, Action.EXIT))
-
-
-        ;
         DIALOG_START_NODE.put(Set.of(
                 DialogKey.FISH,
                 DialogKey.FIRST,
                 DialogKey.SUMMONER
-            ), join
+            ), start(JOIN_FISHING_CLUB_START)
+                .next(action(JOIN_FISHING_CLUB_R1_RESPONSE, Action.ACCEPT).hear(JOIN_FISHING_CLUB_R2))
+                .option(action(JOIN_FISHING_CLUB_FINAL_RESPONSE_TRADE, Action.TRADE))
+                .option(action(JOIN_FISHING_CLUB_FINAL_RESPONSE_LEAVE, Action.EXIT))
+            .root()
+        );
+        DIALOG_START_NODE.put(Set.of(
+                DialogKey.FISH,
+                DialogKey.FIRST,
+                DialogKey.CARD
+            ), start(FISH_START)
+                .option(TRADE_NODE)
+                .option(DISMISS_NODE)
+                .option(EXIT_NODE)
+            .root()
+        );
+        DIALOG_START_NODE.put(Set.of(
+                DialogKey.SPELL,
+                DialogKey.FIRST,
+                DialogKey.CARD
+            ), start(SPELL_START)
+                .option(TRADE_NODE)
+                .option(DISMISS_NODE)
+                .option(EXIT_NODE)
+                .root()
+        );
+
+        DIALOG_START_NODE.put(Set.of(
+                DialogKey.CARD
+            ), start(STANDARD_START)
+                .option(TRADE_NODE)
+                .option(DISMISS_NODE)
+                .option(EXIT_NODE)
+                .root()
+        );
+
+        REFUSE_INTERACTION_NODES.add(DialogNode.start(REFUSE_INTERACTION_1)
+            .option(DISMISS_NODE)
+            .option(QUITE_EXIT_NODE)
+        );
+        REFUSE_INTERACTION_NODES.add(DialogNode.start(REFUSE_INTERACTION_2)
+            .option(DISMISS_NODE)
+            .option(QUITE_EXIT_NODE)
+        );
+        REFUSE_INTERACTION_NODES.add(DialogNode.start(REFUSE_INTERACTION_3)
+            .option(DISMISS_NODE)
+            .option(QUITE_EXIT_NODE)
+        );
+        REFUSE_INTERACTION_NODES.add(DialogNode.start(REFUSE_INTERACTION_4)
+            .option(DISMISS_NODE)
+            .option(QUITE_EXIT_NODE)
+        );
+        REFUSE_INTERACTION_NODES.add(DialogNode.start(REFUSE_INTERACTION_5)
+            .option(DISMISS_NODE)
+            .option(QUITE_EXIT_NODE)
         );
     }
 
     private static final String JOIN_FISHING_CLUB_START =
         """
         God damn, you threw this away?
-        This fish is worth at least 1000 coins amongst fishing enthusiast...
-        ...and even more within the collectors circle...
-        """;
-
-    private static final String JOIN_FISHING_CLUB_START_RESPONSE = CONTINUE_RESPONSE;
-
-    private static final String JOIN_FISHING_CLUB_R1 =
-        """
+        This fish is worth at least 1000 coins amongst fishing enthusiast
+        and even more within the collectors circle...
         Ah you aren't licensed fisherman yet, it makes sense now that you didn't know true worth of a good fish.
         I am Derek, head of local Fishing Club.
-        This title allows me to issue new Fishing Cards to whoever I please...
-        ...and you look like a good fisherman material.
+        This title allows me to issue new Fishing Cards to whoever I please,
+        and you look like a good fisherman material.
         """;
-    private static final String JOIN_FISHING_CLUB_R1_RESPONSE = CONTINUE_RESPONSE;
+    private static final String JOIN_FISHING_CLUB_R1_RESPONSE =
+        " - Huh";
 
     private static final String JOIN_FISHING_CLUB_R2 =
-         """
-         Here's your card and this basic rod we issue together...
-         and 1000 coins for that gold fish. Rod ain't much but it gets the job done...
-         Unlike some sticks with little bit of string attached to it I see all the impostors use...
-         You can always upgrade it with parts you can buy from me or ones you've found [Fishing Card key with rod in hand]
-         """;
-
-    private static final String JOIN_FISHING_CLUB_R2_RESPONSE = CONTINUE_RESPONSE;
-
-    private static final String JOIN_FISHING_CLUB_FINAL =
         """
-        I also run a lot of other services for fellow members.
+        Here's your card and this basic rod we issue together
+        and 1000 coins for that gold fish. Rod ain't much but it gets the job done,
+        unlike some sticks with little bit of string attached to it I see all the impostors use...
+        Anyway I also run a lot of other services for fellow members.
         If you ever need something fishing related, I'm interested.
         """;
 
     private static final String JOIN_FISHING_CLUB_FINAL_RESPONSE_TRADE =
-        """
-        Thanks! Let's trade
-        """;
+        " - Thanks! Let's trade";
     private static final String JOIN_FISHING_CLUB_FINAL_RESPONSE_LEAVE =
+        " - Thanks?, bye.";
+
+
+    private static final String STANDARD_START =
+        "Howdy, need anything?";
+    private static final String STANDARD_TRADE =
+        "Yes";
+    private static final String STANDARD_DISMISS =
+        "You're scaring the fish!";
+    private static final String STANDARD_EXIT =
+        "Nothing for now.";
+
+
+
+    private static final String SPELL_START =
+        "How did I get here...? Never mind... hello, need anything?";
+
+    private static final String FISH_START =
+        "Greeting fellow. I was just picking up that fine fish somebody left. Do you need anything?";
+
+    private static final String REFUSE_INTERACTION_1 =
+        "(Derek doesn't seem to acknowledge your existence)";
+    private static final String REFUSE_INTERACTION_2 =
+        "Talk to me when your real fisherman...";
+    private static final String REFUSE_INTERACTION_3 =
         """
-        Thanks?, bye.
+        Who are you to bother me? Ever caught a fish worth more then 1000 coins?
+        No? Then we don't have anything to talk about";
         """;
+    private static final String REFUSE_INTERACTION_4 =
+        "You don't fish, you don't exist.";
+    private static final String REFUSE_INTERACTION_5 =
+        "Just a string on a stick and you call THAT a fishing rod? What has world come to...";
 
 
+    private static final DialogNode TRADE_NODE = action(STANDARD_TRADE, Action.TRADE);
+    private static final DialogNode DISMISS_NODE = action(STANDARD_DISMISS, Action.DISMISS);
+    private static final DialogNode EXIT_NODE = action(STANDARD_EXIT, Action.EXIT);
+    private static final DialogNode QUITE_EXIT_NODE = action("", Action.EXIT);
 
     public static DialogNode getStartQuestion(Set<DialogKey> keySet) {
         int bestScore = -1;
-        DialogNode bestNode = new DialogNode("MMmmmm", "MMmmmm");
+        DialogNode bestNode = null;
             for (Set<DialogKey> initialNodeKey : DIALOG_START_NODE.keySet()) {
                 int matchScore = keysMatch(keySet, initialNodeKey);
                 if (matchScore > bestScore) {
@@ -88,7 +152,11 @@ public class DialogController {
                     bestNode = DIALOG_START_NODE.get(initialNodeKey);
                 }
             }
-        return bestNode;
+        return bestNode == null ? getRandomRefuse() : bestNode;
+    }
+
+    private static DialogNode getRandomRefuse() {
+        return REFUSE_INTERACTION_NODES.get((int) (Math.random() * REFUSE_INTERACTION_NODES.size()));
     }
 
     public static HashSet<DialogKey> getKeysFromString(String keysString) {
@@ -112,7 +180,9 @@ public class DialogController {
         for(DialogKey key : against) {
             if (keySet.contains(key)) {
                 score++;
+                continue;
             }
+            score--;
         }
         return score;
     }
@@ -121,39 +191,5 @@ public class DialogController {
         HashSet<DialogKey> keys = fishermanEntity.getKeys(playerEntity);
         keys.addAll(FishingCard.of(playerEntity).getKeys());
         return keys;
-    }
-
-    public static String getTextForTick(String text, int tick) {
-        if (text == null || text.isEmpty()) {
-            return "";
-        }
-        int lastCharIndex = 0;
-        int tickCount = 0;
-        while(tickCount < tick && lastCharIndex < text.length()) {
-            tickCount += getTicksPerCharacter(text.charAt(lastCharIndex));
-            lastCharIndex++;
-        }
-        return text.substring(0, lastCharIndex);
-    }
-
-    public static int getTickForText(String text) {
-        if (text == null || text.isEmpty()) {
-            return 0;
-        }
-        int tickCount = 0;
-        for(int i = 0; i < text.length(); i++) {
-            tickCount+= getTicksPerCharacter(text.charAt(i));
-        }
-        return tickCount;
-    }
-
-    private static int getTicksPerCharacter(char c) {
-        return switch (c) {
-            case '.' -> 15;
-            case '?', '!' -> 10;
-            case ',' -> 3;
-            case ' ' -> 2;
-            default -> 1;
-        };
     }
 }

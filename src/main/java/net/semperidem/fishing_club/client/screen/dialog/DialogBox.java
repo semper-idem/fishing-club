@@ -1,35 +1,43 @@
 package net.semperidem.fishing_club.client.screen.dialog;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ScrollableWidget;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishing_club.network.payload.DialogResponsePayload;
-import net.semperidem.fishing_club.screen.dialog.DialogController;
 import net.semperidem.fishing_club.screen.dialog.DialogNode;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DialogBox extends ScrollableWidget {
-    ArrayList<String> responseLines = new ArrayList<>();
-    String trailingLine = "";
-    String lineInQueue = "";
-    DialogNode response;
-    ArrayList<String> responseLinesQueue = new ArrayList<>();
-    ArrayList<String> possibleQuestions = new ArrayList<>();
-    int lineInQueueFinishTick = 0;
-    int tick = 0;
-    int lineHeight = 11;
-    public int textSpeed = 1;
+    private static final int LINE_HEIGHT = 11;
+    private static final int HISTORY_FONT_COLOR = Color.LIGHT_GRAY.getRGB();
+
+    ArrayList<DialogNode> history = new ArrayList<>();
+    ArrayList<Text> currentFinishedLines =  new ArrayList<>();
+    DialogNode current;
+    Text currentText;
+    boolean isCurrentNodeFinished = false;
+    boolean isCurrentLineFinished = false;
+    int charCredit;
+    int lineCount;
+    int creditGain = 1;
+
+    int contentHeight = 0;
+    TextRenderer textRenderer;
 
 
-    public DialogBox(int x, int y, int width, int height) {
+
+    public DialogBox(int x, int y, int width, int height, TextRenderer textRenderer, DialogNode startNode) {
         super(x,y, width, height, Text.empty());
+        this.textRenderer = textRenderer;
+        this.current = startNode;
+        this.tick();
     }
 
     public void resize(int x, int y, int width, int height) {
@@ -65,10 +73,7 @@ public class DialogBox extends ScrollableWidget {
 
     @Override
     protected int getContentsHeight() {
-        if (responseLinesQueue.isEmpty()) {
-            return responseLines.size() * lineHeight + possibleQuestions.size() * lineHeight + 1;
-        }
-        return responseLines.size() * (lineHeight + 1);
+       return contentHeight;
     }
 
     @Override
@@ -83,12 +88,10 @@ public class DialogBox extends ScrollableWidget {
 
     @Override
     protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderMessages(context);
-        if (responseLinesQueue.isEmpty()) {
-            renderPossibleQuestions(context);
-            return;
-        }
-        renderTrailingLine(context);
+        this.lineCount = 0;
+        this.renderHistory(context);
+        this.renderCurrent(context);
+        this.contentHeight = this.lineCount * LINE_HEIGHT;
     }
 
     @Override
@@ -108,102 +111,163 @@ public class DialogBox extends ScrollableWidget {
     }
 
     void tick() {
-        if (finishedRenderingLine() && !responseLinesQueue.isEmpty()) {
-            consumeMessage();
-        }
-        trailingLine = DialogController.getTextForTick(lineInQueue, tick);
-        textSpeed = 1;
-        tick+=textSpeed;
-    }
-
-    public void addMessage(DialogNode nextNode) {
-        response = nextNode;
-        ArrayList<String> temp = new ArrayList<>();
-        if (response.playerSays != null && !response.playerSays.isEmpty()) {
-            temp.add(" - " + response.playerSays);
-        }
-        temp.addAll(List.of(response.response.split("\n")));
-        for(String responseLine : temp) {
-            responseLinesQueue.add(responseLine.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
-        }
-        possibleQuestions.clear();
-        for(DialogNode question : response.questions) {
-            possibleQuestions.add(question.playerSays.replace("$PLAYER_NAME", MinecraftClient.getInstance().player.getName().getString()));
-        }
-        lineInQueue = responseLinesQueue.get(0);
-        lineInQueueFinishTick = DialogController.getTickForText(lineInQueue);
-        tick = 0;
-        setFocused(true);
-    }
-
-    private void consumeMessage() {
-        if (trailingLine.isEmpty()) {
+        this.charCredit += this.creditGain;
+        this.calculateAffordableCurrentText();
+        if (!this.isCurrentLineFinished) {
             return;
         }
-        responseLines.add(trailingLine);
-        responseLinesQueue.remove(trailingLine);
-        lineInQueue = "";
-        setScrollY(getMaxScrollY());
-        if (!responseLinesQueue.isEmpty()) {
-            lineInQueue = responseLinesQueue.get(0);
-            lineInQueueFinishTick = DialogController.getTickForText(lineInQueue);
-            tick = -5;
-            processAction();
+        if (this.currentFinishedLines.size() >= this.current.responseLines.size()) {
+            return;
         }
+        this.currentFinishedLines.add(this.currentText);
+        this.currentText = Text.empty();
+        this.setScrollY(this.getMaxScrollY());
+        this.charCredit = 0;
     }
+
+    public void pickDialog(DialogNode node) {
+        this.history.add(this.current);
+        this.current = node;
+        this.isCurrentLineFinished = false;
+        this.isCurrentNodeFinished = false;
+        this.charCredit = 0;
+        this.currentFinishedLines.clear();
+        this.setFocused(true);
+        this.processAction();
+    }
+
 
     private void processAction() {
-         if (response.action == null) {
+         if (this.current.action == null) {
             return;
         }
-        ClientPlayNetworking.send(new DialogResponsePayload(response.action.toString()));
-    }
-
-    private boolean finishedRenderingLine() {
-        return tick > lineInQueueFinishTick;
+        ClientPlayNetworking.send(new DialogResponsePayload(this.current.action.toString()));
     }
 
     public void finishLine(){
-        tick = lineInQueueFinishTick;
-        trailingLine = lineInQueue;
+        this.charCredit = 9999;//getting really weird
     }
 
-    private void renderMessages(DrawContext context) {
-        for(int i = 0; i < responseLines.size(); i++) {
+    private void renderCurrent(DrawContext context) {
+        if (this.current.parent != null) {
+            this.renderHistoryLine(context, this.current.playerSays);
+        }
+        for(Text currentFinishedLine : this.currentFinishedLines){
+            this.renderHistoryLine(context, currentFinishedLine);
+        }
+        this.renderCurrentLine(context);
+        if (this.isCurrentNodeFinished) {
+            this.renderCurrentQuestions(context);
+        }
+    }
+
+    private void renderCurrentQuestions(DrawContext context) {
+
+        for(DialogNode questionNode : this.current.questions) {
+            String question = questionNode.playerSays.getString().replace("-", "["+ (this.current.questions.indexOf(questionNode) + 1)+"]");
             context.drawText(
-                    MinecraftClient.getInstance().textRenderer,
-                    Text.of(responseLines.get(i)),
-                    getX() + getPadding(),
-                    getY() + i * lineHeight + getPadding(),
-                    Color.LIGHT_GRAY.getRGB(),
-                    true
+                this.textRenderer,
+                question,
+                this.getX() + this.getPadding(),
+                this.getY() + lineCount * LINE_HEIGHT,
+                HISTORY_FONT_COLOR,
+                false
             );
+            this.lineCount++;
         }
     }
 
-    private void renderPossibleQuestions(DrawContext context) {
-        for(int i = 0; i < response.questions.size(); i++) {
-            context.drawText(
-                    MinecraftClient.getInstance().textRenderer,
-                    Text.of("["+(i+1)+"] " + possibleQuestions.get(i)),
-                    getX() + getPadding(),
-                    getY() + responseLines.size() * lineHeight + i * lineHeight + getPadding() + 2,
-                    Color.WHITE.getRGB(),
-                    true);
-        }
-    }
-
-    private void renderTrailingLine(DrawContext context) {
-        if (trailingLine.isEmpty()) {
+    private void renderCurrentLine(DrawContext context) {
+        if (this.currentText.getString().isEmpty()) {
             return;
         }
         context.drawText(
-                MinecraftClient.getInstance().textRenderer,
-                Text.of(trailingLine), getX() + getPadding(),
-                getY() + responseLines.size() * lineHeight + getPadding(),
-                Color.WHITE.getRGB(),
-                true);
+            this.textRenderer,
+            this.currentText,
+            this.getX() + this.getPadding(),
+            this.getY() + lineCount * LINE_HEIGHT,
+            HISTORY_FONT_COLOR,
+            false
+        );
+        this.lineCount++;
     }
+
+    private void calculateAffordableCurrentText() {
+        int currentLineIndex = this.currentFinishedLines.size();
+        if (this.current.responseLines.size() <= currentLineIndex) {
+            this.isCurrentNodeFinished = true;
+            this.currentText = Text.empty();
+            return;
+        }
+        String currentLineString = this.current.responseLines.get(this.currentFinishedLines.size()).getString();
+        int currentLineFinish = 0;
+        int currentLineCost = 0;
+        this.isCurrentLineFinished = true;
+        while(currentLineFinish < currentLineString.length()){
+            currentLineCost += getCharCost(currentLineString.charAt(currentLineFinish));
+            currentLineFinish++;
+            if (currentLineCost > this.charCredit) {
+                this.isCurrentLineFinished = false;
+                break;
+            }
+        }
+		this.currentText = Text.of(currentLineString.substring(0, currentLineFinish));
+    }
+
+    private static int getCharCost(char c) {
+        return switch (c) {
+            case '.' -> 15;
+            case '?', '!' -> 10;
+            case ',' -> 3;
+            case ' ' -> 2;
+            default -> 1;
+        };
+    }
+    private void renderHistoryLine(DrawContext context, Text line) {
+        context.drawText(
+            this.textRenderer,
+            line,
+            this.getX() + this.getPadding(),
+            this.getY() + lineCount * LINE_HEIGHT,
+            HISTORY_FONT_COLOR,
+            false
+        );
+        this.lineCount++;
+    }
+
+    private void renderHistoryNode(DrawContext context, DialogNode historyNode) {
+        if (historyNode.parent != null) {
+            this.renderHistoryLine(context, historyNode.parent.playerSays);
+        }
+        for (Text historyLine : historyNode.responseLines) {
+            this.renderHistoryLine(context, historyLine);
+        }
+    }
+
+    private void renderHistory(DrawContext context) {
+        for (DialogNode historyNode : this.history) {
+            this.renderHistoryNode(context, historyNode);
+        }
+
+    }
+
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputUtil.GLFW_KEY_SPACE && !this.isCurrentLineFinished) {
+            this.finishLine();
+            return true;
+        }
+        if (!this.isCurrentNodeFinished) {
+            return false;
+        }
+        if (keyCode > InputUtil.GLFW_KEY_0 && keyCode <= InputUtil.GLFW_KEY_0 + this.current.questions.size()) {
+            this.pickDialog(this.current.questions.get(keyCode - InputUtil.GLFW_KEY_0 - 1));
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     protected int getPadding() {

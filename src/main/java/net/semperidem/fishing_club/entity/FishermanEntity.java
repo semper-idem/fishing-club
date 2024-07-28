@@ -30,13 +30,12 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishing_club.FishingServerWorld;
-import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.registry.FCEntityTypes;
+import net.semperidem.fishing_club.screen.dialog.DialogController;
 import net.semperidem.fishing_club.screen.dialog.DialogNode;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishing_club.screen.dialog.DialogScreenHandlerFactory;
-import net.semperidem.fishing_club.screen.dialog.DialogController;
 import net.semperidem.fishing_club.screen.member.MemberScreenHandler;
 import net.semperidem.fishing_club.util.EffectUtils;
 import org.jetbrains.annotations.Nullable;
@@ -81,8 +80,7 @@ public class FishermanEntity extends PassiveEntity {
         if (spawnedFrom.isEmpty()) {
             return;
         }
-        this.summonType = spawnedFrom.isOf(FishUtil.DEFAULT_FISH_ITEM) ? SummonType.GRADE : SummonType.GOLDEN;
-        this.spawnedFrom = spawnedFrom;
+        this.summonType = SummonType.FISH;
     }
 
     protected void initGoals() {
@@ -123,24 +121,13 @@ public class FishermanEntity extends PassiveEntity {
         if (this.getWorld().isClient()) {
             return;
         }
-        if (spawnedFrom.isEmpty()) {
-            return;
-        }
         FishingCard.of(this.getWorld().getPlayerByUuid(summonerUUID)).giveDerekFish();
-        spawnedFrom = ItemStack.EMPTY;
     }
 
-    public void refuseTrade() {
+    public void dismiss() {
         if (this.getWorld().isClient()) {
             return;
         }
-        if (spawnedFrom.isEmpty()) {
-            return;
-        }
-
-
-        dropStack(spawnedFrom);
-        spawnedFrom = ItemStack.EMPTY;
         this.despawnTimer = 0;
     }
 
@@ -325,7 +312,7 @@ public class FishermanEntity extends PassiveEntity {
         if (playerEntity.getUuid() == summonerUUID) {
             fisherKeys.add(DialogNode.DialogKey.SUMMONER);
         }
-        if (!talkedTo.contains(playerEntity.getUuid())) {
+        if (!talkedTo.contains(playerEntity.getUuid()) && this.age > 1200) {
             fisherKeys.add(DialogNode.DialogKey.FIRST);
         }
 
@@ -341,7 +328,6 @@ public class FishermanEntity extends PassiveEntity {
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!this.getWorld().isClient && customer == null) {
             HashSet<DialogNode.DialogKey> keySet = DialogController.getKeys(playerEntity, this);
-            FishingCard.of(playerEntity).meetDerek(summonType);
             talkedTo.add(playerEntity.getUuid());
             playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
             setCustomer(playerEntity);
@@ -366,7 +352,7 @@ public class FishermanEntity extends PassiveEntity {
 
     public enum SummonType {
         GOLDEN,
-        GRADE,
+        FISH,
         SPELL
     }
 }

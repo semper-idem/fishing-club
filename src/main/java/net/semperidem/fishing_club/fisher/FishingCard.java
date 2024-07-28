@@ -111,6 +111,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public void giveDerekFish() {
+        this.addCredit(1000);
         historyManager.giveDerekFish();
     }
     public void addUnclaimedReward(ItemStack rewardStack) {

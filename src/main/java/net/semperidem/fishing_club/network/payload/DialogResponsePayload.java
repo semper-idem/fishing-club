@@ -31,7 +31,7 @@ public record DialogResponsePayload(String response) implements CustomPayload {
             case DialogNode.Action.EXIT -> context.player().closeHandledScreen();
             case DialogNode.Action.TRADE -> context.player().openHandledScreen(new MemberScreenHandlerFactory());
             case DialogNode.Action.ACCEPT -> serverWorld.getDerek().acceptTrade();
-            case DialogNode.Action.REFUSE -> serverWorld.getDerek().refuseTrade();
+            case DialogNode.Action.DISMISS -> serverWorld.getDerek().dismiss();
         }
     }
 }
