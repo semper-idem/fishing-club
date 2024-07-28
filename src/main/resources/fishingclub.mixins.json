@@ -4,6 +4,7 @@
   "package": "net.semperidem.fishing_club.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "common.BoatEntityMixin",
     "common.FishEntityMixin",
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
