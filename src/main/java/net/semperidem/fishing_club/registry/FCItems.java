@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.jukebox.JukeboxSongs;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.item.*;
@@ -38,6 +39,9 @@ public class FCItems {
     public static Item FISH_DISPLAY_BAMBOO;
     public static Item YELLOW_FISH_TUNE;
     public static Item REED;
+    public static Item ENERGY_DENSE_KELP;
+    public static Item DRIED_ENERGY_DENSE_KELP;
+    public static Item DRIED_ENERGY_DENSE_KELP_BLOCK;
 
     public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
 
@@ -207,6 +211,11 @@ public class FCItems {
         FISH_DISPLAY_BAMBOO = registerItem("fish_display_bamboo", new FishDisplayItem(FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, new Item.Settings().maxCount(16)));
         YELLOW_FISH_TUNE = registerItem("yellow_fish_tune",  new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN)));
         REED = registerItem("reed", new BlockItem(FCBlocks.REED_BLOCK, new Item.Settings()));
+        ENERGY_DENSE_KELP = registerItem("energy_dense_kelp", new BlockItem(FCBlocks.ENERGY_DENSE_KELP, new Item.Settings()));
+        DRIED_ENERGY_DENSE_KELP = registerItem("dried_energy_dense_kelp", new Item(new Item.Settings()));
+        DRIED_ENERGY_DENSE_KELP_BLOCK = registerItem("dried_energy_dense_kelp_block", new BlockItem(FCBlocks.DRIED_ENERGY_DENSE_KELP_BLOCK, new Item.Settings()));
+        FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP, 200);
+        FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP_BLOCK, 12800);
         registerFish();
         registerItemGroup();
     }

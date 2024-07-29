@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "fishing-club:block/energy_dense_kelp"
+  }
+}

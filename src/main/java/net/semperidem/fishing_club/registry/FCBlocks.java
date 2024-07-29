@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.registry;
 
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.BlockEntityType;
@@ -10,9 +11,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.block.FishDisplayBlock;
-import net.semperidem.fishing_club.block.ReedBlock;
-import net.semperidem.fishing_club.block.TackleBoxBlock;
+import net.semperidem.fishing_club.block.*;
 import net.semperidem.fishing_club.entity.FishDisplayBlockEntity;
 import net.semperidem.fishing_club.entity.TackleBoxBlockEntity;
 
@@ -24,7 +23,9 @@ public class FCBlocks {
     public static FishDisplayBlock FISH_DISPLAY_BLOCK_BAMBOO;
     public static BlockEntityType<FishDisplayBlockEntity> FISH_DISPLAY;
     public static ReedBlock REED_BLOCK;
-
+    public static EnergyDenseKelpBlock ENERGY_DENSE_KELP;
+    public static EnergyDenseKelpPlantBlock ENERGY_DENSE_KELP_PLANT;
+    public static Block DRIED_ENERGY_DENSE_KELP_BLOCK;
 
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
         return Registry.register(
@@ -44,6 +45,45 @@ public class FCBlocks {
 
 
     public static void register() {
+
+        DRIED_ENERGY_DENSE_KELP_BLOCK = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("dried_energy_dense_kelp_block"),
+            new Block(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.GREEN)
+                    .strength(0.5F, 2.5F)
+                    .sounds(BlockSoundGroup.GRASS)
+            )
+        );
+
+        ENERGY_DENSE_KELP_PLANT = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("energy_dense_kelp_plant"),
+            new EnergyDenseKelpPlantBlock(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.WATER_BLUE)
+                    .noCollision()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.WET_GRASS)
+                    .pistonBehavior(PistonBehavior.DESTROY)
+            ));
+        ENERGY_DENSE_KELP = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("energy_dense_kelp"),
+            new EnergyDenseKelpBlock(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.WATER_BLUE)
+                    .noCollision()
+                    .ticksRandomly()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.WET_GRASS)
+                    .pistonBehavior(PistonBehavior.DESTROY)
+            )
+        );
+
+        Registry.register(Registries.BLOCK_TYPE, "energy_dense_kelp", ENERGY_DENSE_KELP.getCodec());
+
         REED_BLOCK =  Registry.register(
             Registries.BLOCK,
             FishingClub.getIdentifier("reed"),
@@ -80,5 +120,6 @@ public class FCBlocks {
           FishingClub.getIdentifier("fish_display_bamboo"),
           BlockEntityType.Builder.create(FishDisplayBlockEntity::new, FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO).build()
         );
+
     }
 }

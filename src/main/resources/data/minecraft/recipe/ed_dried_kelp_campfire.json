@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "cookingtime": 600,
+  "experience": 3,
+  "ingredient": {
+    "item": "fishing-club:energy_dense_kelp"
+  },
+  "result": {
+    "id": "fishing-club:dried_energy_dense_kelp"
+  }
+}

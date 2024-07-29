@@ -9,6 +9,8 @@
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
     "common.ItemEntityMixin",
+    "common.KelpBlockMixin",
+    "common.KelpPlantBlockMixin",
     "common.LivingEntityMixin",
     "common.PlayerEntityMixin",
     "common.ServerWorldMixin"
