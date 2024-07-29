@@ -8,8 +8,10 @@ import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.sound.BlockSoundGroup;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.block.FishDisplayBlock;
+import net.semperidem.fishing_club.block.ReedBlock;
 import net.semperidem.fishing_club.block.TackleBoxBlock;
 import net.semperidem.fishing_club.entity.FishDisplayBlockEntity;
 import net.semperidem.fishing_club.entity.TackleBoxBlockEntity;
@@ -21,6 +23,7 @@ public class FCBlocks {
     public static BlockEntityType<TackleBoxBlockEntity> TACKLE_BOX;
     public static FishDisplayBlock FISH_DISPLAY_BLOCK_BAMBOO;
     public static BlockEntityType<FishDisplayBlockEntity> FISH_DISPLAY;
+    public static ReedBlock REED_BLOCK;
 
 
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
@@ -41,6 +44,18 @@ public class FCBlocks {
 
 
     public static void register() {
+        REED_BLOCK =  Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("reed"),
+            new ReedBlock(AbstractBlock.Settings.create()
+                .mapColor(MapColor.GREEN)
+                .noCollision()
+                .ticksRandomly()
+                .breakInstantly()
+                .sounds(BlockSoundGroup.GRASS)
+                .pistonBehavior(PistonBehavior.DESTROY))
+        );
+
         TACKLE_BOX_BLOCK = Registry.register(
           Registries.BLOCK,
           FishingClub.getIdentifier("tackle_box"),

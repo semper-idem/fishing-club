@@ -1,6 +1,8 @@
 package net.semperidem.fishing_club.registry;
 
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.registry.Registries;
@@ -57,5 +59,6 @@ public class FCRegistry {
         EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.BOAT_ENTITY, (EntityRendererFactory.Context ctx) -> new CustomBoatEntityRenderer(ctx, false));
         BlockEntityRendererFactories.register(FCBlocks.FISH_DISPLAY, FishDisplayEntityRenderer::new);
+        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.REED_BLOCK, RenderLayer.getCutout());
     }
 }

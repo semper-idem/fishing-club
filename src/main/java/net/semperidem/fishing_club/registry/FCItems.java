@@ -37,6 +37,7 @@ public class FCItems {
     public static Item TACKLE_BOX;
     public static Item FISH_DISPLAY_BAMBOO;
     public static Item YELLOW_FISH_TUNE;
+    public static Item REED;
 
     public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
 
@@ -205,6 +206,7 @@ public class FCItems {
         TACKLE_BOX = registerItem("tackle_box", new TackleBoxItem(FCBlocks.TACKLE_BOX_BLOCK, new Item.Settings()));
         FISH_DISPLAY_BAMBOO = registerItem("fish_display_bamboo", new FishDisplayItem(FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, new Item.Settings().maxCount(16)));
         YELLOW_FISH_TUNE = registerItem("yellow_fish_tune",  new Item(new Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN)));
+        REED = registerItem("reed", new BlockItem(FCBlocks.REED_BLOCK, new Item.Settings()));
         registerFish();
         registerItemGroup();
     }
