@@ -29,6 +29,7 @@ public class FCBlocks {
     public static NutritiousKelpBlock NUTRITIOUS_KELP;
     public static NutritiousKelpPlantBlock NUTRITIOUS_KELP_PLANT;
     public static Block DRIED_NUTRITIOUS_KELP_BLOCK;
+    public static WaterloggedLilyPadBlock WATERLOGGED_LILY_PAD_BLOCK;
 
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
         return Registry.register(
@@ -48,6 +49,20 @@ public class FCBlocks {
 
 
     public static void register() {
+
+        WATERLOGGED_LILY_PAD_BLOCK = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("waterlogged_lily_pad"),
+            new WaterloggedLilyPadBlock(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.DARK_GREEN)
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.LILY_PAD)
+                    .nonOpaque()
+                    .pistonBehavior(PistonBehavior.DESTROY)
+            )
+        );
+
 
         DRIED_NUTRITIOUS_KELP_BLOCK = Registry.register(
             Registries.BLOCK,

@@ -11,6 +11,7 @@
     "common.ItemEntityMixin",
     "common.KelpBlockMixin",
     "common.KelpPlantBlockMixin",
+    "common.LilyPadBlockMixin",
     "common.LivingEntityMixin",
     "common.PlayerEntityMixin",
     "common.ServerWorldMixin"

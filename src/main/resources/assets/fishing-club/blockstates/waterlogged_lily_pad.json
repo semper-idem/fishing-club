@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "fishing-club:block/waterlogged_lily_pad"
+      },
+      {
+        "model": "fishing-club:block/waterlogged_lily_pad",
+        "y": 90
+      },
+      {
+        "model": "fishing-club:block/waterlogged_lily_pad",
+        "y": 180
+      },
+      {
+        "model": "fishing-club:block/waterlogged_lily_pad",
+        "y": 270
+      }
+    ]
+  }
+}

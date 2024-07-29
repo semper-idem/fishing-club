@@ -1,6 +1,7 @@
 package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
@@ -64,5 +65,9 @@ public class FCRegistry {
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.ENERGY_DENSE_KELP_PLANT, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP_PLANT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.WATERLOGGED_LILY_PAD_BLOCK, RenderLayer.getCutout());
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            return 2129968;
+        }, FCBlocks.WATERLOGGED_LILY_PAD_BLOCK);
     }
 }
