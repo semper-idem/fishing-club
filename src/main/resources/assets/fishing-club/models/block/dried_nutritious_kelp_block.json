@@ -1,13 +1,13 @@
 {
   "parent": "block/block",
   "textures": {
-    "particle": "fishing-club:block/dried_energy_dense_kelp_side",
-    "down": "fishing-club:block/dried_energy_dense_kelp_bottom",
-    "up": "fishing-club:block/dried_energy_dense_kelp_top",
-    "north": "fishing-club:block/dried_energy_dense_kelp_side",
-    "east": "fishing-club:block/dried_energy_dense_kelp_side",
-    "south": "fishing-club:block/dried_energy_dense_kelp_side",
-    "west": "fishing-club:block/dried_energy_dense_kelp_side"
+    "particle": "fishing-club:block/dried_nutritious_kelp_side",
+    "down": "fishing-club:block/dried_nutritious_kelp_bottom",
+    "up": "fishing-club:block/dried_nutritious_kelp_top",
+    "north": "fishing-club:block/dried_nutritious_kelp_side",
+    "east": "fishing-club:block/dried_nutritious_kelp_side",
+    "south": "fishing-club:block/dried_nutritious_kelp_side",
+    "west": "fishing-club:block/dried_nutritious_kelp_side"
   },
   "elements": [
     {   "from": [ 0, 0, 0 ],

@@ -11,23 +11,23 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.semperidem.fishing_club.registry.FCBlocks;
 import org.jetbrains.annotations.Nullable;
 
-public class EnergyDenseKelpBlock extends AbstractPlantStemBlock implements FluidFillable {
-	public static final MapCodec<EnergyDenseKelpBlock> CODEC = createCodec(EnergyDenseKelpBlock::new);
-	public static final VoxelShape SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 9.0, 9.0);
-	private static final double GROWTH_CHANCE = 0.01;
+import static net.semperidem.fishing_club.block.EnergyDenseKelpBlock.SHAPE;
 
-	public EnergyDenseKelpBlock(Settings settings) {
+public class NutritiousKelpBlock extends AbstractPlantStemBlock implements FluidFillable {
+	public static final MapCodec<NutritiousKelpBlock> CODEC = createCodec(NutritiousKelpBlock::new);
+	private static final double GROWTH_CHANCE = 0.05;
+
+	public NutritiousKelpBlock(Settings settings) {
 		super(settings, Direction.UP, SHAPE, true, GROWTH_CHANCE);
 	}
 
 	@Override
-	public MapCodec<EnergyDenseKelpBlock> getCodec() {
+	public MapCodec<NutritiousKelpBlock> getCodec() {
 		return CODEC;
 	}
 
@@ -39,7 +39,7 @@ public class EnergyDenseKelpBlock extends AbstractPlantStemBlock implements Flui
 
 	@Override
 	protected Block getPlant() {
-		return FCBlocks.ENERGY_DENSE_KELP_PLANT;
+		return FCBlocks.NUTRITIOUS_KELP_PLANT;
 	}
 
 

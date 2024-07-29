@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "fishing-club:item/dried_energy_dense_kelp"
+    "layer0": "fishing-club:item/nutritious_kelp"
   }
 }
