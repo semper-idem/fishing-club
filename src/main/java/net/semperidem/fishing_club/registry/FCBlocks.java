@@ -26,6 +26,9 @@ public class FCBlocks {
     public static EnergyDenseKelpBlock ENERGY_DENSE_KELP;
     public static EnergyDenseKelpPlantBlock ENERGY_DENSE_KELP_PLANT;
     public static Block DRIED_ENERGY_DENSE_KELP_BLOCK;
+    public static NutritiousKelpBlock NUTRITIOUS_KELP;
+    public static NutritiousKelpPlantBlock NUTRITIOUS_KELP_PLANT;
+    public static Block DRIED_NUTRITIOUS_KELP_BLOCK;
 
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
         return Registry.register(
@@ -45,6 +48,44 @@ public class FCBlocks {
 
 
     public static void register() {
+
+        DRIED_NUTRITIOUS_KELP_BLOCK = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("dried_nutritious_kelp_block"),
+            new Block(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.GREEN)
+                    .strength(0.5F, 2.5F)
+                    .sounds(BlockSoundGroup.GRASS)
+            )
+        );
+
+        NUTRITIOUS_KELP_PLANT = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("nutritious_kelp_plant"),
+            new NutritiousKelpPlantBlock(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.WATER_BLUE)
+                    .noCollision()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.WET_GRASS)
+                    .pistonBehavior(PistonBehavior.DESTROY)
+            ));
+        NUTRITIOUS_KELP = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("nutritious_kelp"),
+            new NutritiousKelpBlock(
+                AbstractBlock.Settings.create()
+                    .mapColor(MapColor.WATER_BLUE)
+                    .noCollision()
+                    .ticksRandomly()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.WET_GRASS)
+                    .pistonBehavior(PistonBehavior.DESTROY)
+            )
+        );
+
+        Registry.register(Registries.BLOCK_TYPE, "nutritious_kelp", NUTRITIOUS_KELP.getCodec());
 
         DRIED_ENERGY_DENSE_KELP_BLOCK = Registry.register(
             Registries.BLOCK,

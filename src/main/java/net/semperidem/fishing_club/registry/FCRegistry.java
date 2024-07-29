@@ -62,5 +62,7 @@ public class FCRegistry {
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.REED_BLOCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.ENERGY_DENSE_KELP, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.ENERGY_DENSE_KELP_PLANT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP_PLANT, RenderLayer.getCutout());
     }
 }

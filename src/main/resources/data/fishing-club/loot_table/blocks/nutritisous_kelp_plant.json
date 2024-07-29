@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fishing-club:nutritious_kelp"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "fishing-club:blocks/nutritious_kelp_plant"
+}

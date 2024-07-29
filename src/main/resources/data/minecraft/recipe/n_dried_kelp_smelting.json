@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 1.5,
+  "ingredient": {
+    "item": "fishing-club:nutritious_kelp"
+  },
+  "result": {
+    "id": "fishing-club:dried_nutritious_kelp"
+  }
+}

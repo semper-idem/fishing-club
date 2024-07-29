@@ -4,9 +4,9 @@
   "cookingtime": 600,
   "experience": 6,
   "ingredient": {
-    "item": "fishing-club:energy_dense_kelp"
+    "item": "fishing-club:nutritious_kelp"
   },
   "result": {
-    "id": "fishing-club:dried_energy_dense_kelp"
+    "id": "fishing-club:dried_nutritious_kelp"
   }
 }

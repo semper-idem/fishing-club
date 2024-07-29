@@ -3,7 +3,10 @@ package net.semperidem.fishing_club.registry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.jukebox.JukeboxSongs;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.FoodComponents;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -42,6 +45,9 @@ public class FCItems {
     public static Item ENERGY_DENSE_KELP;
     public static Item DRIED_ENERGY_DENSE_KELP;
     public static Item DRIED_ENERGY_DENSE_KELP_BLOCK;
+    public static Item NUTRITIOUS_KELP;
+    public static Item DRIED_NUTRITIOUS_KELP;
+    public static Item DRIED_NUTRITIOUS_KELP_BLOCK;
 
     public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
 
@@ -185,6 +191,19 @@ public class FCItems {
     public static BaitPartItem BAIT_PITCHER_PLANT;
     public static BaitPartItem BAIT_SPECIAL;
 
+    public static FoodComponent NUTRITIOUS_KELP_FOOD = new FoodComponent.Builder()
+        .nutrition(2)
+        .saturationModifier(0.3F)
+        .statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 0), 0.05F)
+        .build();
+
+
+    public static FoodComponent DRIED_NUTRITIOUS_KELP_FOOD = new FoodComponent.Builder()
+        .nutrition(5)
+        .saturationModifier(0.6F)
+        .statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0), 0.1F)
+        .build();
+
 
     public static <T extends Item> T registerItem(String id, T item) {
         Registry.register(Registries.ITEM, FishingClub.getIdentifier(id), item);
@@ -214,8 +233,14 @@ public class FCItems {
         ENERGY_DENSE_KELP = registerItem("energy_dense_kelp", new BlockItem(FCBlocks.ENERGY_DENSE_KELP, new Item.Settings()));
         DRIED_ENERGY_DENSE_KELP = registerItem("dried_energy_dense_kelp", new Item(new Item.Settings()));
         DRIED_ENERGY_DENSE_KELP_BLOCK = registerItem("dried_energy_dense_kelp_block", new BlockItem(FCBlocks.DRIED_ENERGY_DENSE_KELP_BLOCK, new Item.Settings()));
+        NUTRITIOUS_KELP = registerItem("nutritious_kelp", new BlockItem(FCBlocks.NUTRITIOUS_KELP, new Item.Settings().food(NUTRITIOUS_KELP_FOOD)));
+        DRIED_NUTRITIOUS_KELP = registerItem("dried_nutritious_kelp", new Item(new Item.Settings().food(DRIED_NUTRITIOUS_KELP_FOOD)));
+        DRIED_NUTRITIOUS_KELP_BLOCK = registerItem("dried_nutritious_kelp_block", new BlockItem(FCBlocks.DRIED_NUTRITIOUS_KELP_BLOCK, new Item.Settings()));
+
+
         FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP, 200);
         FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP_BLOCK, 12800);
+
         registerFish();
         registerItemGroup();
     }
