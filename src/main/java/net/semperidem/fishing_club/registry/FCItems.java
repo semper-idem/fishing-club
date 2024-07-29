@@ -192,8 +192,10 @@ public class FCItems {
     public static BaitPartItem BAIT_SPECIAL;
 
     public static FoodComponent NUTRITIOUS_KELP_FOOD = new FoodComponent.Builder()
-        .nutrition(2)
+        .nutrition(1)
         .saturationModifier(0.3F)
+        .snack()
+        .alwaysEdible()
         .statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 0), 0.05F)
         .build();
 
@@ -201,6 +203,7 @@ public class FCItems {
     public static FoodComponent DRIED_NUTRITIOUS_KELP_FOOD = new FoodComponent.Builder()
         .nutrition(4)
         .saturationModifier(0.9F)
+        .alwaysEdible()
         .statusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0), 0.1F)
         .build();
 
