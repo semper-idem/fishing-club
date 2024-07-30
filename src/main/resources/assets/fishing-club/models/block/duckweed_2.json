@@ -1,0 +1,6 @@
+{
+  "parent": "fishing-club:block/water_plant_bed_2",
+  "textures": {
+    "flowerbed": "fishing-club:block/duckweed"
+  }
+}

@@ -21,6 +21,7 @@ import net.semperidem.fishing_club.item.fishing_rod.components.*;
 
 import java.util.ArrayList;
 
+import static net.minecraft.block.ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE;
 import static net.minecraft.util.Rarity.*;
 
 public class FCItems {
@@ -48,6 +49,7 @@ public class FCItems {
     public static Item NUTRITIOUS_KELP;
     public static Item DRIED_NUTRITIOUS_KELP;
     public static Item DRIED_NUTRITIOUS_KELP_BLOCK;
+    public static Item DUCKWEED;
 
     public static final RegistryKey<ItemGroup> FISHING_CLUB_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishing_club"));
 
@@ -239,6 +241,19 @@ public class FCItems {
         NUTRITIOUS_KELP = registerItem("nutritious_kelp", new BlockItem(FCBlocks.NUTRITIOUS_KELP, new Item.Settings().food(NUTRITIOUS_KELP_FOOD)));
         DRIED_NUTRITIOUS_KELP = registerItem("dried_nutritious_kelp", new Item(new Item.Settings().food(DRIED_NUTRITIOUS_KELP_FOOD)));
         DRIED_NUTRITIOUS_KELP_BLOCK = registerItem("dried_nutritious_kelp_block", new BlockItem(FCBlocks.DRIED_NUTRITIOUS_KELP_BLOCK, new Item.Settings()));
+        DUCKWEED = registerItem("duckweed", new DuckweedItem(FCBlocks.DUCKWEED_BLOCK, new Item.Settings()));
+
+        registerCompostableItem(0.1f, DUCKWEED);
+
+		registerCompostableItem(0.3f, REED);
+
+		registerCompostableItem(0.3f, NUTRITIOUS_KELP);
+		registerCompostableItem(0.5f, DRIED_NUTRITIOUS_KELP);
+		registerCompostableItem(1, DRIED_ENERGY_DENSE_KELP_BLOCK);
+
+		registerCompostableItem(0.3f, ENERGY_DENSE_KELP);
+		registerCompostableItem(0.5f, DRIED_ENERGY_DENSE_KELP);
+		registerCompostableItem(1, DRIED_ENERGY_DENSE_KELP_BLOCK);
 
 
         FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP, 200);
@@ -247,6 +262,12 @@ public class FCItems {
         registerFish();
         registerItemGroup();
     }
+
+
+    private static void registerCompostableItem(float levelIncreaseChance, ItemConvertible item) {
+        ITEM_TO_LEVEL_INCREASE_CHANCE.put(item.asItem(), levelIncreaseChance);
+    }
+
 
     private static void registerFish() {
         SpeciesLibrary.iterator().forEachRemaining(

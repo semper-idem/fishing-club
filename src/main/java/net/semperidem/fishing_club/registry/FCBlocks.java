@@ -30,6 +30,7 @@ public class FCBlocks {
     public static NutritiousKelpPlantBlock NUTRITIOUS_KELP_PLANT;
     public static Block DRIED_NUTRITIOUS_KELP_BLOCK;
     public static WaterloggedLilyPadBlock WATERLOGGED_LILY_PAD_BLOCK;
+    public static DuckweedBlock DUCKWEED_BLOCK;
 
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
         return Registry.register(
@@ -49,6 +50,19 @@ public class FCBlocks {
 
 
     public static void register() {
+
+        DUCKWEED_BLOCK = Registry.register(
+            Registries.BLOCK,
+            FishingClub.getIdentifier("duckweed"),
+            new DuckweedBlock(
+                AbstractBlock.Settings.create().
+                    mapColor(MapColor.DARK_GREEN)
+                    .noCollision()
+                    .ticksRandomly()
+                    .sounds(BlockSoundGroup.PINK_PETALS).pistonBehavior(PistonBehavior.DESTROY)
+            )
+        );
+
 
         WATERLOGGED_LILY_PAD_BLOCK = Registry.register(
             Registries.BLOCK,
