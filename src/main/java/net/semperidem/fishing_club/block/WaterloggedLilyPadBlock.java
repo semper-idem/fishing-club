@@ -3,10 +3,13 @@ package net.semperidem.fishing_club.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -26,10 +29,11 @@ public class WaterloggedLilyPadBlock extends PlantBlock implements Waterloggable
 
 	private static final VoxelShape WATERLOGGED_SHAPE = Block.createCuboidShape(1.0, 15, 1.0, 15.0, 16, 15.0);
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	public final static BooleanProperty FLOWERING = BooleanProperty.of("flowering");
 
 	public WaterloggedLilyPadBlock(Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, true));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, true).with(FLOWERING, false));
 	}
 
 	public MapCodec<WaterloggedLilyPadBlock> getCodec() {
@@ -46,6 +50,15 @@ public class WaterloggedLilyPadBlock extends PlantBlock implements Waterloggable
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		return fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
+	}
+
+
+	@Override
+	public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (state.get(FLOWERING)) {
+			dropStack(world, pos, new ItemStack(Items.LILY_PAD));
+		}
+		return super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -65,7 +78,7 @@ public class WaterloggedLilyPadBlock extends PlantBlock implements Waterloggable
 	@Override
 	protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if(world.getBlockState(pos.up()).isAir() && world.getFluidState(pos).isIn(FluidTags.WATER)) {
-			world.setBlockState(pos.up(), Blocks.LILY_PAD.getDefaultState());
+			world.setBlockState(pos.up(), Blocks.LILY_PAD.getDefaultState().with(FLOWERING, state.get(FLOWERING)));
 			world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState());
 		}
 
@@ -85,7 +98,7 @@ public class WaterloggedLilyPadBlock extends PlantBlock implements Waterloggable
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(WATERLOGGED);
+		builder.add(WATERLOGGED, FLOWERING);
 	}
 
 	@Override

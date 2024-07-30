@@ -1,0 +1,69 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "block/lily_pad",
+    "flower": "block/spore_blossom",
+    "base": "block/lily_pad"
+  },
+  "elements": [
+    {   "from": [  0, 15.75,  0 ],
+      "to":   [ 16, 15.75, 16 ],
+      "faces": {
+        "down":  { "uv": [  0, 16, 16,  0 ], "texture": "#base", "tintindex": 0 },
+        "up":  { "uv": [  0,  0, 16, 16 ], "texture": "#base", "tintindex": 0 }
+      }
+    },
+    {   "from": [ 8, 15.7, 0 ],
+      "to": [ 24, 15.7, 16 ],
+      "rotation": { "origin": [ 8, 16, 0 ], "axis": "z", "angle": 22.5, "rescale": false },
+      "shade": false,
+      "faces": {
+        "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#flower", "rotation": 90 },
+        "down": { "uv": [ 0, 16, 16, 0 ], "texture": "#flower", "rotation": 270 }
+      }
+    },
+    {   "from": [ -8, 15.7, 0 ],
+      "to": [ 8, 15.7, 16 ],
+      "rotation": { "origin": [ 8, 16, 0 ], "axis": "z", "angle": -22.5, "rescale": false },
+      "shade": false,
+      "faces": {
+        "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#flower", "rotation": 270 },
+        "down": { "uv": [ 0, 16, 16, 0 ], "texture": "#flower", "rotation": 90 }
+      }
+    },
+    {   "from": [ 0, 15.7, 8 ],
+      "to": [ 16, 15.7, 24 ],
+      "rotation": { "origin": [ 0, 16, 8 ], "axis": "x", "angle": -22.5, "rescale": false },
+      "shade": false,
+      "faces": {
+        "up": { "uv": [ 16, 16, 0, 0 ], "texture": "#flower" },
+        "down": { "uv": [ 16, 0, 0, 16 ], "texture": "#flower" }
+      }
+    },
+    {   "from": [ 0, 15.7, -8 ],
+      "to": [ 16, 15.7, 8 ],
+      "rotation": { "origin": [ 0, 16, 8 ], "axis": "x", "angle": 22.5, "rescale": false },
+      "shade": false,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#flower"
+        },
+        "down": {
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ],
+          "texture": "#flower"
+        }
+      }
+    }
+  ]
+}
