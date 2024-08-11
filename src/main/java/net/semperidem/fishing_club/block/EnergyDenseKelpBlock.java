@@ -45,7 +45,7 @@ public class EnergyDenseKelpBlock extends AbstractPlantStemBlock implements Flui
 
 	@Override
 	protected boolean canAttachTo(BlockState state) {
-		return !state.isOf(Blocks.MAGMA_BLOCK);
+		return !state.isOf(Blocks.MAGMA_BLOCK) && !state.isOf(Blocks.KELP) && !state.isOf(FCBlocks.NUTRITIOUS_KELP);
 	}
 
 	@Override

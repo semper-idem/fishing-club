@@ -1,0 +1,21 @@
+{
+  "feature": "fishing-club:reed_feature",
+  "placement": [
+    {
+      "type": "minecraft:noise_based_count",
+      "noise_factor": 32.0,
+      "noise_offset": 0.0,
+      "noise_to_count_ratio": 160
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR_WG"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

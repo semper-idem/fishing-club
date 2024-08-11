@@ -5,7 +5,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -47,24 +46,19 @@ public class ReedBlock extends Block implements Waterloggable {
 
 	@Override
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos.down());
-		if (blockState.isOf(this)) {
-			return true;
-		} else {
-			if (blockState.isIn(BlockTags.DIRT) || blockState.isIn(BlockTags.SAND)) {
-				BlockPos blockPos = pos.down();
-
-				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState2 = world.getBlockState(blockPos.offset(direction));
-					FluidState fluidState = world.getFluidState(blockPos.offset(direction));
-					if (fluidState.isIn(FluidTags.WATER) || blockState2.isOf(Blocks.FROSTED_ICE)) {
-						return true;
-					}
-				}
-			}
-
+		BlockState stateDown = world.getBlockState(pos.down());
+		BlockState stateAt = world.getBlockState(pos);
+		BlockState stateUp = world.getBlockState(pos.up());
+		if (!stateUp.isAir() && !stateUp.isOf(this)) {
 			return false;
 		}
+		if (stateDown.isOf(this)) {
+			return true;
+		}
+		if (!stateAt.getFluidState().isOf(Fluids.WATER)) {
+			return false;
+		}
+		return stateDown.isIn(BlockTags.DIRT) || stateDown.isIn(BlockTags.SAND);
 	}
 
 	@Nullable

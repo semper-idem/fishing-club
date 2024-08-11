@@ -48,6 +48,7 @@ public class FCRegistry {
         LevelRewardRule.initDefaultRewards();
         FishingPerks.register();
         DialogController.initialize();
+        FCFeatures.register();
     }
 
     public static void registerClient(){

@@ -45,7 +45,7 @@ public class NutritiousKelpBlock extends AbstractPlantStemBlock implements Fluid
 
 	@Override
 	protected boolean canAttachTo(BlockState state) {
-		return !state.isOf(Blocks.MAGMA_BLOCK);
+		return !state.isOf(Blocks.MAGMA_BLOCK) && !state.isOf(Blocks.KELP) && !state.isOf(FCBlocks.ENERGY_DENSE_KELP);
 	}
 
 	@Override
