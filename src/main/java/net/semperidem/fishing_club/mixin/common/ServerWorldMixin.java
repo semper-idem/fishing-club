@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
-import net.semperidem.fishing_club.FishingServerWorld;
+import net.semperidem.fishing_club.world.FishingServerWorld;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.entity.FishingExplosionEntity;
 import net.semperidem.fishing_club.fish.FishUtil;

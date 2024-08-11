@@ -32,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.semperidem.fishing_club.FishingServerWorld;
+import net.semperidem.fishing_club.world.FishingServerWorld;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.registry.FCEntityTypes;
 import net.semperidem.fishing_club.screen.dialog.DialogController;

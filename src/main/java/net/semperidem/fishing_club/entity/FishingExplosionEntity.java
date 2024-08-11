@@ -22,7 +22,7 @@ public class FishingExplosionEntity implements IHookEntity{
     }
 
     @Override
-    public float getFishMethodDebuff() {
+    public float getCircumstanceQuality() {
         return 0.35f;
     }
 }

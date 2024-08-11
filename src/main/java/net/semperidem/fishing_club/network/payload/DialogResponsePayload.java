@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishing_club.FishingServerWorld;
+import net.semperidem.fishing_club.world.FishingServerWorld;
 import net.semperidem.fishing_club.screen.dialog.DialogNode;
 import net.semperidem.fishing_club.screen.member.MemberScreenHandlerFactory;
 

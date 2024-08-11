@@ -13,7 +13,7 @@ public interface IHookEntity {
         return RodConfiguration.EMPTY;
     }
 
-    default float getFishMethodDebuff() {
+    default float getCircumstanceQuality() {
         return 0.5f;
     }
 

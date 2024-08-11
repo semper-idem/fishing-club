@@ -1,4 +1,4 @@
-package net.semperidem.fishing_club;
+package net.semperidem.fishing_club.world;
 
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishing_club.entity.FishermanEntity;

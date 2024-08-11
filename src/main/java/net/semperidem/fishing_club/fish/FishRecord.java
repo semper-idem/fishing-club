@@ -101,7 +101,7 @@ public record FishRecord(
 
         var fisherMean = MathHelper.clamp(fisher.getLevel() * 0.0025, 0, 0.25);
         var rodMean = rod.attributes().fishQuality() * 0.025;
-        var circumstanceMean = caughtWith.getFishMethodDebuff(); //todo add method that handle this
+        var circumstanceMean = caughtWith.getCircumstanceQuality(); //todo add method that handle this
         var mean = fisherMean + rodMean + circumstanceMean;
 
         return (int) MathHelper.clamp(

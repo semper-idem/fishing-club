@@ -19,6 +19,7 @@ import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
+import net.semperidem.fishing_club.world.ChunkQuality;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +30,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 import java.util.UUID;
+
+import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity{
@@ -160,6 +163,7 @@ public abstract class ItemEntityMixin extends Entity{
         serverWorld.spawnEntity(fishEntity);
         fishEntity.setCustomName(Text.of(this.fish.name()));
         fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
+        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
     }
 
     @Unique

@@ -17,6 +17,7 @@ import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.item.FishingNetItem;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
+import net.semperidem.fishing_club.world.ChunkQuality;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import static net.semperidem.fishing_club.fish.FishRecord.MAX_QUALITY;
 import static net.semperidem.fishing_club.fish.FishRecord.MIN_QUALITY;
+import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
     public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
@@ -48,16 +50,6 @@ public class FishUtil {
         return fishReward;
     }
 
-    public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
-        FishingCard fishingCard = FishingCard.of(player);
-        fishingCard.fishCaught(fish);
-            ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
-        ItemStack fishingNetStack = getFishingNet(player, fishStack);
-        if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
-            return;
-        }
-        giveItemStack(player, fishStack);
-    }
 
 private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fishStack) {
         for(int i = 0; i < 9; i++) {
@@ -72,9 +64,22 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         return FishingCard.of(player).getFishingNet(fishStack);
     }
 
+    public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
+        FishingCard fishingCard = FishingCard.of(player);
+        fishingCard.fishCaught(fish);
+        ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
+        ItemStack fishingNetStack = getFishingNet(player, fishStack);
+        if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
+            return;
+        }
+        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+        giveItemStack(player, fishStack);
+    }
+
     public static void fishCaughtAt(ServerPlayerEntity player, FishRecord fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
+        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.EXPLOSION);
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
     }
 

@@ -3,7 +3,7 @@ package net.semperidem.fishing_club.entity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
@@ -37,6 +39,7 @@ import net.semperidem.fishing_club.util.VelocityUtil;
 import java.util.Collections;
 
 import static net.semperidem.fishing_club.registry.FCItems.MEMBER_FISHING_ROD;
+import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 
 
 public class HookEntity extends FishingBobberEntity implements IHookEntity {
@@ -75,7 +78,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private FishRecord caughtFish;
 
-    public HookEntity(EntityType<? extends HookEntity> entityEntityType, World world) {
+    public HookEntity(net.minecraft.entity.EntityType<? extends HookEntity> entityEntityType, World world) {
         super(entityEntityType, world);
 
     }
@@ -165,7 +168,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     @Override
-    public void setOwner(Entity entity) {
+    public void setOwner(net.minecraft.entity.Entity entity) {
         super.setOwner(entity);
         if (entity instanceof PlayerEntity playerEntity) {
             this.playerOwner = playerEntity;
@@ -240,7 +243,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
 
-        if (this.hookedEntity instanceof LivingEntity livingHookedEntity) {
+        if (this.hookedEntity instanceof net.minecraft.entity.LivingEntity livingHookedEntity) {
             this.hookPartItem.onEntityHit(livingHookedEntity);
         }
 
@@ -275,7 +278,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.tickStickBlock();
         this.tickBuoyancy();
         this.tickGravity();
-        this.move(MovementType.SELF, this.getVelocity());
+        this.move(net.minecraft.entity.MovementType.SELF, this.getVelocity());
         this.tickMotionResistance();
         this.tickTension();
     }
@@ -316,7 +319,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     @Override
-    public void move(MovementType movementType, Vec3d movement) {
+    public void move(net.minecraft.entity.MovementType movementType, Vec3d movement) {
         super.move(movementType, movement);
         this.updateRotation();
         this.refreshPosition();
@@ -615,7 +618,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (this.hookedEntity != this.playerOwner) {
             pullEntity();
         }
-        this.getWorld().sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
+        this.getWorld().sendEntityStatus(this, net.minecraft.entity.EntityStatuses.PULL_HOOKED_ENTITY);
         this.discard();
     }
 
@@ -694,8 +697,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     @Override
-    public float getFishMethodDebuff() {
-        return 1f;
+    public float getCircumstanceQuality() {
+        return (float) (CHUNK_QUALITY.get(this.getWorld().getChunk(this.getBlockPos())).getValue() / 4f);
     }
 
     @Override

@@ -11,6 +11,9 @@ import net.minecraft.world.World;
 import net.semperidem.fishing_club.fish.FishComponent;
 import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.registry.FCEntityTypes;
+import net.semperidem.fishing_club.world.ChunkQuality;
+
+import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FCFishEntity extends SchoolingFishEntity {
 
@@ -24,6 +27,12 @@ public class FCFishEntity extends SchoolingFishEntity {
     public FCFishEntity(World world, FishRecord fishRecord) {
         super(FCEntityTypes.FISH_ENTITY, world);
         FishComponent.of(this).set(fishRecord);
+    }
+
+    @Override
+    protected void onRemoval(RemovalReason reason) {
+        CHUNK_QUALITY.get(this.getWorld().getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+        super.onRemoval(reason);
     }
 
     @Override
