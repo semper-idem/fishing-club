@@ -10,6 +10,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.semperidem.fishing_club.block.ReedBlock;
 import net.semperidem.fishing_club.registry.FCBlocks;
 
 public class ReedFeature extends Feature<DefaultFeatureConfig> {
@@ -20,29 +21,26 @@ public class ReedFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-
-		int i = 0;
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
-		int j = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-			BlockState blockState = FCBlocks.REED_BLOCK.getDefaultState();
-			int k = 1 + random.nextInt(2);
-
-			for (int l = 0; l < k; l++) {
-				if (!blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
-					break;
-				}
-				structureWorldAccess.setBlockState(blockPos2, blockState, 2);
-				blockPos2 = blockPos2.up();
-				i++;
-			}
+		int j = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());//todo move to configured feature json
+		BlockPos posWater = new BlockPos(blockPos.getX(), j, blockPos.getZ());
+		BlockPos posAbove = posWater.up();
+		BlockState blockState = FCBlocks.REED_BLOCK.getDefaultState().with(ReedBlock.WATERLOGGED, true);
+		if (!blockState.canPlaceAt(structureWorldAccess, posWater)) {
+			return false;
 		}
-
-		return i > 0;
-
+		if (!structureWorldAccess.getBlockState(posWater).isOf(Blocks.WATER)) {
+			return false;
+		}
+		if (!(structureWorldAccess.getBlockState(posAbove).isAir())) {
+			return false;
+		}
+		structureWorldAccess.setBlockState(posWater, blockState, 2);
+		if (random.nextInt(2) > 0) {
+			structureWorldAccess.setBlockState(posAbove, blockState.with(ReedBlock.WATERLOGGED, false), 2);
+		}
+		return true;
 	}
-
 }

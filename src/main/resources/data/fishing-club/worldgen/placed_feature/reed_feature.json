@@ -3,12 +3,16 @@
   "placement": [
     {
       "type": "minecraft:noise_based_count",
-      "noise_factor": 32.0,
+      "noise_factor": 64.0,
       "noise_offset": 0.0,
-      "noise_to_count_ratio": 160
+      "noise_to_count_ratio": 512
     },
     {
       "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 16
     },
     {
       "type": "minecraft:heightmap",

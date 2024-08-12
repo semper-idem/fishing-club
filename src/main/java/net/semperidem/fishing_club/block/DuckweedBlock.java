@@ -1,11 +1,13 @@
 package net.semperidem.fishing_club.block;
 
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -113,6 +115,14 @@ public class DuckweedBlock extends FlowerbedBlock {
 		playerEntity.addStatusEffect(new StatusEffectInstance(FCStatusEffects.MOISTURIZED, 600 * flowerCount));
 	}
 
+	public static boolean growsInBiome(BiomeSelectionContext context) {
+		return !(
+				context.hasTag(BiomeTags.IS_RIVER) ||
+				context.hasTag(BiomeTags.IS_OCEAN) ||
+				context.hasTag(BiomeTags.IS_DEEP_OCEAN) ||
+				context.hasTag(BiomeTags.IS_BEACH)
+		);
+	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

@@ -698,8 +698,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     public float getCircumstanceQuality() {
-        return (float) (CHUNK_QUALITY.get(this.getWorld().getChunk(this.getBlockPos())).getValue() / 4f);
-    }
+        return CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos()))
+            .map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
+	}
+
 
     @Override
     public int getWaitTime() {

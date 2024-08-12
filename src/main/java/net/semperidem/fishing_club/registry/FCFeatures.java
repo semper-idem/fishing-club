@@ -11,6 +11,8 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.block.DuckweedBlock;
+import net.semperidem.fishing_club.block.ReedBlock;
 import net.semperidem.fishing_club.feature.DuckweedFeature;
 import net.semperidem.fishing_club.feature.ReedFeature;
 
@@ -25,14 +27,14 @@ public class FCFeatures {
 	public static void register() {
 		Registry.register(Registries.FEATURE, DUCKWEED_FEATURE_ID, DUCKWEED_FEATURE);
 		BiomeModifications.addFeature(
-			BiomeSelectors.foundInOverworld(),
+			BiomeSelectors.foundInOverworld().and(DuckweedBlock::growsInBiome),
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			RegistryKey.of(RegistryKeys.PLACED_FEATURE, DUCKWEED_FEATURE_ID
 			)
 		);
 		Registry.register(Registries.FEATURE, REED_FEATURE_ID, REED_FEATURE);
 		BiomeModifications.addFeature(
-			BiomeSelectors.foundInOverworld(),
+			BiomeSelectors.foundInOverworld().and(ReedBlock::growsInBiome),
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			RegistryKey.of(RegistryKeys.PLACED_FEATURE, REED_FEATURE_ID
 			)

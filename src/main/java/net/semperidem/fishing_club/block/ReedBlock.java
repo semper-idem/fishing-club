@@ -1,9 +1,11 @@
 package net.semperidem.fishing_club.block;
 
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.minecraft.block.*;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -46,6 +48,9 @@ public class ReedBlock extends Block implements Waterloggable {
 
 	@Override
 	protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		if (world.getBiome(pos).value().isCold(pos)) {
+			return false;
+		}
 		BlockState stateDown = world.getBlockState(pos.down());
 		BlockState stateAt = world.getBlockState(pos);
 		BlockState stateUp = world.getBlockState(pos.up());
@@ -59,6 +64,14 @@ public class ReedBlock extends Block implements Waterloggable {
 			return false;
 		}
 		return stateDown.isIn(BlockTags.DIRT) || stateDown.isIn(BlockTags.SAND);
+	}
+
+	public static boolean growsInBiome(BiomeSelectionContext context) {
+		return !(
+				context.hasTag(BiomeTags.IS_OCEAN) ||
+				context.hasTag(BiomeTags.IS_DEEP_OCEAN) ||
+				context.hasTag(BiomeTags.IS_BEACH)
+		);
 	}
 
 	@Nullable
