@@ -2,11 +2,17 @@ package net.semperidem.fishing_club.registry;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnLocationTypes;
+import net.minecraft.entity.SpawnRestriction;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -38,6 +44,24 @@ public class FCFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			RegistryKey.of(RegistryKeys.PLACED_FEATURE, REED_FEATURE_ID
 			)
+		);
+		registerMobSpawn();
+	}
+
+	public static void registerMobSpawn() {
+			BiomeModifications.addSpawn(
+				BiomeSelectors.spawnsOneOf(EntityType.COD),
+				SpawnGroup.WATER_AMBIENT,
+				FCEntityTypes.FISH_ENTITY,
+				15,
+				1,
+			6
+			);
+		SpawnRestriction.register(
+			FCEntityTypes.FISH_ENTITY,
+			SpawnLocationTypes.IN_WATER,
+			Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
+			WaterCreatureEntity::canSpawn
 		);
 	}
 }

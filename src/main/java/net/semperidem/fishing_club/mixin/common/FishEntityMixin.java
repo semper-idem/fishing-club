@@ -28,7 +28,6 @@ public class FishEntityMixin extends Entity {
             return;
         }
         ItemStack stackInHand = player.getStackInHand(hand);
-
         if (!(stackInHand.getItem() instanceof FishingNetItem fishingNetItem)) {
             return;
         }

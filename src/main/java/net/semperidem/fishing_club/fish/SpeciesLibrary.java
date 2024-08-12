@@ -158,7 +158,7 @@ public class SpeciesLibrary {
                 0.05f,
                 13.95f,
                 35
-        );
+        ).withSpawnBiome(Species.HOT);
 
         RED_SNAPPER = new Species(
                 "Red Snapper",

@@ -52,7 +52,7 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        if (!stack.isOf(FishUtil.DEFAULT_FISH_ITEM)) {
+        if (!FishUtil.isFish(stack)) {
             return;
         }
 

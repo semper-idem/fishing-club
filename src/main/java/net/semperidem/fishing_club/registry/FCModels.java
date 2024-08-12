@@ -19,6 +19,7 @@ import net.semperidem.fishing_club.fish.SpeciesLibrary;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 public class FCModels {
 
@@ -67,6 +68,10 @@ public class FCModels {
 
 	public static FCFishEntityModel<FCFishEntity> getModel(FishRecord fishRecord) {
 		return SPECIES_TO_MODEL.get(fishRecord.getTextureName());
+	}
+
+	public static Set<String> getSpeciesWithModel() {
+		return SPECIES_TO_MODEL.keySet();
 	}
 
 	public static Identifier getTexture(FishRecord fishRecord) {

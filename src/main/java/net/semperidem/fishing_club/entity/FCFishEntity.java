@@ -18,7 +18,8 @@ import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 public class FCFishEntity extends SchoolingFishEntity {
 
     public FCFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
-        super(entityType, world);
+       super(entityType, world);
+       FishComponent.of(this).set(FishRecord.init());
     }
 
     public FCFishEntity(World world) {

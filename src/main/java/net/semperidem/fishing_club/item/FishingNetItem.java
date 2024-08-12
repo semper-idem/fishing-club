@@ -30,7 +30,7 @@ public class FishingNetItem extends BundleItem {
         if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
             return false;
         }
-        if (!fishStack.isOf(FishUtil.DEFAULT_FISH_ITEM)) {
+        if (!FishUtil.isFish(fishStack)) {
             return false;
         }
 
@@ -44,7 +44,7 @@ public class FishingNetItem extends BundleItem {
             return false;
         }
 
-        if (!fishStack.isOf(FishUtil.DEFAULT_FISH_ITEM)) {
+        if (!FishUtil.isFish(fishStack)) {
             return false;
         }
 
@@ -77,7 +77,7 @@ public class FishingNetItem extends BundleItem {
                         ItemStack itemStack3 = slot.insertStack(itemStack2);
                         builder.add(itemStack3);
                     }
-                } else if (itemStack.getItem().canBeNested() && itemStack.isOf(FishUtil.DEFAULT_FISH_ITEM)) {
+                } else if (itemStack.getItem().canBeNested() && FishUtil.isFish(itemStack)) {
                     int i = builder.add(slot, player);
                     if (i > 0) {
                         this.playInsertSound(player);
@@ -113,7 +113,7 @@ public class FishingNetItem extends BundleItem {
                         this.playRemoveOneSound(player);
                         cursorStackReference.set(itemStack);
                     }
-                } else  if (otherStack.isOf(FishUtil.DEFAULT_FISH_ITEM)){
+                } else  if (FishUtil.isFish(otherStack)){
                     int i = builder.add(otherStack);
                     if (i > 0) {
                         this.playInsertSound(player);

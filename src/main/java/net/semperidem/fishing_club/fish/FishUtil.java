@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishing_club.entity.IHookEntity;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
+import net.semperidem.fishing_club.item.FishItem;
 import net.semperidem.fishing_club.item.FishingNetItem;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
@@ -148,7 +149,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
 
     public static boolean isFish(ItemStack fish) {
-        return fish.isOf(DEFAULT_FISH_ITEM);
+        return fish.getItem() instanceof FishItem;
     }
 
 

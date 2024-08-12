@@ -153,6 +153,9 @@ public class HistoryManager extends DataManager {
     }
 
     private long getCurrentTime() {
+        if (trackedFor.getHolder() == null) {
+            return 0;
+        }
         return trackedFor.getHolder().getWorld().getTime();
     }
 

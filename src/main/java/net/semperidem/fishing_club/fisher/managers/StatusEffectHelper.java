@@ -28,6 +28,9 @@ public class StatusEffectHelper {
 
     public int getMinGrade() {
         int minGrade = 0;
+        if (this.trackedFor.getHolder() == null) {
+            return minGrade;
+        }
         if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
         } else if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
