@@ -11,14 +11,25 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.feature.DuckweedFeature;
 import net.semperidem.fishing_club.feature.ReedFeature;
 
 public class FCFeatures {
 	public static final Identifier REED_FEATURE_ID = FishingClub.getIdentifier("reed_feature");
 	public static final ReedFeature REED_FEATURE = new ReedFeature(DefaultFeatureConfig.CODEC);
 	public static final RegistryKey<ConfiguredFeature<?, ?>> CONFIGURED_REED_FEATURE = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, REED_FEATURE_ID);
+	public static final Identifier DUCKWEED_FEATURE_ID = FishingClub.getIdentifier("duckweed_feature");
+	public static final DuckweedFeature DUCKWEED_FEATURE = new DuckweedFeature(DefaultFeatureConfig.CODEC);
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CONFIGURED_DUCKWEED_FEATURE = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, DUCKWEED_FEATURE_ID);
 
 	public static void register() {
+		Registry.register(Registries.FEATURE, DUCKWEED_FEATURE_ID, DUCKWEED_FEATURE);
+		BiomeModifications.addFeature(
+			BiomeSelectors.foundInOverworld(),
+			GenerationStep.Feature.VEGETAL_DECORATION,
+			RegistryKey.of(RegistryKeys.PLACED_FEATURE, DUCKWEED_FEATURE_ID
+			)
+		);
 		Registry.register(Registries.FEATURE, REED_FEATURE_ID, REED_FEATURE);
 		BiomeModifications.addFeature(
 			BiomeSelectors.foundInOverworld(),

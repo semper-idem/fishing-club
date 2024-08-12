@@ -13,6 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -58,13 +59,48 @@ public class DuckweedBlock extends FlowerbedBlock {
 		builder.add(FACING, FLOWER_AMOUNT, CUT);
 	}
 
-	@Override
-	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		int flowerCount = state.get(FLOWER_AMOUNT);
-		if (!state.get(CUT) && state.get(FLOWER_AMOUNT) < 4 && Math.random() < 0.05) {
+	private void tickGrowth(BlockState state, ServerWorld world, BlockPos pos, Random random, int flowerCount) {
+		if (random.nextFloat() > 0.2) {
+			return;
+		}
+		if (state.get(CUT)) {
+			return;
+		}
+		if (flowerCount < 4) {
 			world.setBlockState(pos, state.with(FLOWER_AMOUNT, flowerCount + 1));
 			return;
 		}
+
+		int neighbourCount = 0;
+		for(Direction direction : Direction.values()) {
+			if (world.getBlockState(pos.offset(direction)).isOf(this)) {
+				neighbourCount++;
+			}
+		}
+		int age = MathHelper.clamp(neighbourCount, 1, 4);
+
+		Direction direction = Direction.fromHorizontal(random.nextInt(4));
+		BlockPos directionPos = pos.offset(direction);
+		BlockState newState = state.with(FLOWER_AMOUNT, age);
+		world.setBlockState(pos, newState);
+		if (random.nextFloat() > 0.2) {
+			return;
+		}
+		if (!state.canPlaceAt(world, directionPos)) {
+			return;
+		}
+		BlockState stateAtDirection = world.getBlockState(directionPos);
+		if (!stateAtDirection.isAir()) {
+			return;
+		}
+		world.setBlockState(pos.offset(direction),newState.with(FACING, direction.getOpposite()));
+	}
+
+	@Override
+	protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		int flowerCount = state.get(FLOWER_AMOUNT);
+		this.tickGrowth(state, world, pos, random, flowerCount);
+
 		world.getOtherEntities(null, new Box(pos)).forEach(o -> {
 			tickStillness(o, flowerCount);
 		});

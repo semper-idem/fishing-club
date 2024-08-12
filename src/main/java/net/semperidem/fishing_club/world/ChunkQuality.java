@@ -56,6 +56,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.x, 0, pos.z);
 		this.base = Math.abs(world.getChunkManager().getNoiseConfig().getNoiseRouter().vegetation().sample(unblendedNoisePos)) * 10;
 		this.recalculateCeiling();
+		this.base += (ceiling * 0.5f);
 		this.current = ceiling;
 		if (chunk == null) {
 			return;
