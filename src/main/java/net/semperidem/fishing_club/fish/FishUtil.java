@@ -12,11 +12,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishing_club.entity.IHookEntity;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.item.FishItem;
 import net.semperidem.fishing_club.item.FishingNetItem;
-import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
 import net.semperidem.fishing_club.world.ChunkQuality;
 
@@ -25,27 +25,22 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import static net.semperidem.fishing_club.fish.FishRecord.MAX_QUALITY;
-import static net.semperidem.fishing_club.fish.FishRecord.MIN_QUALITY;
+import static net.semperidem.fishing_club.fish.specimen.SpecimenData.MAX_QUALITY;
+import static net.semperidem.fishing_club.fish.specimen.SpecimenData.MIN_QUALITY;
 import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
     public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
-    private static final String CAUGHT_BY_TAG = "caught_by";
 
 
-
-    public static ItemStack getStackFromFish(FishRecord fish){
+    public static ItemStack getStackFromFish(SpecimenData fish){
         return getStackFromFish(fish, 1);
     }
 
-    public static ItemStack getStackFromFish(FishRecord fish, int count){
-        ItemStack fishReward = new ItemStack(fish.species().item);
-        fishReward.set(FCComponents.FISH, fish);
-        fishReward.set(DataComponentTypes.CUSTOM_NAME, Text.of(fish.name()));
+    public static ItemStack getStackFromFish(SpecimenData fish, int count){
+        ItemStack fishReward = fish.asItemStack();
         setLore(fishReward, fish);
         fishReward.setCount(count);
         return fishReward;
@@ -65,7 +60,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         return FishingCard.of(player).getFishingNet(fishStack);
     }
 
-    public static void fishCaught(ServerPlayerEntity player, FishRecord fish){
+    public static void fishCaught(ServerPlayerEntity player, SpecimenData fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
@@ -77,7 +72,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         giveItemStack(player, fishStack);
     }
 
-    public static void fishCaughtAt(ServerPlayerEntity player, FishRecord fish, BlockPos caughtAt) {
+    public static void fishCaughtAt(ServerPlayerEntity player, SpecimenData fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.EXPLOSION);
@@ -129,11 +124,11 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
 
-    private static void setLore(ItemStack stack, FishRecord fish) {
+    private static void setLore(ItemStack stack, SpecimenData fish) {
         stack.set(DataComponentTypes.LORE, new LoreComponent(getDetailsAsLore(fish)));
     }
 
-    private static List<Text> getDetailsAsLore(FishRecord fish) {
+    private static List<Text> getDetailsAsLore(SpecimenData fish) {
         ArrayList<Text> result = new ArrayList<>();
         result.add(getQualityText(fish.quality()));
         result.add(getWeightText(fish.weight(), getWeightGrade(fish)));
@@ -191,21 +186,11 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         };
     }
 
-    public static int getWeightGrade(FishRecord fish){
-        Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
-        if (fishType == null) {
-            return MIN_QUALITY;
-        }
-        float percentile = (fish.weight()) / (fishType.fishMinWeight + fishType.fishRandomWeight);
-        return getGrade(percentile);
+    public static int getWeightGrade(SpecimenData fish){
+        return getGrade(fish.weightPercentile());
     }
-    public static int getLengthGrade(FishRecord fish){
-        Species fishType = SpeciesLibrary.ALL_FISH_TYPES.get(fish.speciesName());
-        if (fishType == null) {
-            return MIN_QUALITY;
-        }
-        float percentile = (fish.length()) / (fishType.fishMinLength + fishType.fishRandomLength);
-        return getGrade(percentile);
+    public static int getLengthGrade(SpecimenData fish){
+        return getGrade(fish.lengthPercentile());
     }
 
     private static int getGrade(float percentile){
@@ -241,27 +226,8 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         stack.set(DataComponentTypes.LORE, new LoreComponent(lore));
     }
 
-    private static Species getRandomSpecies(int level) {
-        int totalWeight = 0;
-        HashMap<Species, Integer> speciesToTotalWeight = new HashMap<>();
-        for (Species species : SpeciesLibrary.getSpeciesForLevel(level)) {
-            totalWeight += (int) species.fishRarity;
-            speciesToTotalWeight.put(species, totalWeight);
-        }
-
-        int randomWeight = (int) (Math.random() * totalWeight);
-        Species randomSpecies = SpeciesLibrary.DEFAULT;
-        for(Species species : speciesToTotalWeight.keySet()) {
-            randomSpecies = species;
-            if (randomWeight < speciesToTotalWeight.get(randomSpecies)) {
-                break;
-            }
-        }
-        return randomSpecies;
-    }
-
-    public static FishRecord getFishOnHook(IHookEntity hookEntity) {
-        return FishRecord.init(hookEntity);
+    public static SpecimenData getFishOnHook(IHookEntity hookEntity) {
+        return SpecimenData.init(hookEntity);
     }
 
 

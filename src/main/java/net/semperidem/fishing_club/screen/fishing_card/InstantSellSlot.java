@@ -5,7 +5,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishing_club.client.screen.fishing_card.FishingCardScreen;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.perks.Path;
 import net.semperidem.fishing_club.registry.FCComponents;
 
@@ -29,7 +29,7 @@ public class InstantSellSlot extends UnlockableBoundSlot {
     private void attemptSell() {
         ItemStack currentStack = getStack();
         if (!currentStack.isEmpty()) {
-            parent.fishingCard.addCredit(currentStack.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT).value());
+            parent.fishingCard.addCredit(currentStack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).value());
             currentStack.setCount(0);
         }
     }

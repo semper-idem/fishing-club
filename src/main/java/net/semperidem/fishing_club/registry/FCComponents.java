@@ -3,7 +3,8 @@ package net.semperidem.fishing_club.registry;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.Uuids;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenComponent;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.item.FishingNetContentComponent;
 import net.semperidem.fishing_club.item.fishing_rod.components.RodConfiguration;
 import net.minecraft.component.ComponentType;
@@ -21,7 +22,7 @@ public class FCComponents {
     public static ComponentType<Boolean> BROKEN;
     public static ComponentType<Integer> PART_QUALITY;
     public static ComponentType<Integer> TIER;
-    public static ComponentType<FishRecord> FISH;
+    public static ComponentType<SpecimenData> SPECIMEN;
     public static ComponentType<Long> CREATION_TICK;
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
@@ -83,13 +84,13 @@ public class FCComponents {
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
-        FISH =
+        SPECIMEN =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("fish"),
-                        ComponentType.<FishRecord>builder()
-                                .codec(FishRecord.CODEC)
-                                .packetCodec(FishRecord.PACKET_CODEC)
+                        FishingClub.getIdentifier(SpecimenComponent.KEY),
+                        ComponentType.<SpecimenData>builder()
+                                .codec(SpecimenData.CODEC)
+                                .packetCodec(SpecimenData.PACKET_CODEC)
                                 .build());
         CREATION_TICK =
                 Registry.register(

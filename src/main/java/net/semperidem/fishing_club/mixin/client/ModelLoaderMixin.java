@@ -7,7 +7,7 @@ import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.semperidem.fishing_club.registry.FCModels;
+import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,7 +37,10 @@ public abstract class ModelLoaderMixin {
         Map<Identifier, List<BlockStatesLoader.SourceTrackedData>> blockStates,
         CallbackInfo ci
     ) {
-        FCModels.getModelIds().forEach(this::loadItemModel);
+        SpeciesLibrary.iterator().forEachRemaining(species -> {
+            this.loadItemModel(species.getModelId());
+        });
+    //    FCModels.getModelIds().forEach(this::loadItemModel);
     }
 
 }

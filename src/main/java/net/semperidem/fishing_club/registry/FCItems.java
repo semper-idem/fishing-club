@@ -229,7 +229,7 @@ public class FCItems {
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new net.minecraft.item.Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new net.minecraft.item.Item(new net.minecraft.item.Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new net.minecraft.item.Item.Settings()));
-        FISH = registerItem("fish", new FishItem(SpeciesLibrary.DEFAULT.name, new net.minecraft.item.Item.Settings().food(FoodComponents.TROPICAL_FISH)));
+        FISH = registerItem("fish", new FishItem(new net.minecraft.item.Item.Settings().food(FoodComponents.TROPICAL_FISH)));
         TACKLE_BOX = registerItem("tackle_box", new TackleBoxItem(FCBlocks.TACKLE_BOX_BLOCK, new net.minecraft.item.Item.Settings()));
         FISH_DISPLAY_BAMBOO = registerItem("fish_display_bamboo", new FishDisplayItem(FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, new net.minecraft.item.Item.Settings().maxCount(16)));
         YELLOW_FISH_TUNE = registerItem("yellow_fish_tune",  new net.minecraft.item.Item(new net.minecraft.item.Item.Settings().maxCount(1).rarity(Rarity.RARE).jukeboxPlayable(JukeboxSongs.ELEVEN)));
@@ -272,7 +272,7 @@ public class FCItems {
         SpeciesLibrary.iterator().forEachRemaining(
             species -> {
                 String speciesName = species.name();
-                species.setItem(registerItem("fish_" + speciesName, new FishItem(speciesName, new net.minecraft.item.Item.Settings().food(FoodComponents.TROPICAL_FISH))));
+                species.setItem(registerItem("fish_" + speciesName, new FishItem(new net.minecraft.item.Item.Settings().food(FoodComponents.TROPICAL_FISH))));
             }
         );
     }

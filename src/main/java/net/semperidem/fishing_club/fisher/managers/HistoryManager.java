@@ -10,7 +10,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.entity.IHookEntity;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.registry.FCStatusEffects;
@@ -75,7 +75,7 @@ public class HistoryManager extends DataManager {
         return gaveDerekFish;
     }
 
-    private void recordFishCaught(FishRecord fish) {
+    private void recordFishCaught(SpecimenData fish) {
         String speciesName = fish.speciesName();
         SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
         if (fishAtlas.containsKey(speciesName)) {
@@ -85,7 +85,7 @@ public class HistoryManager extends DataManager {
         fishAtlas.put(speciesName, speciesStatistics);
     }
 
-    public void fishCaught(FishRecord fish) {
+    public void fishCaught(SpecimenData fish) {
         recordFishCaught(fish);
         firstFishCaught();
         sync();

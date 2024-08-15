@@ -1,8 +1,15 @@
 package net.semperidem.fishing_club.util;
 
+import java.util.Random;
 import java.util.TreeMap;
 
 public class MathUtil {
+
+    private static final Random RANDOM = new Random(42L);
+
+    public static double normal(double base, double range, double mean) {
+        return base + range * Math.abs(RANDOM.nextGaussian(mean, 1)) / 4D;
+    }
 
     public static float quadraticBezier(float t, float p0, float p1, float p2) {
         float oneMinusT = 1 - t;

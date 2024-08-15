@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
@@ -76,7 +76,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private HookPartItem hookPartItem;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
-    private FishRecord caughtFish;
+    private SpecimenData caughtFish;
 
     public HookEntity(net.minecraft.entity.EntityType<? extends HookEntity> entityEntityType, World world) {
         super(entityEntityType, world);

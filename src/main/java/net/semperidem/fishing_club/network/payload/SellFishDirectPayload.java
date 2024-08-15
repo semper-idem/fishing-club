@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import net.semperidem.fishing_club.registry.FCComponents;
 
@@ -26,7 +26,7 @@ public record SellFishDirectPayload(ItemStack fish) implements CustomPayload {
             return;
         }
 
-        int value = payload.fish.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT).value();
+        int value = payload.fish.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).value();
         payload.fish.setCount(0);
         FishingCard fishingCard = FishingCard.of(context.player());
         fishingCard.addCredit(value);

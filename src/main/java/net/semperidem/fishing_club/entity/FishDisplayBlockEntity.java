@@ -13,13 +13,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.semperidem.fishing_club.fish.FishComponent;
-import net.semperidem.fishing_club.fish.FishRecord;
 import net.semperidem.fishing_club.fish.FishUtil;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
+import net.semperidem.fishing_club.fish.specimen.SpecimenDisplayComponent;
 import net.semperidem.fishing_club.network.payload.StopPlayingPayload;
 import net.semperidem.fishing_club.registry.FCBlocks;
 import net.semperidem.fishing_club.registry.FCComponents;
-import net.semperidem.fishing_club.registry.FCRegistry;
 
 public class FishDisplayBlockEntity extends BlockEntity {
 
@@ -53,13 +52,13 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return false;
         }
 
-        FishComponent displayFishComponent = FishComponent.of(this);
-        if (displayFishComponent.record() != null) {
+        SpecimenDisplayComponent displayFishComponent = SpecimenDisplayComponent.of(this);
+        if (displayFishComponent.get() != null) {
             return false;
         }
 
-        FishRecord fishRecord = stackInHand.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT);
-        if (fishRecord.isEqual(FishRecord.DEFAULT)) {
+        SpecimenData fishRecord = stackInHand.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT);
+        if (fishRecord.isEqual(SpecimenData.DEFAULT)) {
             return false;
         }
 
@@ -86,7 +85,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         this.stopPlaying();
-        FishComponent.of(this).set(null);
+        SpecimenDisplayComponent.of(this).set(null);
         return true;
     }
 
@@ -96,8 +95,8 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return;
         }
 
-        FishComponent displayFishComponent = FishComponent.of(this);
-        if (displayFishComponent.record() == null) {
+        SpecimenDisplayComponent displayFishComponent = SpecimenDisplayComponent.of(this);
+        if (displayFishComponent.get() == null) {
             return;
         }
 
@@ -183,24 +182,24 @@ public class FishDisplayBlockEntity extends BlockEntity {
     }
 
     private void tickDisplayedFish() {
-
-        FishRecord fishRecord = FishComponent.of(this).record();
-
-        if (fishRecord == null) {
-            this.fishEntity = null;
-            this.fishStack = null;
-            this.fishSong = null;
-            return;
-        }
-        if (this.fishEntity != null) {
-            return;
-        }
-
-        this.fishStack = FishUtil.getStackFromFish(fishRecord);
-        this.fishEntity = new FCFishEntity(this.world);
-        this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
-        FishComponent.of(this.fishEntity).set(fishRecord);
-        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.speciesName());
+//
+//        FishRecord fishRecord = FishComponent.of(this).get();
+//
+//        if (fishRecord == null) {
+//            this.fishEntity = null;
+//            this.fishStack = null;
+//            this.fishSong = null;
+//            return;
+//        }
+//        if (this.fishEntity != null) {
+//            return;
+//        }
+//
+//        this.fishStack = FishUtil.getStackFromFish(fishRecord);
+//        this.fishEntity = new AbstractFishEntity(this.world);
+//        this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
+//        FishComponent.of(this.fishEntity).set(fishRecord);
+//        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.speciesName());
     }
 
     private void tickPlaying() {

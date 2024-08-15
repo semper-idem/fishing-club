@@ -13,8 +13,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.semperidem.fishing_club.fish.FishRecord;
-import net.semperidem.fishing_club.fish.Species;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.item.FishItem;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
@@ -70,15 +69,14 @@ public abstract class HeldItemRendererMixin {
             return;
         }
         this.heldItem = itemStack;
-        FishRecord fishRecord = itemStack.get(FCComponents.FISH);
+        SpecimenData fishRecord = itemStack.get(FCComponents.SPECIMEN);
         weightScale = 1;
         lengthScale = 1;
         if (fishRecord == null) {
             return;
         }
-        Species species = fishRecord.species();
-        weightScale = FishRecord.getWeightScale(species, fishRecord.weight());
-        lengthScale = FishRecord.getLengthScale(species, fishRecord.length());
+        weightScale = fishRecord.weightScale();
+        lengthScale = fishRecord.lengthScale();
     }
 
     @Inject(

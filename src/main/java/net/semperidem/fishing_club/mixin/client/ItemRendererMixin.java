@@ -7,10 +7,9 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.item.FishItem;
 import net.semperidem.fishing_club.registry.FCComponents;
-import net.semperidem.fishing_club.registry.FCModels;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -23,7 +22,7 @@ public abstract class ItemRendererMixin {
             return ((ItemRendererAccessor) this)
               .fishing_club$getModels()
               .getModelManager()
-              .getModel(FCModels.getModelId(stack.getOrDefault(FCComponents.FISH, FishRecord.DEFAULT))
+              .getModel(stack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).species().getModelId()
               );
         }
         return value;

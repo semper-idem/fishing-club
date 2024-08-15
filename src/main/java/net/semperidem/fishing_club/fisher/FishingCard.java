@@ -13,7 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishing_club.FishingClub;
 import net.semperidem.fishing_club.entity.FishermanEntity;
 import net.semperidem.fishing_club.entity.IHookEntity;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.managers.*;
 import net.semperidem.fishing_club.fisher.perks.FishingPerk;
 import net.semperidem.fishing_club.leaderboard.LeaderboardTracker;
@@ -222,7 +222,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return Math.min(5, minGrade);
     }
 
-    public void fishCaught(FishRecord fish){
+    public void fishCaught(SpecimenData fish){
 
         var xEffects = this.statusEffectHelper.getExpMultiplier();
         var xGroup = 1 + 0.1f * this.statusEffectHelper.spreadStatusEffect(this.progressionManager, fish);

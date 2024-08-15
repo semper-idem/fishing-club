@@ -9,7 +9,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fisher.FishingCard;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -23,10 +23,10 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     private Scoreboard scoreboard;
 
     private static final float DISCOUNT_PER_TITLE = 0.1f;
-    public final Leaderboard<FishRecord> bestWeight;
-    public final Leaderboard<FishRecord> worstWeight;
-    public final Leaderboard<FishRecord> bestLength;
-    public final Leaderboard<FishRecord> worstLength;
+    public final Leaderboard<SpecimenData> bestWeight;
+    public final Leaderboard<SpecimenData> worstWeight;
+    public final Leaderboard<SpecimenData> bestLength;
+    public final Leaderboard<SpecimenData> worstLength;
     public final Leaderboard<FishingCard> highestCredit;
     public final Leaderboard<FishingCard> highestLevel;
 
@@ -36,10 +36,10 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     }
 
     public LeaderboardTracker() {
-        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, FishRecord::weight);
-        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, FishRecord::weight);
-        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, FishRecord::length);
-        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, FishRecord::length);
+        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, SpecimenData::weight);
+        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, SpecimenData::weight);
+        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, SpecimenData::length);
+        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, SpecimenData::length);
         highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
         highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
     }
@@ -65,7 +65,7 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     }
 
 
-    public void record(PlayerEntity caughtBy, FishRecord fish) {
+    public void record(PlayerEntity caughtBy, SpecimenData fish) {
         bestWeight.consume(caughtBy, fish);
         worstWeight.consume(caughtBy, fish);
         bestLength.consume(caughtBy, fish);

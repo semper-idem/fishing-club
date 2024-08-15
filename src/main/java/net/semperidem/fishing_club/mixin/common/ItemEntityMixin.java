@@ -4,22 +4,17 @@ package net.semperidem.fishing_club.mixin.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.semperidem.fishing_club.entity.FCFishEntity;
 import net.semperidem.fishing_club.entity.FishermanEntity;
-import net.semperidem.fishing_club.fish.FishRecord;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.registry.FCComponents;
 import net.semperidem.fishing_club.registry.FCItems;
-import net.semperidem.fishing_club.world.ChunkQuality;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,15 +26,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 import java.util.UUID;
 
-import static net.semperidem.fishing_club.world.ChunkQuality.CHUNK_QUALITY;
-
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity{
     @Shadow private @Nullable Entity thrower;
     @Shadow private int itemAge;
     @Unique UUID summonerUUID;
     @Unique boolean isSummonItem;
-    @Unique FishRecord fish;
+    @Unique
+    SpecimenData fish;
     @Unique int escapeAge;
     @Unique float maxFallDistance;
 
@@ -56,7 +50,7 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        this.fish = stack.get(FCComponents.FISH);
+        this.fish = stack.get(FCComponents.SPECIMEN);
 
         if (fish != null && fish.quality() >= 4) {
             summonerUUID = fish.caughtByUUID();
@@ -158,12 +152,13 @@ public abstract class ItemEntityMixin extends Entity{
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-        FCFishEntity fishEntity = new FCFishEntity(serverWorld, this.fish);
-        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
-        serverWorld.spawnEntity(fishEntity);
-        fishEntity.setCustomName(Text.of(this.fish.name()));
-        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
-        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+//todo
+        //        AbstractFishEntity fishEntity = new AbstractFishEntity(serverWorld, this.fish);
+//        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
+//        serverWorld.spawnEntity(fishEntity);
+//        fishEntity.setCustomName(Text.of(this.fish.name()));
+//        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
+//        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
     }
 
     @Unique

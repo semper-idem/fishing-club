@@ -15,6 +15,7 @@ import net.semperidem.fishing_club.entity.renderer.CustomBoatEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishDisplayEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishing_club.entity.renderer.HookEntityRenderer;
+import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishing_club.fisher.perks.FishingPerks;
 import net.semperidem.fishing_club.screen.dialog.DialogController;
@@ -49,6 +50,7 @@ public class FCRegistry {
         FishingPerks.register();
         DialogController.initialize();
         FCFeatures.register();
+        SpeciesLibrary.BUTTERFISH.register();
     }
 
     public static void registerClient(){
@@ -68,6 +70,7 @@ public class FCRegistry {
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP_PLANT, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.WATERLOGGED_LILY_PAD_BLOCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.DUCKWEED_BLOCK, RenderLayer.getCutout());
+        SpeciesLibrary.BUTTERFISH.registerClient();
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> 2129968, FCBlocks.WATERLOGGED_LILY_PAD_BLOCK);
     }
 }

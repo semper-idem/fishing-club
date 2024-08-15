@@ -2,80 +2,218 @@ package net.semperidem.fishing_club.fish;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.component.type.FoodComponents;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.FishEntity;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+import net.semperidem.fishing_club.FishingClub;
+import net.semperidem.fishing_club.fish.species.butterfish.ButterfishEntity;
+import net.semperidem.fishing_club.fish.specimen.SpecimenData;
 import net.semperidem.fishing_club.item.FishItem;
+import net.semperidem.fishing_club.util.MathUtil;
 
 import java.util.function.Predicate;
 
-public class Species {
+public class Species<T extends AbstractFishEntity> {
 
-    public FishItem item;
-
-    public String name;
-
-    final MovementPattern fishPattern;
-    final int minLevel;
-    final int staminaLevel;
-    public final float fishMinLength;
-    public final float fishRandomLength;
-    public final float fishMinWeight;
-    public final float fishRandomWeight;
-    public final float fishRarity;
-    public int minCount = 1;
-    public int maxCount = 6;
-    EntityModelLayerRegistry.TexturedModelDataProvider modelDataProvider;
-    private Predicate<BiomeSelectionContext> spawnBiomes = ANY;
-    public static int idCount = 1;
+    public static int ID_COUNTER = 1;
     public final int id;
 
-    //TODO refactor into factory
-    public Species(
-            String name,
-            MovementPattern fishPattern,
-            int minLevel,
-            int fishEnergyLevel,
-            float fishMinLength,
-            float fishRandomLength,
-            float fishMinWeight,
-            float fishRandomWeight,
-            float fishRarity)
-    {
+    private FishItem item;
+    private EntityType<FishEntity> type;
+
+    public final String name;
+
+    private MovementPattern movement;
+    private int level = SpecimenData.MIN_LEVEL;
+    private int staminaLevel = 1;
+    private float minLength ;
+    private float lengthRange ;
+    private float minWeight;
+    private float weightRange;
+    private float rarity;
+    private Predicate<BiomeSelectionContext> spawnBiomes = ANY;
+    private Identifier identifier;
+    private EntityType<T> entityType;
+    private EntityType.EntityFactory<T> entityFactory;
+    private EntityRendererFactory<T> entityRendererSupplier;
+    private EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider;
+    private EntityModelLayer layer;
+    private Identifier modelId;
+
+
+    public EntityType<T> getEntityType() {
+        return this.entityType;
+    }
+    public void register() {
+        this.identifier = FishingClub.getIdentifier(this.name());
+        this.entityType = Registry.register(Registries.ENTITY_TYPE,
+            this.identifier,
+            EntityType.Builder.create(
+               entityFactory, SpawnGroup.WATER_AMBIENT)
+                .dimensions(0.5f,0.3f)
+                .eyeHeight(0.2f)
+                .maxTrackingRange(4)
+                .build()
+            );
+        FabricDefaultAttributeRegistry.register(
+            this.entityType,
+            ButterfishEntity.createMobAttributes()
+        );
+
+        this.item = Registry.register(
+            Registries.ITEM,
+            this.identifier,
+            new FishItem(new Item.Settings().food(FoodComponents.TROPICAL_FISH))
+        );
+    }
+
+    public void registerClient() {
+
+        EntityRendererRegistry.register(this.entityType, this.entityRendererSupplier);
+        EntityModelLayer modelLayer = new EntityModelLayer(FishingClub.getIdentifier(getTextureName(false)), "main");
+        EntityModelLayerRegistry.registerModelLayer(modelLayer, this.texturedModelDataProvider);
+        this.layer = modelLayer;
+    }
+
+
+    public static Species of(String name) {
+        return SpeciesLibrary.ALL_FISH_TYPES.computeIfAbsent(name, Species::new);
+    }
+    Species(String name) {
         this.name = name;
-        this.fishPattern = fishPattern;
-        this.minLevel = minLevel;
-        this.staminaLevel = fishEnergyLevel;
-        this.fishMinLength = fishMinLength;
-        this.fishRandomLength = fishRandomLength;
-        this.fishMinWeight = fishMinWeight;
-        this.fishRandomWeight = fishRandomWeight;
-        this.fishRarity = fishRarity;
-        SpeciesLibrary.ALL_FISH_TYPES.put(name, this);
-        this.id = idCount;
-        idCount++;
+        this.id = ID_COUNTER;
+        ID_COUNTER++;
+        SpeciesLibrary.ALL_FISH_TYPES.putIfAbsent(this.name, this);
     }
 
-    public MovementPattern getFishPattern() {
-        return fishPattern;
+    public EntityModelLayer getLayer() {
+        return this.layer;
     }
 
-    public int getStaminaLevel() {
-        return staminaLevel;
-    }
-
-    public static Species ofName(String speciesName) {
-        return SpeciesLibrary.ALL_FISH_TYPES.getOrDefault(speciesName, SpeciesLibrary.DEFAULT);
-    }
-
-
-    public EntityModelLayerRegistry.TexturedModelDataProvider model() {
-        return this.modelDataProvider;
-    }
-
-    public Species withModel(EntityModelLayerRegistry.TexturedModelDataProvider modelDataProvider) {
-        this.modelDataProvider = modelDataProvider;
+    public  Species<T> withEntity(EntityType.EntityFactory<T> entityFactory) {
+        this.entityFactory =  entityFactory;
         return this;
     }
 
-    public Species setItem(FishItem item) {
+    public Species<T> withRenderer(EntityRendererFactory<T> entityRendererSupplier) {
+        this.entityRendererSupplier = entityRendererSupplier;
+        return this;
+    }
+
+    public  Species<T> withTexturedModel(EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider) {
+        this.texturedModelDataProvider = texturedModelDataProvider;
+        return this;
+    }
+
+    public  Species<T> level(int level) {
+        this.level = level;
+        return this;
+    }
+
+    public int level() {
+        return this.level;
+    }
+
+    public  Species<T> rarity(float rarity) {
+        this.rarity = rarity;
+        return this;
+    }
+
+    public float rarity() {
+        return rarity;
+    }
+
+    public  Species<T> length(float minLength, float lengthRange) {
+        this.minLength = minLength;
+        this.lengthRange = lengthRange;
+        return this;
+    }
+
+    public float length() {
+        return minLength;
+    }
+
+    public float lengthInRange(float mean) {
+       return (float) MathUtil.normal(minLength, weightRange, mean);
+    }
+
+    public float lengthPercentile(float length) {
+        return (length - this.minLength) / this.lengthRange;
+    }
+
+    public float lengthScale(float length) {
+        return this.sizeScale(this.lengthPercentile(length));
+    }
+
+    public  Species<T> weight(float minWeight, float weightRange){
+       this.minWeight = minWeight;
+       this.weightRange = weightRange;
+       return this;
+    }
+
+    public float weight() {
+        return this.minWeight;
+    }
+
+    public float weightScale(float weight) {
+        return this.sizeScale(this.weightPercentile(weight));
+    }
+
+    public float weightPercentile(float weight) {
+        return (weight - this.minWeight) / this.weightRange;
+    }
+
+    public float weightInRange(float mean) {
+        return (float) MathUtil.normal(this.minWeight, this.weightRange, mean);
+    }
+
+    public float sizeScale(float scalePercentile) {
+        return 1 - HALF_SCALE_RANGE  + scalePercentile * SCALE_RANGE;
+    }
+
+    public boolean weird(float weight, float length) {
+        return Math.abs(this.weightScale(weight) - this.lengthScale(length)) > SCALE_RANGE * WEIRD_RANGE;
+    }
+
+    public FishItem item() {
+        return this.item;
+    }
+
+    public  Species<T> item(FishItem item) {
+        this.item = item;
+        return this;
+    }
+
+    public MovementPattern getMovement() {
+        return movement;
+    }
+
+    public  Species<T> movement(MovementPattern movement) {
+        this.movement = movement;
+        return this;
+    }
+
+    public int staminaLevel() {
+        return staminaLevel;
+    }
+
+    public  Species<T> staminaLevel(int staminaLevel) {
+        this.staminaLevel = staminaLevel;
+        return this;
+    }
+
+
+    public  Species<T> setItem(FishItem item) {
         this.item = item;
         return this;
     }
@@ -89,7 +227,7 @@ public class Species {
         return "fish/" + name + "/" + name + (isAlbino ? "_albino" : "");
     }
 
-    public Species withSpawnBiome(Predicate<BiomeSelectionContext> biomes) {
+    public  Species<T> withSpawnBiome(Predicate<BiomeSelectionContext> biomes) {
         this.spawnBiomes = biomes;
         return this;
     }
@@ -98,6 +236,22 @@ public class Species {
         return this.spawnBiomes != null && this.spawnBiomes.test(context);
     }
 
+    public String getTexturePath() {
+        return "fish/" + this.name + "/" + this.name;
+    }
+
+    public Identifier getTexture() {
+        return FishingClub.getIdentifier("textures/entity/" + this.getTextureName(false) +".png");
+    }
+
+    public ModelIdentifier getModelId() {
+        return new ModelIdentifier(FishingClub.getIdentifier(getTextureName(false) + "_item_3d"), "inventory");
+    }
+
+    public static final double WEIRD_RANGE = 0.7D;
+
+    public static final float SCALE_RANGE = 0.4f;
+    private static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
     public static Predicate<BiomeSelectionContext> ANY = context -> true;
     public static Predicate<BiomeSelectionContext> COLD = context -> context.getBiome().getTemperature() <= 0.2;
     public static Predicate<BiomeSelectionContext> NORMAL = context -> context.getBiome().getTemperature() < 2 && context.getBiome().getTemperature() >= 0.2;

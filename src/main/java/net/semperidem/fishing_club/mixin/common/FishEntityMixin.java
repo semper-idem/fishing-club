@@ -10,7 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-import net.semperidem.fishing_club.fish.FishComponent;
+import net.semperidem.fishing_club.fish.specimen.SpecimenComponent;
 import net.semperidem.fishing_club.fish.FishUtil;
 import net.semperidem.fishing_club.item.FishingNetItem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,11 +31,11 @@ public class FishEntityMixin extends Entity {
         if (!(stackInHand.getItem() instanceof FishingNetItem fishingNetItem)) {
             return;
         }
-        FishComponent fishComponent = FishComponent.of((FishEntity) (Object)this);
+        SpecimenComponent fishComponent = SpecimenComponent.of((FishEntity) (Object)this);
         if (fishComponent == null) {
             return;
         }
-        ItemStack fishStack = FishUtil.getStackFromFish( fishComponent.record(), 1);
+        ItemStack fishStack = FishUtil.getStackFromFish( fishComponent.get(), 1);
         if (fishingNetItem.insertStack(stackInHand, fishStack, player)) {
             this.discard();
         }

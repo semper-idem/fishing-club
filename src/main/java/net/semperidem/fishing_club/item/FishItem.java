@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 
 public class FishItem extends Item {
 
-	public FishItem(String speciesName, Settings settings) {
+	public FishItem(Settings settings) {
 		super(settings);
 	}
 
