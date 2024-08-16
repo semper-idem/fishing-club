@@ -48,14 +48,14 @@ public class Species<T extends AbstractFishEntity> {
     private EntityRendererFactory<T> entityRendererSupplier;
     private EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider;
     private EntityModelLayer layer;
-    private Identifier modelId;
+    private ModelIdentifier modelId;
+    private ModelIdentifier albinoModelId;
 
 
     public EntityType<T> getEntityType() {
         return this.entityType;
     }
     public void register() {
-        this.identifier = FishingClub.getIdentifier(this.name());
         this.entityType = Registry.register(Registries.ENTITY_TYPE,
             this.identifier,
             EntityType.Builder.create(
@@ -85,15 +85,19 @@ public class Species<T extends AbstractFishEntity> {
         this.layer = modelLayer;
     }
 
-
-    public static Species of(String name) {
-        return SpeciesLibrary.ALL_FISH_TYPES.computeIfAbsent(name, Species::new);
+    public static Species<?> of(String name) {
+        return SpeciesLibrary.ALL_FISH_TYPES.getOrDefault( name, SpeciesLibrary.DEFAULT);
     }
     Species(String name) {
         this.name = name;
         this.id = ID_COUNTER;
         ID_COUNTER++;
-        SpeciesLibrary.ALL_FISH_TYPES.putIfAbsent(this.name, this);
+        this.identifier = FishingClub.getIdentifier(this.name());
+    }
+
+    public Species<T> build() {
+        SpeciesLibrary.ALL_FISH_TYPES.put(this.name, this);
+        return this;
     }
 
     public EntityModelLayer getLayer() {
@@ -213,11 +217,6 @@ public class Species<T extends AbstractFishEntity> {
     }
 
 
-    public  Species<T> setItem(FishItem item) {
-        this.item = item;
-        return this;
-    }
-
     public String name() {
         return this.name.toLowerCase().replace(" ", "_");
     }
@@ -236,16 +235,27 @@ public class Species<T extends AbstractFishEntity> {
         return this.spawnBiomes != null && this.spawnBiomes.test(context);
     }
 
-    public String getTexturePath() {
-        return "fish/" + this.name + "/" + this.name;
+    public Identifier getTexture(boolean isAlbino) {
+        return FishingClub.getIdentifier("textures/entity/" + this.getTextureName(isAlbino) +".png");
     }
 
-    public Identifier getTexture() {
-        return FishingClub.getIdentifier("textures/entity/" + this.getTextureName(false) +".png");
+    public ModelIdentifier setAndGetModelId() {
+        this.modelId =  new ModelIdentifier(FishingClub.getIdentifier(getTextureName(false) + "_item_3d"), "inventory");
+        return this.modelId;
+    }
+
+
+    public ModelIdentifier setAndGetAlbinoModelId() {
+        this.albinoModelId =  new ModelIdentifier(FishingClub.getIdentifier(getTextureName(true) + "_item_3d"), "inventory");
+        return this.albinoModelId;
+    }
+
+    public ModelIdentifier getAlbinoModelId() {
+        return this.albinoModelId;
     }
 
     public ModelIdentifier getModelId() {
-        return new ModelIdentifier(FishingClub.getIdentifier(getTextureName(false) + "_item_3d"), "inventory");
+        return this.modelId;
     }
 
     public static final double WEIRD_RANGE = 0.7D;

@@ -12,13 +12,13 @@ import static net.semperidem.fishing_club.fish.MovementPatterns.MID5;
 
 public class SpeciesLibrary {
 
-    static HashMap<String, Species> ALL_FISH_TYPES = new HashMap<>();
+    static HashMap<String, Species<? extends AbstractFishEntity>> ALL_FISH_TYPES = new HashMap<>();
 
 //    public static Species COD;
-    public static Species BUTTERFISH;
+    public static Species<ButterfishEntity> BUTTERFISH;
     public static Species DEFAULT;
 
-    public static Iterator<Species> iterator() {
+    public static Iterator<Species<? extends AbstractFishEntity>> iterator() {
         return ALL_FISH_TYPES.values().iterator();
     }
 
@@ -40,7 +40,8 @@ public class SpeciesLibrary {
             .staminaLevel(1)
             .withEntity(ButterfishEntity::new)
             .withTexturedModel(ButterfishEntityModel::getTexturedModelData)
-            .withRenderer(ButterfishEntityRenderer::new);
+            .withRenderer(ButterfishEntityRenderer::new)
+            .build();
 
         DEFAULT = BUTTERFISH;
     }

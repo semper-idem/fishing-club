@@ -37,10 +37,11 @@ public abstract class ModelLoaderMixin {
         Map<Identifier, List<BlockStatesLoader.SourceTrackedData>> blockStates,
         CallbackInfo ci
     ) {
-        SpeciesLibrary.iterator().forEachRemaining(species -> {
-            this.loadItemModel(species.getModelId());
-        });
-    //    FCModels.getModelIds().forEach(this::loadItemModel);
+       SpeciesLibrary.iterator().forEachRemaining(species -> {
+           this.loadItemModel(species.setAndGetModelId());
+           this.loadItemModel(species.setAndGetAlbinoModelId());
+       });
+
     }
 
 }

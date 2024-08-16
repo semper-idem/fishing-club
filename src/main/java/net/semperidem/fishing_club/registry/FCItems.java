@@ -13,7 +13,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
 import net.semperidem.fishing_club.FishingClub;
-import net.semperidem.fishing_club.fish.SpeciesLibrary;
 import net.semperidem.fishing_club.item.*;
 import net.semperidem.fishing_club.item.fishing_rod.MemberFishingRodItem;
 import net.semperidem.fishing_club.item.fishing_rod.components.*;
@@ -258,7 +257,6 @@ public class FCItems {
         FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP, 200);
         FuelRegistry.INSTANCE.add(DRIED_ENERGY_DENSE_KELP_BLOCK, 12800);
 
-        registerFish();
         registerItemGroup();
     }
 
@@ -267,15 +265,6 @@ public class FCItems {
         ITEM_TO_LEVEL_INCREASE_CHANCE.put(item.asItem(), levelIncreaseChance);
     }
 
-
-    private static void registerFish() {
-        SpeciesLibrary.iterator().forEachRemaining(
-            species -> {
-                String speciesName = species.name();
-                species.setItem(registerItem("fish_" + speciesName, new FishItem(new net.minecraft.item.Item.Settings().food(FoodComponents.TROPICAL_FISH))));
-            }
-        );
-    }
 
     public static void registerParts() {
         registerCore();

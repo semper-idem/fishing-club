@@ -22,7 +22,7 @@ public abstract class ItemRendererMixin {
             return ((ItemRendererAccessor) this)
               .fishing_club$getModels()
               .getModelManager()
-              .getModel(stack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).species().getModelId()
+              .getModel(stack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).getModelId()
               );
         }
         return value;

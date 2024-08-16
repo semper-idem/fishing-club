@@ -2,6 +2,7 @@ package net.semperidem.fishing_club.fish.specimen;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -53,6 +54,10 @@ public record SpecimenData(
 
     public String getTextureName() {
         return Species.of(this.speciesName).getTextureName(this.isAlbino);
+    }
+
+    public ModelIdentifier getModelId() {
+        return !this.isAlbino ? species().getAlbinoModelId() : species().getModelId();
     }
 
     public static SpecimenData init(IHookEntity caughtWith, Species species) {
