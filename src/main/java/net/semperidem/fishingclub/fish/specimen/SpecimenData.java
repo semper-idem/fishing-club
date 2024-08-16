@@ -58,7 +58,7 @@ public record SpecimenData(
     }
 
     public ModelIdentifier getModelId() {
-        return !this.isAlbino ? species().getAlbinoModelId() : species().getModelId();
+        return this.isAlbino ? species().getAlbinoModelId() : species().getModelId();
     }
 
     public static SpecimenData init(IHookEntity caughtWith, Species<? extends AbstractFishEntity> species) {

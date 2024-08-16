@@ -6,8 +6,9 @@ import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
-public class SpecimenDisplayComponent extends AbstractSpecimenComponent implements BlockComponentInitializer {
+public class SpecimenDisplayComponent extends AbstractSpecimenComponent implements AutoSyncedComponent, BlockComponentInitializer {
 	private FishDisplayBlockEntity parent;
 
 	public static SpecimenDisplayComponent of(FishDisplayBlockEntity parent) {

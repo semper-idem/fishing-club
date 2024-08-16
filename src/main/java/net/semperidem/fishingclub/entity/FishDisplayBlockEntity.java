@@ -14,11 +14,13 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent;
 import net.semperidem.fishingclub.network.payload.StopPlayingPayload;
 import net.semperidem.fishingclub.registry.FCBlocks;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCRegistry;
 
 public class FishDisplayBlockEntity extends BlockEntity {
 
@@ -182,24 +184,27 @@ public class FishDisplayBlockEntity extends BlockEntity {
     }
 
     private void tickDisplayedFish() {
-//
-//        FishRecord fishRecord = FishComponent.of(this).get();
-//
-//        if (fishRecord == null) {
-//            this.fishEntity = null;
-//            this.fishStack = null;
-//            this.fishSong = null;
-//            return;
-//        }
-//        if (this.fishEntity != null) {
-//            return;
-//        }
-//
-//        this.fishStack = FishUtil.getStackFromFish(fishRecord);
-//        this.fishEntity = new AbstractFishEntity(this.world);
-//        this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
-//        FishComponent.of(this.fishEntity).set(fishRecord);
-//        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.speciesName());
+
+        SpecimenData fishRecord = SpecimenDisplayComponent.of(this).get();
+
+        if (fishRecord == null) {
+            this.fishEntity = null;
+            this.fishStack = null;
+            this.fishSong = null;
+            return;
+        }
+        if (this.fishEntity != null) {
+            return;
+        }
+
+        this.fishStack = FishUtil.getStackFromFish(fishRecord);
+        this.fishEntity = fishRecord.species().getEntityType().create(this.world);
+        if (this.fishEntity == null) {
+            return;
+        }
+        this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
+        SpecimenComponent.of(this.fishEntity).set(fishRecord);
+        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.speciesName());
     }
 
     private void tickPlaying() {

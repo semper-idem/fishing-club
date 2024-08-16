@@ -4,10 +4,11 @@ import net.minecraft.entity.passive.FishEntity;
 import net.semperidem.fishingclub.FishingClub;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 
-public class SpecimenComponent extends AbstractSpecimenComponent implements EntityComponentInitializer{
+public class SpecimenComponent extends AbstractSpecimenComponent implements AutoSyncedComponent, EntityComponentInitializer{
     private FishEntity parent;
 
     public static SpecimenComponent of(FishEntity fishEntity) {
