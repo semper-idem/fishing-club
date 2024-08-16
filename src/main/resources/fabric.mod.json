@@ -13,21 +13,21 @@
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
-      "net.semperidem.fishing_club.FishingClubDataGenerator"
+      "net.semperidem.fishingclub.FishingClubDataGenerator"
     ],
     "client": [
-      "net.semperidem.fishing_club.client.FishingClubClient"
+      "net.semperidem.fishingclub.client.FishingClubClient"
     ],
     "main": [
-      "net.semperidem.fishing_club.FishingClub"
+      "net.semperidem.fishingclub.FishingClub"
     ],
     "cardinal-components": [
-      "net.semperidem.fishing_club.fisher.FishingCard",
-      "net.semperidem.fishing_club.fish.specimen.SpecimenComponent",
-      "net.semperidem.fishing_club.fish.specimen.SpecimenDisplayComponent",
-      "net.semperidem.fishing_club.fisher.FishingKing",
-      "net.semperidem.fishing_club.leaderboard.LeaderboardTracker",
-      "net.semperidem.fishing_club.world.ChunkQuality"
+      "net.semperidem.fishingclub.fisher.FishingCard",
+      "net.semperidem.fishingclub.fish.specimen.SpecimenComponent",
+      "net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent",
+      "net.semperidem.fishingclub.fisher.FishingKing",
+      "net.semperidem.fishingclub.leaderboard.LeaderboardTracker",
+      "net.semperidem.fishingclub.world.ChunkQuality"
     ]
   },
   "depends": {

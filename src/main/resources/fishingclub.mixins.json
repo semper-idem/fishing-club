@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.semperidem.fishing_club.mixin",
+  "package": "net.semperidem.fishingclub.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "common.BlockItemMixin",

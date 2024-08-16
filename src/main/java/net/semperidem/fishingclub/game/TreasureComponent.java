@@ -1,0 +1,62 @@
+package net.semperidem.fishingclub.game;
+
+import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+
+public class TreasureComponent {
+
+    private static final float TREASURE_MIN_CHANCE = 0.05f;
+    private static final float TREASURE_MIN_TRIGGER_POINT = 0.5f;
+    private static final float TREASURE_MAX_TRIGGER_POINT = 0.25f;
+
+    private boolean isActive;
+    private boolean canPullTreasure;
+    private int pullTreasureTicks = 0;
+    private float treasureTriggerPoint;
+
+
+    private final FishingGameController parent;
+
+
+    public TreasureComponent(FishingGameController parent) {
+        float treasureChance = TREASURE_MIN_CHANCE;
+
+        if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.hasPerk(FishingPerks.DOUBLE_TREASURE_BOAT)) {
+            treasureChance = treasureChance * 2;
+        }
+
+        this.parent = parent;
+        this.isActive = Math.random() < treasureChance;
+        this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
+    }
+
+    public void consumeData(FishingGameTickPayload payload) {
+        this.canPullTreasure = payload.canPullTreasure();
+    }
+
+
+    public void tick() {
+        if (!isActive){
+            return;
+        }
+
+        if (parent.progressComponent.getProgress() > treasureTriggerPoint) {
+            pullTreasureTicks = 50;
+            treasureTriggerPoint = 2;
+        }
+
+        if (pullTreasureTicks == 0) {
+            return;
+        }
+
+        pullTreasureTicks--;
+        if (parent.isPulling()) {
+            pullTreasureTicks = 0;
+            parent.startTreasureHunt();
+        }
+    }
+
+    public boolean canPullTreasure() {
+        return canPullTreasure;
+    }
+}
