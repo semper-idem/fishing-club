@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
@@ -171,11 +170,11 @@ public class Species<T extends AbstractFishEntity> {
 
     public static class Library {
 
-        private static Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
-        private static Predicate<BiomeSelectionContext> ANY = context -> true;
-        private static Predicate<BiomeSelectionContext> COLD = context -> context.getBiome().getTemperature() <= -1.2;
-        private static Predicate<BiomeSelectionContext> NORMAL = context -> context.getBiome().getTemperature() < 1 && context.getBiome().getTemperature() >= 0.2;
-        private static Predicate<BiomeSelectionContext> HOT = context -> context.getBiome().getTemperature() >= 1;
+        private static final Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
+//        private static final Predicate<BiomeSelectionContext> ANY = context -> true;
+//        private static final Predicate<BiomeSelectionContext> COLD = context -> context.getBiome().getTemperature() <= -1.2;
+//        private static final Predicate<BiomeSelectionContext> NORMAL = context -> context.getBiome().getTemperature() < 1 && context.getBiome().getTemperature() >= 0.2;
+//        private static final Predicate<BiomeSelectionContext> HOT = context -> context.getBiome().getTemperature() >= 1;
 
         public static Species<?> BUTTERFISH;
         public static Species<?> DEFAULT;
