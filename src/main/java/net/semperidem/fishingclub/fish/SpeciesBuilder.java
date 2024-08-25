@@ -76,7 +76,12 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
         this.species.staminaLevel = staminaLevel;
         return this;
     }
-    public SpeciesBuilder<T> spawnBiome(Predicate<BiomeSelectionContext> biomes, int weight, int min, int max) {
+    public SpeciesBuilder<T> spawnBiome(
+            Predicate<BiomeSelectionContext> biomes,
+            int weight,
+            int min,
+            int max
+    ) {
         BiomeModifications.addSpawn(
                 biomes,
                 SpawnGroup.WATER_AMBIENT,
@@ -89,7 +94,7 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
                 this.species.entityType,
                 SpawnLocationTypes.IN_WATER,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-                WaterCreatureEntity::canSpawn
+                (type, world, spawnReason, pos, random) -> AbstractFishEntity.canSpawn(this.species, type, world, spawnReason, pos, random)
         );
         return this;
     }

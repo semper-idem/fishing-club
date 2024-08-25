@@ -8,6 +8,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
@@ -23,23 +24,33 @@ import java.util.function.Predicate;
 
 public class Species<T extends AbstractFishEntity> {
 
-    public int id;
+    int id;
 
     String label;
     String name;
     MovementPattern movement;
     int level = SpecimenData.MIN_LEVEL;
     int staminaLevel = 1;
-    float minLength ;
-    float lengthRange ;
+    float minLength;
+    float lengthRange;
     float minWeight;
     float weightRange;
+
+    /**
+     * Positive decimal point number
+     * In-direct inverse of weight
+     * the lowers the number, the higher chance of getting hooked and/or appearing since minimum acceptable quality of chunk is lower
+     * 100 rarity translate to minimum chunk quality of 1 (logarithmic)
+     */
     float rarity;
-    Identifier entityId;
+
     EntityType<T> entityType;
     FishItem item;
+
     EntityRendererFactory<T> entityRendererSupplier;
     EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider;
+
+    Identifier entityId;
     EntityModelLayer layerId;
     ModelIdentifier modelId;
     ModelIdentifier albinoModelId;
@@ -188,7 +199,7 @@ public class Species<T extends AbstractFishEntity> {
                     .movement(MovementPatterns.MID4)
                     .staminaLevel(0)
                     .entity(ButterfishEntity::new)
-                    .spawnBiome(COD_SPAWN, 15, 1, 6)
+                    .spawnBiome(COD_SPAWN, 15, 1, 2)
                     .texturedModel(ButterfishEntityModel::getTexturedModelData)
                     .renderer(ButterfishEntityRenderer::new)
                     .build();
