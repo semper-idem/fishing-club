@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 public record SellFishDirectPayload(ItemStack fish) implements CustomPayload {
-    public static final CustomPayload.Id<SellFishDirectPayload> ID = new CustomPayload.Id<>(FishingClub.getIdentifier("c2s_sell_fish_direct"));
+    public static final CustomPayload.Id<SellFishDirectPayload> ID = new CustomPayload.Id<>(FishingClub.identifier("c2s_sell_fish_direct"));
     public static final PacketCodec<RegistryByteBuf, SellFishDirectPayload> CODEC = PacketCodec.tuple(
             ItemStack.PACKET_CODEC, SellFishDirectPayload::fish, SellFishDirectPayload::new
     );

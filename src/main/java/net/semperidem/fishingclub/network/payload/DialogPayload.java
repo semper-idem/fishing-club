@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.network.payload;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryByteBuf;
@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
 import net.semperidem.fishingclub.screen.dialog.DialogController;
 
 public record DialogPayload(String openingKeys) implements CustomPayload {
-    public static final CustomPayload.Id<DialogPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_dialog"));
+    public static final CustomPayload.Id<DialogPayload> ID = new CustomPayload.Id<>(identifier("c2s_dialog"));
     public static final PacketCodec<RegistryByteBuf, DialogPayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING, DialogPayload::openingKeys, DialogPayload::new);
 
     @Override

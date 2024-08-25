@@ -8,10 +8,10 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.semperidem.fishingclub.fisher.FishingKing;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record TitleClaimPayload(int amount) implements CustomPayload {
-    public static final CustomPayload.Id<TitleClaimPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_title_claim"));
+    public static final CustomPayload.Id<TitleClaimPayload> ID = new CustomPayload.Id<>(identifier("c2s_title_claim"));
     public static final PacketCodec<RegistryByteBuf, TitleClaimPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, TitleClaimPayload::amount, TitleClaimPayload::new);
 
     @Override

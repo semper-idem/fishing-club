@@ -10,7 +10,6 @@ import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.*;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
 
 public class FCEntityTypes {
 
@@ -28,7 +27,7 @@ public class FCEntityTypes {
 		DEREK_ENTITY =
 			Registry.register(
 				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("derek_entity"),
+				FishingClub.identifier("derek_entity"),
 				EntityType.Builder.<FishermanEntity>create(FishermanEntity::new, SpawnGroup.CREATURE)
 					.dimensions(0.6F, 1.95F)
 					.attachment(EntityAttachmentType.PASSENGER, new Vec3d(0, 0, 0))
@@ -38,7 +37,7 @@ public class FCEntityTypes {
 		HOOK_ENTITY =
 			Registry.register(
 				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("hook_entity"),
+				FishingClub.identifier("hook_entity"),
 				EntityType.Builder.<HookEntity>create(HookEntity::new, SpawnGroup.MISC)
 					.dimensions(0.25f, 0.25f)
 					.disableSaving()
@@ -48,7 +47,7 @@ public class FCEntityTypes {
 		HARPOON_ENTITY =
 			Registry.register(
 				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("harpoon_entity"),
+				FishingClub.identifier("harpoon_entity"),
 				EntityType.Builder.<HarpoonEntity>create(HarpoonEntity::new, SpawnGroup.MISC)
 					.dimensions(0.5f, 0.5f)
 					.disableSummon()
@@ -59,7 +58,7 @@ public class FCEntityTypes {
 		LINE_ARROW_ENTITY =
 			Registry.register(
 				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("line_arrow_entity"),
+				FishingClub.identifier("line_arrow_entity"),
 				EntityType.Builder.create(LineArrowEntity::new, SpawnGroup.MISC)
 					.dimensions(0.5f, 0.5f)
 					.disableSummon()
@@ -71,7 +70,7 @@ public class FCEntityTypes {
 		BOAT_ENTITY =
 			Registry.register(
 				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("custom_boat_entity"),
+				FishingClub.identifier("custom_boat_entity"),
 				EntityType.Builder.create(CustomBoatEntity::new, SpawnGroup.MISC)
 					.dimensions(1.375F, 0.5f)
 					.disableSaving()

@@ -13,10 +13,10 @@ import net.semperidem.fishingclub.client.FishingClubClient;
 
 import java.util.ArrayList;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record StopPlayingPayload(String soundId, double x, double y, double z) implements CustomPayload {
-    public static final CustomPayload.Id<StopPlayingPayload> ID = new CustomPayload.Id<>(getIdentifier("s2c_stop_playing"));
+    public static final CustomPayload.Id<StopPlayingPayload> ID = new CustomPayload.Id<>(identifier("s2c_stop_playing"));
     public static final PacketCodec<RegistryByteBuf, StopPlayingPayload> CODEC = PacketCodec.tuple(
       PacketCodecs.STRING, StopPlayingPayload::soundId,
       PacketCodecs.DOUBLE, StopPlayingPayload::x,

@@ -7,10 +7,10 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record FishingGameInputPayload(float reelForce, boolean isReeling, boolean isPulling) implements CustomPayload {
-    public static final CustomPayload.Id<FishingGameInputPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_fishing_game_input"));
+    public static final CustomPayload.Id<FishingGameInputPayload> ID = new CustomPayload.Id<>(identifier("c2s_fishing_game_input"));
     public static final PacketCodec<RegistryByteBuf, FishingGameInputPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.FLOAT,
             FishingGameInputPayload::reelForce,

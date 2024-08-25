@@ -7,10 +7,10 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.entity.HookEntity;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record HookLinePayload(int lineLength) implements CustomPayload {
-    public static final CustomPayload.Id<HookLinePayload> ID = new CustomPayload.Id<>(getIdentifier("s2c_set_hook_line_length"));
+    public static final CustomPayload.Id<HookLinePayload> ID = new CustomPayload.Id<>(identifier("s2c_set_hook_line_length"));
     public static final PacketCodec<RegistryByteBuf, HookLinePayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, HookLinePayload::lineLength, HookLinePayload::new);
 
     @Override

@@ -42,7 +42,7 @@ public class FishController {
     public FishController(FishingGameController parent){
         this.parent = parent;
 
-        Species species = Species.Library.ofName(parent.hookedFish.speciesName());
+        Species<?> species = parent.hookedFish.species();
         stamina = STAMINA_BASE + species.staminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;
@@ -54,7 +54,7 @@ public class FishController {
         minPositionX = 0 + FISH_LENGTH / 2;
         maxPositionX = 1 - FISH_LENGTH / 2;
 
-        patternInstance = new MovementPatternInstance(species.getMovement(), parent.hookedFish.level());
+        patternInstance = new MovementPatternInstance(species.movement(), parent.hookedFish.level());
         lastSegmentIndex = 0;
         currentSegment = patternInstance.getSegmentList().get(lastSegmentIndex);
     }

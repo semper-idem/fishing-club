@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class TabButtonWidget extends ButtonWidget  {
 
     static final Texture BUTTON_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/member_tab_button.png"),
+            FishingClub.identifier("textures/gui/member_tab_button.png"),
             80,
             54
     );

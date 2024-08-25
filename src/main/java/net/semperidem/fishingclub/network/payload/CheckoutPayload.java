@@ -15,7 +15,7 @@ import net.semperidem.fishingclub.registry.FCItems;
 import java.util.List;
 
 public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
-    public static final CustomPayload.Id<CheckoutPayload> ID = new CustomPayload.Id<>(FishingClub.getIdentifier("c2s_checkout"));
+    public static final CustomPayload.Id<CheckoutPayload> ID = new CustomPayload.Id<>(FishingClub.identifier("c2s_checkout"));
     public static final PacketCodec<RegistryByteBuf, CheckoutPayload> CODEC = OrderItem.PACKET_CODEC
             .collect(PacketCodecs.toList())
             .xmap(CheckoutPayload::new, component -> component.cart);

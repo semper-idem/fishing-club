@@ -12,11 +12,11 @@ import net.semperidem.fishingclub.fish.Species;
 public class ButterfishEntityRenderer<T extends AbstractFishEntity> extends AbstractFishEntityRenderer<T, ButterfishEntityModel<T>> {
 
 	private static final float SHADOW_RADIUS = 0.3f;
-	private static final Identifier TEXTURE = Species.Library.BUTTERFISH.getTexture(false);
-	private static final Identifier ALBINO_TEXTURE = Species.Library.BUTTERFISH.getTexture(true);
+	private static final Identifier TEXTURE = Species.Library.BUTTERFISH.texture(false);
+	private static final Identifier ALBINO_TEXTURE = Species.Library.BUTTERFISH.texture(true);
 
 	public ButterfishEntityRenderer(EntityRendererFactory.Context context) {
-		super(context, new ButterfishEntityModel<>(context.getPart(Species.Library.BUTTERFISH.getLayer())), SHADOW_RADIUS);
+		super(context, new ButterfishEntityModel<>(context.getPart(Species.Library.BUTTERFISH.getLayerId())), SHADOW_RADIUS);
 	}
 
 	protected void setupTransforms(T fishEntity, MatrixStack matrixStack, float f, float g, float h, float i) {

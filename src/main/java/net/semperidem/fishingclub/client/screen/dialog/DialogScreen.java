@@ -86,7 +86,7 @@ public class DialogScreen extends HandledScreen<DialogScreenHandler> implements 
     }
 
     public static final Texture TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/derek_dialog.png"),
+            FishingClub.identifier("textures/gui/derek_dialog.png"),
             420,
             120
     );

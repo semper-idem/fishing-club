@@ -188,7 +188,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
 
 
     public static final Texture TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/member_screen.png"),
+            FishingClub.identifier("textures/gui/member_screen.png"),
             420,
             120
     );

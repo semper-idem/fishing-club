@@ -156,7 +156,7 @@ public abstract class ItemEntityMixin extends Entity{
         //        AbstractFishEntity fishEntity = new AbstractFishEntity(serverWorld, this.fish);
 //        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
 //        serverWorld.spawnEntity(fishEntity);
-//        fishEntity.setCustomName(Text.of(this.fish.name()));
+//        fishEntity.setCustomName(Text.of(this.fish.label()));
 //        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
 //        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
     }

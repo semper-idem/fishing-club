@@ -30,7 +30,7 @@ public class SpecimenComponent extends AbstractSpecimenComponent implements Auto
         SPECIMEN.sync(parent);
     }
 
-    private static final ComponentKey<SpecimenComponent> SPECIMEN = ComponentRegistry.getOrCreate(FishingClub.getIdentifier("specimen_component"), SpecimenComponent.class);
+    private static final ComponentKey<SpecimenComponent> SPECIMEN = ComponentRegistry.getOrCreate(FishingClub.identifier("specimen_component"), SpecimenComponent.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {

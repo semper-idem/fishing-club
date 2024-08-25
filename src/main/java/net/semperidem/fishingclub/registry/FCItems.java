@@ -49,7 +49,7 @@ public class FCItems {
     public static net.minecraft.item.Item DRIED_NUTRITIOUS_KELP_BLOCK;
     public static net.minecraft.item.Item DUCKWEED;
 
-    public static final RegistryKey<net.minecraft.item.ItemGroup> fishingclub_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.getIdentifier("fishingclub"));
+    public static final RegistryKey<net.minecraft.item.ItemGroup> fishingclub_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.identifier("fishingclub"));
 
     public static net.minecraft.item.ItemGroup fishingclub_GROUP;
 
@@ -209,7 +209,7 @@ public class FCItems {
 
 
     public static <T extends net.minecraft.item.Item> T registerItem(String id, T item) {
-        Registry.register(Registries.ITEM, FishingClub.getIdentifier(id), item);
+        Registry.register(Registries.ITEM, FishingClub.identifier(id), item);
         FISHING_ITEMS.add(item.getDefaultStack());
         return item;
     }

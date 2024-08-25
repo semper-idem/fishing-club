@@ -105,7 +105,7 @@ public class FishingPerks {
                 .withDetailedDesc(
                         "Fishing Nets which function like shulker boxes \n" +
                                 "but just for fishes.")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity,  FishingClub.getIdentifier("fishing_net")))
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity,  FishingClub.identifier("fishing_net")))
                 .withIcon("fishing_net.png");
 
         UPGRADE_NET = new FishingPerk("double_fishing_net", FISHING_NET)
@@ -115,7 +115,7 @@ public class FishingPerks {
                 .withDetailedDesc(
                         "Double Fishing Nets have double capacity \n" +
                                 "of normal fishing net (who would've guest huh??)")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("double_fishing_net")))
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("double_fishing_net")))
                 .withIcon("double_fishing_net.png");
 
 
@@ -190,7 +190,7 @@ public class FishingPerks {
                         "Unlock recipe and ability to craft\n" +
                                 "all craftable baits")
                 .withIcon("bait.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("bait")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("bait")));
 
         HOOK_CRAFTING = new FishingPerk("hook_crafting", BAIT_CRAFTING)
                 .withLabel("Hook crafting")
@@ -199,7 +199,7 @@ public class FishingPerks {
                         "Unlock recipe and ability to craft\n" +
                                 "all hooks")
                 .withIcon("hook.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("hook")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("hook")));
 
         LINE_BOBBER_CRAFTING = new FishingPerk("line_bobber_crafting", HOOK_CRAFTING)
                 .withLabel("Line and Bobber crafting")
@@ -208,7 +208,7 @@ public class FishingPerks {
                         "Unlock recipe and ability to craft\n" +
                                 "all fishing lines and bobbers")
                 .withIcon("bobber_line.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("bobber_line")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("bobber_line")));
 
 
         FISHER_HAT = new FishingPerk("fisher_hat", LINE_BOBBER_CRAFTING)
@@ -219,7 +219,7 @@ public class FishingPerks {
                                 "Fisher Hat decreases time it takes for fish to bite\n" +
                                 "by 15%")
                 .withIcon("fisher_hat.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("fisher_hat")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("fisher_hat")));
 
         FISHER_VEST = new FishingPerk("fisher_vest", FISHER_HAT)
                 .withLabel("Fisher Vest")
@@ -231,7 +231,7 @@ public class FishingPerks {
                                 "All fisher attire effects double if it's your\n" +
                                 "only equipped armor")
                 .withIcon("fisher_vest.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.getIdentifier("fisher_vest")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity, FishingClub.identifier("fisher_vest")));
 
 
 
@@ -335,7 +335,7 @@ public class FishingPerks {
                 .withDescription("Unlock Harpoon Rod")
                 .withDetailedDesc("Unlock the ability to craft Harpoon.")
                 .withIcon("harpoon_rod.png")
-                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity,  FishingClub.getIdentifier("harpoon_rod")));
+                .withReward(playerEntity -> FishingPerk.grantAdvancement(playerEntity,  FishingClub.identifier("harpoon_rod")));
 
         BOW_FISHING = new FishingPerk("bow_fishing", HARPOON_ROD)
                 .withLabel("Bow fishing")

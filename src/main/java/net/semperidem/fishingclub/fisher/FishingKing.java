@@ -26,11 +26,11 @@ import java.util.UUID;
 
 public final class FishingKing implements ScoreboardComponentInitializer, AutoSyncedComponent {
     private static final String FISHING_KING_KEY = "fishing_king";
-    public static final ComponentKey<FishingKing> FISHING_KING = ComponentRegistry.getOrCreate(FishingClub.getIdentifier(FISHING_KING_KEY), FishingKing.class);
+    public static final ComponentKey<FishingKing> FISHING_KING = ComponentRegistry.getOrCreate(FishingClub.identifier(FISHING_KING_KEY), FishingKing.class);
 
     private static final String UUID_KEY = "uuid";
     private static final String IS_CLAIMED = "is_claimed";
-    private static final String NAME_KEY = "name";
+    private static final String NAME_KEY = "label";
     private static final String PRICE_KEY = "price";
     private static final String TIMESTAMP_KEY = "timestamp";
 

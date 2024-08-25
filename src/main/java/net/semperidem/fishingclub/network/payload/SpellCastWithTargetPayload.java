@@ -11,10 +11,10 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 
 import java.util.UUID;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record SpellCastWithTargetPayload(String spellName, UUID targetUUID) implements CustomPayload {
-    public static final CustomPayload.Id<SpellCastWithTargetPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_spell_cast_target"));
+    public static final CustomPayload.Id<SpellCastWithTargetPayload> ID = new CustomPayload.Id<>(identifier("c2s_spell_cast_target"));
     public static final PacketCodec<RegistryByteBuf, SpellCastWithTargetPayload> CODEC =
             PacketCodec.tuple(
                     PacketCodecs.STRING,

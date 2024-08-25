@@ -27,13 +27,13 @@ public class FCRegistry {
     public static HashMap<String, SoundEvent> SPECIES_TO_TUNE = new HashMap<>();
     public static final SoundEvent YELLOW_FISH_TUNE = registerSoundEvent("yellow_fish_tune");
     static {
-      //  SPECIES_TO_TUNE.put(SpeciesLibrary.BUTTERFISH.name, YELLOW_FISH_TUNE);
+      //  SPECIES_TO_TUNE.put(SpeciesLibrary.BUTTERFISH.label, YELLOW_FISH_TUNE);
     }
 
 
       private static SoundEvent registerSoundEvent(String name) {
-        Identifier id = FishingClub.getIdentifier(name);
-        return Registry.register(Registries.SOUND_EVENT, FishingClub.getIdentifier(name), SoundEvent.of(id));
+        Identifier id = FishingClub.identifier(name);
+        return Registry.register(Registries.SOUND_EVENT, FishingClub.identifier(name), SoundEvent.of(id));
       }
 
 // in the initializer

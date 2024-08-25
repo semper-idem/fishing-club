@@ -2,12 +2,11 @@ package net.semperidem.fishingclub.fish;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -17,7 +16,6 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.Heightmap;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
@@ -26,25 +24,22 @@ import net.semperidem.fishingclub.item.FishItem;
 import java.util.function.Predicate;
 
 public class SpeciesBuilder<T extends AbstractFishEntity> {
-
-
-
-
-
-
-    Species<T> species;
+    private final Species<T> species;
 
 
     private SpeciesBuilder(String speciesName) {
         this.species = new Species<>();
-        this.species.name = speciesName;
+
+        this.species.name = speciesName.toLowerCase().replace(" ", "_");
+        this.species.label = speciesName;
+
         this.species.id = Species.Library.SPECIES_BY_NAME.size();
-        this.species.identifier = FishingClub.getIdentifier(this.species.name());
-        this.species.layer =  new EntityModelLayer(
-                FishingClub.getIdentifier(this.species.getTextureName(false)),
-                "main"
-        );
-    }
+
+        this.species.entityId = FishingClub.identifier(this.species.name);
+        this.species.modelId = new ModelIdentifier(FishingClub.identifier(this.species.textureName() + "_item_3d"), "inventory");
+        this.species.albinoModelId =new ModelIdentifier(FishingClub.identifier(this.species.textureName(true) + "_item_3d"), "inventory");
+        this.species.layerId =  new EntityModelLayer(FishingClub.identifier(this.species.textureName()), "main");
+   }
 
     public static <T extends AbstractFishEntity> SpeciesBuilder<T> create(String speciesName) {
         return new SpeciesBuilder<>(speciesName);
@@ -101,7 +96,7 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
 
     public SpeciesBuilder<T> entity(EntityType.EntityFactory<T> entityFactory) {
         this.species.entityType = Registry.register(Registries.ENTITY_TYPE,
-                this.species.identifier,
+                this.species.entityId,
                 EntityType.Builder.create(
                                 entityFactory, SpawnGroup.WATER_AMBIENT)
                         .dimensions(0.5f,0.3f)
@@ -116,7 +111,7 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
 
         this.species.item = Registry.register(
                 Registries.ITEM,
-                this.species.identifier,
+                this.species.entityId,
                 new FishItem(new Item.Settings().food(FoodComponents.TROPICAL_FISH))
         );
 

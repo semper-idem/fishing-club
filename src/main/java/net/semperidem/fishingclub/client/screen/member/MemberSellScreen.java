@@ -32,7 +32,7 @@ public class MemberSellScreen extends MemberSubScreen{
 
 
     public static final Texture SELECTION_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/fish_selection.png"),
+            FishingClub.identifier("textures/gui/fish_selection.png"),
             16,
             16
     );

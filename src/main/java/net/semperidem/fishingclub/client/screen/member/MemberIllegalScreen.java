@@ -27,12 +27,12 @@ import static net.semperidem.fishingclub.client.screen.member.MemberScreen.*;
 
 public class MemberIllegalScreen extends MemberSubScreen {
     static final Texture PREVIEW_BACKGROUND = new Texture(
-            FishingClub.getIdentifier("textures/gui/box_preview_entry.png"),
+            FishingClub.identifier("textures/gui/box_preview_entry.png"),
             188,
             24
     );
     static final Texture SELECTED_PREVIEW_BACKGROUND = new Texture(
-            FishingClub.getIdentifier("textures/gui/box_preview_entry_selected.png"),
+            FishingClub.identifier("textures/gui/box_preview_entry_selected.png"),
             188,
             24
     );

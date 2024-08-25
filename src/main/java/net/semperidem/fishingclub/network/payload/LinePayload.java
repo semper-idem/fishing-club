@@ -10,10 +10,10 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 import net.semperidem.fishingclub.registry.FCItems;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record LinePayload(int amount) implements CustomPayload {
-    public static final CustomPayload.Id<LinePayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_set_line_length"));
+    public static final CustomPayload.Id<LinePayload> ID = new CustomPayload.Id<>(identifier("c2s_set_line_length"));
     public static final PacketCodec<RegistryByteBuf, LinePayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, LinePayload::amount, LinePayload::new);
 
     @Override

@@ -7,10 +7,10 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record AddPerkPayload(String perkName) implements CustomPayload {
-    public static final CustomPayload.Id<AddPerkPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_add_perk"));
+    public static final CustomPayload.Id<AddPerkPayload> ID = new CustomPayload.Id<>(identifier("c2s_add_perk"));
     public static final PacketCodec<RegistryByteBuf, AddPerkPayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING, AddPerkPayload::perkName, AddPerkPayload::new);
 
     @Override

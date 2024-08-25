@@ -35,7 +35,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
 
 
     static final Texture FIREWORK_CREATOR_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/firework_creator.png"),
+            FishingClub.identifier("textures/gui/firework_creator.png"),
             64,
             64,
             64,
@@ -46,7 +46,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
 
 
     static final Texture CART_ITEM_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/cart_item.png"),
+            FishingClub.identifier("textures/gui/cart_item.png"),
             48,
             64,
             48,

@@ -22,7 +22,7 @@ import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCModels;
 
 public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
-    public static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/harpoon_rod.png");
+    public static final Identifier TEXTURE = FishingClub.identifier("textures/entity/harpoon_rod.png");
     private final HarpoonEntityModel model;
     public HarpoonEntityRenderer(EntityRendererFactory.Context context) {
         super(context);

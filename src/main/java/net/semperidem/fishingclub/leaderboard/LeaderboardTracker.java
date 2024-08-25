@@ -19,7 +19,7 @@ import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 
 public class LeaderboardTracker implements ScoreboardComponentInitializer, Component {
     private static final String LEADERBOARD_TRACKER_KEY = "leaderboard_tracker";
-    public static final ComponentKey<LeaderboardTracker> LEADERBOARD_TRACKER = ComponentRegistry.getOrCreate(FishingClub.getIdentifier(LEADERBOARD_TRACKER_KEY), LeaderboardTracker.class);
+    public static final ComponentKey<LeaderboardTracker> LEADERBOARD_TRACKER = ComponentRegistry.getOrCreate(FishingClub.identifier(LEADERBOARD_TRACKER_KEY), LeaderboardTracker.class);
     private Scoreboard scoreboard;
 
     private static final float DISCOUNT_PER_TITLE = 0.1f;

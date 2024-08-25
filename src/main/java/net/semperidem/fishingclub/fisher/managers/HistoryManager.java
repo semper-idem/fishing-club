@@ -76,7 +76,7 @@ public class HistoryManager extends DataManager {
     }
 
     private void recordFishCaught(SpecimenData fish) {
-        String speciesName = fish.speciesName();
+        String speciesName = fish.species().name();
         SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
         if (fishAtlas.containsKey(speciesName)) {
             speciesStatistics = fishAtlas.get(speciesName);

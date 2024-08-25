@@ -38,8 +38,8 @@ public abstract class ModelLoaderMixin {
         CallbackInfo ci
     ) {
         Species.Library.iterator().forEachRemaining(species -> {
-           this.loadItemModel(species.setAndGetModelId());
-           this.loadItemModel(species.setAndGetAlbinoModelId());
+           this.loadItemModel(species.modelId());
+           this.loadItemModel(species.albinoModelId());
        });
 
     }

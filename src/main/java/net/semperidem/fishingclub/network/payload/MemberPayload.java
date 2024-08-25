@@ -6,10 +6,10 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record MemberPayload() implements CustomPayload {
-    public static final CustomPayload.Id<MemberPayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_member_screen"));
+    public static final CustomPayload.Id<MemberPayload> ID = new CustomPayload.Id<>(identifier("c2s_member_screen"));
     public static final PacketCodec<RegistryByteBuf, MemberPayload> CODEC =
             PacketCodec.unit(new MemberPayload());
 

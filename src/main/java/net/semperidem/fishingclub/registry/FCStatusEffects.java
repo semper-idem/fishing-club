@@ -8,7 +8,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.status_effects.*;
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public class FCStatusEffects {
     //TODO TREASURE CHANCE BUFF
@@ -21,13 +21,13 @@ public class FCStatusEffects {
     public static RegistryEntry<StatusEffect> MOISTURIZED;
 
     public static void register(){
-        QUALITY_BUFF = registerStatusEffect(getIdentifier("quality_buff"), new IncreaseFishQualityStatusEffect());
-        FREQUENCY_BUFF = registerStatusEffect(getIdentifier("frequency_buff"), new IncreaseCatchFrequencyStatusEffect());
-        EXP_BUFF = registerStatusEffect(getIdentifier("exp_buff"), new IncreaseFishingExpStatusEffect());
-        SLOW_FISH_BUFF = registerStatusEffect(getIdentifier("slow_fish_buff"), new DecreaseFishSpeedStatusEffect());
-        BOBBER_BUFF = registerStatusEffect(getIdentifier("bobber_buff"), new IncreaseBobberSizeStatusEffect());
-        ONE_TIME_QUALITY_BUFF = registerStatusEffect(getIdentifier("one_time_quality_buff"), new OneTimeIncreaseFishQualityStatusEffect());
-        MOISTURIZED = registerStatusEffect(getIdentifier("moisturized"), new MoisturizedStatusEffect()
+        QUALITY_BUFF = registerStatusEffect(identifier("quality_buff"), new IncreaseFishQualityStatusEffect());
+        FREQUENCY_BUFF = registerStatusEffect(identifier("frequency_buff"), new IncreaseCatchFrequencyStatusEffect());
+        EXP_BUFF = registerStatusEffect(identifier("exp_buff"), new IncreaseFishingExpStatusEffect());
+        SLOW_FISH_BUFF = registerStatusEffect(identifier("slow_fish_buff"), new DecreaseFishSpeedStatusEffect());
+        BOBBER_BUFF = registerStatusEffect(identifier("bobber_buff"), new IncreaseBobberSizeStatusEffect());
+        ONE_TIME_QUALITY_BUFF = registerStatusEffect(identifier("one_time_quality_buff"), new OneTimeIncreaseFishQualityStatusEffect());
+        MOISTURIZED = registerStatusEffect(identifier("moisturized"), new MoisturizedStatusEffect()
             .addAttributeModifier(EntityAttributes.GENERIC_LUCK, Identifier.ofVanilla("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
         );
     }

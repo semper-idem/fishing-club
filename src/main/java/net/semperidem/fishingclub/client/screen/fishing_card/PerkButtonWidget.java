@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 public class PerkButtonWidget extends ButtonWidget {
     private static final int ICON_SIZE = 20;
     private static final int BORDER_SIZE = 22;
-    private static final Identifier SKILL_ICON = FishingClub.getIdentifier("textures/gui/skill_icon_placeholder.png");
-    private static final Identifier SELECTED_SKILL_BORDER = FishingClub.getIdentifier("textures/gui/skill/selected_skill.png");
+    private static final Identifier SKILL_ICON = FishingClub.identifier("textures/gui/skill_icon_placeholder.png");
+    private static final Identifier SELECTED_SKILL_BORDER = FishingClub.identifier("textures/gui/skill/selected_skill.png");
 
     public boolean isSelected;
     FishingPerk fishingPerk;

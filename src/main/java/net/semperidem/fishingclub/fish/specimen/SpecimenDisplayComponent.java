@@ -30,7 +30,7 @@ public class SpecimenDisplayComponent extends AbstractSpecimenComponent implemen
 		SPECIMEN_DISPLAY.sync(parent);
 	}
 
-	private static final ComponentKey<SpecimenDisplayComponent> SPECIMEN_DISPLAY = ComponentRegistry.getOrCreate(FishingClub.getIdentifier("specimen_display_component"), SpecimenDisplayComponent.class);
+	private static final ComponentKey<SpecimenDisplayComponent> SPECIMEN_DISPLAY = ComponentRegistry.getOrCreate(FishingClub.identifier("specimen_display_component"), SpecimenDisplayComponent.class);
 
 	@Override
 	public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {

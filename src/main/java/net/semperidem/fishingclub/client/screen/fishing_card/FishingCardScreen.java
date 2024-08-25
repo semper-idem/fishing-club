@@ -27,8 +27,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private static final int BACKGROUND_TEXTURE_WIDTH = 400;
     private static final int BACKGROUND_TEXTURE_HEIGHT = 280;
 
-    private static final Texture BACKGROUND_GENERAL = new Texture(FishingClub.getIdentifier("textures/gui/fishing_card_inv.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
-    private static final Texture BACKGROUND_PERK = new Texture(FishingClub.getIdentifier("textures/gui/fishing_card.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+    private static final Texture BACKGROUND_GENERAL = new Texture(FishingClub.identifier("textures/gui/fishing_card_inv.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+    private static final Texture BACKGROUND_PERK = new Texture(FishingClub.identifier("textures/gui/fishing_card.png"), BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
     private static final int TEXT_COLOR = 0xffeace;
 
     private static final int TILE_SIZE = 4;

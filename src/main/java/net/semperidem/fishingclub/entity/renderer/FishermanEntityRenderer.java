@@ -24,8 +24,8 @@ import net.semperidem.fishingclub.mixin.client.BoatEntityModelAccessor;
 import net.semperidem.fishingclub.registry.FCModels;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {
-    private static final Identifier TEXTURE = FishingClub.getIdentifier("textures/entity/fisherman.png");
-    private static final Identifier BOAT_TEXTURE = FishingClub.getIdentifier("textures/entity/chest_boat/mangrove.png");
+    private static final Identifier TEXTURE = FishingClub.identifier("textures/entity/fisherman.png");
+    private static final Identifier BOAT_TEXTURE = FishingClub.identifier("textures/entity/chest_boat/mangrove.png");
 
     private final CompositeEntityModel<BoatEntity> boatModel;
 

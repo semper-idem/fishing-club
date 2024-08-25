@@ -35,7 +35,7 @@ public class FCBlocks {
     private static FishDisplayBlock registerFishDisplayBlock(WoodType woodType, MapColor mapColor) {
         return Registry.register(
           Registries.BLOCK,
-          FishingClub.getIdentifier("fish_display_" + woodType.name().toLowerCase()),
+          FishingClub.identifier("fish_display_" + woodType.name().toLowerCase()),
           new FishDisplayBlock(
             woodType,
             AbstractBlock.Settings.create()
@@ -53,7 +53,7 @@ public class FCBlocks {
 
         DUCKWEED_BLOCK = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("duckweed"),
+            FishingClub.identifier("duckweed"),
             new DuckweedBlock(
                 AbstractBlock.Settings.create().
                     mapColor(MapColor.DARK_GREEN)
@@ -66,7 +66,7 @@ public class FCBlocks {
 
         WATERLOGGED_LILY_PAD_BLOCK = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("waterlogged_lily_pad"),
+            FishingClub.identifier("waterlogged_lily_pad"),
             new WaterloggedLilyPadBlock(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.DARK_GREEN)
@@ -80,7 +80,7 @@ public class FCBlocks {
 
         DRIED_NUTRITIOUS_KELP_BLOCK = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("dried_nutritious_kelp_block"),
+            FishingClub.identifier("dried_nutritious_kelp_block"),
             new Block(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.GREEN)
@@ -91,7 +91,7 @@ public class FCBlocks {
 
         NUTRITIOUS_KELP_PLANT = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("nutritious_kelp_plant"),
+            FishingClub.identifier("nutritious_kelp_plant"),
             new NutritiousKelpPlantBlock(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.WATER_BLUE)
@@ -102,7 +102,7 @@ public class FCBlocks {
             ));
         NUTRITIOUS_KELP = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("nutritious_kelp"),
+            FishingClub.identifier("nutritious_kelp"),
             new NutritiousKelpBlock(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.WATER_BLUE)
@@ -118,7 +118,7 @@ public class FCBlocks {
 
         DRIED_ENERGY_DENSE_KELP_BLOCK = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("dried_energy_dense_kelp_block"),
+            FishingClub.identifier("dried_energy_dense_kelp_block"),
             new Block(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.GREEN)
@@ -129,7 +129,7 @@ public class FCBlocks {
 
         ENERGY_DENSE_KELP_PLANT = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("energy_dense_kelp_plant"),
+            FishingClub.identifier("energy_dense_kelp_plant"),
             new EnergyDenseKelpPlantBlock(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.WATER_BLUE)
@@ -140,7 +140,7 @@ public class FCBlocks {
             ));
         ENERGY_DENSE_KELP = Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("energy_dense_kelp"),
+            FishingClub.identifier("energy_dense_kelp"),
             new EnergyDenseKelpBlock(
                 AbstractBlock.Settings.create()
                     .mapColor(MapColor.WATER_BLUE)
@@ -156,7 +156,7 @@ public class FCBlocks {
 
         REED_BLOCK =  Registry.register(
             Registries.BLOCK,
-            FishingClub.getIdentifier("reed"),
+            FishingClub.identifier("reed"),
             new ReedBlock(AbstractBlock.Settings.create()
                 .mapColor(MapColor.GREEN)
                 .noCollision()
@@ -168,7 +168,7 @@ public class FCBlocks {
 
         TACKLE_BOX_BLOCK = Registry.register(
           Registries.BLOCK,
-          FishingClub.getIdentifier("tackle_box"),
+          FishingClub.identifier("tackle_box"),
           new TackleBoxBlock(AbstractBlock.Settings.create()
             .mapColor(MapColor.CYAN)
             .solid()
@@ -182,12 +182,12 @@ public class FCBlocks {
 
         TACKLE_BOX = Registry.register(
           Registries.BLOCK_ENTITY_TYPE,
-          FishingClub.getIdentifier("tackle_box"),
+          FishingClub.identifier("tackle_box"),
           BlockEntityType.Builder.create(TackleBoxBlockEntity::new, FCBlocks.TACKLE_BOX_BLOCK).build()
         );
         FISH_DISPLAY = Registry.register(
           Registries.BLOCK_ENTITY_TYPE,
-          FishingClub.getIdentifier("fish_display_bamboo"),
+          FishingClub.identifier("fish_display_bamboo"),
           BlockEntityType.Builder.create(FishDisplayBlockEntity::new, FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO, FCBlocks.FISH_DISPLAY_BLOCK_BAMBOO).build()
         );
 

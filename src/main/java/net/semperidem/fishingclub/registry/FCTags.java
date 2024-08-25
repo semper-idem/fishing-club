@@ -9,6 +9,6 @@ public class FCTags {
     public static TagKey<Enchantment> ENCHANTMENT_REPAIR_TAG;
 
     public static void register() {
-        ENCHANTMENT_REPAIR_TAG = TagKey.of(RegistryKeys.ENCHANTMENT, FishingClub.getIdentifier("exclusive_set/repair"));//could be repair.json
+        ENCHANTMENT_REPAIR_TAG = TagKey.of(RegistryKeys.ENCHANTMENT, FishingClub.identifier("exclusive_set/repair"));//could be repair.json
     }
 }

@@ -6,11 +6,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandlerFactory;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record ConfigurationPayload() implements CustomPayload {
     static {
-        ID = new CustomPayload.Id<>(getIdentifier("c2s_configuration"));
+        ID = new CustomPayload.Id<>(identifier("c2s_configuration"));
         CODEC = PacketCodec.unit(new ConfigurationPayload());
     }
     @Override

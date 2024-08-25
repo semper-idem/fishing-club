@@ -14,7 +14,7 @@ public class FishingClub implements ModInitializer {
         FCRegistry.register();
     }
 
-    public static Identifier getIdentifier(String resource){
+    public static Identifier identifier(String resource){
         return Identifier.of(MOD_ID, resource);
     }
 }

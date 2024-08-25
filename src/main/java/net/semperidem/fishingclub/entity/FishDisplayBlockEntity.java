@@ -204,7 +204,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
         this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
         SpecimenComponent.of(this.fishEntity).set(fishRecord);
-        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.speciesName());
+        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.species().name());
     }
 
     private void tickPlaying() {

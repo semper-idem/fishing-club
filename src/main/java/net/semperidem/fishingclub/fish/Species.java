@@ -4,18 +4,10 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.impl.biome.modification.BiomeSelectionContextImpl;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.passive.FishEntity;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
@@ -33,9 +25,8 @@ public class Species<T extends AbstractFishEntity> {
 
     public int id;
 
-    FishItem item;
-    public String name;
-
+    String label;
+    String name;
     MovementPattern movement;
     int level = SpecimenData.MIN_LEVEL;
     int staminaLevel = 1;
@@ -44,21 +35,29 @@ public class Species<T extends AbstractFishEntity> {
     float minWeight;
     float weightRange;
     float rarity;
-    Identifier identifier;
+    Identifier entityId;
     EntityType<T> entityType;
+    FishItem item;
     EntityRendererFactory<T> entityRendererSupplier;
     EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider;
-    EntityModelLayer layer;
+    EntityModelLayer layerId;
     ModelIdentifier modelId;
     ModelIdentifier albinoModelId;
 
+    public String name() {
+        return this.name;
+    }
+
+    public String label() {
+        return this.label;
+    }
 
     public EntityType<T> getEntityType() {
         return this.entityType;
     }
 
-    public EntityModelLayer getLayer() {
-        return this.layer;
+    public EntityModelLayer getLayerId() {
+        return this.layerId;
     }
 
     public float rarity() {
@@ -68,7 +67,6 @@ public class Species<T extends AbstractFishEntity> {
     public int level() {
         return this.level;
     }
-
 
     public float length() {
         return minLength;
@@ -114,46 +112,31 @@ public class Species<T extends AbstractFishEntity> {
         return this.item;
     }
 
-    public MovementPattern getMovement() {
+    public MovementPattern movement() {
         return movement;
     }
-
 
     public int staminaLevel() {
         return staminaLevel;
     }
 
-
-    public String name() {
-        return this.name.toLowerCase().replace(" ", "_");
+    public String textureName() {
+        return textureName(false);
     }
 
-    public String getTextureName(boolean isAlbino) {
-        String name = name();
+    public String textureName(boolean isAlbino) {
         return "fish/" + name + "/" + name + (isAlbino ? "_albino" : "");
     }
 
-    public Identifier getTexture(boolean isAlbino) {
-        return FishingClub.getIdentifier("textures/entity/" + this.getTextureName(isAlbino) +".png");
+    public Identifier texture(boolean isAlbino) {
+        return FishingClub.identifier("textures/entity/" + this.textureName(isAlbino) +".png");
     }
 
-    @Deprecated
-    public ModelIdentifier setAndGetModelId() {
-        this.modelId =  new ModelIdentifier(FishingClub.getIdentifier(getTextureName(false) + "_item_3d"), "inventory");
-        return this.modelId;
-    }
-
-    @Deprecated
-    public ModelIdentifier setAndGetAlbinoModelId() {
-        this.albinoModelId =  new ModelIdentifier(FishingClub.getIdentifier(getTextureName(true) + "_item_3d"), "inventory");
+    public ModelIdentifier albinoModelId() {
         return this.albinoModelId;
     }
 
-    public ModelIdentifier getAlbinoModelId() {
-        return this.albinoModelId;
-    }
-
-    public ModelIdentifier getModelId() {
+    public ModelIdentifier modelId() {
         return this.modelId;
     }
 
@@ -166,7 +149,7 @@ public class Species<T extends AbstractFishEntity> {
         );
 
         EntityModelLayerRegistry.registerModelLayer(
-                this.layer,
+                this.layerId,
                 this.texturedModelDataProvider
         );
 }
@@ -215,7 +198,7 @@ public class Species<T extends AbstractFishEntity> {
         }
 
         public static <T extends AbstractFishEntity> void add(Species<T> species) {
-            SPECIES_BY_NAME.put(species.name(), species);
+            SPECIES_BY_NAME.put(species.name, species);
         }
 
         public static Species<?> ofName(String name) {

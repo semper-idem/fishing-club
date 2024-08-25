@@ -28,7 +28,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 	private static final String CEILING_KEY = "ceiling";
 	private static final String CURRENT_KEY = "current";
 
-	public static final ComponentKey<ChunkQuality> CHUNK_QUALITY = ComponentRegistry.getOrCreate(FishingClub.getIdentifier(CHUNK_QUALITY_KEY), ChunkQuality.class);
+	public static final ComponentKey<ChunkQuality> CHUNK_QUALITY = ComponentRegistry.getOrCreate(FishingClub.identifier(CHUNK_QUALITY_KEY), ChunkQuality.class);
 
 	private final HashMap<FloraInfluence, Integer> floraToCount = new HashMap<>();
 

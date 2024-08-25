@@ -23,7 +23,7 @@ public record FishingGameTickPayload(
         int treasureHookedTicks,
         boolean isWon
 ) implements CustomPayload {
-    public static final CustomPayload.Id<FishingGameTickPayload> ID = new FishingGameTickPayload.Id<>(FishingClub.getIdentifier("s2c_fishing_game_tick"));
+    public static final CustomPayload.Id<FishingGameTickPayload> ID = new FishingGameTickPayload.Id<>(FishingClub.identifier("s2c_fishing_game_tick"));
     private static final Codec<FishingGameTickPayload> CODEC_DTO = RecordCodecBuilder.create(instance -> instance.group(
             PrimitiveCodec.FLOAT.fieldOf("bobberPositionX").forGetter(FishingGameTickPayload::bobberPositionX),
             PrimitiveCodec.FLOAT.fieldOf("fishPositionX").forGetter(FishingGameTickPayload::fishPositionX),

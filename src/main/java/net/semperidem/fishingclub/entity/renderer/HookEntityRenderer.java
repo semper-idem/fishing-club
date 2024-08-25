@@ -19,7 +19,7 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.registry.FCItems;
 
 public class HookEntityRenderer extends EntityRenderer<HookEntity> {
-    public static final Identifier DEFAULT = FishingClub.getIdentifier("textures/entity/bobber.png");
+    public static final Identifier DEFAULT = FishingClub.identifier("textures/entity/bobber.png");
     private static final RenderLayer LAYER = RenderLayer.getEntityCutout(DEFAULT);
 
     public HookEntityRenderer(EntityRendererFactory.Context context) {

@@ -334,7 +334,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         int textureHeight;
 
         Texture(String fileName, int textureWidth, int textureHeight){
-            this.texture = FishingClub.getIdentifier(TEXTURE_DIR_ROOT + fileName);
+            this.texture = FishingClub.identifier(TEXTURE_DIR_ROOT + fileName);
             this.textureWidth = textureWidth;
             this.textureHeight = textureHeight;
         }

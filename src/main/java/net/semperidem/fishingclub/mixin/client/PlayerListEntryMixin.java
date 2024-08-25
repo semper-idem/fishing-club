@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerListEntry.class)
 public abstract class PlayerListEntryMixin {
-    private static final Identifier KING_CAPE = FishingClub.getIdentifier("textures/king_cape.png");
+    private static final Identifier KING_CAPE = FishingClub.identifier("textures/king_cape.png");
 
     @Shadow public abstract GameProfile getProfile();
 

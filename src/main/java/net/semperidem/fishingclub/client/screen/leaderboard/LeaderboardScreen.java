@@ -15,7 +15,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class LeaderboardScreen  extends Screen {
-    private static final Texture BACKGROUND = new Texture(FishingClub.getIdentifier("textures/gui/leaderboard.png"), 400, 280);
+    private static final Texture BACKGROUND = new Texture(FishingClub.identifier("textures/gui/leaderboard.png"), 400, 280);
     private static final int TITLE_COLOR = Color.WHITE.getRGB();
     private int mainBoardX, mainBoardY;
     private int leftRecordX, middleRecordX, rightRecordX;

@@ -9,10 +9,10 @@ import net.semperidem.fishingclub.world.FishingServerWorld;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
-import static net.semperidem.fishingclub.FishingClub.getIdentifier;
+import static net.semperidem.fishingclub.FishingClub.identifier;
 
 public record DialogResponsePayload(String response) implements CustomPayload {
-    public static final CustomPayload.Id<DialogResponsePayload> ID = new CustomPayload.Id<>(getIdentifier("c2s_dialog_response"));
+    public static final CustomPayload.Id<DialogResponsePayload> ID = new CustomPayload.Id<>(identifier("c2s_dialog_response"));
     public static final PacketCodec<RegistryByteBuf, DialogResponsePayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING, DialogResponsePayload::response, DialogResponsePayload::new);
 
     @Override

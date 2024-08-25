@@ -32,7 +32,7 @@ public class FCComponents {
         ROD_CONFIGURATION =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("rod_configuration"),
+                        FishingClub.identifier("rod_configuration"),
                         ComponentType.<RodConfiguration>builder()
                                 .codec(RodConfiguration.CODEC)
                                 .packetCodec(RodConfiguration.PACKET_CODEC)
@@ -42,7 +42,7 @@ public class FCComponents {
         LINE_LENGTH =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("line_length"),
+                        FishingClub.identifier("line_length"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -52,7 +52,7 @@ public class FCComponents {
         CAST_POWER =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("cast_power"),
+                        FishingClub.identifier("cast_power"),
                         ComponentType.<Float>builder()
                                 .codec(Codecs.POSITIVE_FLOAT)
                                 .packetCodec(PacketCodecs.FLOAT)
@@ -61,7 +61,7 @@ public class FCComponents {
         BROKEN =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("part_broken"),
+                        FishingClub.identifier("part_broken"),
                         ComponentType.<Boolean>builder()
                                 .codec(Codec.BOOL)
                                 .packetCodec(PacketCodecs.BOOL)
@@ -70,7 +70,7 @@ public class FCComponents {
         PART_QUALITY =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("part_quality"),
+                        FishingClub.identifier("part_quality"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -79,7 +79,7 @@ public class FCComponents {
         TIER =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("tier"),
+                        FishingClub.identifier("tier"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -87,7 +87,7 @@ public class FCComponents {
         SPECIMEN =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier(SpecimenComponent.KEY),
+                        FishingClub.identifier(SpecimenComponent.KEY),
                         ComponentType.<SpecimenData>builder()
                                 .codec(SpecimenData.CODEC)
                                 .packetCodec(SpecimenData.PACKET_CODEC)
@@ -95,7 +95,7 @@ public class FCComponents {
         CREATION_TICK =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("creation_tick"),
+                        FishingClub.identifier("creation_tick"),
                         ComponentType.<Long>builder()
                                 .codec(Codec.LONG)
                                 .packetCodec(PacketCodecs.VAR_LONG)
@@ -105,7 +105,7 @@ public class FCComponents {
         COIN =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.getIdentifier("coin"),
+                        FishingClub.identifier("coin"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NONNEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -113,7 +113,7 @@ public class FCComponents {
         CAUGHT_BY =
           Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            FishingClub.getIdentifier("caught_by"),
+            FishingClub.identifier("caught_by"),
             ComponentType.<UUID>builder()
               .codec(Uuids.CODEC)
               .packetCodec(Uuids.PACKET_CODEC)
@@ -122,7 +122,7 @@ public class FCComponents {
         FISHING_NET_CONTENT =
           Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            FishingClub.getIdentifier("fishing_net_content"),
+            FishingClub.identifier("fishing_net_content"),
             ComponentType.<FishingNetContentComponent>builder()
               .codec(FishingNetContentComponent.CODEC)
               .packetCodec(FishingNetContentComponent.PACKET_CODEC)

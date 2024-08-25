@@ -86,7 +86,7 @@ public class SpeciesStatistics {
     }
 
 
-    private static final String NAME = "name";
+    private static final String NAME = "label";
     private static final String BEST_LENGTH = "best_length";
     private static final String WORSE_LENGTH = "worse_length";
     private static final String BEST_WEIGHT = "best_weight";

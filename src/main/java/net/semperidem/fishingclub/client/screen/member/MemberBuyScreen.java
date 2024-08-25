@@ -27,12 +27,12 @@ import static net.semperidem.fishingclub.fisher.shop.MemberStock.*;
 public class MemberBuyScreen extends MemberSubScreen {
 
     public static final Texture OFFER_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/offer_background.png"),
+            FishingClub.identifier("textures/gui/offer_background.png"),
             16,
             16
     );
     static final Texture CART_ITEM_TEXTURE = new Texture(
-            FishingClub.getIdentifier("textures/gui/cart_item.png"),
+            FishingClub.identifier("textures/gui/cart_item.png"),
             48,
             64,
             48,
@@ -543,7 +543,7 @@ public class MemberBuyScreen extends MemberSubScreen {
         private static final int SIZE = 16;
 
         static final Texture CATEGORY_BUTTON = new Texture(
-                FishingClub.getIdentifier("textures/gui/member_category_button.png"),
+                FishingClub.identifier("textures/gui/member_category_button.png"),
                 SIZE,
                 SIZE * 4
         );

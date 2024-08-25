@@ -13,7 +13,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
-    public static final CustomPayload.Id<SellFishPayload> ID = new CustomPayload.Id<>(FishingClub.getIdentifier("c2s_sell_fish"));
+    public static final CustomPayload.Id<SellFishPayload> ID = new CustomPayload.Id<>(FishingClub.identifier("c2s_sell_fish"));
     public static final PacketCodec<RegistryByteBuf, SellFishPayload> CODEC = ItemStack.PACKET_CODEC
             .collect(PacketCodecs.toList())
             .xmap(SellFishPayload::new, component -> component.fish);

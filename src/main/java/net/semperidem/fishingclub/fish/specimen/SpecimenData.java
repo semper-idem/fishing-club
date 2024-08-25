@@ -24,19 +24,50 @@ import java.util.Objects;
 import java.util.UUID;
 
 public record SpecimenData(
-  String name,
-  String speciesName,
-  int level,
-  int quality,
-  float weight,
-  float length,
-  UUID id,
-  UUID caughtByUUID,
-  String caughtBy,
-  long caughtAt,
-  boolean isAlive,
-  boolean isAlbino
+        Species<?> species,
+        String label,
+        int level,
+        int quality,
+        float weight,
+        float length,
+        UUID id,
+        UUID caughtByUUID,
+        String caughtBy,
+        long caughtAt,
+        boolean isAlive,
+        boolean isAlbino
 ) {
+
+    public SpecimenData(
+            String speciesName,
+            String label,
+            int level,
+            int quality,
+            float weight,
+            float length,
+            UUID id,
+            UUID caughtByUUID,
+            String caughtBy,
+            long caughtAt,
+            boolean isAlive,
+            boolean isAlbino
+    ) {
+        this(
+            Species.Library.ofName(speciesName),
+            label,
+            level,
+            quality,
+            weight,
+            length,
+            id,
+            caughtByUUID,
+            caughtBy,
+            caughtAt,
+            isAlive,
+            isAlbino
+        );
+
+    }
     public static SpecimenData init() {
 
         return init(Species.Library.DEFAULT);
@@ -44,7 +75,8 @@ public record SpecimenData(
 
     public static SpecimenData init(Species<?> species) {
 
-        return init(new IHookEntity() {}, species);
+        return init(new IHookEntity() {
+        }, species);
     }
 
     public static SpecimenData init(IHookEntity caughtWith) {
@@ -52,12 +84,8 @@ public record SpecimenData(
         return init(caughtWith, Math.random() > 0.5f ? Species.Library.BUTTERFISH : Species.Library.DEFAULT);
     }
 
-    public String getTextureName() {
-        return Species.Library.ofName(this.speciesName).getTextureName(this.isAlbino);
-    }
-
     public ModelIdentifier getModelId() {
-        return this.isAlbino ? species().getAlbinoModelId() : species().getModelId();
+        return this.isAlbino ? species().albinoModelId() : species().modelId();
     }
 
     public static SpecimenData init(IHookEntity caughtWith, Species<? extends AbstractFishEntity> species) {
@@ -74,18 +102,18 @@ public record SpecimenData(
         var isAlbino = Math.random() < 0.01f;
 
         return new SpecimenData(
-          (species.weird(weight, length) ? "Weird " : "") + (isAlbino ? "Albino " : "") + species.name,
-          species.name,
-          level,
-          quality,
-          weight,
-          length,
-          UUID.randomUUID(),
-          caughtBy == null ? UUID.randomUUID() : caughtBy.getUuid(),
-          caughtBy == null ? "x" : caughtBy.getNameForScoreboard(),
-          System.currentTimeMillis(),
-          !(caughtWith instanceof FishingExplosionEntity),
-          isAlbino
+                species,
+                (species.weird(weight, length) ? "Weird " : "") + (isAlbino ? "Albino " : "") + species.label(),
+                level,
+                quality,
+                weight,
+                length,
+                UUID.randomUUID(),
+                caughtBy == null ? UUID.randomUUID() : caughtBy.getUuid(),
+                caughtBy == null ? "x" : caughtBy.getNameForScoreboard(),
+                System.currentTimeMillis(),
+                !(caughtWith instanceof FishingExplosionEntity),
+                isAlbino
         );
     }
 
@@ -101,10 +129,10 @@ public record SpecimenData(
     private static int calculateLevel(Species<? extends AbstractFishEntity> species, int fisherLevel) {
 
         return (int) MathHelper.clamp(MathUtil.normal(
-            species.level(),
-            fisherLevel - species.level(),
-            fisherLevel * 0.01
-          ), MIN_LEVEL, MAX_LEVEL
+                        species.level(),
+                        fisherLevel - species.level(),
+                        fisherLevel * 0.01
+                ), MIN_LEVEL, MAX_LEVEL
         );
     }
 
@@ -116,9 +144,9 @@ public record SpecimenData(
         var mean = fisherMean + rodMean + circumstanceMean;
 
         return (int) MathHelper.clamp(
-          MathUtil.normal(MIN_LEVEL, 4, mean),//non-boosting min quality buff impl
-          fisher.getMinGrade(caughtWith),
-          MAX_QUALITY
+                MathUtil.normal(MIN_LEVEL, 4, mean),//non-boosting min quality buff impl
+                fisher.getMinGrade(caughtWith),
+                MAX_QUALITY
         );
     }
 
@@ -131,23 +159,17 @@ public record SpecimenData(
         var xLevel = Math.pow(this.level, 1.3);
 
         return (int) MathHelper.clamp(
-          BASE_EXP + xFisher * xLevel * xRarity * xQuality * xWeird * xAlbino,
-          BASE_EXP, MAX_EXP
+                BASE_EXP + xFisher * xLevel * xRarity * xQuality * xWeird * xAlbino,
+                BASE_EXP, MAX_EXP
         );
-    }
-
-
-    public Species<? extends AbstractFishEntity> species() {
-        return Species.Library.ofName(this.speciesName);
     }
 
     public boolean weird() {
         return this.species().weird(
-          this.weight,
-          this.length
+                this.weight,
+                this.length
         );
     }
-
 
 
     public float lengthPercentile() {
@@ -161,23 +183,22 @@ public record SpecimenData(
     public float weightPercentile() {
         return this.species().weightPercentile(this.weight);
     }
+
     public float weightScale() {
         return this.species().weightScale(this.length);
     }
 
 
     public int value() {
-        var species = Species.Library.ofName(this.speciesName);
-
-        var xRarity = 1 + species.rarity() * 0.01;
+        var xRarity = 1 + this.species.rarity() * 0.01;
         var xQuality = this.quality <= 2 ? (0.5 + this.quality / 4D) : Math.pow(2, (this.quality - 2));
         var xWeight = 1 + weight * 0.005;
         var xWeird = this.weird() ? 1.5 : 1;
         var xAlbino = this.isAlbino() ? 3 : 1;
 
         return (int) MathHelper.clamp(
-          BASE_VALUE * xRarity * xQuality * xWeight * xWeird * xAlbino
-          , 1, 99999);
+                BASE_VALUE * xRarity * xQuality * xWeight * xWeird * xAlbino
+                , 1, 99999);
     }
 
 
@@ -187,8 +208,8 @@ public record SpecimenData(
 
 
     public boolean isEqual(SpecimenData other) {
-        boolean isEqual = (Objects.equals(this.name, other.name));
-        isEqual &= (Objects.equals(this.speciesName, other.speciesName));
+        boolean isEqual = (Objects.equals(this.label, other.label));
+        isEqual &= (Objects.equals(this.species.name(), other.species.name()));
         isEqual &= (this.level == other.level);
         isEqual &= (this.quality == other.quality);
         isEqual &= (this.weight == other.weight);
@@ -201,13 +222,13 @@ public record SpecimenData(
 
     @Override
     public String toString() {
-        return name;
+        return label;
     }
 
     public ItemStack asItemStack() {
         ItemStack fishItemStack = species().item().getDefaultStack();
         fishItemStack.set(FCComponents.SPECIMEN, this);
-        fishItemStack.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.name));
+        fishItemStack.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.label));
         return fishItemStack;
     }
 
@@ -226,36 +247,36 @@ public record SpecimenData(
 
 
     public static final SpecimenData DEFAULT =
-      new SpecimenData(Species.Library.DEFAULT.name,
-        Species.Library.DEFAULT.name,
-        MIN_LEVEL, MIN_QUALITY,
-        0,
-        0,
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        "x",
-        System.currentTimeMillis(),
-        false, false
-      );
+            new SpecimenData(Species.Library.DEFAULT.name(),
+                    Species.Library.DEFAULT.name(),
+                    MIN_LEVEL, MIN_QUALITY,
+                    0,
+                    0,
+                    UUID.randomUUID(),
+                    UUID.randomUUID(),
+                    "x",
+                    System.currentTimeMillis(),
+                    false, false
+            );
     public static Codec<SpecimenData> CODEC =
-      RecordCodecBuilder.create(
-        instance ->
-          instance
-            .group(
-              Codec.STRING.fieldOf("name").forGetter(SpecimenData::name),
-              Codec.STRING.fieldOf("species_name").forGetter(SpecimenData::speciesName),
-              Codec.INT.fieldOf("level").forGetter(SpecimenData::level),
-              Codec.INT.fieldOf("quality").forGetter(SpecimenData::quality),
-              Codec.FLOAT.fieldOf("weight").forGetter(SpecimenData::weight),
-              Codec.FLOAT.fieldOf("length").forGetter(SpecimenData::length),
-              Uuids.INT_STREAM_CODEC.fieldOf("id").forGetter(SpecimenData::id),
-              Uuids.INT_STREAM_CODEC.fieldOf("caught_by_uuid").forGetter(SpecimenData::caughtByUUID),
-              Codec.STRING.fieldOf("caught_by").forGetter(SpecimenData::caughtBy),
-              Codec.LONG.fieldOf("caught_at").forGetter(SpecimenData::caughtAt),
-              Codec.BOOL.fieldOf("is_alive").forGetter(SpecimenData::isAlive),
-              Codec.BOOL.fieldOf("is_albino").forGetter(SpecimenData::isAlbino)//this is argument count limit, need to package fields
-            ).apply(instance, SpecimenData::new)
-      );
+            RecordCodecBuilder.create(
+                    instance ->
+                            instance
+                                    .group(
+                                            Codec.STRING.fieldOf("species_name").forGetter(c -> c.species.name()),
+                                            Codec.STRING.fieldOf("label").forGetter(SpecimenData::label),
+                                            Codec.INT.fieldOf("level").forGetter(SpecimenData::level),
+                                            Codec.INT.fieldOf("quality").forGetter(SpecimenData::quality),
+                                            Codec.FLOAT.fieldOf("weight").forGetter(SpecimenData::weight),
+                                            Codec.FLOAT.fieldOf("length").forGetter(SpecimenData::length),
+                                            Uuids.INT_STREAM_CODEC.fieldOf("id").forGetter(SpecimenData::id),
+                                            Uuids.INT_STREAM_CODEC.fieldOf("caught_by_uuid").forGetter(SpecimenData::caughtByUUID),
+                                            Codec.STRING.fieldOf("caught_by").forGetter(SpecimenData::caughtBy),
+                                            Codec.LONG.fieldOf("caught_at").forGetter(SpecimenData::caughtAt),
+                                            Codec.BOOL.fieldOf("is_alive").forGetter(SpecimenData::isAlive),
+                                            Codec.BOOL.fieldOf("is_albino").forGetter(SpecimenData::isAlbino)//this is argument count limit, need to package fields
+                                    ).apply(instance, SpecimenData::new)
+            );
     public static PacketCodec<RegistryByteBuf, SpecimenData> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
 }

@@ -28,32 +28,32 @@ public class FCScreenHandlers {
         FISHING_CARD_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
-                        FishingClub.getIdentifier("fishing_card_screen_handler"),
+                        FishingClub.identifier("fishing_card_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 FishingCardScreenHandler::new, FishingCardPayload.CODEC));
 
         FISHING_GAME_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
-                        FishingClub.getIdentifier("fishing_game_screen_handler"),
+                        FishingClub.identifier("fishing_game_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 FishingGameScreenHandler::new, FishingGamePayload.CODEC));
         DIALOG_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
-                        FishingClub.getIdentifier("dialog_screen_handler"),
+                        FishingClub.identifier("dialog_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 DialogScreenHandler::new, DialogPayload.CODEC));
         MEMBER_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
-                        FishingClub.getIdentifier("member_screen_handler"),
+                        FishingClub.identifier("member_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 MemberScreenHandler::new, MemberPayload.CODEC));
         CONFIGURATION_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
-                        FishingClub.getIdentifier("configuration_screen_handler"),
+                        FishingClub.identifier("configuration_screen_handler"),
                         new ExtendedScreenHandlerType<>(
                                 ConfigurationScreenHandler::new, ConfigurationPayload.CODEC));
     }

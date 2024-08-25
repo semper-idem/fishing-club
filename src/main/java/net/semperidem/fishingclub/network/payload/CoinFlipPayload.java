@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FishingCard;
 
 public record CoinFlipPayload(int amount) implements CustomPayload {
-    public static final CustomPayload.Id<CoinFlipPayload> ID = new CustomPayload.Id<>(FishingClub.getIdentifier("c2s_coin_flip"));
+    public static final CustomPayload.Id<CoinFlipPayload> ID = new CustomPayload.Id<>(FishingClub.identifier("c2s_coin_flip"));
     public static final PacketCodec<RegistryByteBuf, CoinFlipPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, CoinFlipPayload::amount, CoinFlipPayload::new);
 
     @Override
