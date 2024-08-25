@@ -15,7 +15,7 @@ import net.semperidem.fishingclub.entity.renderer.CustomBoatEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.FishDisplayEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
 import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
-import net.semperidem.fishingclub.fish.SpeciesLibrary;
+import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.screen.dialog.DialogController;
@@ -38,11 +38,11 @@ public class FCRegistry {
 
 // in the initializer
     public static void register(){
-        FCComponents.register();
         FCTags.register();
         FCBlocks.register();
         FCItems.register();
         FCEntityTypes.register();
+        FCComponents.register();
         FCNetworking.registerServer();
         FCScreenHandlers.register();
         FCStatusEffects.register();
@@ -50,7 +50,6 @@ public class FCRegistry {
         FishingPerks.register();
         DialogController.initialize();
         FCFeatures.register();
-        SpeciesLibrary.BUTTERFISH.register();
     }
 
     public static void registerClient(){
@@ -59,6 +58,7 @@ public class FCRegistry {
         FCKeybindings.registerClient();
         FCModelPredicateProvider.registerClient();
         FCModels.initModels();
+        Species.Library.registerClient();
         EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
         EntityRendererRegistry.register(FCEntityTypes.BOAT_ENTITY, (EntityRendererFactory.Context ctx) -> new CustomBoatEntityRenderer(ctx, false));
@@ -70,7 +70,6 @@ public class FCRegistry {
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP_PLANT, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.WATERLOGGED_LILY_PAD_BLOCK, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.DUCKWEED_BLOCK, RenderLayer.getCutout());
-        SpeciesLibrary.BUTTERFISH.registerClient();
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> 2129968, FCBlocks.WATERLOGGED_LILY_PAD_BLOCK);
     }
 }

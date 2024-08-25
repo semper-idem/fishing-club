@@ -5,19 +5,21 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.semperidem.fishingclub.fish.AbstractFishEntity;
 import net.semperidem.fishingclub.fish.AbstractFishEntityRenderer;
-import net.semperidem.fishingclub.fish.SpeciesLibrary;
+import net.semperidem.fishingclub.fish.Species;
 
-public class ButterfishEntityRenderer extends AbstractFishEntityRenderer<ButterfishEntity, ButterfishEntityModel<ButterfishEntity>> {
+public class ButterfishEntityRenderer<T extends AbstractFishEntity> extends AbstractFishEntityRenderer<T, ButterfishEntityModel<T>> {
+
 	private static final float SHADOW_RADIUS = 0.3f;
-	private static final Identifier TEXTURE = SpeciesLibrary.BUTTERFISH.getTexture(false);
-	private static final Identifier ALBINO_TEXTURE = SpeciesLibrary.BUTTERFISH.getTexture(true);
+	private static final Identifier TEXTURE = Species.Library.BUTTERFISH.getTexture(false);
+	private static final Identifier ALBINO_TEXTURE = Species.Library.BUTTERFISH.getTexture(true);
 
 	public ButterfishEntityRenderer(EntityRendererFactory.Context context) {
-		super(context, new ButterfishEntityModel<>(context.getPart(SpeciesLibrary.BUTTERFISH.getLayer())), SHADOW_RADIUS);
+		super(context, new ButterfishEntityModel<>(context.getPart(Species.Library.BUTTERFISH.getLayer())), SHADOW_RADIUS);
 	}
 
-	protected void setupTransforms(ButterfishEntity fishEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
+	protected void setupTransforms(T fishEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
 		super.setupTransforms(fishEntity, matrixStack, f, g, h, i);
 		float j = 4.3F * MathHelper.sin(0.6F * f);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));

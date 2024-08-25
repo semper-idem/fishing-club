@@ -21,6 +21,7 @@ import net.semperidem.fishingclub.block.DuckweedBlock;
 import net.semperidem.fishingclub.block.ReedBlock;
 import net.semperidem.fishingclub.feature.DuckweedFeature;
 import net.semperidem.fishingclub.feature.ReedFeature;
+import net.semperidem.fishingclub.fish.Species;
 
 public class FCFeatures {
 	public static final Identifier REED_FEATURE_ID = FishingClub.getIdentifier("reed_feature");
@@ -44,24 +45,6 @@ public class FCFeatures {
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			RegistryKey.of(RegistryKeys.PLACED_FEATURE, REED_FEATURE_ID
 			)
-		);
-		registerMobSpawn();
-	}
-
-	public static void registerMobSpawn() {
-			BiomeModifications.addSpawn(
-				BiomeSelectors.spawnsOneOf(EntityType.COD),
-				SpawnGroup.WATER_AMBIENT,
-				FCEntityTypes.FISH_ENTITY,
-				15,
-				1,
-			6
-			);
-		SpawnRestriction.register(
-			FCEntityTypes.FISH_ENTITY,
-			SpawnLocationTypes.IN_WATER,
-			Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-			WaterCreatureEntity::canSpawn
 		);
 	}
 }

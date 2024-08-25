@@ -42,7 +42,7 @@ public class FishController {
     public FishController(FishingGameController parent){
         this.parent = parent;
 
-        Species species = Species.of(parent.hookedFish.speciesName());
+        Species species = Species.Library.ofName(parent.hookedFish.speciesName());
         stamina = STAMINA_BASE + species.staminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;

@@ -6,8 +6,6 @@ import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.Models;
-import net.semperidem.fishingclub.fish.SpeciesLibrary;
 
 public class FishModelGenerator extends FabricModelProvider {
 
@@ -68,7 +66,6 @@ public class FishModelGenerator extends FabricModelProvider {
 
 	@Override
 	public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-		SpeciesLibrary.iterator().forEachRemaining(species -> itemModelGenerator.register(species.item(), Models.GENERATED));
 	}
 
 }

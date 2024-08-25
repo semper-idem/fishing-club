@@ -9,6 +9,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.*;
+import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
 
 public class FCEntityTypes {
@@ -17,12 +18,12 @@ public class FCEntityTypes {
 	public static EntityType<HookEntity> HOOK_ENTITY;
 	public static EntityType<HarpoonEntity> HARPOON_ENTITY;
 	public static EntityType<LineArrowEntity> LINE_ARROW_ENTITY;
-	public static EntityType<ButterfishEntity> FISH_ENTITY;
 	public static EntityType<CustomBoatEntity> BOAT_ENTITY;
 
 
 
 	public static void register() {
+		Species.Library.register();
 
 		DEREK_ENTITY =
 			Registry.register(
@@ -77,17 +78,8 @@ public class FCEntityTypes {
 					.trackingTickInterval(20)
 					.maxTrackingRange(4)
 					.build());
-
-		FISH_ENTITY =
-			Registry.register(
-				Registries.ENTITY_TYPE,
-				FishingClub.getIdentifier("fish_entity"),
-				EntityType.Builder.create(ButterfishEntity::new, SpawnGroup.WATER_AMBIENT)
-					.dimensions(0.5F, 0.3F).eyeHeight(0.195F).maxTrackingRange(4)
-					.build());
-
 		FabricDefaultAttributeRegistry.register(DEREK_ENTITY, FishermanEntity.createMobAttributes());
-		FabricDefaultAttributeRegistry.register(FISH_ENTITY, ButterfishEntity.createMobAttributes());
+
 
 	}
 

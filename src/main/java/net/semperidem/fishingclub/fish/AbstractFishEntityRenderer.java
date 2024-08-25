@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 
 
-public abstract class AbstractFishEntityRenderer<M extends FishEntity, T extends EntityModel<M>> extends MobEntityRenderer<M, T> {
+public abstract class AbstractFishEntityRenderer<M extends AbstractFishEntity, T extends EntityModel<M>> extends MobEntityRenderer<M, T> {
 
 	public AbstractFishEntityRenderer(EntityRendererFactory.Context context, T entityModel, float f) {
 		super(context, entityModel, f);

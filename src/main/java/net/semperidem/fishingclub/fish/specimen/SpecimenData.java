@@ -15,7 +15,6 @@ import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.AbstractFishEntity;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.fish.SpeciesLibrary;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCComponents;
@@ -40,7 +39,7 @@ public record SpecimenData(
 ) {
     public static SpecimenData init() {
 
-        return init(SpeciesLibrary.DEFAULT);
+        return init(Species.Library.DEFAULT);
     }
 
     public static SpecimenData init(Species<?> species) {
@@ -50,11 +49,11 @@ public record SpecimenData(
 
     public static SpecimenData init(IHookEntity caughtWith) {
 
-        return init(caughtWith, Math.random() > 0.5f ? SpeciesLibrary.BUTTERFISH : SpeciesLibrary.DEFAULT);
+        return init(caughtWith, Math.random() > 0.5f ? Species.Library.BUTTERFISH : Species.Library.DEFAULT);
     }
 
     public String getTextureName() {
-        return Species.of(this.speciesName).getTextureName(this.isAlbino);
+        return Species.Library.ofName(this.speciesName).getTextureName(this.isAlbino);
     }
 
     public ModelIdentifier getModelId() {
@@ -139,7 +138,7 @@ public record SpecimenData(
 
 
     public Species<? extends AbstractFishEntity> species() {
-        return Species.of(this.speciesName);
+        return Species.Library.ofName(this.speciesName);
     }
 
     public boolean weird() {
@@ -168,7 +167,7 @@ public record SpecimenData(
 
 
     public int value() {
-        var species = Species.of(this.speciesName);
+        var species = Species.Library.ofName(this.speciesName);
 
         var xRarity = 1 + species.rarity() * 0.01;
         var xQuality = this.quality <= 2 ? (0.5 + this.quality / 4D) : Math.pow(2, (this.quality - 2));
@@ -227,8 +226,8 @@ public record SpecimenData(
 
 
     public static final SpecimenData DEFAULT =
-      new SpecimenData(SpeciesLibrary.DEFAULT.name,
-        SpeciesLibrary.DEFAULT.name,
+      new SpecimenData(Species.Library.DEFAULT.name,
+        Species.Library.DEFAULT.name,
         MIN_LEVEL, MIN_QUALITY,
         0,
         0,
