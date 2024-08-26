@@ -19,9 +19,9 @@ public class ButterfishEntityRenderer<T extends AbstractFishEntity> extends Abst
 		super(context, new ButterfishEntityModel<>(context.getPart(Species.Library.BUTTERFISH.getLayerId())), SHADOW_RADIUS);
 	}
 
-	protected void setupTransforms(T fishEntity, MatrixStack matrixStack, float f, float g, float h, float i) {
-		super.setupTransforms(fishEntity, matrixStack, f, g, h, i);
-		float j = 4.3F * MathHelper.sin(0.6F * f);
+	protected void setupTransforms(T fishEntity, MatrixStack matrixStack, float animationProgress, float bodyYaw, float tickDelta, float scalei) {
+		super.setupTransforms(fishEntity, matrixStack, animationProgress, bodyYaw, tickDelta, scalei);
+		float j = 4.3F * MathHelper.sin(0.6F * animationProgress);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
 		if (!fishEntity.isTouchingWater()) {
 			matrixStack.translate(0.1F, 0.1F, -0.1F);
