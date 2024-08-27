@@ -4,17 +4,26 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
+import net.semperidem.fishingclub.fish.AbstractFishEntity;
+import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.world.ChunkQuality;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,6 +34,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 import java.util.UUID;
+
+import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity{
@@ -153,12 +164,24 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 //todo
-        //        AbstractFishEntity fishEntity = new AbstractFishEntity(serverWorld, this.fish);
-//        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
-//        serverWorld.spawnEntity(fishEntity);
+        EntityType<?> entityType = this.fish.species().getEntityType();
+
+        WaterCreatureEntity fishEntity = (WaterCreatureEntity) entityType.create(serverWorld);
+        if (fishEntity == null) {
+            return;
+        }
+        if (entityType.getUntranslatedName().equals("tropical_fish")) {
+            NbtCompound nbtCompound = new NbtCompound();
+            fishEntity.writeCustomDataToNbt(nbtCompound);
+            nbtCompound.putInt("Variant", TropicalFishEntity.COMMON_VARIANTS.get(this.fish.subspecies()).getId());
+            fishEntity.readCustomDataFromNbt(nbtCompound);
+        }
+        SpecimenComponent.of(fishEntity).set(this.fish);
+        fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
+        serverWorld.spawnEntity(fishEntity);
 //        fishEntity.setCustomName(Text.of(this.fish.label()));
-//        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
-//        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
+        CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_RELEASE);
     }
 
     @Unique

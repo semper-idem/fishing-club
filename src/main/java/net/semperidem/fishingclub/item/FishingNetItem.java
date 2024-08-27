@@ -1,6 +1,8 @@
 package net.semperidem.fishingclub.item;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.BundleItem;
@@ -10,10 +12,13 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.registry.FCComponents;
 import org.apache.commons.lang3.math.Fraction;
 
@@ -24,6 +29,30 @@ public class FishingNetItem extends BundleItem {
     public FishingNetItem(Settings settings, int stackCount) {
         super(settings);
         this.stackCount = stackCount;
+    }
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (!(entity instanceof WaterCreatureEntity waterCreatureEntity)) {
+            return ActionResult.PASS;
+        }
+        if (user.getWorld().isClient) {
+            return ActionResult.PASS;
+        }
+        ItemStack stackInHand = user.getStackInHand(hand);
+        if (!(stackInHand.getItem() instanceof FishingNetItem fishingNetItem)) {
+            return ActionResult.PASS;
+
+        }
+        SpecimenComponent fishComponent = SpecimenComponent.of(waterCreatureEntity);
+        if (fishComponent == null) {
+            return ActionResult.PASS;
+        }
+        ItemStack fishStack = FishUtil.getStackFromFish(fishComponent.get(), 1);
+        if (fishingNetItem.insertStack(stackInHand, fishStack, user)) {
+            entity.discard();
+        }
+        return ActionResult.SUCCESS;
     }
 
     public boolean canInsert(ItemStack fishingNetStack, ItemStack fishStack) {

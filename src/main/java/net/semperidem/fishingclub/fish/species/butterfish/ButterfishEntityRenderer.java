@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fish.species.butterfish;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -9,7 +10,7 @@ import net.semperidem.fishingclub.fish.AbstractFishEntity;
 import net.semperidem.fishingclub.fish.AbstractFishEntityRenderer;
 import net.semperidem.fishingclub.fish.Species;
 
-public class ButterfishEntityRenderer<T extends AbstractFishEntity> extends AbstractFishEntityRenderer<T, ButterfishEntityModel<T>> {
+public class ButterfishEntityRenderer<T extends WaterCreatureEntity> extends AbstractFishEntityRenderer<T, ButterfishEntityModel<T>> {
 
 	private static final float SHADOW_RADIUS = 0.3f;
 	private static final Identifier TEXTURE = Species.Library.BUTTERFISH.texture(false);

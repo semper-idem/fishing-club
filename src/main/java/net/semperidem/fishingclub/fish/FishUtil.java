@@ -15,9 +15,10 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.FishItem;
 import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 import net.semperidem.fishingclub.world.ChunkQuality;
 
 import java.time.Instant;
@@ -26,7 +27,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MAX_QUALITY;
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
@@ -143,8 +143,8 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
 
-    public static boolean isFish(ItemStack fish) {
-        return fish.getItem() instanceof FishItem;
+    public static boolean isFish(ItemStack itemStack) {
+        return itemStack.isIn(FCTags.FISH_ITEM_TAG) || itemStack.get(FCComponents.SPECIMEN) != null;
     }
 
 

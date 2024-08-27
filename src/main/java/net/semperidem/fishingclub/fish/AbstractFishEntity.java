@@ -28,10 +28,8 @@ public abstract class AbstractFishEntity extends FishEntity {
     }
 
 
-    public static boolean canSpawn(Species<? extends AbstractFishEntity> species, EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
-        double chunkQuality = CHUNK_QUALITY.get(world.getChunk(pos)).getValue();
-        double speciesMinChunkQuality = Math.log(species.rarity()) * 0.5;
-        if (chunkQuality < speciesMinChunkQuality) {
+    public static<T extends WaterCreatureEntity> boolean canSpawn(Species<T> species, EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+        if (!ChunkQuality.isAboveMinimumQuality(species, world, pos)) {
             return false;
         }
         int seaLevel = world.getSeaLevel();

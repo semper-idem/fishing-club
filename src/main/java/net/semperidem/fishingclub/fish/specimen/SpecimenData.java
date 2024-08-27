@@ -4,6 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -13,7 +15,6 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
-import net.semperidem.fishingclub.fish.AbstractFishEntity;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
@@ -35,7 +36,7 @@ public record SpecimenData(
         String caughtBy,
         long caughtAt,
         boolean isAlive,
-        boolean isAlbino
+        int subspecies
 ) {
 
     public SpecimenData(
@@ -50,10 +51,10 @@ public record SpecimenData(
             String caughtBy,
             long caughtAt,
             boolean isAlive,
-            boolean isAlbino
+            int subspecies
     ) {
         this(
-            Species.Library.ofName(speciesName),
+            Species.Library.fromName(speciesName),
             label,
             level,
             quality,
@@ -64,7 +65,7 @@ public record SpecimenData(
             caughtBy,
             caughtAt,
             isAlive,
-            isAlbino
+            subspecies
         );
 
     }
@@ -75,20 +76,25 @@ public record SpecimenData(
 
     public static SpecimenData init(Species<?> species) {
 
+        var isAlbino = Math.random() < 0.01f;
         return init(new IHookEntity() {
-        }, species);
+        }, species, isAlbino ? -1 : 0);
     }
 
+    public static SpecimenData init(Species<TropicalFishEntity> species, int subspecies) {
+        return init(new IHookEntity() {}, species, subspecies);
+    }
     public static SpecimenData init(IHookEntity caughtWith) {
 
-        return init(caughtWith, Math.random() > 0.5f ? Species.Library.BUTTERFISH : Species.Library.DEFAULT);
+        var isAlbino = Math.random() < 0.01f;
+        return init(caughtWith, Math.random() > 0.5f ? Species.Library.BUTTERFISH : Species.Library.DEFAULT, isAlbino ? -1 : 0);
     }
 
     public ModelIdentifier getModelId() {
-        return this.isAlbino ? species().albinoModelId() : species().modelId();
+        return this.isAlbino() ? species().albinoModelId() : species().modelId();
     }
 
-    public static SpecimenData init(IHookEntity caughtWith, Species<? extends AbstractFishEntity> species) {
+    public static SpecimenData init(IHookEntity caughtWith, Species<? extends WaterCreatureEntity> species, int subspecies) {
 
         var caughtByCard = caughtWith.getFishingCard();
         var caughtUsing = caughtWith.getCaughtUsing();
@@ -99,11 +105,13 @@ public record SpecimenData(
         var weight = calculateWeight(species, level);
         var length = calculateLength(species, level);
 
-        var isAlbino = Math.random() < 0.01f;
-
+        var label = (species.weird(weight, length) ? "Weird " : "") + (subspecies == -1 ? "Albino " : "") + species.label();
+        if (subspecies > 0) {
+            label = Text.translatable(TropicalFishEntity.getToolTipForVariant(subspecies)).getString();
+        }
         return new SpecimenData(
                 species,
-                (species.weird(weight, length) ? "Weird " : "") + (isAlbino ? "Albino " : "") + species.label(),
+                label,
                 level,
                 quality,
                 weight,
@@ -113,20 +121,20 @@ public record SpecimenData(
                 caughtBy == null ? "x" : caughtBy.getNameForScoreboard(),
                 System.currentTimeMillis(),
                 !(caughtWith instanceof FishingExplosionEntity),
-                isAlbino
+               subspecies
         );
     }
 
 
-    private static float calculateWeight(Species<? extends AbstractFishEntity> species, int level) {
+    private static float calculateWeight(Species<? extends WaterCreatureEntity> species, int level) {
         return species.weightInRange(level * 0.01f);
     }
 
-    private static float calculateLength(Species<? extends AbstractFishEntity> species, int level) {
+    private static float calculateLength(Species<? extends WaterCreatureEntity> species, int level) {
         return species.lengthInRange(level * 0.01f);
     }
 
-    private static int calculateLevel(Species<? extends AbstractFishEntity> species, int fisherLevel) {
+    private static int calculateLevel(Species<? extends WaterCreatureEntity> species, int fisherLevel) {
 
         return (int) MathHelper.clamp(MathUtil.normal(
                         species.level(),
@@ -155,7 +163,7 @@ public record SpecimenData(
         var xRarity = (50 / (this.species().rarity() + 9));//expected values from 1 to 200
         var xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;
         var xWeird = this.weird() ? 3 : 1;
-        var xAlbino = this.isAlbino ? 1.5 : 1;
+        var xAlbino = this.subspecies == -1 ? 1.5 : 1;
         var xLevel = Math.pow(this.level, 1.3);
 
         return (int) MathHelper.clamp(
@@ -188,6 +196,12 @@ public record SpecimenData(
         return this.species().weightScale(this.length);
     }
 
+    public boolean isAlbino() {
+        return isAlbino(this);
+    }
+    public static boolean isAlbino(SpecimenData specimenData) {
+        return specimenData.subspecies == -1;
+    }
 
     public int value() {
         var xRarity = 1 + this.species.rarity() * 0.01;
@@ -228,7 +242,12 @@ public record SpecimenData(
     public ItemStack asItemStack() {
         ItemStack fishItemStack = species().item().getDefaultStack();
         fishItemStack.set(FCComponents.SPECIMEN, this);
-        fishItemStack.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.label));
+        Text label = Text.of(this.label);
+        if (this.species == Species.Library.TROPICAL_FISH) {
+
+            label = Text.translatable(TropicalFishEntity.getToolTipForVariant(this.subspecies));
+        }
+        fishItemStack.set(DataComponentTypes.ITEM_NAME, label);
         return fishItemStack;
     }
 
@@ -256,7 +275,7 @@ public record SpecimenData(
                     UUID.randomUUID(),
                     "x",
                     System.currentTimeMillis(),
-                    false, false
+                    false, 0
             );
     public static Codec<SpecimenData> CODEC =
             RecordCodecBuilder.create(
@@ -274,7 +293,7 @@ public record SpecimenData(
                                             Codec.STRING.fieldOf("caught_by").forGetter(SpecimenData::caughtBy),
                                             Codec.LONG.fieldOf("caught_at").forGetter(SpecimenData::caughtAt),
                                             Codec.BOOL.fieldOf("is_alive").forGetter(SpecimenData::isAlive),
-                                            Codec.BOOL.fieldOf("is_albino").forGetter(SpecimenData::isAlbino)//this is argument count limit, need to package fields
+                                            Codec.INT.fieldOf("subspecies").forGetter(SpecimenData::subspecies)//this is argument count limit, need to package fields
                                     ).apply(instance, SpecimenData::new)
             );
     public static PacketCodec<RegistryByteBuf, SpecimenData> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);

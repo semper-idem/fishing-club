@@ -82,7 +82,7 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         matrices.push();
         this.setAngles(matrices, -block.getRotationDegrees(state), state);
         this.renderSign(matrices, vertexConsumers, light, overlay, woodType, model);
-        if (signBlockEntity.getFishEntity() == null) {
+        if (signBlockEntity.getWaterCreatureEntity() == null) {
             matrices.pop();
             return;
         }
@@ -91,7 +91,7 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         matrices.translate(0,0.3, 0.05);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float) (Math.PI / 2f)));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotation((float) (Math.PI / 2f)));
-        this.entityRenderDispatcher.render(signBlockEntity.getFishEntity(), 0,0,0,0, signBlockEntity.getDuration()/3f, matrices, vertexConsumers, light);
+        this.entityRenderDispatcher.render(signBlockEntity.getWaterCreatureEntity(), 0,0,0,0, signBlockEntity.getDuration()/3f, matrices, vertexConsumers, light);
         matrices.pop();
         //this.renderText(entity.getPos(), entity.getFrontText(), matrices, vertexConsumers, light, entity.getTextLineHeight(), entity.getMaxTextWidth(), true);
         //this.renderText(entity.getPos(), entity.getBackText(), matrices, vertexConsumers, light, entity.getTextLineHeight(), entity.getMaxTextWidth(), false);

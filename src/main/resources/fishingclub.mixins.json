@@ -8,7 +8,6 @@
     "common.BoatEntityMixin",
     "common.BucketItemMixin",
     "common.ChunkGeneratingMixin",
-    "common.FishEntityMixin",
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
     "common.FluidBlockMixin",

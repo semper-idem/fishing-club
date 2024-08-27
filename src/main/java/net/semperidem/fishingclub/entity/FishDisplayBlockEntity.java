@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.passive.FishEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -25,7 +25,7 @@ import net.semperidem.fishingclub.registry.FCRegistry;
 public class FishDisplayBlockEntity extends BlockEntity {
 
     private ItemStack fishStack;
-    private FishEntity fishEntity;
+    private WaterCreatureEntity fishEntity;
     private SoundEvent fishSong;
     private boolean isPlaying = false;
     private int duration = 0;
@@ -115,7 +115,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         this.fishEntity.discard();
         this.fishStack = null;
     }
-    public FishEntity getFishEntity() {
+    public WaterCreatureEntity getWaterCreatureEntity() {
 
         return this.fishEntity;
     }

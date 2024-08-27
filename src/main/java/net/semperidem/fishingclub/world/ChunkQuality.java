@@ -5,11 +5,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.registry.FCBlocks;
 import org.ladysnake.cca.api.v3.chunk.ChunkComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.chunk.ChunkComponentInitializer;
@@ -180,6 +184,10 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		tag.putDouble(BASE_KEY, this.base);
 		tag.putDouble(CEILING_KEY, this.ceiling);
 		tag.putDouble(CURRENT_KEY, this.current);
+	}
+
+	public static boolean isAboveMinimumQuality(Species<?> species, WorldAccess world, BlockPos pos) {
+		return CHUNK_QUALITY.get(world.getChunk(pos)).getValue() >= Math.log(species.rarity()) * 0.5;
 	}
 
 	public enum PlayerInfluence {
