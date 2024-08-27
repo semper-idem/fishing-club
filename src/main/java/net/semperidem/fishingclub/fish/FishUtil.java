@@ -26,6 +26,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MAX_QUALITY;
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
@@ -33,7 +34,6 @@ import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
     public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
-
 
     public static ItemStack getStackFromFish(SpecimenData fish){
         return getStackFromFish(fish, 1);

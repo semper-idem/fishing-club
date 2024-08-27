@@ -21,8 +21,8 @@ public class ButterfishEntityRenderer<T extends AbstractFishEntity> extends Abst
 
 	protected void setupTransforms(T fishEntity, MatrixStack matrixStack, float animationProgress, float bodyYaw, float tickDelta, float scalei) {
 		super.setupTransforms(fishEntity, matrixStack, animationProgress, bodyYaw, tickDelta, scalei);
-		float j = 4.3F * MathHelper.sin(0.6F * animationProgress);
-		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
+		float jumpHeight = 4.3F * MathHelper.sin(0.6F * animationProgress);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(jumpHeight));
 		if (!fishEntity.isTouchingWater()) {
 			matrixStack.translate(0.1F, 0.1F, -0.1F);
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));

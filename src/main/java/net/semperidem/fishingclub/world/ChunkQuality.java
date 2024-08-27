@@ -21,6 +21,7 @@ import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ChunkQuality implements ChunkComponentInitializer, ServerTickingComponent, AutoSyncedComponent {
 	private static final String CHUNK_QUALITY_KEY = "chunk_quality";
@@ -54,9 +55,10 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 	public void init(ServerWorld world) {
 		ChunkPos pos = this.chunk.getPos();
 		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.x, 0, pos.z);
-		this.base = Math.abs(world.getChunkManager().getNoiseConfig().getNoiseRouter().vegetation().sample(unblendedNoisePos)) * 10;
-		this.recalculateCeiling();
-		this.base += (ceiling * 0.5f);
+		double randomBase = Math.abs(world.getChunkManager().getNoiseConfig().getNoiseRouter().vegetation().sample(unblendedNoisePos)) * 5;
+		double floraValue = getFloraValue();
+		this.base = randomBase + floraValue * 0.5f;
+		this.ceiling = base + floraValue;
 		this.current = ceiling;
 		if (chunk == null) {
 			return;
@@ -64,34 +66,33 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		CHUNK_QUALITY.sync(chunk);
 	}
 
-	private void countFlora() {
+	private double getFloraValue() {
+		AtomicReference<Double> floraValue = new AtomicReference<>(0D);
+		HashMap<FloraInfluence, Integer> floraToCount = new HashMap<>();
 		this.chunk.forEachBlockMatchingPredicate(blockState -> {
 				FloraInfluence floraInfluence = FloraInfluence.getOrNull(blockState.getBlock());
 				if (floraInfluence == null) {
 					return false;
 				}
-				this.floraToCount.put(floraInfluence, floraToCount.getOrDefault(floraInfluence, 0) + 1);
+				floraToCount.put(floraInfluence, floraToCount.getOrDefault(floraInfluence, 0) + 1);
 				return true;
 			}, ((blockPos, blockState) -> {
+				//Should never be null
+				FloraInfluence floraInfluence = FloraInfluence.getOrNull(blockState.getBlock());
+				int count = floraToCount.get(floraInfluence);
+				double newValue = (float)MathHelper.clamp(
+						floraValue.get() + (count > 1 ? floraInfluence.value * 0.1 : floraInfluence.value),
+						0,
+						floraInfluence.value * 2
+				);
+				floraValue.set(newValue);
 			})
 		);
+		return floraValue.get();
 	}
 
 	public void needsRecalculation() {
 		this.needsRecalculation = true;
-	}
-
-	public void recalculateCeiling() {
-		this.countFlora();
-		this.ceiling = base;
-		this.floraToCount.forEach((flora, count) -> {
-			if (count == 0) {
-				return;
-			}
-			this.ceiling += MathHelper.clamp(flora.value + (flora.value * (count - 1) / 10), 0, flora.value * 2);
-		});
-		this.ceiling = MathHelper.clamp(ceiling, base, ceiling);
-
 	}
 
 	private void tickRegen() {
@@ -130,7 +131,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 
 		if (this.needsRecalculation) {
 
-			this.recalculateCeiling();
+			this.ceiling = this.base + this.getFloraValue();
 			this.needsRecalculation = false;
 		}
 		if (chunk == null) {

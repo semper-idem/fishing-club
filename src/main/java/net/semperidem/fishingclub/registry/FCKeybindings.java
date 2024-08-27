@@ -17,7 +17,6 @@ import org.lwjgl.glfw.GLFW;
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
 public class FCKeybindings {
-    private final static KeyBinding CONTEXT_SCREEN = registerKeybinding("fisher_screen", "general", GLFW.GLFW_KEY_F);
     public final static KeyBinding CAST_SPELL = registerKeybinding("cast_spell", "spell", GLFW.GLFW_KEY_N);
     public final static KeyBinding SPELL_SELECT = registerKeybinding("spell_select", "spell", GLFW.GLFW_KEY_M);
     public final static KeyBinding MULTIPLY_CART_ACTION_1 = registerKeybinding("multiply_cart_action_1", "shop", GLFW.GLFW_KEY_LEFT_SHIFT);
@@ -26,10 +25,8 @@ public class FCKeybindings {
     public final static KeyBinding PULL = registerKeybinding("pull", "game", GLFW.GLFW_KEY_ENTER);
 
     public static void registerClient() {
-        registerAction(FCKeybindings::openContextFCMenu);
         registerAction(FCKeybindings::spellCast);
         registerAction(FCKeybindings::spellSelect);
-        registerAction(o -> {});
     }
 
     private static void registerAction(ClientTickEvents.EndTick endTickAction) {
@@ -45,21 +42,6 @@ public class FCKeybindings {
                         "category." + MOD_ID + "." + keyCategory
                 )
         );
-    }
-
-
-    private static void openContextFCMenu(MinecraftClient client) {
-        if (!CONTEXT_SCREEN.wasPressed()) {
-            return;
-        }
-        if (client.player == null) {
-            return;
-        }
-        if (client.player.getMainHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
-            ClientPlayNetworking.send(new ConfigurationPayload());
-            return;
-        }
-        ClientPlayNetworking.send(new FishingCardPayload());
     }
 
     private static void spellCast(MinecraftClient client) {

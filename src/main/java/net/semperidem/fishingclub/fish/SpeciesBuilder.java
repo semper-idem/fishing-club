@@ -22,8 +22,8 @@ import net.semperidem.fishingclub.item.FishItem;
 
 import java.util.function.Predicate;
 
-public class SpeciesBuilder<T extends AbstractFishEntity> {
-    private final Species<T> species;
+public class SpeciesBuilder {
+    private final Species<AbstractFishEntity> species;
 
 
     private SpeciesBuilder(String speciesName) {
@@ -40,42 +40,42 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
         this.species.layerId =  new EntityModelLayer(FishingClub.identifier(this.species.textureName()), "main");
    }
 
-    public static <T extends AbstractFishEntity> SpeciesBuilder<T> create(String speciesName) {
-        return new SpeciesBuilder<>(speciesName);
+    public static SpeciesBuilder create(String speciesName) {
+        return new SpeciesBuilder(speciesName);
     }
 
-    public SpeciesBuilder<T> level(int level) {
+    public SpeciesBuilder level(int level) {
         this.species.level = level;
         return this;
     }
 
-    public SpeciesBuilder<T> rarity(float rarity) {
+    public SpeciesBuilder rarity(float rarity) {
         this.species.rarity = rarity;
         return this;
     }
 
-    public SpeciesBuilder<T> lengthMinAndRange(float minLength, float lengthRange) {
+    public SpeciesBuilder lengthMinAndRange(float minLength, float lengthRange) {
         this.species.minLength = minLength;
         this.species.lengthRange = lengthRange;
         return this;
     }
 
-    public SpeciesBuilder<T> weightMinAndRange(float minWeight, float weightRange){
+    public SpeciesBuilder weightMinAndRange(float minWeight, float weightRange){
         this.species.minWeight = minWeight;
         this.species.weightRange = weightRange;
         return this;
     }
 
-    public SpeciesBuilder<T> movement(MovementPattern movement) {
+    public SpeciesBuilder movement(MovementPattern movement) {
         this.species.movement = movement;
         return this;
     }
 
-    public SpeciesBuilder<T> staminaLevel(int staminaLevel) {
+    public SpeciesBuilder staminaLevel(int staminaLevel) {
         this.species.staminaLevel = staminaLevel;
         return this;
     }
-    public SpeciesBuilder<T> spawnBiome(
+    public SpeciesBuilder spawnBiome(
             Predicate<BiomeSelectionContext> biomes,
             int weight,
             int min,
@@ -98,7 +98,7 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
         return this;
     }
 
-    public SpeciesBuilder<T> entity(EntityType.EntityFactory<T> entityFactory) {
+    public SpeciesBuilder entity(EntityType.EntityFactory<AbstractFishEntity> entityFactory) {
         this.species.entityType = Registry.register(Registries.ENTITY_TYPE,
                 this.species.entityId,
                 EntityType.Builder.create(
@@ -122,16 +122,16 @@ public class SpeciesBuilder<T extends AbstractFishEntity> {
         return this;
     }
 
-    public SpeciesBuilder<T> renderer(EntityRendererFactory<T> entityRendererSupplier) {
+    public SpeciesBuilder renderer(EntityRendererFactory<AbstractFishEntity> entityRendererSupplier) {
         this.species.entityRendererSupplier = entityRendererSupplier;
         return this;
     }
 
-    public SpeciesBuilder<T> texturedModel(EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider) {
+    public SpeciesBuilder texturedModel(EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider) {
         this.species.texturedModelDataProvider = texturedModelDataProvider;
         return this;
     }
-    public Species<T> build() {
+    public Species build() {
         if (this.species.entityRendererSupplier == null) {//todo logger
             System.out.println("Missing  EntityRender  for:  " + this.species.name);
         }

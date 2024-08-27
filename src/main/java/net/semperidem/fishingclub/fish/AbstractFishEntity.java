@@ -1,9 +1,12 @@
 package net.semperidem.fishingclub.fish;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -12,9 +15,9 @@ import net.semperidem.fishingclub.world.ChunkQuality;
 
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
-public abstract class AbstractFishEntity extends SchoolingFishEntity {
+public abstract class AbstractFishEntity extends FishEntity {
 
-    public AbstractFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+    public AbstractFishEntity(EntityType<? extends FishEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -27,7 +30,22 @@ public abstract class AbstractFishEntity extends SchoolingFishEntity {
 
     public static boolean canSpawn(Species<? extends AbstractFishEntity> species, EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         double chunkQuality = CHUNK_QUALITY.get(world.getChunk(pos)).getValue();
-        double speciesMinChunkQuality = Math.log(species.rarity) / 2;
-        return WaterCreatureEntity.canSpawn(type, world, reason, pos, random) && (chunkQuality > speciesMinChunkQuality);
+        double speciesMinChunkQuality = Math.log(species.rarity()) * 0.5;
+        if (chunkQuality < speciesMinChunkQuality) {
+            return false;
+        }
+        int seaLevel = world.getSeaLevel();
+        int x = seaLevel - 13;
+        if (pos.getY() > seaLevel) {
+            return false;
+        }
+        if (pos.getY() < x) {
+            return false;
+        }
+        if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
+            return false;
+        }
+        return world.getBlockState(pos.up()).isOf(Blocks.WATER);
+
     }
 }

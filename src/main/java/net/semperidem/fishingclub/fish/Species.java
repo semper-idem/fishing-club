@@ -5,7 +5,9 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.model.CodEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.SalmonEntityModel;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
@@ -13,6 +15,10 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityModel;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityRenderer;
+import net.semperidem.fishingclub.fish.species.cod.CodEntity;
+import net.semperidem.fishingclub.fish.species.cod.CodEntityRenderer;
+import net.semperidem.fishingclub.fish.species.sockeyesalmon.SockeyeSalmonEntity;
+import net.semperidem.fishingclub.fish.species.sockeyesalmon.SockeyeSalmonEntityRenderer;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.FishItem;
 import net.semperidem.fishingclub.util.MathUtil;
@@ -177,6 +183,8 @@ public class Species<T extends AbstractFishEntity> {
 //        private static final Predicate<BiomeSelectionContext> HOT = context -> context.getBiome().getTemperature() >= 1;
 
         public static Species<?> BUTTERFISH;
+        public static Species<?> COD;
+        public static Species<?> SOCKEYE_SALMON;
         public static Species<?> DEFAULT;
         static HashMap<String, Species<? extends AbstractFishEntity>> SPECIES_BY_NAME = new HashMap<>();
 
@@ -189,6 +197,28 @@ public class Species<T extends AbstractFishEntity> {
         }
 
         public static void register(){
+            SOCKEYE_SALMON = SpeciesBuilder.create("Salmon")
+                    .level(1)
+                    .rarity(100)
+                    .lengthMinAndRange(0, 1)
+                    .weightMinAndRange(0, 1)
+                    .staminaLevel(4)
+                    .entity(SockeyeSalmonEntity::new)
+                    .texturedModel(SalmonEntityModel::getTexturedModelData)
+                    .renderer(SockeyeSalmonEntityRenderer::new)
+                    .build();
+            COD  = SpeciesBuilder
+                    .create("Cod")
+                    .level(1)
+                    .rarity(1)
+                    .lengthMinAndRange(0, 1)
+                    .weightMinAndRange(0, 1)
+                    .movement(MovementPatterns.EASY1)
+                    .staminaLevel(0)
+                    .entity(CodEntity::new)//need to add OUR vanilla fish
+                    .texturedModel(CodEntityModel::getTexturedModelData)
+                    .renderer(CodEntityRenderer::new)
+                    .build();
             BUTTERFISH = SpeciesBuilder
                     .create("Butterfish")
                     .level(9)
@@ -204,7 +234,7 @@ public class Species<T extends AbstractFishEntity> {
                     .build();
 
 
-            DEFAULT = BUTTERFISH;
+            DEFAULT = COD;
         }
 
         public static <T extends AbstractFishEntity> void add(Species<T> species) {

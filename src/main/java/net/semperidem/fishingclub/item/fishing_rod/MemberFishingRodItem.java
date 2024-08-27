@@ -35,14 +35,27 @@ public class MemberFishingRodItem extends FishingRodItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+
         ItemStack fishingRod = user.getStackInHand(hand);
+        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
+        if (!canCast) {
+            user.sendMessage(Text.of("Can't use without line"), true);
+            return TypedActionResult.fail(fishingRod);
+        }
+
+        if (!FishingCard.of(user).isMember()) {
+            return super.use(world, user, hand);
+        }
+
         if (user.fishHook != null) {
             this.reelRod(world, user, fishingRod);
             return TypedActionResult.success(fishingRod, world.isClient());
         }
-
-        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
-        if (!canCast || fishingRod.getOrDefault(FCComponents.BROKEN, false) || hasNoFishingRod(user)) {
+        if (fishingRod.getOrDefault(FCComponents.BROKEN, false)) {
+            user.sendMessage(Text.of("Broken."), true);
+            return TypedActionResult.fail(fishingRod);
+        }
+        if (hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }
 
@@ -133,7 +146,7 @@ public class MemberFishingRodItem extends FishingRodItem {
         return UseAction.SPEAR;
     }
 
-    public boolean hasNoFishingRod(PlayerEntity playerEntity) {
+    public boolean hasNoFishingRod(PlayerEntity playerEntity) {//todo verify how is this possible and if it's even needed
         return !playerEntity.getMainHandStack().isOf(this) || !playerEntity.getOffHandStack().isEmpty();
     }
 

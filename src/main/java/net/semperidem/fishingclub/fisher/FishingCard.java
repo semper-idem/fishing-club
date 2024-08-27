@@ -295,6 +295,9 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
 
+    public boolean isMember() {
+        return this.historyManager.gaveDerekFish();
+    }
     @Override
     public String toString() {
         return "";

@@ -6,10 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.AbstractFishEntity;
+import net.semperidem.fishingclub.fish.AbstractSchoolingFishEntity;
 
-public class ButterfishEntity extends AbstractFishEntity {
+public class ButterfishEntity extends AbstractSchoolingFishEntity {
 
-	public ButterfishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+	public ButterfishEntity(EntityType<? extends AbstractFishEntity> entityType, World world) {
 		super(entityType, world);
 	}
 

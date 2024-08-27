@@ -20,15 +20,19 @@
     "common.LivingEntityMixin",
     "common.PlayerEntityMixin",
     "common.ServerPlayerInteractionManagerMixin",
-    "common.ServerWorldMixin"
+    "common.ServerWorldMixin",
+    "common.TropicalFishEntityMixin",
+    "common.WaterCreatureEntityMixin"
   ],
   "client": [
     "client.BipedEntityModelMixin",
     "client.BoatEntityModelAccessor",
     "client.DebugHudMixin",
+    "client.FishingBobberEntityRendererMixin",
     "client.HeldItemFeatureRenderer",
     "client.HeldItemRendererMixin",
     "client.InGameHudMixin",
+    "client.InventoryScreenMixin",
     "client.ItemRendererAccessor",
     "client.ItemRendererMixin",
     "client.ModelLoaderMixin",
