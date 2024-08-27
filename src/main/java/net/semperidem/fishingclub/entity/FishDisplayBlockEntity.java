@@ -5,6 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -17,6 +18,7 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent;
+import net.semperidem.fishingclub.mixin.common.TropicalFishAccessor;
 import net.semperidem.fishingclub.network.payload.StopPlayingPayload;
 import net.semperidem.fishingclub.registry.FCBlocks;
 import net.semperidem.fishingclub.registry.FCComponents;
@@ -201,6 +203,9 @@ public class FishDisplayBlockEntity extends BlockEntity {
         this.fishEntity = fishRecord.species().getEntityType().create(this.world);
         if (this.fishEntity == null) {
             return;
+        }
+        if (fishEntity instanceof TropicalFishEntity) {
+           fishEntity.getDataTracker().set(TropicalFishAccessor.getVariant(),TropicalFishEntity.COMMON_VARIANTS.get(fishRecord.subspecies()).getId());
         }
         this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
         SpecimenComponent.of(this.fishEntity).set(fishRecord);

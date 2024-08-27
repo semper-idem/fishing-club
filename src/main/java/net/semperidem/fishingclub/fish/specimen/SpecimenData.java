@@ -242,10 +242,11 @@ public record SpecimenData(
     public ItemStack asItemStack() {
         ItemStack fishItemStack = species().item().getDefaultStack();
         fishItemStack.set(FCComponents.SPECIMEN, this);
-        Text label = Text.of(this.label);
+        Text label = Text.of((!this.isAlive ? "Raw " : "") + this.label);
         if (this.species == Species.Library.TROPICAL_FISH) {
 
-            label = Text.translatable(TropicalFishEntity.getToolTipForVariant(this.subspecies));
+            label = Text.of((!this.isAlive ? "Raw " : "") + Text.translatable(TropicalFishEntity.getToolTipForVariant(this.subspecies)).getString());
+
         }
         fishItemStack.set(DataComponentTypes.ITEM_NAME, label);
         return fishItemStack;
@@ -253,6 +254,22 @@ public record SpecimenData(
 
     //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
 
+    public static SpecimenData ofVariant(SpecimenData data, int subspecies) {
+        return new SpecimenData(
+                data.species,
+                data.label,
+                data.level,
+                data.quality,
+                data.weight,
+                data.length,
+                data.id,
+                data.caughtByUUID,
+                data.caughtBy,
+                data.caughtAt,
+                data.isAlive,
+                subspecies
+        );
+    }
     public static final int MIN_LEVEL = 1;
     private static final int MAX_LEVEL = 99;
 

@@ -20,6 +20,7 @@
     "common.PlayerEntityMixin",
     "common.ServerPlayerInteractionManagerMixin",
     "common.ServerWorldMixin",
+    "common.TropicalFishAccessor",
     "common.TropicalFishEntityMixin",
     "common.WaterCreatureEntityMixin"
   ],

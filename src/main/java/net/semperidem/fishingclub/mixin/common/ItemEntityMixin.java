@@ -163,7 +163,7 @@ public abstract class ItemEntityMixin extends Entity{
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
             return;
         }
-//todo
+//todo move to SpecimenData like asItemStack
         EntityType<?> entityType = this.fish.species().getEntityType();
 
         WaterCreatureEntity fishEntity = (WaterCreatureEntity) entityType.create(serverWorld);

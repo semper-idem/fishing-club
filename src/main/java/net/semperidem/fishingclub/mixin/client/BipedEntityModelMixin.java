@@ -4,7 +4,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.item.FishItem;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.FCItems;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +34,7 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
 
     @Inject(method = "setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void onSetAngles(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci) {
-        if (!FishItem.isFish(livingEntity.getMainHandStack())) {
+        if (!FishUtil.isFish(livingEntity.getMainHandStack())) {
             return;
         }
         if (livingEntity.getMainHandStack().isEmpty()) {

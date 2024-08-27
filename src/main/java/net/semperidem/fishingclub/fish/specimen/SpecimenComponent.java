@@ -21,12 +21,6 @@ public class SpecimenComponent extends AbstractSpecimenComponent implements Auto
 
     public SpecimenComponent(WaterCreatureEntity entity) {
         this.parent = entity;
-//        NbtCompound nbt = new NbtCompound();
-//        entity.writeNbt(nbt);
-//        if (nbt.contains(AbstractSpecimenComponent.KEY)) {
-//            return;
-//        }
-//        this.set(SpecimenData.init(Species.Library.fromName(entity.getType().getUntranslatedName())));
     }
 
     @Override

@@ -12,14 +12,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnLocationTypes;
 import net.minecraft.entity.SpawnRestriction;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
-import net.semperidem.fishingclub.item.FishItem;
 
 import java.util.function.Predicate;
 
@@ -119,17 +118,22 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
                         .maxTrackingRange(4)
                         .build()
         );
-        FabricDefaultAttributeRegistry.register(
-                this.species.entityType,
-                ButterfishEntity.createMobAttributes()
-        );
 
         this.species.item = Registry.register(
                 Registries.ITEM,
                 this.species.entityId,
-                new FishItem(new Item.Settings().food(FoodComponents.TROPICAL_FISH))
+                new Item(new Item.Settings().food(FoodComponents.TROPICAL_FISH))
         );
 
+        return this;
+    }
+
+    public SpeciesBuilder<T> attributes(DefaultAttributeContainer.Builder attributesBuilder) {
+
+        FabricDefaultAttributeRegistry.register(
+                this.species.entityType,
+                attributesBuilder
+                );
         return this;
     }
 

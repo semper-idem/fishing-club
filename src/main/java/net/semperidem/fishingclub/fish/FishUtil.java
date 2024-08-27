@@ -41,7 +41,10 @@ public class FishUtil {
 
     public static ItemStack getStackFromFish(SpecimenData fish, int count){
         ItemStack fishReward = fish.asItemStack();
-        setLore(fishReward, fish);
+        if (fish.isAlive()) {
+
+            setLore(fishReward, fish);
+        }
         fishReward.setCount(count);
         return fishReward;
     }
@@ -136,9 +139,6 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         result.add(getCaughtBy(fish.caughtBy()));
         result.add(getCaughtAt(fish.caughtAt()));
         result.add(getValueText(fish.value()));
-        if (!fish.isAlive()) {
-            result.add(Text.of("<x)))><"));
-        }
         return result;
     }
 

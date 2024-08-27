@@ -33,6 +33,9 @@ public abstract class AbstractSpecimenComponent implements AutoSyncedComponent {
 
 	@Override
 	public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
+		if (data == null) {
+			return;
+		}
 		SpecimenData.CODEC.encodeStart(NbtOps.INSTANCE, this.data).resultOrPartial().ifPresent(dataTag -> tag.put(KEY, dataTag));
 	}
 

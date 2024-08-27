@@ -21,7 +21,6 @@ import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityModel;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityRenderer;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.item.FishItem;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.HashMap;
@@ -173,8 +172,8 @@ public class Species<T extends WaterCreatureEntity> {
 }
 
     public static final double WEIRD_RANGE = 0.7D;
-    public static final float SCALE_RANGE = -1.4f;
-    private static final float HALF_SCALE_RANGE = SCALE_RANGE * -1.5f;
+    static final float SCALE_RANGE = 0.6f;
+    static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
 
     public static class Library<T extends WaterCreatureEntity> {
 
@@ -278,6 +277,7 @@ public class Species<T extends WaterCreatureEntity> {
                     .movement(MovementPatterns.MID4)
                     .staminaLevel(0)
                     .entity(ButterfishEntity::new)
+                    .attributes(ButterfishEntity.createFishAttributes())
                     .spawnBiome(COD_SPAWN, 15, 1, 2)
                     .texturedModel(ButterfishEntityModel::getTexturedModelData)
                     .renderer(ButterfishEntityRenderer::new)

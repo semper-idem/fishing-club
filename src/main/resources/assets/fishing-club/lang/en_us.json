@@ -6,5 +6,6 @@
   "effect.fishing-club.bobber_buff": "Bobber Width+",
   "effect.fishing-club.one_time_quality_buff": "One-time Fish Quality+",
   "effect.fishing-club.shared_bait_buff": "Shared Bait",
-  "block.fishing-club.tackle_box": "Tackle Box"
+  "block.fishing-club.tackle_box": "Tackle Box",
+  "item.fishing-club.butterfish": "Raw Butterfish"
 }
