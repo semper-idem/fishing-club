@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin.client;
+package net.semperidem.fishingclub.mixin.client.renderer;
 
 import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
 import net.minecraft.item.Item;

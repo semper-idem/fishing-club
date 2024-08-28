@@ -20,7 +20,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
-import net.semperidem.fishingclub.mixin.client.BoatEntityModelAccessor;
+import net.semperidem.fishingclub.mixin.client.model.BoatEntityModelAccessor;
 import net.semperidem.fishingclub.registry.FCModels;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {

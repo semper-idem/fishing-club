@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin.client;
+package net.semperidem.fishingclub.mixin.client.ui;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
@@ -11,9 +11,7 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.registry.FCItems;

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin.client;
+package net.semperidem.fishingclub.mixin.client.model;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BoatEntityModel;

@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.mixin.client;
+package net.semperidem.fishingclub.mixin.client.renderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -120,6 +120,25 @@ public abstract class HeldItemRendererMixin {
         matrices.pop();
     }
 
+
+
+    @Inject(method = "renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/world/World;III)V"
+            ))
+    protected void onRenderItem(LivingEntity entity, ItemStack stack, ModelTransformationMode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        if (!(FishUtil.isFish(stack))) {
+            return;
+        }
+
+        if (renderMode != ModelTransformationMode.THIRD_PERSON_LEFT_HAND && renderMode != ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
+            return;
+        }
+
+        matrices.translate(-0.15, 0, 0);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(60));
+    }
     @Inject(method = "getHandRenderType", at = @At("HEAD"),
             cancellable = true
     )
