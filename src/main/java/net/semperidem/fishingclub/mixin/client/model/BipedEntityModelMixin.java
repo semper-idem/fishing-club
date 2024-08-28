@@ -5,7 +5,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,7 +53,7 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
         if (armPose != BipedEntityModel.ArmPose.THROW_SPEAR) {
             return;
         }
-        if (!entity.getActiveItem().isOf(FCItems.MEMBER_FISHING_ROD))  {
+        if (!entity.getActiveItem().isIn(FCTags.ROD_CORE))  {
             return;
         }
         float usedFor = MathHelper.clamp(entity.getItemUseTime() / 100f, 0, 1);

@@ -32,13 +32,13 @@ import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCEntityTypes;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.registry.FCTags;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
 import net.semperidem.fishingclub.util.Util;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
 
-import static net.semperidem.fishingclub.registry.FCItems.MEMBER_FISHING_ROD;
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 
@@ -104,7 +104,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     public void init(ItemStack fishingRod) {
-        if (!fishingRod.isOf(MEMBER_FISHING_ROD)) {
+        if (!fishingRod.isIn(FCTags.ROD_CORE)) {
             this.discard();
             return;
         }
@@ -581,7 +581,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isOwnerValid(PlayerEntity playerEntity) {
-        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || MEMBER_FISHING_ROD.hasNoFishingRod(playerEntity);
+        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive();
     }
 
     private boolean hasHookEntity() {

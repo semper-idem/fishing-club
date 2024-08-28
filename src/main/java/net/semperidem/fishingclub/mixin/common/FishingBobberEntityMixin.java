@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,7 +44,7 @@ public abstract class FishingBobberEntityMixin extends ProjectileEntity {
     //But it doesn't have to be optimal
     @Redirect(method = "removeIfInvalid", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isOf(Lnet/minecraft/item/Item;)Z"))
     private boolean fishing_club$isOf(ItemStack instance, Item item) {
-        return instance.isOf(item) || instance.isOf(FCItems.MEMBER_FISHING_ROD);
+        return instance.isOf(item) || instance.isIn(FCTags.ROD_CORE);
     }
 
     @Inject(method = "tick", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/FishingBobberEntity;getPlayerOwner()Lnet/minecraft/entity/player/PlayerEntity;"))

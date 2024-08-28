@@ -28,10 +28,6 @@ public class DebugItem extends Item {
             user.sendMessage(Text.literal("[DEBUG MODE]" + mode));
             return super.use(world, user, hand);
         }
-        ItemStack rod = user.getInventory().getStack(0);
-        if (!rod.isOf(FCItems.MEMBER_FISHING_ROD)) {
-            return super.use(world, user, hand);
-        }
         return super.use(world, user, hand);
     }
 }

@@ -72,4 +72,11 @@ public class FCRegistry {
         BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.DUCKWEED_BLOCK, RenderLayer.getCutout());
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> 2129968, FCBlocks.WATERLOGGED_LILY_PAD_BLOCK);
     }
+
+    //Server-side only
+    // this is so we can modify vanilla fishing rod
+    public static void registerPreFishingRod() {
+        FCComponents.registerRodConfigurationEarly();
+        FCItems.registerLineEarly();
+    }
 }

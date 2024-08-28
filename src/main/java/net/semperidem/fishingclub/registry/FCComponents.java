@@ -28,8 +28,8 @@ public class FCComponents {
     public static ComponentType<UUID> CAUGHT_BY;
     public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
 
-    public static void register() {
-        ROD_CONFIGURATION =
+    public static void registerRodConfigurationEarly() {
+                ROD_CONFIGURATION =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("rod_configuration"),
@@ -39,6 +39,10 @@ public class FCComponents {
                                 .cache()
                                 .build());
 
+
+    }
+
+    public static void register() {
         LINE_LENGTH =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,

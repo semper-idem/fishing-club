@@ -4,9 +4,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 
 public class RodInventory extends SimpleInventory {
+    public static final int SIZE = 5;
     PlayerEntity playerEntity;
     public RodInventory(PlayerEntity playerEntity) {
-        super(6);
+        super(SIZE);
         this.playerEntity = playerEntity;
     }
 }

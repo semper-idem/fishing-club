@@ -6,11 +6,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 
 import java.util.Random;
 
@@ -34,8 +36,8 @@ public class TreasureReward {
 
     ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isOf(FCItems.MEMBER_FISHING_ROD)) {
-            return FCItems.MEMBER_FISHING_ROD.getDefaultStack();
+        if (rewardStack.isIn(FCTags.ROD_CORE)) {
+            return FCItems.CORE_IRON.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {

@@ -10,6 +10,7 @@ import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
+import net.semperidem.fishingclub.registry.FCTags;
 
 import java.util.function.BiConsumer;
 
@@ -20,7 +21,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private final static int SLOT_SIZE = 20;
     final PlayerInventory playerInventory;
     RodConfiguration configuration;
-    ItemStack fishingRod;
+    ItemStack core;
     private int rodSlot = 0;
 
     public ConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, ConfigurationPayload payload) {
@@ -28,8 +29,8 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         super(FCScreenHandlers.CONFIGURATION_SCREEN, syncId);
 
         this.playerInventory = playerInventory;
-        this.fishingRod = playerInventory.getMainHandStack();
-        this.configuration = RodConfiguration.of(this.fishingRod);
+        this.core = playerInventory.getMainHandStack();
+        this.configuration = RodConfiguration.of(this.core);
 
         this.addPlayerInventorySlots();
         this.addRodInventorySlots();
@@ -38,7 +39,6 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private void addRodInventorySlots() {
 
         RodInventory rodInventory = this.configuration.getParts(this.playerInventory.player);
-        addPartSlot(rodInventory,83, 46, FCItems.CORE_OAK_WOOD);
         addPartSlot(rodInventory,41, 64, FCItems.REEL_WOOD);
         addPartSlot(rodInventory,147, 84, FCItems.LINE_SPIDER);
         addPartSlot(rodInventory,84, 115, FCItems.BOBBER_PLANT_SLIME);
@@ -48,7 +48,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
     private void addPartSlot(RodInventory rodInventory, int x, int y, Item boundItem){
 
-        addSlot(new PartSlot(rodInventory, rodSlot++,x, y, boundItem, equipPart(), this));
+        addSlot(new PartSlot(rodInventory, rodSlot++,x, y, boundItem, equipPart()));
     }
 
     public RodConfiguration getConfiguration() {
@@ -60,16 +60,15 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
         return (partStack, partType) -> {
 
-            RodConfiguration rodConfiguration = this.fishingRod.get(ROD_CONFIGURATION);
+            RodConfiguration rodConfiguration = this.core.get(ROD_CONFIGURATION);
 
             if (rodConfiguration == null) {
-                return;
+                this.configuration = RodConfiguration.EMPTY;
             }
 
-            this.configuration = rodConfiguration.equip(partStack, partType);
+            this.configuration = this.configuration.equip(partStack, partType);
 
-            this.configuration.calculateRodDurability(this.fishingRod);
-            this.fishingRod.set(ROD_CONFIGURATION, this.configuration);
+            this.core.set(ROD_CONFIGURATION, this.configuration);
         };
     }
 
@@ -99,7 +98,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
 
-        return this.fishingRod.isOf(FCItems.MEMBER_FISHING_ROD);
+        return this.core.isIn(FCTags.ROD_CORE);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(2,100,1, Items.DARK_OAK_CHEST_BOAT, 1));
         ALL_REWARDS.add(new TreasureReward(2,100,1, Items.ACACIA_CHEST_BOAT, 1));
 
-        ALL_REWARDS.add(new TreasureReward(2,120,1, FCItems.MEMBER_FISHING_ROD, 1));
+        ALL_REWARDS.add(new TreasureReward(2,120,1, FCItems.CORE_IRON, 1));
 
         ALL_REWARDS.add(new TreasureReward(2,160,6, Items.COD, 5));
         ALL_REWARDS.add(new TreasureReward(2,160,1, Items.TROPICAL_FISH, 3));

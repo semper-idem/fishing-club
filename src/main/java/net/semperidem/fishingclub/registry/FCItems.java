@@ -10,13 +10,11 @@ import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
-import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 
 import java.util.ArrayList;
@@ -25,8 +23,8 @@ import static net.minecraft.block.ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE;
 import static net.minecraft.util.Rarity.*;
 
 public class FCItems {
+    public static final int VANILLA_ROD_DURABILITY = 640;
 
-    public static MemberFishingRodItem MEMBER_FISHING_ROD;
     public static FishingNetItem FISHING_NET;
     public static FishingNetItem DOUBLE_FISHING_NET;
     public static Item FISH_COIN_BUNDLE;
@@ -34,7 +32,6 @@ public class FCItems {
     public static Item FISHER_VEST;
     public static Item HARPOON_ROD;
     public static Item LINE_ARROW;
-    public static Item CLONED_ROD;
     public static Item ILLEGAL_GOODS;
     public static Item GOLD_FISH;
     public static Item DEBUG;
@@ -218,16 +215,13 @@ public class FCItems {
 
     public static void register() {
         registerParts();
-        Registry.register(Registries.ITEM, Identifier.ofVanilla("fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault())));
         DOUBLE_FISHING_NET = registerItem(("double_fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT), 4));
         FISHING_NET = registerItem(("fishing_net"), new FishingNetItem(new Item.Settings().maxCount(1).component(FCComponents.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT), 2));
-        MEMBER_FISHING_ROD = registerItem(("member_fishing_rod"), new MemberFishingRodItem(new Item.Settings().maxCount(1).maxDamage(100).component(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault())));
         FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
         FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
         FISHER_VEST = registerItem(("fisher_vest"), new ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
         HARPOON_ROD = registerItem(("harpoon_rod"), new HarpoonRodItem(new Item.Settings().maxCount(1).maxDamage(64)));
         LINE_ARROW = registerItem(("line_arrow"), new LineArrowItem(new Item.Settings()));
-        CLONED_ROD = registerItem(("cloned_rod"), new ClonedFishingRod(new Item.Settings().maxCount(1).maxDamage(128)));
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));
@@ -301,7 +295,7 @@ public class FCItems {
           .bobberControl(ItemStat.BASE_T2)
           .fishControl(ItemStat.BASE_T2)
         );
-        CORE_OAK_WOOD = registerItem("core_oak_wood", new CorePartItem(new Item.Settings().maxDamage(640).rarity(COMMON), 10)
+        CORE_OAK_WOOD = registerItem("core_oak_wood", new CorePartItem(new Item.Settings().maxDamage(VANILLA_ROD_DURABILITY).rarity(COMMON), 10)
           .castPowerMultiplier(ItemStat.MULTIPLIER_T2)
           .bobberControl(ItemStat.BASE_T3)
           .fishControl(ItemStat.BASE_T3)
@@ -665,11 +659,6 @@ public class FCItems {
         );
         LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings().maxDamage(320).rarity(COMMON), 10)
           .maxLineLength(8)
-          .fishControl(ItemStat.BASE_T2)
-          .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
-        );
-        LINE_SPIDER = registerItem("line_spider", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15)
-          .maxLineLength(16)
           .fishControl(ItemStat.BASE_T2)
           .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
         );
@@ -1157,7 +1146,15 @@ public class FCItems {
 
     }
 
+    public static void registerLineEarly() {
+        LINE_SPIDER = FCItems.registerItem("line_spider", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON), 15)
+                .maxLineLength(16)
+                .fishControl(ItemStat.BASE_T2)
+                .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
+        );
+    }
 
-    private static final ArrayList<net.minecraft.item.ItemStack> FISHING_ITEMS = new ArrayList<>();
+
+    public static final ArrayList<net.minecraft.item.ItemStack> FISHING_ITEMS = new ArrayList<>();
 
 }

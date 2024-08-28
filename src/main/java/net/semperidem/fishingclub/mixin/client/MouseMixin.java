@@ -6,9 +6,10 @@ import net.minecraft.client.Mouse;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
 import net.semperidem.fishingclub.network.payload.LinePayload;
 import net.semperidem.fishingclub.registry.FCKeybindings;
+import net.semperidem.fishingclub.registry.FCTags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,7 +34,7 @@ public class MouseMixin {
             return;
         }
         boolean isFishing = player.fishHook instanceof HookEntity;
-        boolean isSneakingWithRod = player.getMainHandStack().getItem() instanceof MemberFishingRodItem && player.isSneaking();
+        boolean isSneakingWithRod = player.getMainHandStack().isIn(FCTags.ROD_CORE) && player.isSneaking();
         if (isFishing || isSneakingWithRod) {
             ClientPlayNetworking.send(new LinePayload((int) vertical));
             ci.cancel();

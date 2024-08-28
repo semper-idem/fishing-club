@@ -2,18 +2,22 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.HashSet;
 import java.util.List;
 
-public class PartItem extends Item {
+public class PartItem extends FishingRodItem {
     int weightCapacity;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
@@ -23,6 +27,10 @@ public class PartItem extends Item {
 
     boolean destroyOnBreak = false;
 
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+       return TypedActionResult.fail(user.getStackInHand(hand));
+    }
 
     public enum DamageSource {
         CAST(0), BITE(1), REEL_FISH(2), REEL_ENTITY(3), REEL_WATER(4), REEL_GROUND(5);

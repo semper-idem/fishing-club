@@ -14,8 +14,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.MemberFishingRodItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.registry.FCItems.MEMBER_FISHING_ROD;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
@@ -45,8 +45,8 @@ public abstract class LivingEntityMixin extends Entity{
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
         int power;
-        if (activeStack.isOf(MEMBER_FISHING_ROD) || activeStack.isOf(FCItems.HARPOON_ROD)){
-            power = MemberFishingRodItem.getChargePower(getItemUseTime());
+        if (activeStack.isIn(FCTags.ROD_CORE) || activeStack.isOf(FCItems.HARPOON_ROD)){
+            power = CorePartItem.getChargePower(getItemUseTime());
             tickPullPower(power);
         } else {
             return;

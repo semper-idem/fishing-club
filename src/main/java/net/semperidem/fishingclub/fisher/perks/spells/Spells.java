@@ -94,15 +94,16 @@ public class Spells {
         MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
-                ItemStack rodStack = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
-                if (mainHand.getItem().equals(FCItems.MEMBER_FISHING_ROD)) {
-                    rodStack = source.getStackInHand(Hand.MAIN_HAND);
-                }
-                ItemStack clonedStack = FCItems.CLONED_ROD.getDefaultStack();
-                clonedStack.applyComponentsFrom(rodStack.getComponents());
-                clonedStack.set(FCComponents.CREATION_TICK, source.getWorld().getTime());
-                source.giveItemStack(clonedStack);
+                //todo rework since i've removed member rod and cloned rod
+//                ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
+//                ItemStack rodStack = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
+//                if (mainHand ) {
+//                    rodStack = source.getStackInHand(Hand.MAIN_HAND);
+//                }
+//                ItemStack clonedStack = FCItems.CLONED_ROD.getDefaultStack();
+//                clonedStack.applyComponentsFrom(rodStack.getComponents());
+//                clonedStack.set(FCComponents.CREATION_TICK, source.getWorld().getTime());
+//                source.giveItemStack(clonedStack);
             }
         });
         FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 144000,   new Spell.Effect() {

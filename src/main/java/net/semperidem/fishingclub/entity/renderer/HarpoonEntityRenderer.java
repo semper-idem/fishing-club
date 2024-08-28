@@ -20,6 +20,7 @@ import net.semperidem.fishingclub.entity.HarpoonEntity;
 import net.semperidem.fishingclub.entity.renderer.model.HarpoonEntityModel;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCModels;
+import net.semperidem.fishingclub.registry.FCTags;
 
 public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
     public static final Identifier TEXTURE = FishingClub.identifier("textures/entity/harpoon_rod.png");
@@ -65,7 +66,7 @@ public class HarpoonEntityRenderer extends EntityRenderer<HarpoonEntity> {
     private Vec3d getHandPos(PlayerEntity player, float f, float tickDelta) {
         int i = player.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandStack();
-        if (!itemStack.isOf(FCItems.MEMBER_FISHING_ROD)) {
+        if (!itemStack.isIn(FCTags.ROD_CORE)) {
             i = -i;
         }
 

@@ -17,6 +17,7 @@ import net.minecraft.util.math.*;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 
 public class HookEntityRenderer extends EntityRenderer<HookEntity> {
     public static final Identifier DEFAULT = FishingClub.identifier("textures/entity/bobber.png");
@@ -63,7 +64,7 @@ public class HookEntityRenderer extends EntityRenderer<HookEntity> {
     private Vec3d getHandPos(PlayerEntity player, float f, float tickDelta) {
         int i = player.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = player.getMainHandStack();
-        if (!itemStack.isOf(FCItems.MEMBER_FISHING_ROD)) {
+        if (!itemStack.isIn(FCTags.ROD_CORE)) {
             i = -i;
         }
 

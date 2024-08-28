@@ -49,7 +49,7 @@ public class Commands {
     }
     public static void registerGiveStarterRod(){
         rootCommand.then(literal("starter_rod").executes(context -> {
-            context.getSource().getPlayer().giveItemStack(FCItems.MEMBER_FISHING_ROD.getDefaultStack());
+            context.getSource().getPlayer().giveItemStack(FCItems.CORE_BAMBOO.getDefaultStack());
             return 0;
         }));
     }

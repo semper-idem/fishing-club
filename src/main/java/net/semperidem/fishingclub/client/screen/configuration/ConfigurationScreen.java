@@ -1,17 +1,20 @@
 package net.semperidem.fishingclub.client.screen.configuration;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
+import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandler> implements ScreenHandlerProvider<ConfigurationScreenHandler> {
     public ConfigurationScreen(ConfigurationScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -55,7 +58,7 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 22, 182, 22);
         RenderSystem.enableBlend();
         matrixStack.translate(this.x, this.y, 200);
-        for(int i = 0; i < 6; i++) {
+        for(int i = 0; i < RodInventory.SIZE; i++) {
           Slot slot = this.handler.slots.get(i + 36);
             context.fill(slot.x, slot.y, slot.x+16, slot.y+16, 0x88888888);
         }
@@ -67,6 +70,7 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
     }
 
     private void renderFishingRod(DrawContext context, int mouseX, int mouseY, float delta) {
+        ItemStack stackInHand = MinecraftClient.getInstance().player != null ? MinecraftClient.getInstance().player.getMainHandStack() : null;
         MatrixStack matrixStack = context.getMatrices();
         matrixStack.push();
         float scale = 12;
@@ -77,18 +81,18 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         context.setShaderColor(shadow,shadow,shadow, 1f);
         matrixStack.push();
         matrixStack.translate(0, shadow, 0);
-        context.drawItem(FCItems.MEMBER_FISHING_ROD.getDefaultStack(), 0, 0);
+        context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(shadow, shadow, 0);
-        context.drawItem(FCItems.MEMBER_FISHING_ROD.getDefaultStack(), 0, 0);
+        context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(shadow, 0, 0);
-        context.drawItem(FCItems.MEMBER_FISHING_ROD.getDefaultStack(), 0, 0);
+        context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
         context.setShaderColor(1,1,1, 1f);
-        context.drawItem(FCItems.MEMBER_FISHING_ROD.getDefaultStack(), 0, 0);
+        context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
     }
     @Override

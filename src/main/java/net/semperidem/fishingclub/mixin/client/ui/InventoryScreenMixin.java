@@ -54,7 +54,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 //        }
 
         this.fishingCardButton = new TexturedButtonWidget(this.x + 126, this.height / 2 - 22, 20, 18, BUTTON_TEXTURES, button -> {
-            if (client != null && client.player != null && client.player.getMainHandStack().isIn(ItemTags.FISHING_ENCHANTABLE)) {
+            if (client != null && client.player != null && client.player.getMainHandStack().isIn(FCTags.ROD_CORE)) {
                 ClientPlayNetworking.send(new ConfigurationPayload());
                 return;
             }
