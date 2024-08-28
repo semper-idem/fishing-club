@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#fishing-club:core",
+    "fishing-club:member_fishing_rod",
+    "fishing-club:cloned_rod"
+  ]
+}

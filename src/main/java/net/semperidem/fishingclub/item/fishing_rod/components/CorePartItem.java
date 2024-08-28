@@ -1,7 +1,9 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.command.DataCommand;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -18,7 +20,12 @@ public class CorePartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_ENTITY, 2.5f);
     }
 
-    public CorePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
+    @Override
+    public int getEnchantability() {
+       return 1;
+    }
+
+    public CorePartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature) {
 
         this(settings, weightCapacity);
         this.minOperatingTemperature = minOperatingTemperature;
@@ -60,6 +67,7 @@ public class CorePartItem extends PartItem {
         fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.EMPTY.equip(coreStack, RodConfiguration.PartType.CORE));
         float rodDamage = getPartDamagePercentage(coreStack);
         fishingRod.setDamage((int) (fishingRod.getMaxDamage() * rodDamage));
+        fishingRod.set(DataComponentTypes.ENCHANTMENTS, coreStack.getEnchantments());
         //user.getStackInHand(hand).setCount(0);
         user.setStackInHand(hand, fishingRod);
         return super.use(world, user, hand);

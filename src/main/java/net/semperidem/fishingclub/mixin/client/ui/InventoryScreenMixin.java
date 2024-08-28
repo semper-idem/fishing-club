@@ -9,12 +9,14 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -52,7 +54,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
 //        }
 
         this.fishingCardButton = new TexturedButtonWidget(this.x + 126, this.height / 2 - 22, 20, 18, BUTTON_TEXTURES, button -> {
-            if (client != null && client.player != null && client.player.getMainHandStack().isOf(FCItems.MEMBER_FISHING_ROD)) {
+            if (client != null && client.player != null && client.player.getMainHandStack().isIn(ItemTags.FISHING_ENCHANTABLE)) {
                 ClientPlayNetworking.send(new ConfigurationPayload());
                 return;
             }

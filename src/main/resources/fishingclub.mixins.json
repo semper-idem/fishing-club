@@ -12,6 +12,7 @@
     "common.FishingBobberEntityMixin",
     "common.FluidBlockMixin",
     "common.ItemEntityMixin",
+    "common.ItemsMixin",
     "common.KelpBlockMixin",
     "common.KelpFeatureMixin",
     "common.KelpPlantBlockMixin",

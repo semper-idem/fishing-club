@@ -34,6 +34,11 @@ public class MemberFishingRodItem extends FishingRodItem {
     }
 
     @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return super.isEnchantable(stack);
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 
         ItemStack fishingRod = user.getStackInHand(hand);
