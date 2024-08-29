@@ -20,6 +20,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
@@ -36,6 +37,7 @@ import net.semperidem.fishingclub.util.Util;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
@@ -210,6 +212,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.setPitch((float) (MathHelper.atan2(castAngle.y, castAngle.horizontalLength()) * 57.3));
         this.prevYaw = this.getYaw();
         this.prevPitch = this.getPitch();
+    }
+
+    @Override
+    public Random getRandom() {
+        return super.getRandom();
     }
 
     @Override
@@ -473,16 +480,23 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             // FishingRodPartController.putPart(fishingRodCopy, sharedBait);
             fishingRod = fishingRodCopy;
         }
-        caughtFish = FishUtil.getFishOnHook(this);
-        this.getVelocity().add(0, -0.03 * caughtFish.quality() * caughtFish.quality(), 0);
+
+        //(From 20 To 45) * Multiplier
+        this.hookCountdown = 45;//(int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
+        this.lastHookCountdown = hookCountdown;
+
+        Optional<SpecimenData> caughtFish = FishUtil.getFishOnHook(this);
+        if (caughtFish.isEmpty()) {
+            return;
+        }
+        this.caughtFish = caughtFish.get();
+        this.getVelocity().add(0, -0.03 * this.caughtFish.quality() * this.caughtFish.quality(), 0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
         serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-        //(From 20 To 45) * Multiplier
-        this.hookCountdown = 45;//(int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
-        this.lastHookCountdown = hookCountdown;
+
 
         if (sharedBait != ItemStack.EMPTY) {
             int damage = sharedBait.getDamage();
@@ -700,6 +714,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             .map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
 	}
 
+    @Override
+    public int maxWeight() {
+        return core.maxWeight();
+    }
 
     @Override
     public int getWaitTime() {

@@ -16,10 +16,12 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCTags;
 import net.semperidem.fishingclub.world.ChunkQuality;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MAX_QUALITY;
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
@@ -68,10 +71,10 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         fishingCard.fishCaught(fish);
         ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
         ItemStack fishingNetStack = getFishingNet(player, fishStack);
+        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
         if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
             return;
         }
-        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
         giveItemStack(player, fishStack);
     }
 
@@ -111,7 +114,11 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     private static int getRewardMultiplier(FishingCard fishingCard){
         int rewardMultiplier = 1;
         if (!fishingCard.isFishingFromBoat()) {
-            return rewardMultiplier;
+            int luck = 0;
+            if (fishingCard.getHolder() != null) {
+                luck = (int) fishingCard.getHolder().getLuck();
+            }
+            return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
         }
         if (fishingCard.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {
             rewardMultiplier = 2;
@@ -226,8 +233,16 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         stack.set(DataComponentTypes.LORE, new LoreComponent(lore));
     }
 
-    public static SpecimenData getFishOnHook(IHookEntity hookEntity) {
-        return SpecimenData.init(hookEntity);
+    public static Optional<SpecimenData> getFishOnHook(IHookEntity hookEntity) {
+        int attempts = 10;
+        int maxWeight = hookEntity.maxWeight();
+        for(int i = 0; i < attempts; i++) {
+            SpecimenData hooked = SpecimenData.init(hookEntity);
+            if (hooked.weight() > maxWeight) {
+                return Optional.of(hooked);
+            }
+        }
+        return Optional.empty();
     }
 
 

@@ -84,7 +84,7 @@ public class LineArrowEntity extends PersistentProjectileEntity implements IHook
         if (getOwner() != null) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
                 range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
+             //   FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
             }
         }
     }

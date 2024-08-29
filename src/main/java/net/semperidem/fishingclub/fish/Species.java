@@ -23,7 +23,9 @@ import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityRender
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.util.MathUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
@@ -221,6 +223,10 @@ public class Species<T extends WaterCreatureEntity> {
 
         public static <T extends WaterCreatureEntity> Iterator<Species<?>> iterator() {
             return SPECIES_BY_NAME.values().iterator();
+        }
+
+        public static Collection<Species<?>> values() {
+            return SPECIES_BY_NAME.values();
         }
 
         public static void register(){

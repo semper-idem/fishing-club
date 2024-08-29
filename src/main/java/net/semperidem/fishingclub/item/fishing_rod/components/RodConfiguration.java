@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
@@ -161,6 +162,7 @@ public record RodConfiguration(
         int weightMagnitude = 2;
         int maxLineLength = 0;
         float bobberControl = 0;
+        float bobberControlMultiplier = 1;
         float bobberWidth = 0;
         boolean canCast = false;
         int minOperatingTemperature = -1;
@@ -267,12 +269,18 @@ public record RodConfiguration(
             return fishQuality;
         }
 
-        public float fishControl() {
-            return fishControl;
+        public float fishControl(ItemStack coreStack) {
+            if (!(coreStack.getItem() instanceof FishingRodCoreItem coreItem)) {
+               return 0;
+            }
+            return MathHelper.clamp(fishControl * fishControlMultiplier, 0, coreItem.fishControlCeiling.value);
         }
 
-        public float fishControlMultiplier() {
-            return fishControlMultiplier;
+        public float bobberControl(ItemStack coreStack) {
+            if (!(coreStack.getItem() instanceof FishingRodCoreItem coreItem)) {
+                return 0;
+            }
+            return MathHelper.clamp(bobberControl * bobberControlMultiplier, 0, coreItem.bobberControlCeiling.value);
         }
 
         public float treasureBonus() {

@@ -51,7 +51,7 @@ public class HarpoonEntity extends TridentEntity implements IHookEntity{
         if (getOwner() != null && this.isInsideWaterOrBubbleColumn()) {
             if (getOwner() instanceof ServerPlayerEntity owner) {
                 range = MathHelper.square(owner.getBlockPos().getSquaredDistance(getPos()));
-                FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
+               // FishUtil.fishCaught(owner, FishUtil.getFishOnHook(this));
             }
         }
     }

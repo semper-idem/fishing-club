@@ -156,15 +156,15 @@ public abstract class PartItem extends Item {
 
     public int getWeightMagnitude() {
 
-        if (weightClass < 25) {
+        if (weightClass < 3) {//3
             return 1;
         }
 
-        if (weightClass < 100) {
+        if (weightClass < 5) {
             return 0;
         }
 
-        if (weightClass < 250) {
+        if (weightClass < 6) {
             return -1;
         }
 

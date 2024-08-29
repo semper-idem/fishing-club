@@ -27,13 +27,13 @@ import net.semperidem.fishingclub.registry.FCComponents;
 import java.util.List;
 
 public class FishingRodCoreItem extends FishingRodItem {
-    ItemStat castPower;
+    ItemStat castPower = ItemStat.MULTIPLIER_T3;
     ItemStat bobberControlCeiling;
     ItemStat fishControlCeiling;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
     int luck = 0;
-    int weightClass;
+    int weightClass = 0;
 
     public FishingRodCoreItem(Settings settings) {
         super(settings);
@@ -91,6 +91,7 @@ public class FishingRodCoreItem extends FishingRodItem {
         if (!world.isClient) {
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (user.isSneaking() ? 1 : -1) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
+            fishingRod.damage(1, user, EquipmentSlot.MAINHAND);
             updateClientInventory((ServerPlayerEntity) user);
             world.spawnEntity(new HookEntity(user, world, fishingRod));
         }
@@ -158,6 +159,10 @@ public class FishingRodCoreItem extends FishingRodItem {
         return !playerEntity.getMainHandStack().isOf(this) || !playerEntity.getOffHandStack().isEmpty();
     }
 
+    public int maxWeight() {
+        return WEIGHT_CLASS[weightClass];
+    }
+
     public FishingRodCoreItem weightClass(int weightClass) {
         this.weightClass = weightClass;
         return this;
@@ -199,4 +204,6 @@ public class FishingRodCoreItem extends FishingRodItem {
         return this;
     }
 
+
+    public static int[] WEIGHT_CLASS = {0,5,25,50,100,999999};
 }

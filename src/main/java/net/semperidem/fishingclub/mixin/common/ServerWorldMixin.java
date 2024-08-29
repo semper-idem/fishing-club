@@ -21,6 +21,7 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.world.FishingServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -72,11 +74,11 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
         int fishCount = (int) ((Math.abs(random.nextGaussian()) + 0.5) * power);
         FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity);
         for(int i = 0; i < fishCount; i++) {
-            FishUtil.fishCaughtAt(
+            FishUtil.getFishOnHook(fee).ifPresent(specimenData -> FishUtil.fishCaughtAt(
                     causingEntity,
-                    FishUtil.getFishOnHook(fee),
+                    specimenData,
                     explosionPos
-            );
+            ));
         }
     }
 

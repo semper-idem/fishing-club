@@ -6,6 +6,7 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -13,6 +14,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Species;
@@ -21,8 +23,10 @@ import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.util.MathUtil;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public record SpecimenData(
         Species<?> species,
@@ -87,7 +91,17 @@ public record SpecimenData(
     public static SpecimenData init(IHookEntity caughtWith) {
 
         var isAlbino = Math.random() < 0.01f;
-        return init(caughtWith, Math.random() > 0.5f ? Species.Library.BUTTERFISH : Species.Library.DEFAULT, isAlbino ? -1 : 0);
+        int luck;
+        Random r = caughtWith.getRandom();
+        if (caughtWith.getFishingCard().getHolder() instanceof PlayerEntity holder) {
+            luck = (int) holder.getLuck();
+        } else {
+            luck = 0;
+        }
+
+        List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > luck * 100).toList();
+        Species<?> species = availableSpecies.get(r.nextInt(availableSpecies.size()));
+        return init(caughtWith,species, isAlbino ? -1 : 0);
     }
 
     public ModelIdentifier getModelId() {
