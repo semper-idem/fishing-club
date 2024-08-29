@@ -51,7 +51,7 @@ public class FishingRodCoreItem extends FishingRodItem {
             return TypedActionResult.fail(fishingRod);
         }
 
-        if (!FishingCard.of(user).isMember()) {
+        if (FishingCard.of(user).isMember()) {
             return super.use(world, user, hand);
         }
 
@@ -92,6 +92,9 @@ public class FishingRodCoreItem extends FishingRodItem {
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (user.isSneaking() ? 1 : -1) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
             fishingRod.damage(1, user, EquipmentSlot.MAINHAND);
+            if (fishingRod.getDamage() >= fishingRod.getMaxDamage()) {
+               RodConfiguration.dropContent(user, fishingRod);
+            }
             updateClientInventory((ServerPlayerEntity) user);
             world.spawnEntity(new HookEntity(user, world, fishingRod));
         }
@@ -156,7 +159,7 @@ public class FishingRodCoreItem extends FishingRodItem {
     }
 
     public boolean hasNoFishingRod(PlayerEntity playerEntity) {//todo verify how is this possible and if it's even needed
-        return !playerEntity.getMainHandStack().isOf(this) || !playerEntity.getOffHandStack().isEmpty();
+        return !(playerEntity.getMainHandStack().getItem() instanceof FishingRodCoreItem);
     }
 
     public int maxWeight() {
@@ -173,8 +176,17 @@ public class FishingRodCoreItem extends FishingRodItem {
         return this;
     }
 
+
     public float castPower() {
         return this.castPower.value;
+    }
+
+    public int minOperatingTemperature() {
+        return this.minOperatingTemperature;
+    }
+
+    public int maxOperatingTemperature() {
+        return this.maxOperatingTemperature;
     }
 
     public FishingRodCoreItem minOperatingTemperature(int minOperatingTemperature) {

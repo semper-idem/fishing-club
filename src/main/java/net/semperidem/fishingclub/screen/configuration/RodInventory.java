@@ -10,4 +10,10 @@ public class RodInventory extends SimpleInventory {
         super(SIZE);
         this.playerEntity = playerEntity;
     }
+
+    public void dropContent() {
+        for(int i = 0; i < SIZE; i++) {
+            this.playerEntity.dropItem(this.getStack(i), true, true);
+        }
+    }
 }

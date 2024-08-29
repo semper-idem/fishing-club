@@ -698,7 +698,7 @@ public class FCItems {
                 .bobberWidth(ItemStat.MULTIPLIER_T4)
                 .bobberControl(ItemStat.BASE_T3)
         );
-        BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON), 25, 0, 1)
+        BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
@@ -784,7 +784,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T2)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        LINE_STRIDER = registerItem("line_strider", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 1, 1)
+        LINE_STRIDER = registerItem("line_strider", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(1)
                 .maxOperatingTemperature(1)
@@ -805,7 +805,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(1)
         );
-        LINE_PIGLIN = registerItem("line_piglin", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE), 100, 0, 1)
+        LINE_PIGLIN = registerItem("line_piglin", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
                 .weightClass(5)
                 .maxOperatingTemperature(1)
                 .maxLineLength(64)
@@ -1044,7 +1044,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
                 .sticky(true)
         );
-        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1053,7 +1053,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishQuality(1)
         );
-        HOOK_GOLD_POISON = registerItem("hook_gold_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD_POISON = registerItem("hook_gold_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1064,7 +1064,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T9)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_GOLD_SHARP = registerItem("hook_gold_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD_SHARP = registerItem("hook_gold_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1075,7 +1075,7 @@ public class FCItems {
                 .damage(4)
                 .biteFailChance(ItemStat.MULTIPLIER_T015)
         );
-        HOOK_GOLD_SERRATED = registerItem("hook_gold_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD_SERRATED = registerItem("hook_gold_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1085,7 +1085,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .reelDamage(5)
         );
-        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1095,7 +1095,7 @@ public class FCItems {
                 .fishQuality(1)
                 .autoHookChance(ItemStat.MULTIPLIER_T2)
         );
-        HOOK_GOLD_STICKY = registerItem("hook_gold_sticky", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON), 25, 0, 1)
+        HOOK_GOLD_STICKY = registerItem("hook_gold_sticky", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1335,7 +1335,7 @@ public class FCItems {
                 .fishQuantityBonus(ItemStat.BASE_T2)
                 .fishQuality(1)
         );
-        BAIT_BLAZE_POWDER = registerItem("bait_blaze_powder", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON), 300, 1, 1)
+        BAIT_BLAZE_POWDER = registerItem("bait_blaze_powder", new BaitPartItem(new Item.Settings().maxDamage(64).rarity(COMMON))
                 .minOperatingTemperature(1)
                 .maxOperatingTemperature(1)
                 .fishQuality(1)

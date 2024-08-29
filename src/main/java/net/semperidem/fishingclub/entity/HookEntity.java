@@ -1,10 +1,10 @@
 package net.semperidem.fishingclub.entity;
 
-import com.mojang.datafixers.types.templates.Hook;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -53,6 +53,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private int fishTravelCountdown;
     private float fishAngle;
     private int lastHookCountdown;
+    private int frozenTicks;
+    private int temperatureTicks;
+    private static final int TEMPERATURE_INTERVAL = 20;
+    private int temperature = 0;
 
     private boolean isInFluid = false;
 
@@ -226,6 +230,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         super.tick();
         if ((!this.getWorld().isClient && this.isOwnerValid(this.playerOwner))) {
+            this.playerOwner.inPowderSnow = false;
             this.discard();
             return;
         }
@@ -401,7 +406,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", this.ownerVector.length())), true);
         ServerWorld serverWorld = (ServerWorld) this.getWorld();
-
+        this.tickTemperature();
         if (this.hookCountdown > 0) {
             this.tickHookedFish();
             return;
@@ -415,6 +420,39 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
         this.setWaitCountdown();
+    }
+
+    private boolean isFreezing() {
+        return this.core.minOperatingTemperature() >= this.temperature;
+    }
+
+    private boolean isBurning() {
+        return this.core.maxOperatingTemperature() <= this.temperature;
+    }
+
+    private void tickTemperature() {
+        this.temperature = FishUtil.getTemperature(this.getWorld(), this.getBlockPos());
+        if (this.isFreezing()) {
+            this.playerOwner.inPowderSnow = true;
+            this.playerOwner.setFrozenTicks(this.playerOwner.getFrozenTicks() + 3);
+            this.frozenTicks++;
+            return;
+        }
+        if (this.temperatureTicks < TEMPERATURE_INTERVAL) {
+            this.temperatureTicks++;
+            return;
+
+        }
+        this.temperatureTicks = 0;
+        if (!this.isBurning()) {
+            this.playerOwner.setFireTicks(100);
+            int nextDamage = (int) (this.fishingRod.getDamage() + this.fishingRod.getMaxDamage() * 0.01);
+            if (this.fishingRod.getMaxDamage() <= nextDamage) {
+                RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
+            }
+
+            this.fishingRod.damage((int) (this.fishingRod.getMaxDamage() * 0.01f), this.playerOwner, EquipmentSlot.MAINHAND);
+        }
     }
 
     private boolean isValidFishing() {
@@ -593,7 +631,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isOwnerValid(PlayerEntity playerEntity) {
-        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive();
+        return playerEntity == null || playerEntity.isRemoved() || !playerEntity.isAlive() || this.core.hasNoFishingRod(playerEntity);
     }
 
     private boolean hasHookEntity() {
@@ -605,6 +643,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (this.playerOwner == null) {
             this.discard();
             return 0;
+        }
+        if (this.isFreezing() && MathHelper.clamp(0.005 * this.frozenTicks,0, 0.5) > Math.random()) {
+            RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
+            this.fishingRod.setDamage(this.fishingRod.getMaxDamage());
         }
         if (this.hasHookEntity()) {
             this.reelEntity();

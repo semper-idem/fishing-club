@@ -14,26 +14,13 @@ public class BobberPartItem extends PartItem {
     public BobberPartItem(Settings settings) {
 
         super(settings);
+        this.partType = RodConfiguration.PartType.BOBBER;
         this.destroyOnBreak = true;
         setDamageMultiplier(DamageSource.CAST, 0);
         setDamageMultiplier(DamageSource.REEL_ENTITY, 0);
         setDamageMultiplier(DamageSource.REEL_WATER, 1);
         setDamageMultiplier(DamageSource.REEL_GROUND, 2);
     }
-
-    public BobberPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    public BobberPartItem(Settings settings,int weightCapacity) {
-
-        this(settings);
-        this.weightClass = weightCapacity;
-    }
-
 
     public BobberPartItem weightClass(int weightClass) {
         this.weightClass = weightClass;

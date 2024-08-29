@@ -12,7 +12,6 @@ import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
 import net.semperidem.fishingclub.registry.FCTags;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static net.semperidem.fishingclub.registry.FCComponents.*;
@@ -39,7 +38,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
     private void addRodInventorySlots() {
 
-        RodInventory rodInventory = this.configuration.getParts(this.playerInventory.player);
+        RodInventory rodInventory = this.configuration.inventory(this.playerInventory.player);
         addPartSlot(rodInventory,41, 64, FCItems.REEL_WOOD);
         addPartSlot(rodInventory,147, 84, FCItems.LINE_SPIDER);
         addPartSlot(rodInventory,84, 115, FCItems.BOBBER_PLANT_SLIME);

@@ -245,6 +245,10 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         return Optional.empty();
     }
 
+    public static int getTemperature (World world, BlockPos pos) {
+        return world.getBiome(pos).value().doesNotSnow(pos) ? (world.getDimension().ultrawarm() ? 1 : 0) : -1;
+    }
+
 
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};

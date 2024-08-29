@@ -9,24 +9,11 @@ public class LinePartItem extends PartItem {
     public LinePartItem(Settings settings) {
         super(settings);
         this.destroyOnBreak = true;
+        this.partType = RodConfiguration.PartType.LINE;
         setDamageMultiplier(DamageSource.BITE, 1);
         setDamageMultiplier(DamageSource.REEL_FISH, 2);
         setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
     }
-
-    public LinePartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    public LinePartItem(Settings settings,int weightCapacity) {
-
-        this(settings);
-        this.weightClass = weightCapacity;
-    }
-
 
     public LinePartItem weightClass(int weightClass) {
         this.weightClass = weightClass;

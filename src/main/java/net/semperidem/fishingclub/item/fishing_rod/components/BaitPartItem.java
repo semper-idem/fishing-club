@@ -41,18 +41,6 @@ public class BaitPartItem extends PartItem{
         return this;
     }
 
-    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    public BaitPartItem(Settings settings,int weightCapacity) {
-
-        this(settings);
-        this.weightClass = weightCapacity;
-    }
-
     public BaitPartItem speciesBonus(Species<?> species, float bonus) {
         this.speciesBoost.put(species, bonus);
         return this;

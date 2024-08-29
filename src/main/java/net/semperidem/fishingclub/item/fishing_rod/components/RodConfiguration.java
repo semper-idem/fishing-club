@@ -116,7 +116,16 @@ public record RodConfiguration(
         return of(this.line, this.bobber, this.reel, this.bait, hook);
     }
 
-    public RodInventory getParts(PlayerEntity playerEntity) {
+    public static void dropContent(PlayerEntity holder, ItemStack core) {
+        RodConfiguration rodConfiguration = core.get(FCComponents.ROD_CONFIGURATION);
+        if (rodConfiguration == null) {
+            return;
+        }
+        rodConfiguration.inventory(holder).dropContent();
+        core.set(FCComponents.ROD_CONFIGURATION, EMPTY);
+    }
+
+    public RodInventory inventory(PlayerEntity playerEntity) {
         RodInventory parts = new RodInventory(playerEntity);
         parts.setStack(0, reel);
         parts.setStack(1, line);

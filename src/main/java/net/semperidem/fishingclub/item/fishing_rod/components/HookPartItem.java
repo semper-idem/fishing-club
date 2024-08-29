@@ -93,25 +93,13 @@ public class HookPartItem extends PartItem {
     public HookPartItem(Settings settings) {
 
         super(settings);
+        this.partType = RodConfiguration.PartType.HOOK;
         this.destroyOnBreak = true;
         setDamageMultiplier(DamageSource.CAST, 0);
         setDamageMultiplier(DamageSource.BITE, 1);
         setDamageMultiplier(DamageSource.REEL_FISH, 2);
         setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
-    }
-
-    public HookPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    public HookPartItem(Settings settings,int weightCapacity) {
-
-        this(settings);
-        this.weightClass = weightCapacity;
     }
 
     public HookPartItem fishQuality(int fishQuality) {

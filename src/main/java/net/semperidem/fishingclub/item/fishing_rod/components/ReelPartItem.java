@@ -15,22 +15,6 @@ public class ReelPartItem extends PartItem {
         this.setDamageMultiplier(DamageSource.REEL_ENTITY, 3);
     }
 
-
-    @Deprecated
-    public ReelPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
-
-    @Deprecated
-    public ReelPartItem(Settings settings,int weightCapacity) {
-
-        this(settings);
-        this.weightClass = weightCapacity;
-    }
-
     public ReelPartItem weightClass(int weightClass) {
         this.weightClass = weightClass;
         return this;
@@ -60,11 +44,6 @@ public class ReelPartItem extends PartItem {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
-
-
-
-
-
 
     public ReelPartItem bobberControl(ItemStat bobberControl) {
         this.bobberControl = bobberControl;
