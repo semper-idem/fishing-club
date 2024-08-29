@@ -13,7 +13,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HarpoonEntity;
-import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 
 public class HarpoonRodItem extends FishingRodItem {
   public HarpoonRodItem(Settings settings) {
@@ -28,7 +28,7 @@ public class HarpoonRodItem extends FishingRodItem {
       return;
     }
     PlayerEntity playerEntity = (PlayerEntity) user;
-    float usePower = 1 + (1 - CorePartItem.getChargePower(user.getItemUseTime())) * 0.2f;
+    float usePower = 1 + (1 - FishingRodCoreItem.getChargePower(user.getItemUseTime())) * 0.2f;
     stack.damage(1, playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
     HarpoonEntity harpoonEntity = new HarpoonEntity(world, playerEntity, stack);
     harpoonEntity.setVelocity(

@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.registry.FCScreenHandlers;
 import net.semperidem.fishingclub.registry.FCTags;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static net.semperidem.fishingclub.registry.FCComponents.*;
 
@@ -56,9 +57,9 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         return configuration;
     }
 
-    public BiConsumer<ItemStack, RodConfiguration.PartType> equipPart(){
+    public Consumer<ItemStack> equipPart(){
 
-        return (partStack, partType) -> {
+        return (partStack) -> {
 
             RodConfiguration rodConfiguration = this.core.get(ROD_CONFIGURATION);
 
@@ -66,7 +67,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
                 this.configuration = RodConfiguration.EMPTY;
             }
 
-            this.configuration = this.configuration.equip(partStack, partType);
+            this.configuration = this.configuration.equip(partStack);
 
             this.core.set(ROD_CONFIGURATION, this.configuration);
         };

@@ -2,6 +2,9 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class BobberPartItem extends PartItem {
 
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+
     ItemStat bobberWidth;
     ItemStat bobberControl;
     ItemStat waitTimeReductionMultiplier;
@@ -28,7 +31,23 @@ public class BobberPartItem extends PartItem {
     public BobberPartItem(Settings settings,int weightCapacity) {
 
         this(settings);
-        this.weightCapacity = weightCapacity;
+        this.weightClass = weightCapacity;
+    }
+
+
+    public BobberPartItem weightClass(int weightClass) {
+        this.weightClass = weightClass;
+        return this;
+    }
+
+    public BobberPartItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
+        return this;
+    }
+
+    public BobberPartItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
+        return this;
     }
 
     public BobberPartItem bobberControl(ItemStat bobberControl) {
@@ -58,13 +77,11 @@ public class BobberPartItem extends PartItem {
         return this;
     }
 
-    @Override
     public BobberPartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
-    @Override
     public BobberPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
@@ -82,8 +99,11 @@ public class BobberPartItem extends PartItem {
         return this;
     }
     @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
 
+
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
         configuration.bobberControl += this.bobberControl.value;
         configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;

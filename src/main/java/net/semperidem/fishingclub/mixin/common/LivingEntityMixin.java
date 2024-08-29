@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCTags;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +46,7 @@ public abstract class LivingEntityMixin extends Entity{
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
         int power;
         if (activeStack.isIn(FCTags.ROD_CORE) || activeStack.isOf(FCItems.HARPOON_ROD)){
-            power = CorePartItem.getChargePower(getItemUseTime());
+            power = FishingRodCoreItem.getChargePower(getItemUseTime());
             tickPullPower(power);
         } else {
             return;

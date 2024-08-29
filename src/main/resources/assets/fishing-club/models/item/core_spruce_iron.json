@@ -1,5 +1,5 @@
 ﻿{
-    "parent": "item/generated",
+    "parent": "fishing-club:item/core",
     "textures": {
         "layer0": "fishing-club:item/core_spruce_iron"
     }

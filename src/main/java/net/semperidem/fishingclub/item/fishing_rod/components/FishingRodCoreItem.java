@@ -2,13 +2,12 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
-import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -24,31 +23,22 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
 
 import java.util.List;
 
-public class CorePartItem extends PartItem {
-    ItemStat castPowerMultiplier;
-    ItemStat bobberControl;
+public class FishingRodCoreItem extends FishingRodItem {
+    ItemStat castPower;
+    ItemStat bobberControlCeiling;
+    ItemStat fishControlCeiling;
+    int minOperatingTemperature = 0;
+    int maxOperatingTemperature = 0;
+    int luck = 0;
+    int weightClass;
 
-    public CorePartItem(Settings settings) {
+    public FishingRodCoreItem(Settings settings) {
         super(settings);
-        setDamageMultiplier(DamageSource.REEL_FISH, 1);
-        setDamageMultiplier(DamageSource.REEL_ENTITY, 2.5f);
     }
 
-    @Override
-    public int getEnchantability() {
-       return 1;
-    }
-
-    public CorePartItem(Settings settings, int weightCapacity, int minOperatingTemperature, int maxOperatingTemperature) {
-
-        this(settings, weightCapacity);
-        this.minOperatingTemperature = minOperatingTemperature;
-        this.maxOperatingTemperature = maxOperatingTemperature;
-    }
 
 
     @Override
@@ -168,46 +158,45 @@ public class CorePartItem extends PartItem {
         return !playerEntity.getMainHandStack().isOf(this) || !playerEntity.getOffHandStack().isEmpty();
     }
 
-    public CorePartItem(Settings settings, int weightCapacity, RodConfiguration configuration) {
-
-        this(settings.component(FCComponents.ROD_CONFIGURATION, configuration));
-        this.weightCapacity = weightCapacity;
-    }
-    public CorePartItem(Settings settings, int weightCapacity) {
-        this(settings, weightCapacity, RodConfiguration.EMPTY);
-    }
-
-    public CorePartItem fishQuality(int fishQuality) {
-        this.fishQuality = fishQuality;
+    public FishingRodCoreItem weightClass(int weightClass) {
+        this.weightClass = weightClass;
         return this;
     }
 
-    public CorePartItem fishControl(ItemStat fishControl) {
-        this.fishControl = fishControl;
+    public FishingRodCoreItem castPower(ItemStat castPower) {
+        this.castPower = castPower;
         return this;
     }
 
-    public CorePartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
+    public float castPower() {
+        return this.castPower.value;
+    }
+
+    public FishingRodCoreItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
         return this;
     }
 
-    public CorePartItem bobberControl(ItemStat bobberControl) {
-
-        this.bobberControl = bobberControl;
+    public FishingRodCoreItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
         return this;
     }
 
-    public CorePartItem castPowerMultiplier(ItemStat castPowerMultiplier) {
-        this.castPowerMultiplier = castPowerMultiplier;
+    public FishingRodCoreItem luck(int luck) {
+        this.luck = luck;
         return this;
     }
 
-    @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
-
-        configuration.bobberControl += this.bobberControl.value;
-        configuration.castPower *= castPowerMultiplier.value;
-        super.applyComponent(configuration);
+    public FishingRodCoreItem fishControlCeiling(ItemStat fishControl) {
+        this.fishControlCeiling = fishControl;
+        return this;
     }
+
+
+    public FishingRodCoreItem bobberControlCeiling(ItemStat bobberControl) {
+
+        this.bobberControlCeiling = bobberControl;
+        return this;
+    }
+
 }

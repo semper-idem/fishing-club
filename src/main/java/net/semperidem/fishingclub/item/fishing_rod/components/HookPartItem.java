@@ -27,6 +27,9 @@ public class HookPartItem extends PartItem {
     private ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
     private ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
     private ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+
 
     public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
         targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
@@ -38,6 +41,21 @@ public class HookPartItem extends PartItem {
         targetEntity.setOnFireForTicks(200);
     };
 
+
+    public HookPartItem weightClass(int weightClass) {
+        this.weightClass = weightClass;
+        return this;
+    }
+
+    public HookPartItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
+        return this;
+    }
+
+    public HookPartItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
+        return this;
+    }
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
@@ -93,7 +111,7 @@ public class HookPartItem extends PartItem {
     public HookPartItem(Settings settings,int weightCapacity) {
 
         this(settings);
-        this.weightCapacity = weightCapacity;
+        this.weightClass = weightCapacity;
     }
 
     public HookPartItem fishQuality(int fishQuality) {
@@ -165,14 +183,11 @@ public class HookPartItem extends PartItem {
         return this;
     }
 
-
-    @Override
     public HookPartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
-    @Override
     public HookPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
@@ -215,8 +230,10 @@ public class HookPartItem extends PartItem {
         return this;
     }
     @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
 
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
         configuration.baitFailChance = this.biteFailChance.value;
         configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;

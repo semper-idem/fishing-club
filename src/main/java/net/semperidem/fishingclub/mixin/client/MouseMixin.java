@@ -6,7 +6,6 @@ import net.minecraft.client.Mouse;
 import net.minecraft.entity.player.PlayerEntity;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
 import net.semperidem.fishingclub.network.payload.LinePayload;
 import net.semperidem.fishingclub.registry.FCKeybindings;
 import net.semperidem.fishingclub.registry.FCTags;

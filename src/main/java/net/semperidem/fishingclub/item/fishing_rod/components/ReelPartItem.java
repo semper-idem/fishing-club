@@ -1,17 +1,22 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class ReelPartItem extends PartItem {
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat bobberControl = ItemStat.BASE_T1;
     ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
 
     public ReelPartItem(Settings settings) {
 
         super(settings);
-        setDamageMultiplier(DamageSource.CAST, 0);
-        setDamageMultiplier(DamageSource.REEL_FISH, 1);
-        setDamageMultiplier(DamageSource.REEL_ENTITY, 3);
+        this.partType = RodConfiguration.PartType.REEL;
+        this.setDamageMultiplier(DamageSource.CAST, 0);
+        this.setDamageMultiplier(DamageSource.REEL_FISH, 1);
+        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 3);
     }
 
+
+    @Deprecated
     public ReelPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
 
         this(settings, weightCapacity);
@@ -19,17 +24,25 @@ public class ReelPartItem extends PartItem {
         this.maxOperatingTemperature = maxOperatingTemperature;
     }
 
+    @Deprecated
     public ReelPartItem(Settings settings,int weightCapacity) {
 
         this(settings);
-        this.weightCapacity = weightCapacity;
+        this.weightClass = weightCapacity;
     }
 
+    public ReelPartItem weightClass(int weightClass) {
+        this.weightClass = weightClass;
+        return this;
+    }
 
-    @Override
-    public ReelPartItem fishControl(ItemStat fishControl) {
+    public ReelPartItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
+        return this;
+    }
 
-        this.fishControl = fishControl;
+    public ReelPartItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
         return this;
     }
 
@@ -38,28 +51,36 @@ public class ReelPartItem extends PartItem {
         return this;
     }
 
-    @Override
-    public ReelPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
+    public ReelPartItem fishControl(ItemStat fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
 
+    public ReelPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
 
-    public ReelPartItem bobberControl(ItemStat bobberControl) {
 
+
+
+
+
+    public ReelPartItem bobberControl(ItemStat bobberControl) {
         this.bobberControl = bobberControl;
         return this;
     }
 
     public ReelPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
-
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
     }
 
     @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
 
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
         configuration.bobberControl += this.bobberControl.value;
         configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
 

@@ -1,11 +1,12 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
+import net.minecraft.item.Item;
 import net.semperidem.fishingclub.fish.Species;
 
 import java.util.HashMap;
 
-public class BaitPartItem extends PartItem {
-    HashMap<Species, Float> speciesBoost = new HashMap<>();
+public class BaitPartItem extends PartItem{
+    HashMap<Species<?>, Float> speciesBoost = new HashMap<>();
     ItemStat treasureBonus = ItemStat.BASE_T1;
     ItemStat treasureRarityBonus = ItemStat.BASE_T1;
     ItemStat fishRarity = ItemStat.BASE_T1;
@@ -15,10 +16,12 @@ public class BaitPartItem extends PartItem {
     ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat fishQuantityBonus = ItemStat.BASE_T1;
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
 
     public BaitPartItem(Settings settings) {
-
         super(settings);
+        this.partType = RodConfiguration.PartType.BAIT;
         this.destroyOnBreak = true;
         setDamageMultiplier(DamageSource.BITE, 1);
         setDamageMultiplier(DamageSource.REEL_FISH, 3);
@@ -27,8 +30,18 @@ public class BaitPartItem extends PartItem {
         setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
-    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
 
+    public BaitPartItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
+        return this;
+    }
+
+    public BaitPartItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
+        return this;
+    }
+
+    public BaitPartItem(Settings settings,int weightCapacity,  int minOperatingTemperature, int maxOperatingTemperature) {
         this(settings, weightCapacity);
         this.minOperatingTemperature = minOperatingTemperature;
         this.maxOperatingTemperature = maxOperatingTemperature;
@@ -37,50 +50,42 @@ public class BaitPartItem extends PartItem {
     public BaitPartItem(Settings settings,int weightCapacity) {
 
         this(settings);
-        this.weightCapacity = weightCapacity;
+        this.weightClass = weightCapacity;
     }
 
-    public BaitPartItem speciesBonus(Species species, float bonus) {
-
+    public BaitPartItem speciesBonus(Species<?> species, float bonus) {
         this.speciesBoost.put(species, bonus);
         return this;
     }
 
-    public HashMap<Species, Float> getSpeciesBoost() {
-
+    public HashMap<Species<?>, Float> getSpeciesBoost() {
         return speciesBoost;
     }
 
     public BaitPartItem treasureBonus(ItemStat treasureBonus) {
-
         this.treasureBonus = treasureBonus;
         return this;
     }
 
     public float getTreasureBonus() {
-
         return treasureBonus.value;
     }
 
     public BaitPartItem treasureRarityBonus(ItemStat treasureRarityBonus) {
-
         this.treasureRarityBonus = treasureRarityBonus;
         return this;
     }
 
     public float getTreasureRarityBonus() {
-
         return treasureRarityBonus.value;
     }
 
     public BaitPartItem fishRarity(ItemStat fishRarity) {
-
         this.fishRarity = fishRarity;
         return this;
     }
 
     public BaitPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
-
         this.fishRarityMultiplier = fishRarityMultiplier;
         return this;
     }
@@ -91,38 +96,34 @@ public class BaitPartItem extends PartItem {
     }
 
     public BaitPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
-
         this.waitTimeReductionMultiplier = waitTimeReductionMultiplier;
         return this;
     }
 
     public BaitPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
-
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
     }
 
     public BaitPartItem fishQuantityBonus(ItemStat fishQuantityBonus) {
-
         this.fishQuantityBonus = fishQuantityBonus;
         return this;
     }
 
     public BaitPartItem meat() {
-
         this.isMeat = true;
         return this;
     }
 
     public BaitPartItem plant() {
-
         this.isPlant = false;
         return this;
     }
 
     @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
-
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
         configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
         configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         configuration.fishRarity += this.fishRarity.value;

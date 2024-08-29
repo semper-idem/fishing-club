@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.entity;
 
+import com.mojang.datafixers.types.templates.Hook;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,10 +25,7 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.item.fishing_rod.components.BobberPartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.HookPartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
+import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCEntityTypes;
@@ -72,6 +70,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private PlayerEntity playerOwner;
     private FishingCard fishingCard;
     private ItemStack fishingRod;
+    private FishingRodCoreItem core;
     private RodConfiguration configuration;
     private HookPartItem hookPartItem;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
@@ -109,14 +108,13 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
         this.fishingRod = fishingRod;
+        this.core = (FishingRodCoreItem) fishingRod.getItem();
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
         this.configuration = RodConfiguration.of(this.fishingRod);
-        this.configuration.hook().ifPresent(hookStack -> {
-            if (hookStack.getItem() instanceof HookPartItem aHookPartItem) {
-                this.hookPartItem = aHookPartItem;
-            }
-        });
+        if (this.configuration.hook().getItem() instanceof HookPartItem aHookPartItem) {
+            this.hookPartItem = aHookPartItem;
+        }
         this.maxEntityMagnitude = this.configuration.attributes().weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.attributes().maxLineLength());
         this.calculateResistance();
@@ -460,7 +458,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private void handleFishOnHook(ServerWorld serverWorld) {
         float fishTypeRarityMultiplier = 1;
-        if (this.configuration.bobber().isPresent() && this.configuration.bobber().get().getItem() instanceof BobberPartItem bobberPartItem) {
+        if (this.configuration.bobber().getItem() instanceof BobberPartItem bobberPartItem) {
             bobberPartItem.onFishBiteEffect();
         }
         if (Math.random() < configuration.attributes().baitFailChance()) {
@@ -623,11 +621,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private Vec3d getPullVector() {
-        return this.ownerVector.normalize().multiply(configuration.attributes().castPower() * getTension());
+        return this.ownerVector.normalize().multiply(core.castPower() * getTension());
     }
 
     private Vec3d getPullVectorNT() {
-        return this.ownerVector.normalize().multiply(configuration.attributes().castPower());
+        return this.ownerVector.normalize().multiply(core.castPower());
     }
 
     private void pullEntity() {

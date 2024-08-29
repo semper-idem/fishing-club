@@ -2,34 +2,31 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.HashSet;
 import java.util.List;
 
-public class PartItem extends FishingRodItem {
-    int weightCapacity;
+public abstract class PartItem extends Item {
+    RodConfiguration.PartType partType;
+    int weightClass = 6;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
     int fishQuality = 0;
-    ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+//    ItemStat fishControl = ItemStat.BASE_T1;
+//    ItemStat bobberControl = ItemStat.BASE_T1;
+//    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
 
     boolean destroyOnBreak = false;
 
-    @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-       return TypedActionResult.fail(user.getStackInHand(hand));
+    public PartItem(Settings settings) {
+        super(settings);
     }
 
     public enum DamageSource {
@@ -78,22 +75,6 @@ public class PartItem extends FishingRodItem {
     public float getDamageMultiplier(DamageSource source) {
         return durabilityMultiplier[source.value];
     }
-
-    public PartItem(Settings settings) {
-
-        super(settings);
-    }
-
-    public PartItem fishControl(ItemStat fishControl) {
-        this.fishControl = fishControl;
-        return this;
-    }
-
-    public PartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
-        return this;
-    }
-
 
     public static float getPartDamagePercentage(ItemStack partStack) {
 
@@ -163,11 +144,11 @@ public class PartItem extends FishingRodItem {
         fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.valid(fishingRod));
     }
 
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
 
         configuration.fishQuality += this.fishQuality;
-        configuration.fishControl += this.fishControl.value;
-        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
+//        configuration.fishControl += this.fishControl.value;
+//        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
 
         validateWeightCapacity(configuration);
         validateTemperature(configuration);
@@ -175,31 +156,31 @@ public class PartItem extends FishingRodItem {
 
     public int getWeightMagnitude() {
 
-        if (weightCapacity < 25) {
+        if (weightClass < 25) {
             return 1;
         }
 
-        if (weightCapacity < 100) {
+        if (weightClass < 100) {
             return 0;
         }
 
-        if (weightCapacity < 250) {
+        if (weightClass < 250) {
             return -1;
         }
 
         return -4;
     }
 
-    void validateWeightCapacity(RodConfiguration.AttributeProcessor configuration) {
+    void validateWeightCapacity(RodConfiguration.AttributeComposite configuration) {
 
-        if (configuration.weightCapacity > this.weightCapacity || configuration.weightCapacity == 0) {
+        if (configuration.weightClass > this.weightClass || configuration.weightClass == 0) {
 
-            configuration.weightCapacity = this.weightCapacity;
+            configuration.weightClass = this.weightClass;
             configuration.weightMagnitude = this.getWeightMagnitude();
         }
     }
 
-    void validateTemperature(RodConfiguration.AttributeProcessor configuration) {
+    void validateTemperature(RodConfiguration.AttributeComposite configuration) {
 
         if (configuration.minOperatingTemperature() < this.minOperatingTemperature) {
             configuration.minOperatingTemperature = this.minOperatingTemperature;
@@ -222,7 +203,7 @@ public class PartItem extends FishingRodItem {
 
     public String getRatingText(int rating) {
         String ratingString = "[§6";
-        String value = "■■■■■■■■■■";
+        String value = "✦✦✦✦✦✦✦✦✦✦";
         ratingString += value.substring(0, rating) + "§r" + value.substring(rating);
         return ratingString + "]";
     }

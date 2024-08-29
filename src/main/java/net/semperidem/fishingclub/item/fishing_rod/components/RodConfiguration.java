@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -12,92 +11,117 @@ import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 public record RodConfiguration(
-  Optional<ItemStack> line,
-  Optional<ItemStack> bobber,
-  Optional<ItemStack> reel,
-  Optional<ItemStack> bait,
-  Optional<ItemStack> hook,
-  AttributeProcessor attributes
-) {
+        ItemStack line,
+        ItemStack bobber,
+        ItemStack reel,
+        ItemStack bait,
+        ItemStack hook,
+        AttributeComposite attributes) {
 
     public static final RodConfiguration EMPTY = new RodConfiguration(
-      Optional.empty(),
-      Optional.empty(),
-      Optional.empty(),
-      Optional.empty(),
-      Optional.empty(),
-      new AttributeProcessor()
+            ItemStack.EMPTY,
+            ItemStack.EMPTY,
+            ItemStack.EMPTY,
+            ItemStack.EMPTY,
+            ItemStack.EMPTY,
+            new AttributeComposite()
     );
 
     public static RodConfiguration getDefault() {
         return EMPTY;
     }
 
-
-    public static RodConfiguration of(ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-        AttributeProcessor stats = AttributeProcessor.process(line, bobber, reel, bait, hook);
+    public static RodConfiguration of(
+            ItemStack line,
+            ItemStack bobber,
+            ItemStack reel,
+            ItemStack bait,
+            ItemStack hook
+    ) {
         return new RodConfiguration(
-          line.isEmpty() ? Optional.empty() : Optional.of(line),
-          bobber.isEmpty() ? Optional.empty() : Optional.of(bobber),
-          reel.isEmpty() ? Optional.empty() : Optional.of(reel),
-          bait.isEmpty() ? Optional.empty() : Optional.of(bait),
-          hook.isEmpty() ? Optional.empty() : Optional.of(hook),
-          stats
+                line,
+                bobber,
+                reel,
+                bait,
+                hook,
+                new AttributeComposite(
+                        line,
+                        bobber,
+                        reel,
+                        bait,
+                        hook
+                )
         );
     }
 
     public static RodConfiguration valid(ItemStack core) {
         RodConfiguration configuration = of(core);
         return of(
-          configuration.line.orElse(ItemStack.EMPTY),
-          configuration.bobber.orElse(ItemStack.EMPTY),
-          configuration.reel.orElse(ItemStack.EMPTY),
-          configuration.bait.orElse(ItemStack.EMPTY),
-          configuration.hook.orElse(ItemStack.EMPTY)
+                configuration.line,
+                configuration.bobber,
+                configuration.reel,
+                configuration.bait,
+                configuration.hook
         );
     }
 
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-      ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line),
-      ItemStack.CODEC.optionalFieldOf("bobber").forGetter(RodConfiguration::bobber),
-      ItemStack.CODEC.optionalFieldOf("reel").forGetter(RodConfiguration::reel),
-      ItemStack.CODEC.optionalFieldOf("bait").forGetter(RodConfiguration::bait),
-      ItemStack.CODEC.optionalFieldOf("hook").forGetter(RodConfiguration::hook)
-    ).apply(instance, (line, bobber, reel, bait, hook) -> of(
-      line.orElse(ItemStack.EMPTY),
-      bobber.orElse(ItemStack.EMPTY),
-      reel.orElse(ItemStack.EMPTY),
-      bait.orElse(ItemStack.EMPTY),
-      hook.orElse(ItemStack.EMPTY)
-    )));
+            ItemStack.CODEC.fieldOf("line").forGetter(RodConfiguration::line),
+            ItemStack.CODEC.fieldOf("bobber").forGetter(RodConfiguration::bobber),
+            ItemStack.CODEC.fieldOf("reel").forGetter(RodConfiguration::reel),
+            ItemStack.CODEC.fieldOf("bait").forGetter(RodConfiguration::bait),
+            ItemStack.CODEC.fieldOf("hook").forGetter(RodConfiguration::hook)
+    ).apply(instance, RodConfiguration::of));
 
     public static PacketCodec<RegistryByteBuf, RodConfiguration> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
     public static RodConfiguration of(ItemStack fishingRod) {
-        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, getDefault());
+        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
     }
 
-    public RodConfiguration equip(ItemStack part, PartType partType) {
-        return of(
-          partType == PartType.LINE ? part : this.line.orElse(ItemStack.EMPTY),
-          partType == PartType.BOBBER ? part : this.bobber.orElse(ItemStack.EMPTY),
-          partType == PartType.REEL ? part : this.reel.orElse(ItemStack.EMPTY),
-          partType == PartType.BAIT ? part : this.bait.orElse(ItemStack.EMPTY),
-          partType == PartType.HOOK ? part : this.hook.orElse(ItemStack.EMPTY)
-        );
+    public RodConfiguration equip(ItemStack part) {
+        if (!(part.getItem() instanceof PartItem partItem)) {
+            return this;
+        }
+        return switch (partItem.partType) {
+            case PartType.LINE -> equipLine(part);
+            case PartType.BOBBER -> equipBobber(part);
+            case PartType.REEL -> equipReel(part);
+            case PartType.BAIT -> equipBait(part);
+            case PartType.HOOK -> equipHook(part);
+            default -> this;
+        };
     }
 
+    private RodConfiguration equipLine(ItemStack line) {
+        return of(line, this.bobber, this.reel, this.bait, this.hook);
+    }
+
+    private RodConfiguration equipBobber(ItemStack bobber) {
+        return of(this.line, bobber, this.reel, this.bait, this.hook);
+    }
+
+    private RodConfiguration equipReel(ItemStack reel) {
+        return of(this.line, this.bobber, reel, this.bait, this.hook);
+    }
+
+    private RodConfiguration equipBait(ItemStack bait) {
+        return of(this.line, this.bobber, this.reel, bait, this.hook);
+    }
+
+    private RodConfiguration equipHook(ItemStack hook) {
+        return of(this.line, this.bobber, this.reel, this.bait, hook);
+    }
 
     public RodInventory getParts(PlayerEntity playerEntity) {
         RodInventory parts = new RodInventory(playerEntity);
-        parts.setStack(0, reel.orElse(ItemStack.EMPTY));
-        parts.setStack(1, line.orElse(ItemStack.EMPTY));
-        parts.setStack(2, bobber.orElse(ItemStack.EMPTY));
-        parts.setStack(3, hook.orElse(ItemStack.EMPTY));
-        parts.setStack(4, bait.orElse(ItemStack.EMPTY));
+        parts.setStack(0, reel);
+        parts.setStack(1, line);
+        parts.setStack(2, bobber);
+        parts.setStack(3, hook);
+        parts.setStack(4, bait);
         return parts;
     }
 
@@ -113,7 +137,7 @@ public record RodConfiguration(
 
 
     public void damage(int amount, PartItem.DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
-        for(ItemStack part : this.attributes().parts) {
+        for (ItemStack part : this.attributes().parts) {
             damagePart(amount, damageSource, part, player, fishingRod);
         }
     }
@@ -131,12 +155,11 @@ public record RodConfiguration(
         partStack.getMaxDamage();
     }
 
-    public static class AttributeProcessor {
+    public static class AttributeComposite {
 
-        int weightCapacity = 0;
+        int weightClass = 0;
         int weightMagnitude = 2;
         int maxLineLength = 0;
-        float castPower = 1;
         float bobberControl = 0;
         float bobberWidth = 0;
         boolean canCast = false;
@@ -155,10 +178,16 @@ public record RodConfiguration(
 
         HashSet<ItemStack> parts = new HashSet<>();
 
-        AttributeProcessor() {
+        AttributeComposite() {
         }
 
-        AttributeProcessor(ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
+        AttributeComposite(
+                ItemStack line,
+                ItemStack bobber,
+                ItemStack reel,
+                ItemStack bait,
+                ItemStack hook
+        ) {
             this.canCast = this.validateAndApply(line);
             this.validateAndApply(bobber);
             if (!this.validateAndApply(bait)) {
@@ -172,10 +201,6 @@ public record RodConfiguration(
             }
         }
 
-        public static AttributeProcessor process(ItemStack line, ItemStack bobber, ItemStack reel, ItemStack bait, ItemStack hook) {
-            return new AttributeProcessor(line, bobber, reel, bait, hook);
-        }
-
         void applyNoReelPenalty() {
             this.fishControl -= ItemStat.BASE_T5.value;
         }
@@ -186,18 +211,17 @@ public record RodConfiguration(
 
         void applyNoBaitPenalty() {
             this.waitTimeReductionMultiplier *= ItemStat.MULTIPLIER_T025.value;
-            this.timeHookedMultiplier *=  ItemStat.MULTIPLIER_T05.value;
+            this.timeHookedMultiplier *= ItemStat.MULTIPLIER_T05.value;
             this.fishRarity -= ItemStat.BASE_T5.value;
-            this.fishRarityMultiplier *=  ItemStat.MULTIPLIER_T05.value;
+            this.fishRarityMultiplier *= ItemStat.MULTIPLIER_T05.value;
         }
 
         boolean validateAndApply(ItemStack part) {
-
-            if (part.getOrDefault(FCComponents.BROKEN, false)) {
+            if (!(part.getItem() instanceof PartItem partItem)) {
                 return false;
             }
 
-            if (!(part.getItem() instanceof PartItem partItem)) {
+            if (part.getOrDefault(FCComponents.BROKEN, false)) {
                 return false;
             }
 
@@ -207,8 +231,8 @@ public record RodConfiguration(
         }
 
 
-        public int weightCapacity() {
-            return weightCapacity;
+        public int weightClass() {
+            return this.weightClass;
         }
 
         public int weightMagnitude() {
@@ -217,10 +241,6 @@ public record RodConfiguration(
 
         public int maxLineLength() {
             return maxLineLength;
-        }
-
-        public float castPower() {
-            return castPower;
         }
 
         public float bobberWidth() {
@@ -266,20 +286,19 @@ public record RodConfiguration(
         @Override
         public String toString() {
             return ":" +
-              ", weightCapacity=" + weightCapacity +
-              ", minOperatingTemperature=" + minOperatingTemperature +
-              ", maxOperatingTemperature=" + maxOperatingTemperature +
-              ", fishQuality=" + fishQuality +
-              ", weightMagnitude=" + weightMagnitude +
-              ", maxLineLength=" + maxLineLength +
-              ", castPower=" + castPower +
-              ", bobberWidth=" + bobberWidth +
-              ", canCast=" + canCast +
-              ", fishControl=" + fishControl +
-              ", fishControlMultiplier=" + fishControlMultiplier +
-              ", treasureBonus=" + treasureBonus +
-              ", treasureRarityBonus=" + treasureRarityBonus +
-              ",";
+                    ", weightCapacity=" + weightClass +
+                    ", minOperatingTemperature=" + minOperatingTemperature +
+                    ", maxOperatingTemperature=" + maxOperatingTemperature +
+                    ", fishQuality=" + fishQuality +
+                    ", weightMagnitude=" + weightMagnitude +
+                    ", maxLineLength=" + maxLineLength +
+                    ", bobberWidth=" + bobberWidth +
+                    ", canCast=" + canCast +
+                    ", fishControl=" + fishControl +
+                    ", fishControlMultiplier=" + fishControlMultiplier +
+                    ", treasureBonus=" + treasureBonus +
+                    ", treasureRarityBonus=" + treasureRarityBonus +
+                    ",";
         }
 
     }
@@ -291,31 +310,6 @@ public record RodConfiguration(
         BAIT,
         HOOK,
         INVALID;
-
-        public static PartType of(ItemStack part) {
-            Item partItem = part.getItem();
-
-            if (partItem instanceof LinePartItem) {
-                return LINE;
-            }
-
-            if (partItem instanceof BobberPartItem) {
-                return BOBBER;
-            }
-
-            if (partItem instanceof ReelPartItem) {
-                return REEL;
-            }
-
-            if (partItem instanceof BaitPartItem) {
-                return BAIT;
-            }
-
-            if (partItem instanceof HookPartItem) {
-                return HOOK;
-            }
-            return INVALID;
-        }
     }
 
 }

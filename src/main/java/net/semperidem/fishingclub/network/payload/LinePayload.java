@@ -7,8 +7,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.item.fishing_rod.components.CorePartItem;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -23,7 +22,7 @@ public record LinePayload(int amount) implements CustomPayload {
 
     public static void consumePayload(LinePayload payload, ServerPlayNetworking.Context context) {
         ItemStack stackInHand = context.player().getMainHandStack();
-        if (!(stackInHand.getItem() instanceof CorePartItem core)) {
+        if (!(stackInHand.getItem() instanceof FishingRodCoreItem core)) {
             return;
         }
         int lineLength = core.scrollLineBy(context.player(), stackInHand, payload.amount());

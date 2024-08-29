@@ -2,6 +2,10 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class LinePartItem extends PartItem {
     int maxLineLength;
+
+    ItemStat fishControl = ItemStat.BASE_T1;
+    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+
     public LinePartItem(Settings settings) {
         super(settings);
         this.destroyOnBreak = true;
@@ -20,7 +24,23 @@ public class LinePartItem extends PartItem {
     public LinePartItem(Settings settings,int weightCapacity) {
 
         this(settings);
-        this.weightCapacity = weightCapacity;
+        this.weightClass = weightCapacity;
+    }
+
+
+    public LinePartItem weightClass(int weightClass) {
+        this.weightClass = weightClass;
+        return this;
+    }
+
+    public LinePartItem minOperatingTemperature(int minOperatingTemperature) {
+        this.minOperatingTemperature = minOperatingTemperature;
+        return this;
+    }
+
+    public LinePartItem maxOperatingTemperature(int maxOperatingTemperature) {
+        this.maxOperatingTemperature = maxOperatingTemperature;
+        return this;
     }
 
     public LinePartItem maxLineLength(int maxLineLength) {
@@ -34,14 +54,11 @@ public class LinePartItem extends PartItem {
         return this;
     }
 
-
-    @Override
     public LinePartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
         return this;
     }
 
-    @Override
     public LinePartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
         this.fishControlMultiplier = fishControlMultiplier;
         return this;
@@ -49,8 +66,12 @@ public class LinePartItem extends PartItem {
 
 
     @Override
-    void applyComponent(RodConfiguration.AttributeProcessor configuration) {
-        super.applyComponent(configuration);
+    void applyComponent(RodConfiguration.AttributeComposite configuration) {
+
+
         configuration.maxLineLength = this.maxLineLength;
+        configuration.fishControl += this.fishControl.value;
+        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
+        super.applyComponent(configuration);
     }
 }
