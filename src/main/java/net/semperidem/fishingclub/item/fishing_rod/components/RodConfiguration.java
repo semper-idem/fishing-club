@@ -86,7 +86,7 @@ public record RodConfiguration(
         if (!(part.getItem() instanceof PartItem partItem)) {
             return this;
         }
-        return switch (partItem.partType) {
+        return switch (partItem.type) {
             case PartType.LINE -> equipLine(part);
             case PartType.BOBBER -> equipBobber(part);
             case PartType.REEL -> equipReel(part);
@@ -236,7 +236,7 @@ public record RodConfiguration(
                 return false;
             }
 
-            partItem.applyComponent(this);
+            partItem.apply(this);
             parts.add(part);
             return true;
         }

@@ -14,33 +14,31 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
-    private ItemStat biteFailChance = ItemStat.MULTIPLIER_T3;
-    private ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
-    private boolean sharp = false;
-    private float damage = 0;
-    private float reelDamage = 0;
-    private boolean sticky = false;
-    private final ArrayList<Consumer<LivingEntity>> onEntityHitEffects = new ArrayList<>();
-    private ItemStat treasureBonus = ItemStat.BASE_T1;
-    private ItemStat treasureRarityBonus = ItemStat.BASE_T1;
-    private ItemStat fishRarity = ItemStat.BASE_T1;
-    private ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
-    private ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
-    private ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat fishControl = ItemStat.BASE_T1;
     ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat biteFailChance = ItemStat.MULTIPLIER_T3;
+    ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
+    ItemStat treasureBonus = ItemStat.BASE_T1;
+    ItemStat treasureRarityBonus = ItemStat.BASE_T1;
+    ItemStat fishRarity = ItemStat.BASE_T1;
+    ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
+    ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
+    boolean sharp = false;
+    float damage = 0;
+    float reelDamage = 0;
+    boolean sticky = false;
+    final ArrayList<Consumer<LivingEntity>> onEntityHitEffects = new ArrayList<>();
 
-
-    public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> {
-        targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
-    };
-    public static final Consumer<LivingEntity> ON_HIT_WITHER = targetEntity -> {
-        targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 100));
-    };
-    public static final Consumer<LivingEntity> ON_HIT_FIRE = targetEntity -> {
-        targetEntity.setOnFireForTicks(200);
-    };
-
+    public HookPartItem(Settings settings) {
+        super(settings);
+        this.type = RodConfiguration.PartType.HOOK;
+        this.setDamageMultiplier(DamageSource.CAST, 0);
+        this.setDamageMultiplier(DamageSource.BITE, 1);
+        this.setDamageMultiplier(DamageSource.REEL_FISH, 2);
+        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
+        this.setDamageMultiplier(DamageSource.REEL_GROUND, 1);
+    }
 
     public HookPartItem weightClass(int weightClass) {
         this.weightClass = weightClass;
@@ -56,51 +54,6 @@ public class HookPartItem extends PartItem {
         this.maxOperatingTemperature = maxOperatingTemperature;
         return this;
     }
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
-            tooltip.add(Text.of("§8Left Shift for additional info"));
-            return;
-        }
-        if (this.sticky) {
-            tooltip.add(Text.of("§aSticky"));
-        }
-        if (this.damage > 0) {
-            tooltip.add(Text.of("§7Sharp [ >> §4" + (int)this.damage + "§7]"));
-        }
-        if (this.reelDamage > 0) {
-            tooltip.add(Text.of("§7Serrated [ << §4" + (int)this.reelDamage + "§7]"));
-        }
-        for(Consumer<LivingEntity> onhit : onEntityHitEffects) {
-            if (onhit == ON_HIT_POISON) {
-                tooltip.add(Text.of("§2Poison I"));
-
-            }
-            if (onhit == ON_HIT_FIRE) {
-                tooltip.add(Text.of("§4Flame I"));
-
-            }
-            if (onhit == ON_HIT_WITHER) {
-                tooltip.add(Text.of("§0Wither I"));
-            }
-        }
-        if (this.autoHookChance.value > 0) {
-            tooltip.add(Text.of("§7Auto-hook [" + (int)(this.autoHookChance.value * 100) + "%]"));
-        }
-        super.appendTooltip(stack, context, tooltip, type);
-    }
-
-    public HookPartItem(Settings settings) {
-
-        super(settings);
-        this.partType = RodConfiguration.PartType.HOOK;
-        this.destroyOnBreak = true;
-        setDamageMultiplier(DamageSource.CAST, 0);
-        setDamageMultiplier(DamageSource.BITE, 1);
-        setDamageMultiplier(DamageSource.REEL_FISH, 2);
-        setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
-        setDamageMultiplier(DamageSource.REEL_GROUND, 1);
-    }
 
     public HookPartItem fishQuality(int fishQuality) {
         this.fishQuality = fishQuality;
@@ -112,18 +65,76 @@ public class HookPartItem extends PartItem {
         return this;
     }
 
+    public HookPartItem biteFailChance(ItemStat biteFailChance) {
+        this.biteFailChance = biteFailChance;
+        return this;
+    }
+
+    public HookPartItem sticky(boolean sticky) {
+        this.sticky = sticky;
+        return this;
+    }
+
+    public HookPartItem fishControl(ItemStat fishControl) {
+        this.fishControl = fishControl;
+        return this;
+    }
+
+    public HookPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
+        this.fishControlMultiplier = fishControlMultiplier;
+        return this;
+    }
+
+    public HookPartItem treasureBonus(ItemStat treasureBonus) {
+        this.treasureBonus = treasureBonus;
+        return this;
+    }
+
+    public HookPartItem treasureRarityBonus(ItemStat treasureRarityBonus) {
+        this.treasureRarityBonus = treasureRarityBonus;
+        return this;
+    }
+
+    public HookPartItem fishRarity(ItemStat fishRarity) {
+        this.fishRarity = fishRarity;
+        return this;
+    }
+
+    public HookPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
+        this.fishRarityMultiplier = fishRarityMultiplier;
+        return this;
+    }
+
+    public HookPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
+        this.waitTimeReductionMultiplier = waitTimeReductionMultiplier  ;
+        return this;
+    }
+
+    public HookPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
+        this.timeHookedMultiplier = timeHookedMultiplier;
+        return this;
+    }
+
+    @Override
+    void apply(RodConfiguration.AttributeComposite attributes) {
+        attributes.fishControl += this.fishControl.value;
+        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
+        attributes.baitFailChance = this.biteFailChance.value;
+        attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
+        attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
+        attributes.fishRarity += this.fishRarity.value;
+        attributes.fishRarityMultiplier += this.fishRarityMultiplier.value;
+        attributes.treasureBonus += this.treasureBonus.value;
+        attributes.treasureRarityBonus += this.treasureRarityBonus.value;
+        super.apply(attributes);
+    }
+
     public void onEntityHit(LivingEntity entity){
         this.onEntityHitEffects.forEach(o -> o.accept(entity));
     }
 
-
     public float getBiteFailChance() {
         return this.biteFailChance.value;
-    }
-
-    public HookPartItem biteFailChance(ItemStat biteFailChance) {
-        this.biteFailChance = biteFailChance;
-        return this;
     }
 
     public float getAutoHookChance() {
@@ -166,69 +177,41 @@ public class HookPartItem extends PartItem {
         return this.sticky;
     }
 
-    public HookPartItem sticky(boolean sticky) {
-        this.sticky = sticky;
-        return this;
-    }
-
-    public HookPartItem fishControl(ItemStat fishControl) {
-        this.fishControl = fishControl;
-        return this;
-    }
-
-    public HookPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
-        return this;
-    }
-
-
-    public HookPartItem treasureBonus(ItemStat treasureBonus) {
-
-        this.treasureBonus = treasureBonus;
-        return this;
-    }
-
-    public HookPartItem treasureRarityBonus(ItemStat treasureRarityBonus) {
-
-        this.treasureRarityBonus = treasureRarityBonus;
-        return this;
-    }
-
-    public HookPartItem fishRarity(ItemStat fishRarity) {
-
-        this.fishRarity = fishRarity;
-        return this;
-    }
-
-    public HookPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
-
-        this.fishRarityMultiplier = fishRarityMultiplier;
-        return this;
-    }
-
-    public HookPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
-
-        this.waitTimeReductionMultiplier = waitTimeReductionMultiplier  ;
-        return this;
-    }
-
-    public HookPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
-
-        this.timeHookedMultiplier = timeHookedMultiplier;
-        return this;
-    }
     @Override
-    void applyComponent(RodConfiguration.AttributeComposite configuration) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InputUtil.GLFW_KEY_LEFT_SHIFT)) {
+            tooltip.add(Text.of("§8Left Shift for additional info"));
+            return;
+        }
+        if (this.sticky) {
+            tooltip.add(Text.of("§aSticky"));
+        }
+        if (this.damage > 0) {
+            tooltip.add(Text.of("§7Sharp [ >> §4" + (int)this.damage + "§7]"));
+        }
+        if (this.reelDamage > 0) {
+            tooltip.add(Text.of("§7Serrated [ << §4" + (int)this.reelDamage + "§7]"));
+        }
+        for(Consumer<LivingEntity> onHit : onEntityHitEffects) {
+            if (onHit == ON_HIT_POISON) {
+                tooltip.add(Text.of("§2Poison I"));
 
-        configuration.fishControl += this.fishControl.value;
-        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
-        configuration.baitFailChance = this.biteFailChance.value;
-        configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
-        configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
-        configuration.fishRarity += this.fishRarity.value;
-        configuration.fishRarityMultiplier += this.fishRarityMultiplier.value;
-        configuration.treasureBonus += this.treasureBonus.value;
-        configuration.treasureRarityBonus += this.treasureRarityBonus.value;
-        super.applyComponent(configuration);
+            }
+            if (onHit == ON_HIT_FIRE) {
+                tooltip.add(Text.of("§4Flame I"));
+
+            }
+            if (onHit == ON_HIT_WITHER) {
+                tooltip.add(Text.of("§0Wither I"));
+            }
+        }
+        if (this.autoHookChance.value > 0) {
+            tooltip.add(Text.of("§7Auto-hook [" + (int)(this.autoHookChance.value * 100) + "%]"));
+        }
+        super.appendTooltip(stack, context, tooltip, type);
     }
+    public static final Consumer<LivingEntity> ON_HIT_POISON = targetEntity -> targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 200));
+    public static final Consumer<LivingEntity> ON_HIT_WITHER = targetEntity -> targetEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 100));
+    public static final Consumer<LivingEntity> ON_HIT_FIRE = targetEntity -> targetEntity.setOnFireForTicks(200);
+
 }

@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -8,95 +7,55 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 import java.util.HashSet;
 import java.util.List;
 
 public abstract class PartItem extends Item {
-    RodConfiguration.PartType partType;
     int weightClass = 6;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
     int fishQuality = 0;
-//    ItemStat fishControl = ItemStat.BASE_T1;
-//    ItemStat bobberControl = ItemStat.BASE_T1;
-//    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
 
-    boolean destroyOnBreak = false;
+    RodConfiguration.PartType type;
+    boolean destructible = false;
+    float[] durabilityMultiplier = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 
     public PartItem(Settings settings) {
         super(settings);
     }
 
-    public enum DamageSource {
-        CAST(0), BITE(1), REEL_FISH(2), REEL_ENTITY(3), REEL_WATER(4), REEL_GROUND(5);
-
-        public final int value;
-
-        DamageSource(int value) {
-            this.value = value;
-        }
-
-    }
-
-    private static final HashSet<DamageSource> TEMPERATURE_INFLUENCED_DAMAGE_SOURCES = new HashSet<>();
-
-    static {
-        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.BITE);
-        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_FISH);
-        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_WATER);
-    }
-
-    ;
-
-    float[] durabilityMultiplier = {
-      0.5f,
-      0.5f,
-      0.5f,
-      0.5f,
-      0.5f,
-      0.5f
-    };
-
-
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.of("Durability " + this.getRatingText(this.getDurabilityRating(stack.getMaxDamage()))));
-        if (fishQuality != 0) {
-            tooltip.add(Text.of("Quality " + (this.fishQuality > 0 ? "§a+" : "§c") + fishQuality));
+        if (this.fishQuality != 0) {
+            tooltip.add(Text.of("Quality " + (this.fishQuality > 0 ? "§a+" : "§c") + this.fishQuality));
         }
     }
 
     protected void setDamageMultiplier(DamageSource source, float value) {
-        durabilityMultiplier[source.value] = value;
+        this.durabilityMultiplier[source.value] = value;
     }
 
-    public float getDamageMultiplier(DamageSource source) {
-        return durabilityMultiplier[source.value];
-    }
-
-    public static float getPartDamagePercentage(ItemStack partStack) {
-
-        return (float) partStack.getDamage() / partStack.getMaxDamage();
+    public float damageMultiplierForSource(DamageSource source) {
+        return this.durabilityMultiplier[source.value];
     }
 
     private boolean shouldDamage(int quality) {
-
         return Math.random() > MathHelper.clamp((quality - 1) * 0.25f, 0, 1);
     }
 
-    public <T extends LivingEntity> void damage(ItemStack componentStack, int amount, DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
-
+    public void damage(ItemStack componentStack, int amount, DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
         damage(componentStack,
-          getTemperatureAdjustedDamage(
-            damageSource,
-            player,
-            Math.ceil(
-              getDamageMultiplier(damageSource) * amount)
-          ),
-          player,
-          fishingRod);
+                getTemperatureAdjustedDamage(
+                        damageSource,
+                        player,
+                        Math.ceil(damageMultiplierForSource(damageSource) * amount)
+                ),
+                player,
+                fishingRod);
     }
 
     int getTemperatureAdjustedDamage(DamageSource damageSource, PlayerEntity player, double amount) {
@@ -104,98 +63,80 @@ public abstract class PartItem extends Item {
         if (!TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.contains(damageSource)) {
             return (int) amount;
         }
+        int positionTemperature = FishUtil.getTemperature(player.getWorld(), player.getBlockPos());
 
-        boolean isNegativeTemperatureArea = player.getWorld().getBiome(player.getBlockPos()).value().getTemperature() <= 0f;
-        boolean isUltraWarm = player.getWorld().getDimension().ultrawarm();
-        int positionTemperature = isNegativeTemperatureArea ? -1 : isUltraWarm ? 1 : 0;
-
-        if (positionTemperature > maxOperatingTemperature) {
-            int maxDiff = positionTemperature - maxOperatingTemperature;
-            amount *= maxDiff * 20;
+        if (positionTemperature > this.maxOperatingTemperature) {
+            return (int) (amount * positionTemperature - this.maxOperatingTemperature * 20);
         }
 
-        if (positionTemperature < minOperatingTemperature) {
-            int minDiff = positionTemperature - minOperatingTemperature;
-            amount *= minDiff * 10;
+        if (positionTemperature < this.minOperatingTemperature) {
+            return (int) (amount * positionTemperature - this.minOperatingTemperature * 20);
         }
         return (int) amount;
     }
 
-    <T extends LivingEntity> void damage(ItemStack componentStack, int amount, PlayerEntity player, ItemStack fishingRod) {
+    void damage(ItemStack stack, int amount, PlayerEntity player, ItemStack fishingRod) {
 
-        int quality = componentStack.getOrDefault(FCComponents.PART_QUALITY, 1);
+        int quality = stack.getOrDefault(FCComponents.PART_QUALITY, 1);
         if (!shouldDamage(quality)) {
             return;
         }
 
-        int currentDamage = componentStack.getDamage();
-        if (currentDamage + amount <= componentStack.getMaxDamage()) {
-            componentStack.setDamage(currentDamage + amount);
+        int currentDamage = stack.getDamage();
+        if (currentDamage + amount <= stack.getMaxDamage()) {
+            stack.setDamage(currentDamage + amount);
             return;
         }
 
         player.playSound(SoundEvents.ENTITY_ITEM_BREAK);
-        if (!destroyOnBreak) {
-            componentStack.set(FCComponents.BROKEN, true);
+        if (!this.destructible) {
+            stack.set(FCComponents.BROKEN, true);
             return;
         }
 
-        componentStack.setCount(0);
+        stack.setCount(0);
         fishingRod.set(FCComponents.ROD_CONFIGURATION, RodConfiguration.valid(fishingRod));
     }
 
-    void applyComponent(RodConfiguration.AttributeComposite configuration) {
-
-        configuration.fishQuality += this.fishQuality;
-//        configuration.fishControl += this.fishControl.value;
-//        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
-
-        validateWeightCapacity(configuration);
-        validateTemperature(configuration);
+    void apply(RodConfiguration.AttributeComposite attributes) {
+        attributes.fishQuality += this.fishQuality;
+        validateWeightCapacity(attributes);
+        validateTemperature(attributes);
     }
 
     public int getWeightMagnitude() {
-
-        if (weightClass < 3) {//3
+        if (this.weightClass < 3) {//3
             return 1;
         }
-
-        if (weightClass < 5) {
+        if (this.weightClass < 5) {
             return 0;
         }
-
-        if (weightClass < 6) {
+        if (this.weightClass < 6) {
             return -1;
         }
-
         return -4;
     }
 
     void validateWeightCapacity(RodConfiguration.AttributeComposite configuration) {
-
         if (configuration.weightClass > this.weightClass || configuration.weightClass == 0) {
-
             configuration.weightClass = this.weightClass;
             configuration.weightMagnitude = this.getWeightMagnitude();
         }
     }
 
     void validateTemperature(RodConfiguration.AttributeComposite configuration) {
-
         if (configuration.minOperatingTemperature() < this.minOperatingTemperature) {
             configuration.minOperatingTemperature = this.minOperatingTemperature;
         }
-
         if (configuration.maxOperatingTemperature() > this.maxOperatingTemperature) {
             configuration.maxOperatingTemperature = this.maxOperatingTemperature;
         }
-
     }
 
     public int getDurabilityRating(int maxDamage) {
         int rating = 0;
         float maxDamageTrimmed = maxDamage / 10f;
-        while((maxDamageTrimmed *= 0.5f) > 1) {
+        while ((maxDamageTrimmed *= 0.5f) > 1) {
             rating++;
         }
         return rating;
@@ -207,5 +148,25 @@ public abstract class PartItem extends Item {
         ratingString += value.substring(0, rating) + "§r" + value.substring(rating);
         return ratingString + "]";
     }
+
+
+    public enum DamageSource {
+        CAST(0), BITE(1), REEL_FISH(2), REEL_ENTITY(3), REEL_WATER(4), REEL_GROUND(5);
+        public final int value;
+
+        DamageSource(int value) {
+            this.value = value;
+        }
+    }
+
+    private static final HashSet<DamageSource> TEMPERATURE_INFLUENCED_DAMAGE_SOURCES = new HashSet<>();
+
+    static {
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.BITE);
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_FISH);
+        TEMPERATURE_INFLUENCED_DAMAGE_SOURCES.add(DamageSource.REEL_WATER);
+    }
+
+    ;
 
 }

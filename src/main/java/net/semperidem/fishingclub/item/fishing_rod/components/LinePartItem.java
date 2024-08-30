@@ -1,18 +1,17 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class LinePartItem extends PartItem {
-    int maxLineLength;
-
     ItemStat fishControl = ItemStat.BASE_T1;
     ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
+    int maxLineLength;
 
     public LinePartItem(Settings settings) {
         super(settings);
-        this.destroyOnBreak = true;
-        this.partType = RodConfiguration.PartType.LINE;
-        setDamageMultiplier(DamageSource.BITE, 1);
-        setDamageMultiplier(DamageSource.REEL_FISH, 2);
-        setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
+        this.type = RodConfiguration.PartType.LINE;
+        this.destructible = true;
+        this.setDamageMultiplier(DamageSource.BITE, 1);
+        this.setDamageMultiplier(DamageSource.REEL_FISH, 2);
+        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
     }
 
     public LinePartItem weightClass(int weightClass) {
@@ -35,7 +34,6 @@ public class LinePartItem extends PartItem {
         return this;
     }
 
-
     public LinePartItem fishQuality(int fishQuality) {
         this.fishQuality = fishQuality;
         return this;
@@ -51,14 +49,11 @@ public class LinePartItem extends PartItem {
         return this;
     }
 
-
     @Override
-    void applyComponent(RodConfiguration.AttributeComposite configuration) {
-
-
-        configuration.maxLineLength = this.maxLineLength;
-        configuration.fishControl += this.fishControl.value;
-        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
-        super.applyComponent(configuration);
+    void apply(RodConfiguration.AttributeComposite attributes) {
+        attributes.maxLineLength = this.maxLineLength;
+        attributes.fishControl += this.fishControl.value;
+        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
+        super.apply(attributes);
     }
 }

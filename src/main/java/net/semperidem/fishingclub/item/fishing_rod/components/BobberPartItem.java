@@ -1,25 +1,21 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class BobberPartItem extends PartItem {
-
     ItemStat fishControl = ItemStat.BASE_T1;
     ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
-
     ItemStat bobberWidth;
     ItemStat bobberControl;
     ItemStat waitTimeReductionMultiplier;
     ItemStat timeHookedMultiplier;
-    Runnable fishBiteEffect = () -> {};
+    Runnable fishBiteEffect;
 
     public BobberPartItem(Settings settings) {
-
         super(settings);
-        this.partType = RodConfiguration.PartType.BOBBER;
-        this.destroyOnBreak = true;
-        setDamageMultiplier(DamageSource.CAST, 0);
-        setDamageMultiplier(DamageSource.REEL_ENTITY, 0);
-        setDamageMultiplier(DamageSource.REEL_WATER, 1);
-        setDamageMultiplier(DamageSource.REEL_GROUND, 2);
+        this.type = RodConfiguration.PartType.BOBBER;
+        this.setDamageMultiplier(DamageSource.CAST, 0);
+        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 0);
+        this.setDamageMultiplier(DamageSource.REEL_WATER, 1);
+        this.setDamageMultiplier(DamageSource.REEL_GROUND, 2);
     }
 
     public BobberPartItem weightClass(int weightClass) {
@@ -38,26 +34,19 @@ public class BobberPartItem extends PartItem {
     }
 
     public BobberPartItem bobberControl(ItemStat bobberControl) {
-
         this.bobberControl = bobberControl;
         return this;
     }
 
     public BobberPartItem bobberWidth(ItemStat bobberWidth) {
-
         this.bobberWidth = bobberWidth;
         return this;
-    }
-
-    public void onFishBiteEffect() {
-        this.fishBiteEffect.run();
     }
 
     public BobberPartItem setFishBiteEffect(Runnable fishBiteEffect) {
         this.fishBiteEffect = fishBiteEffect;
         return this;
     }
-
 
     public BobberPartItem fishQuality(int fishQuality) {
         this.fishQuality = fishQuality;
@@ -75,26 +64,31 @@ public class BobberPartItem extends PartItem {
     }
 
     public BobberPartItem waitTimeReductionMultiplier(ItemStat waitTimeReductionMultiplier) {
-
         this.waitTimeReductionMultiplier = waitTimeReductionMultiplier;
         return this;
     }
 
     public BobberPartItem timeHookedMultiplier(ItemStat timeHookedMultiplier) {
-
         this.timeHookedMultiplier = timeHookedMultiplier;
         return this;
     }
+
     @Override
-    void applyComponent(RodConfiguration.AttributeComposite configuration) {
-
-
-        configuration.fishControl += this.fishControl.value;
-        configuration.fishControlMultiplier *= this.fishControlMultiplier.value;
-        configuration.bobberControl += this.bobberControl.value;
-        configuration.timeHookedMultiplier *= this.timeHookedMultiplier.value;
-        configuration.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
-        configuration.bobberWidth = this.bobberWidth.value;
-        super.applyComponent(configuration);
+    void apply(RodConfiguration.AttributeComposite attributes) {
+        attributes.fishControl += this.fishControl.value;
+        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
+        attributes.bobberControl += this.bobberControl.value;
+        attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
+        attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
+        attributes.bobberWidth = this.bobberWidth.value;
+        super.apply(attributes);
     }
+
+    public void onFishBiteEffect() {
+        if (this.fishBiteEffect == null) {
+            return;
+        }
+        this.fishBiteEffect.run();
+    }
+
 }
