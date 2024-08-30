@@ -25,7 +25,8 @@ public class ItemsMixin {
     )
     private static FishingRodItem fishing_club$fishingRod(Item.Settings settings) {
         //Need to register before Rod so we can use it
-        FCRegistry.registerPreFishingRod();
+        FCComponents.registerRodConfigurationEarly();
+        FCItems.registerLineEarly();
         RodConfiguration defaultRod = RodConfiguration.EMPTY.equip(FCItems.LINE_SPIDER.getDefaultStack());
         return new FishingRodCoreItem(settings.maxDamage(FCItems.VANILLA_ROD_DURABILITY)
                 .component(FCComponents.ROD_CONFIGURATION, defaultRod))

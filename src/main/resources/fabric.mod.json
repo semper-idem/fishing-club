@@ -13,7 +13,7 @@
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
-      "net.semperidem.fishingclub.FishingClubDataGenerator"
+      "net.semperidem.fishingclub.datagen.FishingClubDataGenerator"
     ],
     "client": [
       "net.semperidem.fishingclub.client.FishingClubClient"

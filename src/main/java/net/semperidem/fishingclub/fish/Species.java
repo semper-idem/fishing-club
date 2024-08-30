@@ -151,10 +151,16 @@ public class Species<T extends WaterCreatureEntity> {
     }
 
     public ModelIdentifier albinoModelId() {
+        if (this.albinoModelId == null) {
+            this.albinoModelId =new ModelIdentifier(FishingClub.identifier(this.textureName(true) + "_item_3d"), "inventory");
+        }
         return this.albinoModelId;
     }
 
     public ModelIdentifier modelId() {
+        if (this.modelId == null) {
+            this.modelId = new ModelIdentifier(FishingClub.identifier(this.textureName() + "_item_3d"), "inventory");
+        }
         return this.modelId;
     }
 
@@ -162,6 +168,9 @@ public class Species<T extends WaterCreatureEntity> {
         if (entityRendererSupplier == null) {
             return;
         }
+
+        this.layerId =  new EntityModelLayer(FishingClub.identifier(this.textureName()), "main");
+
         EntityRendererRegistry.register(
                 this.entityType,
                 this.entityRendererSupplier

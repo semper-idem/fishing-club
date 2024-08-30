@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub;
+package net.semperidem.fishingclub.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -9,7 +9,7 @@ public class FishingClubDataGenerator implements DataGeneratorEntrypoint {
 	@Override
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
-		pack.addProvider(FishModelGenerator::new);
+		pack.addProvider(FCLootTableProviders::createLootTableProvider);
 
 		// Adding a provider example:
 		//

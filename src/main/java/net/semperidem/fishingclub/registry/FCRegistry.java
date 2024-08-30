@@ -50,6 +50,7 @@ public class FCRegistry {
         FishingPerks.register();
         DialogController.initialize();
         FCFeatures.register();
+        FCLootTables.register();
     }
 
     public static void registerClient(){
@@ -75,8 +76,4 @@ public class FCRegistry {
 
     //Server-side only
     // this is so we can modify vanilla fishing rod
-    public static void registerPreFishingRod() {
-        FCComponents.registerRodConfigurationEarly();
-        FCItems.registerLineEarly();
-    }
 }

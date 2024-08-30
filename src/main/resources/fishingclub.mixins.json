@@ -18,6 +18,7 @@
     "common.KelpPlantBlockMixin",
     "common.LilyPadBlockMixin",
     "common.LivingEntityMixin",
+    "common.LootTablesAccessor",
     "common.PlayerEntityMixin",
     "common.ServerPlayerInteractionManagerMixin",
     "common.ServerWorldMixin",

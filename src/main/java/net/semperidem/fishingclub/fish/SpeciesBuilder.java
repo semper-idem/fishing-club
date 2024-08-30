@@ -35,9 +35,7 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
         this.species.id = Species.Library.SPECIES_BY_NAME.size();
 
         this.species.entityId = FishingClub.identifier(this.species.name);
-        this.species.modelId = new ModelIdentifier(FishingClub.identifier(this.species.textureName() + "_item_3d"), "inventory");
-        this.species.albinoModelId =new ModelIdentifier(FishingClub.identifier(this.species.textureName(true) + "_item_3d"), "inventory");
-        this.species.layerId =  new EntityModelLayer(FishingClub.identifier(this.species.textureName()), "main");
+
    }
 
     public static <T extends WaterCreatureEntity> SpeciesBuilder<T> create(String speciesName) {

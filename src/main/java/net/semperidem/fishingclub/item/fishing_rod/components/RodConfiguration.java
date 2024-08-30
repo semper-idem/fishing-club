@@ -19,7 +19,8 @@ public record RodConfiguration(
         ItemStack reel,
         ItemStack bait,
         ItemStack hook,
-        AttributeComposite attributes) {
+        AttributeComposite attributes
+) {
 
     public static final RodConfiguration EMPTY = new RodConfiguration(
             ItemStack.EMPTY,

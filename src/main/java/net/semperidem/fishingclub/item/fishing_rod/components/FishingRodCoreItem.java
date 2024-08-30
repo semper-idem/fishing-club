@@ -7,8 +7,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -23,6 +29,7 @@ import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCLootTables;
 
 import java.util.List;
 
@@ -43,8 +50,22 @@ public class FishingRodCoreItem extends FishingRodItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        if (world.isClient) {
+            return TypedActionResult.success(user.getStackInHand(hand));
+        }
 
         ItemStack fishingRod = user.getStackInHand(hand);
+        LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)world)
+                .add(LootContextParameters.ORIGIN, user.getPos())
+                .add(LootContextParameters.TOOL, fishingRod)
+                .add(LootContextParameters.THIS_ENTITY, user)
+                .luck(0.5f)
+                .build(LootContextTypes.FISHING);
+        LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(FCLootTables.JUNK);
+        List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
+        for(ItemStack stack : list) {
+            user.dropItem(stack, false);
+        }
         boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast) {
             user.sendMessage(Text.of("Can't use without line"), true);

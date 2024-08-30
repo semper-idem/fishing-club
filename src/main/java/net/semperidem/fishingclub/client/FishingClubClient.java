@@ -34,6 +34,6 @@ public class FishingClubClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        FCRegistry.registerClient();
+       FCRegistry.registerClient();
     }
 }
