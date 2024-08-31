@@ -8,6 +8,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
@@ -28,15 +32,13 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCEntityTypes;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.*;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
 import net.semperidem.fishingclub.util.Util;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
@@ -496,59 +498,40 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void tickFish(ServerWorld serverWorld) {
         this.fishTravelCountdown -= 1;
         if (this.fishTravelCountdown > 0) {
-            this.tickFishReeling(serverWorld);
+            this.tickFishTrail(serverWorld);
         }
-        this.handleFishOnHook(serverWorld);
+        this.tickFishBite(serverWorld);
     }
 
-    private void handleFishOnHook(ServerWorld serverWorld) {
-        float fishTypeRarityMultiplier = 1;
+    private void tickFishBite(ServerWorld serverWorld) {
         if (this.configuration.bobber().getItem() instanceof BobberPartItem bobberPartItem) {
             bobberPartItem.onFishBiteEffect();
         }
         if (Math.random() < configuration.attributes().baitFailChance()) {
             return;
         }
-        if (fishingCard.hasPerk(FishingPerks.BOBBER_THROW_CHARGE)) {
-            fishTypeRarityMultiplier += MathHelper.clamp(this.distanceTraveled / 64, 0, 1);
-        }
-        ItemStack fishingRodCopy = fishingRod.copy();
-        ItemStack sharedBait = fishingCard.getSharedBait();
-        if (sharedBait != ItemStack.EMPTY) {
-            // FishingRodPartController.putPart(fishingRodCopy, sharedBait);
-            fishingRod = fishingRodCopy;
-        }
 
-        //(From 20 To 45) * Multiplier
         this.hookCountdown = 45;//(int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
         Optional<SpecimenData> caughtFish = FishUtil.getFishOnHook(this);
-        if (caughtFish.isEmpty()) {
-            return;
+
+        float biteStrength = 1;
+        if (caughtFish.isPresent()) {
+            this.caughtFish = caughtFish.get();
+            biteStrength = (float) Math.pow(this.caughtFish.quality(), 2);
         }
-        this.caughtFish = caughtFish.get();
-        this.getVelocity().add(0, -0.03 * this.caughtFish.quality() * this.caughtFish.quality(), 0);
+        this.getVelocity().add(0, -0.03 * biteStrength, 0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
         serverWorld.spawnParticles(ParticleTypes.FIREWORK, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
 
-
-        if (sharedBait != ItemStack.EMPTY) {
-            int damage = sharedBait.getDamage();
-            sharedBait.setDamage(damage + 1);
-            if (damage + 1 > sharedBait.getMaxDamage()) {
-                fishingCard.setSharedBait(ItemStack.EMPTY);//todo fix ugly
-            }
-//        } else if (FishingRodPartController.hasBait(fishingRod)) {
-//            MEMBER_FISHING_ROD.damageComponents(fishingRod, 2, PartItem.DamageSource.BITE, this.playerOwner);
-        }
-
+        this.configuration.damage(1, PartItem.DamageSource.BITE, this.playerOwner, this.fishingRod);
     }
 
-    private void tickFishReeling(ServerWorld serverWorld) {
+    private void tickFishTrail(ServerWorld serverWorld) {
         this.fishAngle += (float) this.random.nextTriangular(0.0, 9.188);
         float f = this.fishAngle * ((float) Math.PI / 180);
         float g = MathHelper.sin(f);
@@ -571,11 +554,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private void tickWait(ServerWorld serverWorld) {
         this.waitCountdown -= 1;
-        splashWater(serverWorld);
-        handleWaitCountdown();
-    }
-
-    private void handleWaitCountdown() {
+        this.splashWater(serverWorld);
         if (this.waitCountdown <= 0) {
             this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
             //TODO Initialize with value with skill
@@ -707,8 +686,30 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 //            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
 //        }
         this.damageRod(2, PartItem.DamageSource.REEL_FISH);
+        if (this.caughtFish == null) {
+           this.reelJunk();
+            this.discard();
+            return;
+        }
         this.playerOwner.openHandledScreen(new FishingGameScreenHandlerFactory(this.caughtFish, this.configuration));
         this.discard();
+    }
+
+    private void reelJunk() {
+        if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
+           return;
+        }
+        if (!(this.playerOwner instanceof ServerPlayerEntity serverPlayer)) {
+            return;
+        }
+        LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+                .add(LootContextParameters.ORIGIN, serverPlayer.getPos())
+                .add(LootContextParameters.TOOL, this.fishingRod)
+                .add(LootContextParameters.THIS_ENTITY, serverPlayer)
+                .luck(0.5f)
+                .build(LootContextTypes.FISHING);
+        LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(FCLootTables.JUNK);
+        FishUtil.giveReward(serverPlayer, lootTable.generateLoot(lootContextParameterSet));
     }
 
     private void reelWater() {

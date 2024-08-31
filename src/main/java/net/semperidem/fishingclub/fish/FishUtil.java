@@ -85,7 +85,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
     }
 
-    public static void giveReward(ServerPlayerEntity player, ArrayList<ItemStack> treasureReward){
+    public static void giveReward(ServerPlayerEntity player, List<ItemStack> treasureReward){
         for(ItemStack reward : treasureReward) {
             giveItemStack(player, reward);
         }
@@ -234,6 +234,16 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     }
 
     public static Optional<SpecimenData> getFishOnHook(IHookEntity hookEntity) {
+        float luck = 0.5f;
+        if (hookEntity.getFishingCard().getHolder() instanceof PlayerEntity playerEntity) {
+            luck = (playerEntity.getBlockY() + 128) / 384f;
+            luck *= (1 + playerEntity.getLuck());
+        }
+
+        if (Math.random() < 0.05 / luck) {
+           return Optional.empty();
+        }
+
         int attempts = 10;
         int maxWeight = hookEntity.maxWeight();
         for(int i = 0; i < attempts; i++) {

@@ -55,17 +55,7 @@ public class FishingRodCoreItem extends FishingRodItem {
         }
 
         ItemStack fishingRod = user.getStackInHand(hand);
-        LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)world)
-                .add(LootContextParameters.ORIGIN, user.getPos())
-                .add(LootContextParameters.TOOL, fishingRod)
-                .add(LootContextParameters.THIS_ENTITY, user)
-                .luck(0.5f)
-                .build(LootContextTypes.FISHING);
-        LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(FCLootTables.JUNK);
-        List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
-        for(ItemStack stack : list) {
-            user.dropItem(stack, false);
-        }
+
         boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast) {
             user.sendMessage(Text.of("Can't use without line"), true);
