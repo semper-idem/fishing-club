@@ -110,7 +110,7 @@ public class TradeSecret {
     public Text getShortDescription(){
         return this.shortDescription;
     }
-    public Text getLongDescription(){
+    public List<Text> getLongDescription(){
         return this.longDescription;
     }
 
