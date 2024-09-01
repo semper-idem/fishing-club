@@ -10,19 +10,54 @@ import java.util.List;
 import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.*;
 
 public class TradeSecret {
-    public final int id;
+    String name;
     Text label;
     Text shortDescription;
     List<Text> longDescription;
     TradeSecret parent;
     List<TradeSecret> children = new ArrayList<>();
     Identifier texture;
-    int maxLevel = 0;
+    int maxLevel = 1;
     float[] levelValues;
     int[] costPerLevel;
 
-    private TradeSecret(int id) {
-        this.id = id;
+    public String name() {
+        return this.name;
+    }
+
+    public List<TradeSecret> getChildren(){
+        return this.children;
+    }
+
+    public Identifier getTexture(){
+        return this.texture;
+    }
+
+    public TradeSecret getParent(){
+        return parent;
+    }
+
+    public Text getLabel(){
+        return label;
+    }
+
+    public Text getShortDescription(){
+        return this.shortDescription;
+    }
+
+    public List<Text> getLongDescription(){
+        return this.longDescription;
+    }
+
+    public int maxLevel() {
+        return this.maxLevel;
+    }
+
+    public int cost(int level) {
+        if (this.costPerLevel == null || this.costPerLevel.length < level) {
+            return 1;
+        }
+        return costPerLevel[level];
     }
 
     static Builder builder() {
@@ -30,20 +65,16 @@ public class TradeSecret {
     }
 
     static class Builder {
-        private final int id;
         private String name;
         private TradeSecret parent;
         private float[] levelValues;
         private int[] costPerLevel;
 
-        Builder() {
-            id = ID_TO_SKILL.size();
-        }
-
         TradeSecret build() {
-            TradeSecret tradeSecret = new TradeSecret(this.id);
-            ID_TO_SKILL.put(this.id, tradeSecret);
+            TradeSecret tradeSecret = new TradeSecret();
+            NAME_TO_SKILL.put(this.name, tradeSecret);
 
+            tradeSecret.name = this.name;
             tradeSecret.label = Text.translatable(this.name);
             tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name);
             tradeSecret.shortDescription = Text.translatable(this.name + ".short_description");
@@ -92,26 +123,5 @@ public class TradeSecret {
 
     }
 
-    public List<TradeSecret> getChildren(){
-        return this.children;
-    }
-
-    public Identifier getTexture(){
-        return this.texture;
-    }
-
-    public TradeSecret getParent(){
-        return parent;
-    }
-
-    public Text getLabel(){
-        return label;
-    }
-    public Text getShortDescription(){
-        return this.shortDescription;
-    }
-    public List<Text> getLongDescription(){
-        return this.longDescription;
-    }
 
 }

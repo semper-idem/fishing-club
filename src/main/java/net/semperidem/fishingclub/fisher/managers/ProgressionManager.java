@@ -27,7 +27,7 @@ public class ProgressionManager extends DataManager {
     private static final int RESET_COST_PER_RESET = 10000;
     private int resetCount = 0;
 
-    private final List<Integer> knownTradeSecrets = new ArrayList<>();
+    private final HashMap<String, Integer> knownTradeSecrets = new HashMap<>();
     private final HashMap<String, SpellInstance> spells = new HashMap<>();
 
     public ProgressionManager(FishingCard trackedFor) {
@@ -67,14 +67,14 @@ public class ProgressionManager extends DataManager {
         return exp;
     }
 
-    public void learnTradeSecret(int tradeSecretId){
+    public void learnTradeSecret(String tradeSecretName){
         if (!hasAdmirationPoints()) {
             return;
         }
-        if (this.knownTradeSecrets.contains(tradeSecretId)) {
+        if (this.knownTradeSecrets.containsKey(tradeSecretName)) {
             return;
         }
-        Optional<TradeSecret> maybeTradeSecret = TradeSecrets.fromId(tradeSecretId);
+        Optional<TradeSecret> maybeTradeSecret = TradeSecrets.fromName(tradeSecretName);
         if (maybeTradeSecret.isEmpty()){
             return;
         }
@@ -82,11 +82,18 @@ public class ProgressionManager extends DataManager {
         if (!hasRequiredPerk(tradeSecret)) {
             return;
         }
-
-        this.admirationPoints--;
-        this.knownTradeSecrets.add(tradeSecretId);
+        int currentLevel = this.knownTradeSecrets.getOrDefault(tradeSecretName, 0);
+        if (tradeSecret.maxLevel() <= currentLevel) {
+            return;
+        }
+        int nextLevelPoints = tradeSecret.cost(currentLevel);
+        if (!this.hasAdmirationPoints(nextLevelPoints)){
+            return;
+        }
+        this.admirationPoints -= currentLevel;
+        this.knownTradeSecrets.put(tradeSecretName, currentLevel + 1);
         if (Spells.perkHasSpell(tradeSecret)) {
-            this.spells.put(String.valueOf(tradeSecret.id), SpellInstance.getSpellInstance(tradeSecret, 0));
+            this.spells.put(tradeSecretName, SpellInstance.getSpellInstance(tradeSecret, 0));
         }
 
         this.sync();
@@ -105,7 +112,7 @@ public class ProgressionManager extends DataManager {
         if (!this.hasRequiredPerk(tradeSecret)) {
             return false;
         }
-        return !this.knownTradeSecrets.contains(tradeSecret.id);
+        return !this.knownTradeSecrets.containsKey(tradeSecret.name());
     }
 
     public void addPerkPoints(int amount){
@@ -119,6 +126,10 @@ public class ProgressionManager extends DataManager {
 
     public boolean hasAdmirationPoints(){
         return this.admirationPoints > 0;
+    }
+
+    public boolean hasAdmirationPoints(int count) {
+        return this.admirationPoints >= count;
     }
 
     public void useSpell(String perkName, Entity target){

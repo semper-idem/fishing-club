@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class TradeSecrets {
-    static final HashMap<Integer, TradeSecret> ID_TO_SKILL = new HashMap<>();
+    static final HashMap<String, TradeSecret> NAME_TO_SKILL = new HashMap<>();
     public static TradeSecret BOBBER_THROW_CHARGE;
     public static TradeSecret FISH_QUANTITY;
     public static TradeSecret BOBBER_SIZE_BOAT;//todo add open water check on all boat perks
@@ -184,11 +184,11 @@ public class TradeSecrets {
                 .build();
     }
 
-    public static Optional<TradeSecret> fromId(int id) {
-        return Optional.of(ID_TO_SKILL.get(id));
+    public static Optional<TradeSecret> fromName(String name) {
+        return Optional.of(NAME_TO_SKILL.get(name));
     }
 
     public static int count() {
-        return ID_TO_SKILL.size();
+        return NAME_TO_SKILL.size();
     }
 }
