@@ -1,14 +1,10 @@
 package net.semperidem.fishingclub.fisher.perks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
 public class TradeSecrets {
-    static final HashMap<String, TradeSecret> NAME_TO_PERK_MAP = new HashMap<>();
-    static final HashMap<Byte, TradeSecret> ID_TO_PERK_MAP = new HashMap<>();
-    public static final HashMap<Path, ArrayList<TradeSecret>> SKILL_TREE = new HashMap<>();
-
+    static final HashMap<Integer, TradeSecret> ID_TO_SKILL = new HashMap<>();
 
 
     //H - Special
@@ -67,17 +63,22 @@ public class TradeSecrets {
 
 
         //make it toggle
-        BOBBER_THROW_CHARGE = new TradeSecret("bobber_throw_charge", Path.HOBBYIST)
-                .withLabel("Expert Technique")
-                .withDescription(
-                        "Charge rod cast to throw bobber further \n" +
-                                "and catch rare fish more easily"
-                ).withDetailedDesc(
-                        "Charge rod cast to throw bobber further \n" +
-                                "which increases rarity of fish type by up to\n" +
-                                "100% at 64 blocks (doesn't include height)\n" +
-                                "This also decreases catch-rate by up to 50%"
-                ).withIcon("bobber_throw_charge.png");
+        BOBBER_THROW_CHARGE = TradeSecret.builder()
+                .name("bobber_throw_charge")
+                .shortDescription("""
+                                Charge rod cast to throw bobber further
+                                and catch rare fish more easily
+                                """)
+                .longDescription("""
+                                Charge rod cast to throw bobber further
+                                which increases rarity of fish type by up to
+                                100% at 64 blocks (doesn't include height)
+                                This also decreases catch-rate by up to 50%
+                                At highest level allows to do precision throw
+                                (using  Sneak Key) to achieve the opposite effect
+                                """)
+                .levelValues(0, 0)
+                .build();
 
         FISH_QUANTITY = new TradeSecret("fish_quantity", Path.HOBBYIST)
                 .withLabel("Another one")
@@ -313,30 +314,11 @@ public class TradeSecrets {
         CURSE_OF_LOSER = new TradeSecret("curse_of_loser");
     }
 
-    public static TradeSecret getPerkFromName(String name){
-        return Optional.of(NAME_TO_PERK_MAP.get(name)).orElse(CURSE_OF_LOSER);
+    public static Optional<TradeSecret> fromId(int id) {
+        return Optional.of(ID_TO_SKILL.get(id));
     }
 
-    public static TradeSecret getPerkFromId(byte id) {
-        return Optional.of(ID_TO_PERK_MAP.get(id)).orElse(CURSE_OF_LOSER);
-    }
-
-    public static HashMap<String, TradeSecret> fromByteArray(byte[] ids) {
-        HashMap<String, TradeSecret> perkMap = new HashMap<>();
-        for (byte id : ids) {
-            TradeSecret perk = getPerkFromId(id);
-            perkMap.put(perk.getName(), perk);
-        }
-        return perkMap;
-    }
-
-    public static byte[] toByteArray(HashMap<String, TradeSecret> perkMap) {
-        byte[] ids = new byte[perkMap.size()];
-        byte lastIndex = 0;
-        for(TradeSecret perk : perkMap.values()){
-            ids[lastIndex] = perk.id;
-            lastIndex++;
-        }
-        return ids;
+    public static int count() {
+        return ID_TO_SKILL.size();
     }
 }

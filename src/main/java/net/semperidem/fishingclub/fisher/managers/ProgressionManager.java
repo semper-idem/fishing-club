@@ -11,7 +11,7 @@ import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class ProgressionManager extends DataManager {
     private static final int BASE_EXP = 50;
@@ -21,13 +21,13 @@ public class ProgressionManager extends DataManager {
 
     private int level = 1;
     private int exp = 0;
-    private int perkPoints = 0;
+    private int admirationPoints = 0;
 
     private static final int RESET_COST_PER_PERK = 1000;
     private static final int RESET_COST_PER_RESET = 10000;
     private int resetCount = 0;
 
-    private final HashMap<String, TradeSecret> perks = new HashMap<>();
+    private final List<Integer> knownTradeSecrets = new ArrayList<>();
     private final HashMap<String, SpellInstance> spells = new HashMap<>();
 
     public ProgressionManager(FishingCard trackedFor) {
@@ -41,13 +41,13 @@ public class ProgressionManager extends DataManager {
 
 
     public int getResetCost() {
-        return RESET_COST_PER_RESET * resetCount + RESET_COST_PER_PERK * perks.size();
+        return RESET_COST_PER_RESET * resetCount + RESET_COST_PER_PERK * knownTradeSecrets.size();
     }
 
     public void resetPerks() {
         resetCount++;
-        int refundPerkPoints = perks.size();
-        perks.clear();
+        int refundPerkPoints = knownTradeSecrets.size();
+        knownTradeSecrets.clear();
         spells.clear();
         addPerkPoints(refundPerkPoints);
         sync();
@@ -60,53 +60,69 @@ public class ProgressionManager extends DataManager {
     public void setLevel(int level) {
         int currentLevel = this.level;
         this.level = level;
-        this.perkPoints += (level - currentLevel);
+        this.admirationPoints += (level - currentLevel);
         sync();
     }
     public int getExp() {
         return exp;
     }
 
-    public void addPerk(String perkName){
-        TradeSecret perk = TradeSecrets.getPerkFromName(perkName);
-        if (!hasRequiredPerk(perk) || !hasPerkPoints()) {
+    public void learnTradeSecret(int tradeSecretId){
+        if (!hasAdmirationPoints()) {
             return;
         }
-        perk.onEarn(trackedFor.getHolder());
-        this.perks.put(perk.getName(), perk);
-        if (Spells.perkHasSpell(perk)) {
-            this.spells.put(perk.getName(), SpellInstance.getSpellInstance(perk, 0));
+        if (this.knownTradeSecrets.contains(tradeSecretId)) {
+            return;
         }
-        perkPoints--;
-        sync();
+        Optional<TradeSecret> maybeTradeSecret = TradeSecrets.fromId(tradeSecretId);
+        if (maybeTradeSecret.isEmpty()){
+            return;
+        }
+        TradeSecret tradeSecret = maybeTradeSecret.get();
+        if (!hasRequiredPerk(tradeSecret)) {
+            return;
+        }
+
+        this.admirationPoints--;
+        this.knownTradeSecrets.add(tradeSecretId);
+        if (Spells.perkHasSpell(tradeSecret)) {
+            this.spells.put(tradeSecret.getName(), SpellInstance.getSpellInstance(tradeSecret, 0));
+        }
+
+        this.sync();
     }
 
 
 
-    public boolean hasRequiredPerk(TradeSecret perk){
-        return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
+    public boolean hasRequiredPerk(TradeSecret tradeSecret){
+        return tradeSecret.getParent() == null;
     }
 
-    public boolean canUnlockPerk(TradeSecret perk) {
-        boolean isNotUnlocked = !this.perks.containsKey(perk.getName());
-        return hasRequiredPerk(perk) && hasPerkPoints() && isNotUnlocked;
+    public boolean canUnlockPerk(TradeSecret tradeSecret) {
+        if (!hasAdmirationPoints()) {
+            return false;
+        }
+        if (!this.hasRequiredPerk(tradeSecret)) {
+            return false;
+        }
+        return !this.knownTradeSecrets.contains(tradeSecret.id);
     }
 
     public void addPerkPoints(int amount){
-        this.perkPoints += amount;
+        this.admirationPoints += amount;
         sync();
     }
 
-    public int getPerkPoints(){
-        return this.perkPoints;
+    public int getAdmirationPoints(){
+        return this.admirationPoints;
     }
 
-    public boolean hasPerkPoints(){
-        return this.perkPoints > 0;
+    public boolean hasAdmirationPoints(){
+        return this.admirationPoints > 0;
     }
 
     public void useSpell(String perkName, Entity target){
-        if (!perks.containsKey(perkName)){
+        if (!this.spells.containsKey(perkName)){
             return;
         }
         SpellInstance spellInstance = spells.get(perkName);
@@ -123,7 +139,7 @@ public class ProgressionManager extends DataManager {
         if (gainedXP < 0) {
             return;
         }
-
+        //It was intentionally to not cast it to decimal but maybe we should
         trackedFor.getHolder().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
 
         this.exp += gainedXP;
@@ -137,12 +153,16 @@ public class ProgressionManager extends DataManager {
         sync();
     }
 
-    public HashMap<String, TradeSecret> getPerks(){
-        return perks;
+    public List<Integer> getKnownTradeSecrets(){
+        return this.knownTradeSecrets;
     }
 
-    public boolean hasPerk(TradeSecret perk) {
-        return perks.containsKey(perk.getName());
+    public boolean knowsTradeSecret(TradeSecret tradeSecret) {
+        return this.knowsTradeSecret(tradeSecret.id);
+    }
+
+    public boolean knowsTradeSecret(int tradeSecretId) {
+        return this.knownTradeSecrets.contains(tradeSecretId);
     }
 
     @Override
@@ -151,17 +171,17 @@ public class ProgressionManager extends DataManager {
             return;
         }
         NbtCompound progressionNbt = fishingCardNbt.getCompound(TAG);
-        level = progressionNbt.getInt(LEVEL_TAG);
-        exp = progressionNbt.getInt(EXP_TAG);
-        perkPoints = progressionNbt.getInt(PERK_POINTS);
-        resetCount = progressionNbt.getInt(RESET_COUNT);
-        readPerks(progressionNbt);
-        readSpells(progressionNbt);
+        this.level = progressionNbt.getInt(LEVEL_TAG);
+        this.exp = progressionNbt.getInt(EXP_TAG);
+        this.admirationPoints = progressionNbt.getInt(ADMIRATION_POINTS_TAG);
+        this.resetCount = progressionNbt.getInt(RESET_COUNT);
+        this.readKnownTradeSecrets(progressionNbt);
+        this.readSpells(progressionNbt);
     }
 
-    private void readPerks(NbtCompound fishingCardNbt){
-        perks.clear();
-        this.perks.putAll(TradeSecrets.fromByteArray(fishingCardNbt.getByteArray(PERKS_TAG)));
+    private void readKnownTradeSecrets(NbtCompound fishingCardNbt){
+        this.knownTradeSecrets.clear();
+        this.knownTradeSecrets.addAll(Arrays.stream((fishingCardNbt.getIntArray(TRADE_SECRETS_TAG))).boxed().toList());
     }
 
     private void readSpells(NbtCompound progressionNbt){
@@ -176,17 +196,13 @@ public class ProgressionManager extends DataManager {
     @Override
     public void writeNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound progressionNbt = new NbtCompound();
-        progressionNbt.putInt(LEVEL_TAG, level);
-        progressionNbt.putInt(EXP_TAG, exp);
-        progressionNbt.putInt(PERK_POINTS, perkPoints);
-        progressionNbt.putInt(RESET_COUNT, resetCount);
-        writePerks(progressionNbt);
-        writeSpells(progressionNbt);
+        progressionNbt.putInt(LEVEL_TAG, this.level);
+        progressionNbt.putInt(EXP_TAG, this.exp);
+        progressionNbt.putInt(ADMIRATION_POINTS_TAG, this.admirationPoints);
+        progressionNbt.putInt(RESET_COUNT, this.resetCount);
+        progressionNbt.putIntArray(TRADE_SECRETS_TAG, this.knownTradeSecrets);//todo with spells
+        this.writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
-    }
-
-    public void writePerks(NbtCompound progressionNbt){
-        progressionNbt.putByteArray(PERKS_TAG, TradeSecrets.toByteArray(this.perks));//todo with spells
     }
 
     public void writeSpells(NbtCompound progressionNbt){
@@ -199,8 +215,8 @@ public class ProgressionManager extends DataManager {
     private static final String TAG = "progression";
     private static final String LEVEL_TAG = "level";
     private static final String EXP_TAG = "exp";
-    private static final String PERK_POINTS = "perk_points";
+    private static final String ADMIRATION_POINTS_TAG = "perk_points";
     private static final String RESET_COUNT = "reset_count";
-    private static final String PERKS_TAG ="perks";
+    private static final String TRADE_SECRETS_TAG ="perks";
     private static final String SPELLS_TAG ="spells";
 }

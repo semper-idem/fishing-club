@@ -48,7 +48,7 @@ public class SpellInstance {
     }
 
     public String getLabel(){
-        return spell.requiredPerk.getLabel();
+        return spell.requiredPerk.getLabel().getString();
     }
 
     public long getNextCast(){

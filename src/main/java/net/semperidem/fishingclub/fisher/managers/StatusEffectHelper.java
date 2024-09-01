@@ -56,7 +56,7 @@ public class StatusEffectHelper {
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
-                progressionManager.hasPerk(TradeSecrets.QUALITY_SHARING) &&
+                progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_SHARING) &&
                 !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
@@ -85,7 +85,7 @@ public class StatusEffectHelper {
     }
 
     private void prolongStatusEffects(ProgressionManager progressionManager){
-        if (!progressionManager.hasPerk(TradeSecrets.SHARED_BUFFS)) {
+        if (!progressionManager.knowsTradeSecret(TradeSecrets.SHARED_BUFFS)) {
             return;
         }
 

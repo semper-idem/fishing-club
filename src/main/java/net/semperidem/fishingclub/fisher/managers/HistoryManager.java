@@ -137,7 +137,7 @@ public class HistoryManager extends DataManager {
             minGrade++;
         }
         if (isFirstCatchOfTheDay()) {
-            if (progressionManager.hasPerk(TradeSecrets.FIRST_CATCH)) {
+            if (progressionManager.knowsTradeSecret(TradeSecrets.FIRST_CATCH)) {
                 minGrade++;
             }
             minGrade++;

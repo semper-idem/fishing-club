@@ -17,10 +17,11 @@ import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.perks.TradeSecret;
 import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.Path;
-import net.semperidem.fishingclub.network.payload.AddPerkPayload;
+import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> implements ScreenHandlerProvider<FishingCardScreenHandler>, Cacheable {
 
@@ -192,8 +193,9 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            handler.fishingCard.addPerk(selectedPerk.getName());
-            ClientPlayNetworking.send(new AddPerkPayload(selectedPerk.getName()));
+            handler.fishingCard.learnTradeSecret(selectedPerk.id);
+            //this is prob not needed since we are using cardinal components TODO verify
+            ClientPlayNetworking.send(new LearnTradeSecretPayload(selectedPerk.id));
             unlockButton.visible = false;
         };
     }
@@ -293,7 +295,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
                 TEXT_COLOR
         );
 
-        ArrayList<Text> lines = selectedPerk.getDetailedDescription();
+        List<Text> lines = selectedPerk.getLongDescription();
         int offset = 0;
         for(Text line : lines) {
             context.drawTextWithShadow(textRenderer, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
@@ -324,7 +326,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             );
             perkButtons.add(perkButtonWidget);
             addDrawableChild(perkButtonWidget);
-            perkToAdd = perkToAdd.getChild();
+            perkToAdd = perkToAdd.getChildren();
             perkX += 26;
         }
     }

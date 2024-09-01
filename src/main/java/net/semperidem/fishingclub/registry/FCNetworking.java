@@ -25,7 +25,7 @@ public class FCNetworking {
         PayloadTypeRegistry.playC2S().register(SellFishDirectPayload.ID, SellFishDirectPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SummonAcceptPayload.ID, SummonAcceptPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingGameInputPayload.ID, FishingGameInputPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(AddPerkPayload.ID, AddPerkPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(LearnTradeSecretPayload.ID, LearnTradeSecretPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ConfigurationPayload.ID, ConfigurationPayload.CODEC);
     }
 
@@ -39,7 +39,7 @@ public class FCNetworking {
     public static void registerServer() {
         registerPayload();
         ServerPlayNetworking.registerGlobalReceiver(FishingCardPayload.ID, FishingCardPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(AddPerkPayload.ID, AddPerkPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(LearnTradeSecretPayload.ID, LearnTradeSecretPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(LinePayload.ID, LinePayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CoinFlipPayload.ID, CoinFlipPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(TitleClaimPayload.ID, TitleClaimPayload::consumePayload);

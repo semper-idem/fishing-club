@@ -1,133 +1,108 @@
 package net.semperidem.fishingclub.fisher.perks;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.*;
 
 public class TradeSecret {
-    static byte LAST_ID = 0;
-    String name;
-    String label;
-    ArrayList<Text> description;
-    ArrayList<Text> detailedDescription;
+    public final int id;
+    Text label;
+    List<Text> shortDescription;
+    List<Text> longDescription;
     TradeSecret parent;
-    TradeSecret child;
-    Path path;
-    Identifier icon;
-    PerkReward reward;
-    public final byte id;
+    List<TradeSecret> children = new ArrayList<>();
+    Identifier texture;
+    int maxLevel = 0;
+    int[] levelValues;
 
-
-    TradeSecret(String name){
-        this.name = name;
-        this.id = LAST_ID++;
+    private TradeSecret(int id) {
+        this.id = id;
     }
 
-    TradeSecret(String name, Path path){
-        this.id = LAST_ID++;
-        this.name = name;
-        this.path = path;
-        NAME_TO_PERK_MAP.put(name, this);
-        ID_TO_PERK_MAP.put(this.id, this);
-        if (!SKILL_TREE.containsKey(path)) {
-            SKILL_TREE.put(path, new ArrayList<>());
+    static Builder builder() {
+        return new Builder();
+    }
+
+    static class Builder {
+        private final int id;
+        private String name;
+        private String shortDescription;
+        private String longDescription;
+        private TradeSecret parent;
+        private int[] levelValues;
+
+        Builder() {
+            id = ID_TO_SKILL.size();
         }
-        SKILL_TREE.get(path).add(this);
-    }
-    TradeSecret(String name, TradeSecret parent){
-        this.id = LAST_ID++;
-        this.name = name;
-        this.path = parent.path;
-        this.parent = parent;
-        parent.child = this;
-        NAME_TO_PERK_MAP.put(name, this);
-        ID_TO_PERK_MAP.put(this.id, this);
-    }
 
-    public void onEarn(PlayerEntity playerEntity){
-        if (reward == null) return;
-        if (!(playerEntity instanceof ServerPlayerEntity)) return;
-        reward.onEarn(playerEntity);
-    }
+        TradeSecret build() {
+            TradeSecret tradeSecret = new TradeSecret(this.id);
+            ID_TO_SKILL.put(this.id, tradeSecret);
 
-    public Path getPath() {
-        return this.path;
-    }
+            tradeSecret.label = Text.of(this.name);
+            tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name);
+            tradeSecret.shortDescription = Arrays.stream(this.shortDescription.split("\n")).map(Text::of).toList();
+            tradeSecret.longDescription = Arrays.stream(this.longDescription.split("\n")).map(Text::of).toList();
+            tradeSecret.maxLevel = this.levelValues == null ? 0 : this.levelValues.length;
+            tradeSecret.levelValues = this.levelValues;
 
-    public TradeSecret getChild(){
-        return this.child;
-    }
-
-    public TradeSecret withIcon(String iconName){
-        this.icon = Identifier.of(FishingClub.MOD_ID, "textures/gui/skill/" + iconName);
-        return this;
-    }
-
-    public TradeSecret withReward(PerkReward perkReward){
-        this.reward = perkReward;
-        return this;
-    }
-    public Identifier getIcon(){
-        return this.icon;
-    }
-    public boolean parentIsRoot(){
-        if (this.parent == null) {
-            return false;
+            this.parent.children.add(tradeSecret);
+            tradeSecret.parent = this.parent;
+            return tradeSecret;
         }
-        return this.parent.parent != null;
+
+        Builder levelValues(int... levelValues) {
+            this.levelValues = levelValues;
+            return this;
+        }
+        Builder longDescription(String longDescription) {
+            this.longDescription = longDescription;
+            return this;
+        }
+
+        Builder shortDescription(String shortDescription) {
+            this.shortDescription = shortDescription;
+            return this;
+        }
+
+        Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        Builder parent(TradeSecret parent) {
+            this.parent = parent;
+            return this;
+        }
+
     }
 
-    public String getName(){
-        return name;
+    public List<TradeSecret> getChildren(){
+        return this.children;
     }
+
+    public Identifier getTexture(){
+        return this.texture;
+    }
+
     public TradeSecret getParent(){
         return parent;
     }
 
-    TradeSecret withLabel(String label){
-        this.label = label;
-        return this;
-    }
-    TradeSecret withDescription(String description){
-        this.description = splitLine(description);
-        return this;
-    }
-
-    TradeSecret withDetailedDesc(String detailedDescription){
-        this.detailedDescription = splitLine(detailedDescription);
-        return this;
-    }
-
-    private ArrayList<Text> splitLine(String text){
-        String[] lines = text.split("\n");
-        ArrayList<Text> result = new ArrayList<>();
-        for(String line : lines) {
-                result.add(Text.of(line));
-        }
-        return result;
-    }
-
-    public String getLabel(){
+    public Text getLabel(){
         return label;
     }
-    public ArrayList<Text> getDescription(){
-        return description;
+    public List<Text> getShortDescription(){
+        return this.shortDescription;
     }
-    public ArrayList<Text> getDetailedDescription(){
-        return detailedDescription;
+    public List<Text> getLongDescription(){
+        return this.longDescription;
     }
 
-    static void grantAdvancement(PlayerEntity player, Identifier advancementIdentifier){
-//        Advancement advancement = player.getServer().getAdvancementLoader().get(advancementIdentifier);
-//        AdvancementProgress advancementProgress =  ((ServerPlayerEntity)player).getAdvancementTracker().getProgress(advancement);
-//        for(String criterion : advancementProgress.getUnobtainedCriteria()) {
-//            ((ServerPlayerEntity)player).getAdvancementTracker().grantCriterion(advancement, criterion);
-//        }
-    }
 }

@@ -67,7 +67,7 @@ public class PerkButtonWidget extends ButtonWidget {
 
     private void renderIcon(DrawContext context){
         Identifier icon;
-        if ((icon = tradeSecret.getIcon()) == null) {
+        if ((icon = tradeSecret.getTexture()) == null) {
             return;
         }
         RenderSystem.setShaderColor(1,1,1,1);

@@ -154,18 +154,18 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public boolean canResetPerks() {
-        return getResetCost() <= getCredit() && !progressionManager.getPerks().isEmpty();
+        return getResetCost() <= getCredit() && !progressionManager.getKnownTradeSecrets().isEmpty();
     }
 
     public int getResetCost() {
         return progressionManager.getResetCost();
     }
     public int getPerkPoints(){
-        return this.progressionManager.getPerkPoints();
+        return this.progressionManager.getAdmirationPoints();
     }
 
     public boolean hasPerkPoints(){
-        return this.progressionManager.hasPerkPoints();
+        return this.progressionManager.hasAdmirationPoints();
     }
 
     public void useSpell(String perkName, Entity target){
@@ -240,12 +240,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return historyManager.getFishAtlas();
     }
 
-    public void addPerk(String perkName){
-        progressionManager.addPerk(perkName);
+    public void learnTradeSecret(int tradeSecretId){
+        this.progressionManager.learnTradeSecret(tradeSecretId);
     }
 
     public boolean hasPerk(TradeSecret perk){
-        return progressionManager.hasPerk(perk);
+        return progressionManager.knowsTradeSecret(perk);
     }
 
     public boolean canUnlockPerk(TradeSecret perk){
