@@ -56,7 +56,7 @@ public class StatusEffectHelper {
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
-                progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_SHARING) &&
+                progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION) &&
                 !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
@@ -74,7 +74,7 @@ public class StatusEffectHelper {
 
         boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
         for(ServerPlayerEntity serverPlayerEntity : nearPlayers) {
-            if (FishingCard.of(serverPlayerEntity).hasPerk(TradeSecrets.PASSIVE_FISHING_XP)) {
+            if (FishingCard.of(serverPlayerEntity).hasPerk(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
                 xpBuffAffectedCount++;
             }
             if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {

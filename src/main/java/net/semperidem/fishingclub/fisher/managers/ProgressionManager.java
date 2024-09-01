@@ -86,7 +86,7 @@ public class ProgressionManager extends DataManager {
         this.admirationPoints--;
         this.knownTradeSecrets.add(tradeSecretId);
         if (Spells.perkHasSpell(tradeSecret)) {
-            this.spells.put(tradeSecret.getName(), SpellInstance.getSpellInstance(tradeSecret, 0));
+            this.spells.put(String.valueOf(tradeSecret.id), SpellInstance.getSpellInstance(tradeSecret, 0));
         }
 
         this.sync();

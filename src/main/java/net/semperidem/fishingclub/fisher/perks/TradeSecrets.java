@@ -5,313 +5,183 @@ import java.util.Optional;
 
 public class TradeSecrets {
     static final HashMap<Integer, TradeSecret> ID_TO_SKILL = new HashMap<>();
-
-
-    //H - Special
     public static TradeSecret BOBBER_THROW_CHARGE;
-    //H - Boat
     public static TradeSecret FISH_QUANTITY;
-    //add open water check for boat
-    public static TradeSecret BOBBER_SIZE_BOAT;
+    public static TradeSecret BOBBER_SIZE_BOAT;//todo add open water check on all boat perks
     public static TradeSecret FISH_QUANTITY_BOAT;
     public static TradeSecret LINE_HEALTH_BOAT;
     public static TradeSecret TREASURE_CHANCE_BOAT;
-
-    //O - Rain
     public static TradeSecret CATCH_RATE_RAIN;
     public static TradeSecret FISH_QUALITY_RAIN;
     public static TradeSecret SUMMON_RAIN;
-
-    //O - First catch of the day
     public static TradeSecret FIRST_CATCH;
     public static TradeSecret FIRST_CATCH_BUFF_QUALITY;
     public static TradeSecret FIRST_CATCH_BUFF_CATCH_RATE;
     public static TradeSecret CHANGE_OF_SCENERY;
-
-    //O - Misc
     public static TradeSecret INSTANT_FISH_CREDIT;
     public static TradeSecret BOMB_FISHING;
-
-    //S - Active Aura
     public static TradeSecret FISHING_SCHOOL;
     public static TradeSecret SLOWER_FISH;
     public static TradeSecret EXPERIENCE_BOOST;
     public static TradeSecret LUCKY_FISHING;
-
-    //S - Passive Aura
-    public static TradeSecret PASSIVE_FISHING_XP;
+    public static TradeSecret PASSIVE_FISHING_XP_BUFF;
     public static TradeSecret WATCH_AND_LEARN;
-    public static TradeSecret QUALITY_SHARING;
+    public static TradeSecret QUALITY_CELEBRATION;
     public static TradeSecret SHARED_BUFFS;
-
-    //S - Link
     public static TradeSecret FISHERMAN_LINK;
     public static TradeSecret DOUBLE_LINK;
     public static TradeSecret FISHERMAN_SUMMON;
-
-    //S - Misc
     public static TradeSecret MAGIC_ROD_SUMMON;
     public static TradeSecret FREE_SHOP_SUMMON;
 
-    public static TradeSecret CURSE_OF_LOSER;
-
-
     public static void register() {
-        //H - Special
-
-        //PRECISION FISHING - charge while sneaking to cast closer
-
-
-        //make it toggle
         BOBBER_THROW_CHARGE = TradeSecret.builder()
                 .name("bobber_throw_charge")
-                .shortDescription("""
-                                Charge rod cast to throw bobber further
-                                and catch rare fish more easily
-                                """)
-                .longDescription("""
-                                Charge rod cast to throw bobber further
-                                which increases rarity of fish type by up to
-                                100% at 64 blocks (doesn't include height)
-                                This also decreases catch-rate by up to 50%
-                                At highest level allows to do precision throw
-                                (using  Sneak Key) to achieve the opposite effect
-                                """)
-                .levelValues(0, 0)
+                .costPerLevel(2, 1)
                 .build();
 
-        FISH_QUANTITY = new TradeSecret("fish_quantity", Path.HOBBYIST)
-                .withLabel("Another one")
-                .withDescription("""
-                                Gain percentage change go catch more then one fish
-                                """
-                );
+        FISH_QUANTITY = TradeSecret.builder()
+                .name("fish_quantity")
+                .levelValues(0.1f, 0.15f, 0.2f)
+                .costPerLevel(1, 1, 1)
+                .build();
 
+        LINE_HEALTH_BOAT = TradeSecret.builder()
+                .name("line_health_boat")
+                .levelValues(50, 100, 200)
+                .build();
+        BOBBER_SIZE_BOAT = TradeSecret.builder()
+                .name("bobber_size_boat")
+                .levelValues(0.05f, 0.1f, 0.2f)
+                .parent(LINE_HEALTH_BOAT)
+                .build();
+        FISH_QUANTITY_BOAT = TradeSecret.builder()
+                .name("fish_quantity_boat")
+                .levelValues(0.05f, 0.1f, 0.2f)
+                .parent(BOBBER_SIZE_BOAT)
+                .build();
+        TREASURE_CHANCE_BOAT = TradeSecret.builder()
+                .name("treasure_chance_boat")
+                .levelValues(0.1f, 0.25f, 0.5f)
+                .costPerLevel(2, 2 ,2)
+                .parent(FISH_QUANTITY_BOAT)
+                .build();
 
-        //H - Boat
-        BOBBER_SIZE_BOAT = new TradeSecret("boat_bobber_size", Path.HOBBYIST)
-                .withLabel("Immersive fishing")
-                .withDescription("Increases bobber size by 10% when in boat")
-                .withDetailedDesc(
-                        "Your bobber grows in size while fishing from a boat,\n" +
-                                "making it easier to catch fish.")
-                .withIcon("oak_boat.png");
+        CATCH_RATE_RAIN = TradeSecret.builder()
+                .name("catch_rate_rain")
+                .levelValues(0.25f, 0.5f, 1)
+                .costPerLevel(1,2,3)
+                .build();
+        FISH_QUALITY_RAIN = TradeSecret.builder()
+                .name("fish_quality_rain")
+                .levelValues(0.1f, 0.25f, 0.5f)
+                .costPerLevel(1,1,1)
+                .parent(CATCH_RATE_RAIN)
+                .build();
+        SUMMON_RAIN = TradeSecret.builder().name("rain_summon")
+                .levelValues(1, 0.875f, 0.75f, 0.675f, 0.5f)
+                .costPerLevel(4, 1, 1, 1, 1)
+                .parent(FISH_QUALITY_RAIN)
+                .build();
 
-        FISH_QUANTITY_BOAT = new TradeSecret("double_fish_boat", BOBBER_SIZE_BOAT)
-                .withLabel("OMG twins?")
-                .withDescription("Gain 9% chance to double fish when in boat")
-                .withDetailedDesc(
-                        "Gain 9% chance to catch additional fish\n" +
-                                "when fishing from boat")
-                .withIcon("double_fish.png");
+        FIRST_CATCH = TradeSecret.builder()
+                .name("first_catch")
+                .build();
+        FIRST_CATCH_BUFF_QUALITY = TradeSecret.builder()
+                .name("quality_increase_first_catch")
+                .levelValues(1, 1.25f, 1.5f, 1.75f, 2f)
+                .costPerLevel(2,1,1,1,1)
+                .parent(FIRST_CATCH)
+                .build();
+        FIRST_CATCH_BUFF_CATCH_RATE = TradeSecret.builder()
+                .name("frequent_catch_first_catch")
+                .levelValues(1, 1.25f, 1.5f, 1.75f, 2)
+                .costPerLevel(2, 1, 1, 1, 1)
+                .parent(FIRST_CATCH_BUFF_QUALITY)
+                .build();
 
+        CHANGE_OF_SCENERY = TradeSecret.builder()
+                .name("change_of_scenery")
+                .costPerLevel(2)
+                .build();
 
-        LINE_HEALTH_BOAT = new TradeSecret("line_health_boat", FISH_QUANTITY_BOAT)
-                .withLabel("Sturdy Line")
-                .withDescription(
-                        "Fishing line takes 20% reduced damage when in boat")
-                .withDetailedDesc(
-                        "Gain 20% fishing line's damage reduction when in boat")
-                .withIcon("sturdy_line.png");
+        INSTANT_FISH_CREDIT = TradeSecret.builder()
+                .name("instant_fish_credit")
+                .levelValues(0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1)
+                .costPerLevel(1, 2, 3, 4, 5, 6)
+                .build();
 
+        BOMB_FISHING = TradeSecret.builder()
+                .name("bomb_fishing")
+                .costPerLevel(5)
+                .build();
 
-        TREASURE_CHANCE_BOAT = new TradeSecret("double_treasure_boat", LINE_HEALTH_BOAT)
-                .withLabel("Golden Boat")
-                .withDescription("Double chance for treasure when in boat")
-                .withDetailedDesc(
-                        "Double base chance for treasure (5% -> 10%)\n" +
-                                "to appear when in boat")
-                .withIcon("golden_boat.png");
+        FISHING_SCHOOL = TradeSecret.builder()
+                .name("fishing_school")
+                .levelValues(1, 1.5f, 2)
+                .build();
+        SLOWER_FISH = TradeSecret.builder()
+                .name("slower_fish")
+                .levelValues(0.1f, 0.25f, 0.5f)
+                .costPerLevel(1, 2, 4)
+                .parent(FISHING_SCHOOL)
+                .build();
+        EXPERIENCE_BOOST = TradeSecret.builder()
+                .name("experience_boost")
+                .levelValues(0.1f, 0.25f, 0.5f, 1f)
+                .costPerLevel(1,2,3,4)
+                .parent(SLOWER_FISH)
+                .build();
+        LUCKY_FISHING = TradeSecret.builder()
+                .name("lucky_fishing")
+                .levelValues(1, 2, 3)
+                .parent(EXPERIENCE_BOOST)
+                .build();
 
-        //O - Rain
-        CATCH_RATE_RAIN = new TradeSecret("rainy_fish", Path.OPPORTUNIST)
-                .withLabel("Fish o'clock")
-                .withDescription("Double raining catch rate bonus")
-                .withDetailedDesc("When casting bobber in rain increase raining\n" +
-                        " catch rate to 25%.\n" +
-                        "(Default rain catch rate bonus is 12.5%)")
-                .withIcon("raining_cloud.png");
+        WATCH_AND_LEARN = TradeSecret.builder()
+                .name("watch_and_learn")
+                .levelValues(0.1f, 0.125f, 0.15f, 0.175f, 0.2f)
+                .build();
+        PASSIVE_FISHING_XP_BUFF = TradeSecret.builder()
+                .name("passive_fishing_xp_buff")
+                .levelValues(1, 2, 5, 10)
+                .costPerLevel(1, 2, 3, 4)
+                .parent(WATCH_AND_LEARN)
+                .build();
 
+        MAGIC_ROD_SUMMON = TradeSecret.builder()
+                .name("magic_rod_summon")
+                .levelValues(1,2,3)
+                .build();
 
-        //Rework to increase quality or luck in rain
-        FISH_QUALITY_RAIN = new TradeSecret("rainy_fish_plus", CATCH_RATE_RAIN)
-                .withLabel("Fishy hours")
-                .withDescription("Quadruple raining catch rate bonus")
-                .withDetailedDesc("When casting bobber in rain increase raining\n" +
-                        " catch rate to 50%.")
-                .withIcon("raining_cloud_2.png");
-
-        SUMMON_RAIN = new TradeSecret("rain_summon", FISH_QUALITY_RAIN)
-                .withLabel("Perfect conditions")
-                .withDescription("[Spell] Summon rain")
-                .withDetailedDesc("[Spell] Summon rain\n" +
-                        "Duration: 5min\n" +
-                        "Cooldown: 60min")
-                .withIcon("rain_summon.png");
-
-        //O - First catch of the day
-        FIRST_CATCH = new TradeSecret("first_catch", Path.OPPORTUNIST)
-                .withLabel("First-est Catch of the Day")
-                .withDescription("Increase min grade of first fish of the day")
-                .withDetailedDesc("Your first catch of the day is always \n" +
-                        "grade 3 or above")
-                .withIcon("first.png");
-
-        FIRST_CATCH_BUFF_QUALITY = new TradeSecret("quality_increase_first_catch", FIRST_CATCH)
-                .withLabel("Few more first")
-                .withDescription("Gain buff to fish quality after first catch of the day")
-                .withDetailedDesc(
-                        "After first catch of the day gain buff:\n" +
-                                "25% chance to increase min fish grade by 1\n" +
-                                "Duration: 2min")
-                .withIcon("first_buff.png");
-
-        FIRST_CATCH_BUFF_CATCH_RATE = new TradeSecret("frequent_catch_first_catch", FIRST_CATCH_BUFF_QUALITY)
-                .withLabel("Frequent Catches")
-                .withDescription("Gain buff to fish catch rate after first catch of the day")
-                .withDetailedDesc(
-                        "After first catch of the day gain buff:\n" +
-                                "Decreasing fish wait time by 10%\n" +
-                                "Duration: 2min")
-                .withIcon("first_freq.png");
-
-        CHANGE_OF_SCENERY = new TradeSecret("chunk_quality_increase", FIRST_CATCH_BUFF_CATCH_RATE)
-                .withLabel("Fresh Waters")
-                .withDescription("If you're fishing for the first time in a chunk, fish quality increases")
-                .withDetailedDesc("If you're fishing for the first time in a chunk\n" +
-                        "grade of first fish caught is increased by 1")
-                .withIcon("chunk.png");
-
-        //O - Misc
-        INSTANT_FISH_CREDIT = new TradeSecret("instant_fish_credit", Path.OPPORTUNIST)
-                .withLabel("Instant Credit")
-                .withDescription("Unlock slot that lets you sell fish")
-                .withDetailedDesc("Unlock slot that lets you sell fish")
-                .withIcon("instant_credit.png");
-
-        BOMB_FISHING = new TradeSecret("bomb_fishing", INSTANT_FISH_CREDIT)
-                .withLabel("Explosive fishing")
-                .withDescription("TNT can now catch fish")
-                .withDetailedDesc("TNT prime by you and under water can \"catch\" fish")
-                .withIcon("tnt.png");
-        //WIND CHARGE FISHING
-
-        //S - Active Aura
-        FISHING_SCHOOL = new TradeSecret("fishing_school", Path.SOCIALIST)
-                .withLabel("Everyone learns sometime")
-                .withDescription("[Spell] Grants you and players near you buff to bobber width")
-                .withDetailedDesc("[Spell]\n" +
-                        "Grants you and players near you\n" +
-                        "additional 10% bobber width\n" +
-                        "Duration: 5min\n" +
-                        "Cooldown: 15min\n" +
-                        "Range: 4 blocks")
-                .withIcon("fishing_school.png");
-
-        SLOWER_FISH = new TradeSecret("slower_fish", FISHING_SCHOOL)
-                .withLabel("Slow Fish-o")
-                .withDescription("[Spell] Grants you and players near you buff slowing fish movement")
-                .withDetailedDesc("[Spell]\n" +
-                        "Slows down fish for you and players near you,\n" +
-                        "making them easier to catch.\n" +
-                        "Duration: 5min\n" +
-                        "Cooldown: 15min\n" +
-                        "Range: 4 blocks")
-                .withIcon("time_boost.png");
-
-        EXPERIENCE_BOOST = new TradeSecret("experience_boost", SLOWER_FISH)
-                .withLabel("Experience Boost")
-                .withDescription("[Spell] Grants you and players near you buff to experience gained")
-                .withDetailedDesc("[Spell]\n" +
-                        "Provides an experience boost to you and nearby\n" +
-                        "players, increasing the amount of fishing experience \n" +
-                        "gained from fishing.\n" +
-                        "Duration: 5min\n" +
-                        "Cooldown: 15min\n" +
-                        "Range: 4 blocks")
-                .withIcon("exp_boost.png");
-
-
-        LUCKY_FISHING = new TradeSecret("lucky_fishing", EXPERIENCE_BOOST)
-                .withLabel("Lucky Fishing")
-                .withDescription("[Spell] Grants you and players near you buff increasing fishing luck")
-                .withDetailedDesc("[Spell]\n" +
-                        "Increases fishing luck for you and nearby players, \n" +
-                        "raising the chance to catch valuable items.\n" +
-                        "Duration: 5min\n" +
-                        "Cooldown: 15min\n" +
-                        "Range: 4 blocks")
-                .withIcon("luck_boost.png");
-
-        //S - Passive Aura
-        //WATCH_AND_LEARN - gain passive exp from other players fishing
-
-        PASSIVE_FISHING_XP = new TradeSecret("passive_fishing_xp", Path.SOCIALIST)
-                .withLabel("Watch and learn")
-                .withDescription("Players near you gain small buff to fishing experience they gain")
-                .withDetailedDesc("Players near you gain small buff to fishing\n" +
-                        "experience they gain.\n" +
-                        "Scales with level difference between fisherman\n" +
-                        "Range: 3 blocks")
-                .withIcon("passiv_exp.png");
-
-        QUALITY_SHARING = new TradeSecret("quality_sharing", PASSIVE_FISHING_XP)
-                .withLabel("Celebration!")
-                .withDescription("Each time you catch grade 4+ fish, players near you gain quality buff for their next catch")
-                .withDetailedDesc("Each time you catch grade 4+ fish,\n" +
-                        "players near you gain +1 to min grade of their\n" +
-                        "next catch\n" +
-                        "Range: 4 blocks\n" +
-                        "Duration: 2min")
-                .withIcon("quality_sharing.png");
-
-        SHARED_BUFFS = new TradeSecret("shared_buffs", QUALITY_SHARING)
-                .withLabel("Team expedition")
-                .withDescription("When in a boat together, each time you catch fish increase buff timer")
-                .withDetailedDesc("When in a boat together, \n" +
-                        "each time you catch fish increase buff timer by \n" +
-                        "10 seconds")
-                .withIcon("buff_sharing.png");
-
-        //S - Link
-        FISHERMAN_LINK = new TradeSecret("fisherman_link", Path.SOCIALIST)
-                .withLabel("Fisherman Link")
-                .withDescription("Link one fisherman to always have shared buffs")
-                .withDetailedDesc("Establish a link with another fisherman. \n" +
-                        "When linked, you will always share fishing buffs, \n" +
-                        "regardless of range (This works both ways)")
-                .withIcon("fisher_link_1.png");
-
-        DOUBLE_LINK = new TradeSecret("double_link", FISHERMAN_LINK)
-                .withLabel("Double Link")
-                .withDescription("Link additional fisherman")
-                .withDetailedDesc("Link additional fisherman")
-                .withIcon("fisher_link_2.png");
-
-        FISHERMAN_SUMMON = new TradeSecret("fisherman_summon", DOUBLE_LINK)
-                .withLabel("Fisherman Summon")
-                .withDescription("[Spell] Summon linked fisherman to your position")
-                .withDetailedDesc("[Spell]\n" +
-                        "Summon all fisherman you are linked with to\n" +
-                        "your current location.\n" +
-                        "(They still have to agree to it)\n" +
-                        "Cooldown: 60min")
-                .withIcon("linked_tp.png");
-
-        MAGIC_ROD_SUMMON = new TradeSecret("magic_rod_summon", FISHERMAN_SUMMON)
-                .withLabel("Shadow Rod Cloning")
-                .withDescription("Create clone of your rod that lasts for 5 minutes")
-                .withDetailedDesc("Create clone of your that lasts for 5 minutes\n" +
-                        "(Can be dropped)")
-                .withIcon("magic_rod.png");
-
-        FREE_SHOP_SUMMON = new TradeSecret("free_shop_summon", MAGIC_ROD_SUMMON)
-                .withLabel("Derek Express")
-                .withDescription("Summon shop for free")
-                .withDetailedDesc("Summons a shop at your current location for free.")
-                .withIcon("free_shop.png");
-
-        CURSE_OF_LOSER = new TradeSecret("curse_of_loser");
+        FISHERMAN_LINK = TradeSecret.builder()
+                .name("fisherman_link")
+                .build();
+        SHARED_BUFFS = TradeSecret.builder()
+                .name("shared_buffs")
+                .levelValues(1, 2, 4)
+                .parent(FISHERMAN_LINK)
+                .build();
+        QUALITY_CELEBRATION = TradeSecret.builder()
+                .name("quality_celebration")
+                .parent(FISHERMAN_LINK)
+                .build();
+        DOUBLE_LINK = TradeSecret.builder()
+                .name("double_link")
+                .parent(FISHERMAN_LINK)
+                .costPerLevel(3)
+                .build();
+        FISHERMAN_SUMMON = TradeSecret.builder()
+                .name("fisherman_summon")
+                .levelValues(1, 0.875f, 0.75f, 0.675f, 0.5f)
+                .costPerLevel(3, 1, 1, 1, 1)
+                .parent(FISHERMAN_LINK)
+                .build();
+        FREE_SHOP_SUMMON = TradeSecret.builder()
+                .name("free_shop_summon")
+                .costPerLevel(5)
+                .parent(FISHERMAN_SUMMON)
+                .build();
     }
 
     public static Optional<TradeSecret> fromId(int id) {
