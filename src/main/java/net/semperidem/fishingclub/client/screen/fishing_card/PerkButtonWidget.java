@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
 
 import java.awt.*;
 import java.util.function.Supplier;
@@ -19,12 +19,12 @@ public class PerkButtonWidget extends ButtonWidget {
     private static final Identifier SELECTED_SKILL_BORDER = FishingClub.identifier("textures/gui/skill/selected_skill.png");
 
     public boolean isSelected;
-    FishingPerk fishingPerk;
+    TradeSecret tradeSecret;
     FishingCard fishingCard;
-    public PerkButtonWidget(int x, int y, FishingCard fishingCard, FishingPerk fishingPerk, FishingCardScreen parent) {
-        super(x, y, ICON_SIZE, ICON_SIZE, Text.empty(), button -> parent.setPerk((PerkButtonWidget) button, fishingPerk), Supplier::get);
+    public PerkButtonWidget(int x, int y, FishingCard fishingCard, TradeSecret tradeSecret, FishingCardScreen parent) {
+        super(x, y, ICON_SIZE, ICON_SIZE, Text.empty(), button -> parent.setPerk((PerkButtonWidget) button, tradeSecret), Supplier::get);
         this.fishingCard = fishingCard;
-        this.fishingPerk = fishingPerk;
+        this.tradeSecret = tradeSecret;
         this.visible = false;
         this.isSelected = false;
     }
@@ -50,24 +50,24 @@ public class PerkButtonWidget extends ButtonWidget {
     }
 
     private void renderBackground(DrawContext context){
-        if (!fishingCard.hasRequiredPerk(fishingPerk)) {
+        if (!fishingCard.hasRequiredPerk(tradeSecret)) {
             RenderSystem.setShaderColor(0.6f,0.6f,0.6f,0.6f);
-        } else if (fishingCard.hasPerk(fishingPerk)) {
+        } else if (fishingCard.hasPerk(tradeSecret)) {
             RenderSystem.setShaderColor(0.5f,1,0.5f,1);
         }
         context.drawTexture(SKILL_ICON, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
     }
 
     private void renderLink(DrawContext context){
-        if (fishingPerk.getParent() == null) {
+        if (tradeSecret.getParent() == null) {
             return;
         }
-        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.hasPerk(fishingPerk) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
+        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.hasPerk(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
     }
 
     private void renderIcon(DrawContext context){
         Identifier icon;
-        if ((icon = fishingPerk.getIcon()) == null) {
+        if ((icon = tradeSecret.getIcon()) == null) {
             return;
         }
         RenderSystem.setShaderColor(1,1,1,1);

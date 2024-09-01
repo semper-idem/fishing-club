@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
-import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOBBER_SIZE_BOAT;
+import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.BOBBER_SIZE_BOAT;
 import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {

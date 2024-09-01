@@ -6,8 +6,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
 import net.semperidem.fishingclub.fisher.perks.spells.Spells;
 
@@ -27,7 +27,7 @@ public class ProgressionManager extends DataManager {
     private static final int RESET_COST_PER_RESET = 10000;
     private int resetCount = 0;
 
-    private final HashMap<String, FishingPerk> perks = new HashMap<>();
+    private final HashMap<String, TradeSecret> perks = new HashMap<>();
     private final HashMap<String, SpellInstance> spells = new HashMap<>();
 
     public ProgressionManager(FishingCard trackedFor) {
@@ -68,7 +68,7 @@ public class ProgressionManager extends DataManager {
     }
 
     public void addPerk(String perkName){
-        FishingPerk perk = FishingPerks.getPerkFromName(perkName);
+        TradeSecret perk = TradeSecrets.getPerkFromName(perkName);
         if (!hasRequiredPerk(perk) || !hasPerkPoints()) {
             return;
         }
@@ -83,11 +83,11 @@ public class ProgressionManager extends DataManager {
 
 
 
-    public boolean hasRequiredPerk(FishingPerk perk){
+    public boolean hasRequiredPerk(TradeSecret perk){
         return perk.getParent() == null || this.perks.containsKey(perk.getParent().getName());
     }
 
-    public boolean canUnlockPerk(FishingPerk perk) {
+    public boolean canUnlockPerk(TradeSecret perk) {
         boolean isNotUnlocked = !this.perks.containsKey(perk.getName());
         return hasRequiredPerk(perk) && hasPerkPoints() && isNotUnlocked;
     }
@@ -137,11 +137,11 @@ public class ProgressionManager extends DataManager {
         sync();
     }
 
-    public HashMap<String, FishingPerk> getPerks(){
+    public HashMap<String, TradeSecret> getPerks(){
         return perks;
     }
 
-    public boolean hasPerk(FishingPerk perk) {
+    public boolean hasPerk(TradeSecret perk) {
         return perks.containsKey(perk.getName());
     }
 
@@ -161,7 +161,7 @@ public class ProgressionManager extends DataManager {
 
     private void readPerks(NbtCompound fishingCardNbt){
         perks.clear();
-        this.perks.putAll(FishingPerks.fromByteArray(fishingCardNbt.getByteArray(PERKS_TAG)));
+        this.perks.putAll(TradeSecrets.fromByteArray(fishingCardNbt.getByteArray(PERKS_TAG)));
     }
 
     private void readSpells(NbtCompound progressionNbt){
@@ -186,7 +186,7 @@ public class ProgressionManager extends DataManager {
     }
 
     public void writePerks(NbtCompound progressionNbt){
-        progressionNbt.putByteArray(PERKS_TAG, FishingPerks.toByteArray(this.perks));//todo with spells
+        progressionNbt.putByteArray(PERKS_TAG, TradeSecrets.toByteArray(this.perks));//todo with spells
     }
 
     public void writeSpells(NbtCompound progressionNbt){

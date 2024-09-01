@@ -13,7 +13,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -31,10 +31,10 @@ public class LinkingManager extends DataManager {
     }
 
     private int getLinkLimit() {
-        if (trackedFor.hasPerk(FishingPerks.DOUBLE_LINK)) {
+        if (trackedFor.hasPerk(TradeSecrets.DOUBLE_LINK)) {
             return DOUBLE_LINK_LIMIT;
         }
-        if (trackedFor.hasPerk(FishingPerks.FISHERMAN_LINK)) {
+        if (trackedFor.hasPerk(TradeSecrets.FISHERMAN_LINK)) {
             return LINK_LIMIT;
         }
         return 0;

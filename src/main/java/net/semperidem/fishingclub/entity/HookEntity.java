@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.*;
@@ -580,10 +580,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         float catchRateReduction = 0;// FishingRodPartController.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
         if (this.getWorld().isRaining()) {
             float rainBonus = 0.125f;
-            if (fishingCard.hasPerk(FishingPerks.CATCH_RATE_RAIN)) {
+            if (fishingCard.hasPerk(TradeSecrets.CATCH_RATE_RAIN)) {
                 rainBonus *= 2;
             }
-            if (fishingCard.hasPerk(FishingPerks.FISH_QUALITY_RAIN)) {
+            if (fishingCard.hasPerk(TradeSecrets.FISH_QUALITY_RAIN)) {
                 rainBonus *= 2;
             }
             catchRateReduction += rainBonus;

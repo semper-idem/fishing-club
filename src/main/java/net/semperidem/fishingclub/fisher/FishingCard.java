@@ -15,7 +15,7 @@ import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;
@@ -135,7 +135,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         progressionManager.resetCooldown();
     }
 
-    public boolean hasRequiredPerk(FishingPerk perk){
+    public boolean hasRequiredPerk(TradeSecret perk){
         return progressionManager.hasRequiredPerk(perk);
     }
 
@@ -244,11 +244,11 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         progressionManager.addPerk(perkName);
     }
 
-    public boolean hasPerk(FishingPerk perk){
+    public boolean hasPerk(TradeSecret perk){
         return progressionManager.hasPerk(perk);
     }
 
-    public boolean canUnlockPerk(FishingPerk perk){
+    public boolean canUnlockPerk(TradeSecret perk){
         return progressionManager.canUnlockPerk(perk);
     }
 

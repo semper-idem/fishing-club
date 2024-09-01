@@ -7,8 +7,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class Spells {
     static Spell SHARED_BAIT;
     static Spell MAGIC_ROD_SUMMON;
     static Spell FREE_SHOP_SUMMON;
-    static HashMap<FishingPerk, Spell> perkToSpell = new HashMap<>();
+    static HashMap<TradeSecret, Spell> perkToSpell = new HashMap<>();
 
     private static void castEffect(ServerPlayerEntity caster,int range, StatusEffectInstance effect){
         Box aoe = new Box(caster.getBlockPos());
@@ -37,7 +37,7 @@ public class Spells {
     }
 
     static {
-        SUMMON_RAIN = new Spell(FishingPerks.SUMMON_RAIN.getName(), FishingPerks.SUMMON_RAIN, 72000,   new Spell.Effect() {
+        SUMMON_RAIN = new Spell(TradeSecrets.SUMMON_RAIN.getName(), TradeSecrets.SUMMON_RAIN, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 if (Math.random() < 0.1f) {
@@ -46,46 +46,46 @@ public class Spells {
                 source.getWorld().setRainGradient(1);
             }
         });
-        FISHING_SCHOOL = new Spell(FishingPerks.FISHING_SCHOOL.getName(), FishingPerks.FISHING_SCHOOL, 18000,   new Spell.Effect() {
+        FISHING_SCHOOL = new Spell(TradeSecrets.FISHING_SCHOOL.getName(), TradeSecrets.FISHING_SCHOOL, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.BOBBER_BUFF, 6000));
             }
         });
-        SLOWER_FISH = new Spell(FishingPerks.SLOWER_FISH.getName(), FishingPerks.SLOWER_FISH, 18000,  new Spell.Effect() {
+        SLOWER_FISH = new Spell(TradeSecrets.SLOWER_FISH.getName(), TradeSecrets.SLOWER_FISH, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.SLOW_FISH_BUFF, 6000));
             }
         });
-        EXPERIENCE_BOOST = new Spell(FishingPerks.EXPERIENCE_BOOST.getName(), FishingPerks.EXPERIENCE_BOOST, 18000,   new Spell.Effect() {
+        EXPERIENCE_BOOST = new Spell(TradeSecrets.EXPERIENCE_BOOST.getName(), TradeSecrets.EXPERIENCE_BOOST, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.EXP_BUFF,  6000));
             }
         });
-        LUCKY_FISHING = new Spell(FishingPerks.LUCKY_FISHING.getName(), FishingPerks.LUCKY_FISHING, 18000,  new Spell.Effect() {
+        LUCKY_FISHING = new Spell(TradeSecrets.LUCKY_FISHING.getName(), TradeSecrets.LUCKY_FISHING, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
                 castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,  6000));
             }
         });
-        FISHERMAN_LINK = new Spell(FishingPerks.FISHERMAN_LINK.getName(), FishingPerks.FISHERMAN_LINK, 6000, new Spell.Effect() {
+        FISHERMAN_LINK = new Spell(TradeSecrets.FISHERMAN_LINK.getName(), TradeSecrets.FISHERMAN_LINK, 6000, new Spell.Effect() {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
                 FishingCard.of(source).linkTarget(target);
             }
         });
-        FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
+        FISHERMAN_SUMMON_REQUEST = new Spell(TradeSecrets.FISHERMAN_SUMMON.getName() + " - Request", TradeSecrets.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 FishingCard.of(source).requestSummon();;
             }
         });
-        MAGIC_ROD_SUMMON = new Spell(FishingPerks.MAGIC_ROD_SUMMON.getName(), FishingPerks.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
+        MAGIC_ROD_SUMMON = new Spell(TradeSecrets.MAGIC_ROD_SUMMON.getName(), TradeSecrets.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                //todo rework since i've removed member rod and cloned rod
+                //todo reimplement since i've removed member rod and cloned rod
 //                ItemStack mainHand = source.getStackInHand(Hand.MAIN_HAND);
 //                ItemStack rodStack = FCItems.MEMBER_FISHING_ROD.getDefaultStack();
 //                if (mainHand ) {
@@ -97,7 +97,7 @@ public class Spells {
 //                source.giveItemStack(clonedStack);
             }
         });
-        FREE_SHOP_SUMMON = new Spell(FishingPerks.FREE_SHOP_SUMMON.getName(), FishingPerks.FREE_SHOP_SUMMON, 144000,   new Spell.Effect() {
+        FREE_SHOP_SUMMON = new Spell(TradeSecrets.FREE_SHOP_SUMMON.getName(), TradeSecrets.FREE_SHOP_SUMMON, 144000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
                 //TODO Make only on Derek per world
@@ -107,12 +107,12 @@ public class Spells {
         });
     }
 
-    public static Spell getSpellFromPerk(FishingPerk fishingPerk){
-        if (!perkHasSpell(fishingPerk)) return null;
-        return perkToSpell.get(fishingPerk);
+    public static Spell getSpellFromPerk(TradeSecret tradeSecret){
+        if (!perkHasSpell(tradeSecret)) return null;
+        return perkToSpell.get(tradeSecret);
     }
 
-    public static boolean perkHasSpell(FishingPerk fishingPerk){
-        return perkToSpell.containsKey(fishingPerk);
+    public static boolean perkHasSpell(TradeSecret tradeSecret){
+        return perkToSpell.containsKey(tradeSecret);
     }
 }

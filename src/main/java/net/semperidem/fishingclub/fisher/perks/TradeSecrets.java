@@ -4,60 +4,60 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class FishingPerks {
-    static final HashMap<String, FishingPerk> NAME_TO_PERK_MAP = new HashMap<>();
-    static final HashMap<Byte, FishingPerk> ID_TO_PERK_MAP = new HashMap<>();
-    public static final HashMap<Path, ArrayList<FishingPerk>> SKILL_TREE = new HashMap<>();
+public class TradeSecrets {
+    static final HashMap<String, TradeSecret> NAME_TO_PERK_MAP = new HashMap<>();
+    static final HashMap<Byte, TradeSecret> ID_TO_PERK_MAP = new HashMap<>();
+    public static final HashMap<Path, ArrayList<TradeSecret>> SKILL_TREE = new HashMap<>();
 
 
 
     //H - Special
-    public static FishingPerk BOBBER_THROW_CHARGE;
+    public static TradeSecret BOBBER_THROW_CHARGE;
     //H - Boat
-    public static FishingPerk FISH_QUANTITY;
+    public static TradeSecret FISH_QUANTITY;
     //add open water check for boat
-    public static FishingPerk BOBBER_SIZE_BOAT;
-    public static FishingPerk FISH_QUANTITY_BOAT;
-    public static FishingPerk LINE_HEALTH_BOAT;
-    public static FishingPerk TREASURE_CHANCE_BOAT;
+    public static TradeSecret BOBBER_SIZE_BOAT;
+    public static TradeSecret FISH_QUANTITY_BOAT;
+    public static TradeSecret LINE_HEALTH_BOAT;
+    public static TradeSecret TREASURE_CHANCE_BOAT;
 
     //O - Rain
-    public static FishingPerk CATCH_RATE_RAIN;
-    public static FishingPerk FISH_QUALITY_RAIN;
-    public static FishingPerk SUMMON_RAIN;
+    public static TradeSecret CATCH_RATE_RAIN;
+    public static TradeSecret FISH_QUALITY_RAIN;
+    public static TradeSecret SUMMON_RAIN;
 
     //O - First catch of the day
-    public static FishingPerk FIRST_CATCH;
-    public static FishingPerk FIRST_CATCH_BUFF_QUALITY;
-    public static FishingPerk FIRST_CATCH_BUFF_CATCH_RATE;
-    public static FishingPerk CHANGE_OF_SCENERY;
+    public static TradeSecret FIRST_CATCH;
+    public static TradeSecret FIRST_CATCH_BUFF_QUALITY;
+    public static TradeSecret FIRST_CATCH_BUFF_CATCH_RATE;
+    public static TradeSecret CHANGE_OF_SCENERY;
 
     //O - Misc
-    public static FishingPerk INSTANT_FISH_CREDIT;
-    public static FishingPerk BOMB_FISHING;
+    public static TradeSecret INSTANT_FISH_CREDIT;
+    public static TradeSecret BOMB_FISHING;
 
     //S - Active Aura
-    public static FishingPerk FISHING_SCHOOL;
-    public static FishingPerk SLOWER_FISH;
-    public static FishingPerk EXPERIENCE_BOOST;
-    public static FishingPerk LUCKY_FISHING;
+    public static TradeSecret FISHING_SCHOOL;
+    public static TradeSecret SLOWER_FISH;
+    public static TradeSecret EXPERIENCE_BOOST;
+    public static TradeSecret LUCKY_FISHING;
 
     //S - Passive Aura
-    public static FishingPerk PASSIVE_FISHING_XP;
-    public static FishingPerk WATCH_AND_LEARN;
-    public static FishingPerk QUALITY_SHARING;
-    public static FishingPerk SHARED_BUFFS;
+    public static TradeSecret PASSIVE_FISHING_XP;
+    public static TradeSecret WATCH_AND_LEARN;
+    public static TradeSecret QUALITY_SHARING;
+    public static TradeSecret SHARED_BUFFS;
 
     //S - Link
-    public static FishingPerk FISHERMAN_LINK;
-    public static FishingPerk DOUBLE_LINK;
-    public static FishingPerk FISHERMAN_SUMMON;
+    public static TradeSecret FISHERMAN_LINK;
+    public static TradeSecret DOUBLE_LINK;
+    public static TradeSecret FISHERMAN_SUMMON;
 
     //S - Misc
-    public static FishingPerk MAGIC_ROD_SUMMON;
-    public static FishingPerk FREE_SHOP_SUMMON;
+    public static TradeSecret MAGIC_ROD_SUMMON;
+    public static TradeSecret FREE_SHOP_SUMMON;
 
-    public static FishingPerk CURSE_OF_LOSER;
+    public static TradeSecret CURSE_OF_LOSER;
 
 
     public static void register() {
@@ -67,7 +67,7 @@ public class FishingPerks {
 
 
         //make it toggle
-        BOBBER_THROW_CHARGE = new FishingPerk("bobber_throw_charge", Path.HOBBYIST)
+        BOBBER_THROW_CHARGE = new TradeSecret("bobber_throw_charge", Path.HOBBYIST)
                 .withLabel("Expert Technique")
                 .withDescription(
                         "Charge rod cast to throw bobber further \n" +
@@ -79,7 +79,7 @@ public class FishingPerks {
                                 "This also decreases catch-rate by up to 50%"
                 ).withIcon("bobber_throw_charge.png");
 
-        FISH_QUANTITY = new FishingPerk("fish_quantity", Path.HOBBYIST)
+        FISH_QUANTITY = new TradeSecret("fish_quantity", Path.HOBBYIST)
                 .withLabel("Another one")
                 .withDescription("""
                                 Gain percentage change go catch more then one fish
@@ -88,7 +88,7 @@ public class FishingPerks {
 
 
         //H - Boat
-        BOBBER_SIZE_BOAT = new FishingPerk("boat_bobber_size", Path.HOBBYIST)
+        BOBBER_SIZE_BOAT = new TradeSecret("boat_bobber_size", Path.HOBBYIST)
                 .withLabel("Immersive fishing")
                 .withDescription("Increases bobber size by 10% when in boat")
                 .withDetailedDesc(
@@ -96,7 +96,7 @@ public class FishingPerks {
                                 "making it easier to catch fish.")
                 .withIcon("oak_boat.png");
 
-        FISH_QUANTITY_BOAT = new FishingPerk("double_fish_boat", BOBBER_SIZE_BOAT)
+        FISH_QUANTITY_BOAT = new TradeSecret("double_fish_boat", BOBBER_SIZE_BOAT)
                 .withLabel("OMG twins?")
                 .withDescription("Gain 9% chance to double fish when in boat")
                 .withDetailedDesc(
@@ -105,7 +105,7 @@ public class FishingPerks {
                 .withIcon("double_fish.png");
 
 
-        LINE_HEALTH_BOAT = new FishingPerk("line_health_boat", FISH_QUANTITY_BOAT)
+        LINE_HEALTH_BOAT = new TradeSecret("line_health_boat", FISH_QUANTITY_BOAT)
                 .withLabel("Sturdy Line")
                 .withDescription(
                         "Fishing line takes 20% reduced damage when in boat")
@@ -114,7 +114,7 @@ public class FishingPerks {
                 .withIcon("sturdy_line.png");
 
 
-        TREASURE_CHANCE_BOAT = new FishingPerk("double_treasure_boat", LINE_HEALTH_BOAT)
+        TREASURE_CHANCE_BOAT = new TradeSecret("double_treasure_boat", LINE_HEALTH_BOAT)
                 .withLabel("Golden Boat")
                 .withDescription("Double chance for treasure when in boat")
                 .withDetailedDesc(
@@ -123,7 +123,7 @@ public class FishingPerks {
                 .withIcon("golden_boat.png");
 
         //O - Rain
-        CATCH_RATE_RAIN = new FishingPerk("rainy_fish", Path.OPPORTUNIST)
+        CATCH_RATE_RAIN = new TradeSecret("rainy_fish", Path.OPPORTUNIST)
                 .withLabel("Fish o'clock")
                 .withDescription("Double raining catch rate bonus")
                 .withDetailedDesc("When casting bobber in rain increase raining\n" +
@@ -133,14 +133,14 @@ public class FishingPerks {
 
 
         //Rework to increase quality or luck in rain
-        FISH_QUALITY_RAIN = new FishingPerk("rainy_fish_plus", CATCH_RATE_RAIN)
+        FISH_QUALITY_RAIN = new TradeSecret("rainy_fish_plus", CATCH_RATE_RAIN)
                 .withLabel("Fishy hours")
                 .withDescription("Quadruple raining catch rate bonus")
                 .withDetailedDesc("When casting bobber in rain increase raining\n" +
                         " catch rate to 50%.")
                 .withIcon("raining_cloud_2.png");
 
-        SUMMON_RAIN = new FishingPerk("rain_summon", FISH_QUALITY_RAIN)
+        SUMMON_RAIN = new TradeSecret("rain_summon", FISH_QUALITY_RAIN)
                 .withLabel("Perfect conditions")
                 .withDescription("[Spell] Summon rain")
                 .withDetailedDesc("[Spell] Summon rain\n" +
@@ -149,14 +149,14 @@ public class FishingPerks {
                 .withIcon("rain_summon.png");
 
         //O - First catch of the day
-        FIRST_CATCH = new FishingPerk("first_catch", Path.OPPORTUNIST)
+        FIRST_CATCH = new TradeSecret("first_catch", Path.OPPORTUNIST)
                 .withLabel("First-est Catch of the Day")
                 .withDescription("Increase min grade of first fish of the day")
                 .withDetailedDesc("Your first catch of the day is always \n" +
                         "grade 3 or above")
                 .withIcon("first.png");
 
-        FIRST_CATCH_BUFF_QUALITY = new FishingPerk("quality_increase_first_catch", FIRST_CATCH)
+        FIRST_CATCH_BUFF_QUALITY = new TradeSecret("quality_increase_first_catch", FIRST_CATCH)
                 .withLabel("Few more first")
                 .withDescription("Gain buff to fish quality after first catch of the day")
                 .withDetailedDesc(
@@ -165,7 +165,7 @@ public class FishingPerks {
                                 "Duration: 2min")
                 .withIcon("first_buff.png");
 
-        FIRST_CATCH_BUFF_CATCH_RATE = new FishingPerk("frequent_catch_first_catch", FIRST_CATCH_BUFF_QUALITY)
+        FIRST_CATCH_BUFF_CATCH_RATE = new TradeSecret("frequent_catch_first_catch", FIRST_CATCH_BUFF_QUALITY)
                 .withLabel("Frequent Catches")
                 .withDescription("Gain buff to fish catch rate after first catch of the day")
                 .withDetailedDesc(
@@ -174,7 +174,7 @@ public class FishingPerks {
                                 "Duration: 2min")
                 .withIcon("first_freq.png");
 
-        CHANGE_OF_SCENERY = new FishingPerk("chunk_quality_increase", FIRST_CATCH_BUFF_CATCH_RATE)
+        CHANGE_OF_SCENERY = new TradeSecret("chunk_quality_increase", FIRST_CATCH_BUFF_CATCH_RATE)
                 .withLabel("Fresh Waters")
                 .withDescription("If you're fishing for the first time in a chunk, fish quality increases")
                 .withDetailedDesc("If you're fishing for the first time in a chunk\n" +
@@ -182,13 +182,13 @@ public class FishingPerks {
                 .withIcon("chunk.png");
 
         //O - Misc
-        INSTANT_FISH_CREDIT = new FishingPerk("instant_fish_credit", Path.OPPORTUNIST)
+        INSTANT_FISH_CREDIT = new TradeSecret("instant_fish_credit", Path.OPPORTUNIST)
                 .withLabel("Instant Credit")
                 .withDescription("Unlock slot that lets you sell fish")
                 .withDetailedDesc("Unlock slot that lets you sell fish")
                 .withIcon("instant_credit.png");
 
-        BOMB_FISHING = new FishingPerk("bomb_fishing", INSTANT_FISH_CREDIT)
+        BOMB_FISHING = new TradeSecret("bomb_fishing", INSTANT_FISH_CREDIT)
                 .withLabel("Explosive fishing")
                 .withDescription("TNT can now catch fish")
                 .withDetailedDesc("TNT prime by you and under water can \"catch\" fish")
@@ -196,7 +196,7 @@ public class FishingPerks {
         //WIND CHARGE FISHING
 
         //S - Active Aura
-        FISHING_SCHOOL = new FishingPerk("fishing_school", Path.SOCIALIST)
+        FISHING_SCHOOL = new TradeSecret("fishing_school", Path.SOCIALIST)
                 .withLabel("Everyone learns sometime")
                 .withDescription("[Spell] Grants you and players near you buff to bobber width")
                 .withDetailedDesc("[Spell]\n" +
@@ -207,7 +207,7 @@ public class FishingPerks {
                         "Range: 4 blocks")
                 .withIcon("fishing_school.png");
 
-        SLOWER_FISH = new FishingPerk("slower_fish", FISHING_SCHOOL)
+        SLOWER_FISH = new TradeSecret("slower_fish", FISHING_SCHOOL)
                 .withLabel("Slow Fish-o")
                 .withDescription("[Spell] Grants you and players near you buff slowing fish movement")
                 .withDetailedDesc("[Spell]\n" +
@@ -218,7 +218,7 @@ public class FishingPerks {
                         "Range: 4 blocks")
                 .withIcon("time_boost.png");
 
-        EXPERIENCE_BOOST = new FishingPerk("experience_boost", SLOWER_FISH)
+        EXPERIENCE_BOOST = new TradeSecret("experience_boost", SLOWER_FISH)
                 .withLabel("Experience Boost")
                 .withDescription("[Spell] Grants you and players near you buff to experience gained")
                 .withDetailedDesc("[Spell]\n" +
@@ -231,7 +231,7 @@ public class FishingPerks {
                 .withIcon("exp_boost.png");
 
 
-        LUCKY_FISHING = new FishingPerk("lucky_fishing", EXPERIENCE_BOOST)
+        LUCKY_FISHING = new TradeSecret("lucky_fishing", EXPERIENCE_BOOST)
                 .withLabel("Lucky Fishing")
                 .withDescription("[Spell] Grants you and players near you buff increasing fishing luck")
                 .withDetailedDesc("[Spell]\n" +
@@ -245,7 +245,7 @@ public class FishingPerks {
         //S - Passive Aura
         //WATCH_AND_LEARN - gain passive exp from other players fishing
 
-        PASSIVE_FISHING_XP = new FishingPerk("passive_fishing_xp", Path.SOCIALIST)
+        PASSIVE_FISHING_XP = new TradeSecret("passive_fishing_xp", Path.SOCIALIST)
                 .withLabel("Watch and learn")
                 .withDescription("Players near you gain small buff to fishing experience they gain")
                 .withDetailedDesc("Players near you gain small buff to fishing\n" +
@@ -254,7 +254,7 @@ public class FishingPerks {
                         "Range: 3 blocks")
                 .withIcon("passiv_exp.png");
 
-        QUALITY_SHARING = new FishingPerk("quality_sharing", PASSIVE_FISHING_XP)
+        QUALITY_SHARING = new TradeSecret("quality_sharing", PASSIVE_FISHING_XP)
                 .withLabel("Celebration!")
                 .withDescription("Each time you catch grade 4+ fish, players near you gain quality buff for their next catch")
                 .withDetailedDesc("Each time you catch grade 4+ fish,\n" +
@@ -264,7 +264,7 @@ public class FishingPerks {
                         "Duration: 2min")
                 .withIcon("quality_sharing.png");
 
-        SHARED_BUFFS = new FishingPerk("shared_buffs", QUALITY_SHARING)
+        SHARED_BUFFS = new TradeSecret("shared_buffs", QUALITY_SHARING)
                 .withLabel("Team expedition")
                 .withDescription("When in a boat together, each time you catch fish increase buff timer")
                 .withDetailedDesc("When in a boat together, \n" +
@@ -273,7 +273,7 @@ public class FishingPerks {
                 .withIcon("buff_sharing.png");
 
         //S - Link
-        FISHERMAN_LINK = new FishingPerk("fisherman_link", Path.SOCIALIST)
+        FISHERMAN_LINK = new TradeSecret("fisherman_link", Path.SOCIALIST)
                 .withLabel("Fisherman Link")
                 .withDescription("Link one fisherman to always have shared buffs")
                 .withDetailedDesc("Establish a link with another fisherman. \n" +
@@ -281,13 +281,13 @@ public class FishingPerks {
                         "regardless of range (This works both ways)")
                 .withIcon("fisher_link_1.png");
 
-        DOUBLE_LINK = new FishingPerk("double_link", FISHERMAN_LINK)
+        DOUBLE_LINK = new TradeSecret("double_link", FISHERMAN_LINK)
                 .withLabel("Double Link")
                 .withDescription("Link additional fisherman")
                 .withDetailedDesc("Link additional fisherman")
                 .withIcon("fisher_link_2.png");
 
-        FISHERMAN_SUMMON = new FishingPerk("fisherman_summon", DOUBLE_LINK)
+        FISHERMAN_SUMMON = new TradeSecret("fisherman_summon", DOUBLE_LINK)
                 .withLabel("Fisherman Summon")
                 .withDescription("[Spell] Summon linked fisherman to your position")
                 .withDetailedDesc("[Spell]\n" +
@@ -297,43 +297,43 @@ public class FishingPerks {
                         "Cooldown: 60min")
                 .withIcon("linked_tp.png");
 
-        MAGIC_ROD_SUMMON = new FishingPerk("magic_rod_summon", FISHERMAN_SUMMON)
+        MAGIC_ROD_SUMMON = new TradeSecret("magic_rod_summon", FISHERMAN_SUMMON)
                 .withLabel("Shadow Rod Cloning")
                 .withDescription("Create clone of your rod that lasts for 5 minutes")
                 .withDetailedDesc("Create clone of your that lasts for 5 minutes\n" +
                         "(Can be dropped)")
                 .withIcon("magic_rod.png");
 
-        FREE_SHOP_SUMMON = new FishingPerk("free_shop_summon", MAGIC_ROD_SUMMON)
+        FREE_SHOP_SUMMON = new TradeSecret("free_shop_summon", MAGIC_ROD_SUMMON)
                 .withLabel("Derek Express")
                 .withDescription("Summon shop for free")
                 .withDetailedDesc("Summons a shop at your current location for free.")
                 .withIcon("free_shop.png");
 
-        CURSE_OF_LOSER = new FishingPerk("curse_of_loser");
+        CURSE_OF_LOSER = new TradeSecret("curse_of_loser");
     }
 
-    public static FishingPerk getPerkFromName(String name){
+    public static TradeSecret getPerkFromName(String name){
         return Optional.of(NAME_TO_PERK_MAP.get(name)).orElse(CURSE_OF_LOSER);
     }
 
-    public static FishingPerk getPerkFromId(byte id) {
+    public static TradeSecret getPerkFromId(byte id) {
         return Optional.of(ID_TO_PERK_MAP.get(id)).orElse(CURSE_OF_LOSER);
     }
 
-    public static HashMap<String, FishingPerk> fromByteArray(byte[] ids) {
-        HashMap<String, FishingPerk> perkMap = new HashMap<>();
+    public static HashMap<String, TradeSecret> fromByteArray(byte[] ids) {
+        HashMap<String, TradeSecret> perkMap = new HashMap<>();
         for (byte id : ids) {
-            FishingPerk perk = getPerkFromId(id);
+            TradeSecret perk = getPerkFromId(id);
             perkMap.put(perk.getName(), perk);
         }
         return perkMap;
     }
 
-    public static byte[] toByteArray(HashMap<String, FishingPerk> perkMap) {
+    public static byte[] toByteArray(HashMap<String, TradeSecret> perkMap) {
         byte[] ids = new byte[perkMap.size()];
         byte lastIndex = 0;
-        for(FishingPerk perk : perkMap.values()){
+        for(TradeSecret perk : perkMap.values()){
             ids[lastIndex] = perk.id;
             lastIndex++;
         }

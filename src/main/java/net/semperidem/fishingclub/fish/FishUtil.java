@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
@@ -118,7 +118,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
             }
             return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
         }
-        if (fishingCard.hasPerk(FishingPerks.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
+        if (fishingCard.hasPerk(TradeSecrets.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
             rewardMultiplier = 2;
         }
 

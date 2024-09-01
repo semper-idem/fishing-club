@@ -12,7 +12,7 @@ import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.ArrayList;
@@ -118,10 +118,10 @@ public class HistoryManager extends DataManager {
 
         usedChunks.add(Chunk.create(chunkPos));
         sync();//checkChunk writes
-        if (trackedFor.hasPerk(FishingPerks.FIRST_CATCH_BUFF_CATCH_RATE)) {
+        if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
         }
-        if (trackedFor.hasPerk(FishingPerks.FIRST_CATCH_BUFF_QUALITY)) {
+        if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_QUALITY)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
         }
         return true;
@@ -137,7 +137,7 @@ public class HistoryManager extends DataManager {
             minGrade++;
         }
         if (isFirstCatchOfTheDay()) {
-            if (progressionManager.hasPerk(FishingPerks.FIRST_CATCH)) {
+            if (progressionManager.hasPerk(TradeSecrets.FIRST_CATCH)) {
                 minGrade++;
             }
             minGrade++;

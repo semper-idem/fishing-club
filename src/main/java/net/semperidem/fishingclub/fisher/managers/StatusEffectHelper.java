@@ -7,7 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public class StatusEffectHelper {
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
-                progressionManager.hasPerk(FishingPerks.QUALITY_SHARING) &&
+                progressionManager.hasPerk(TradeSecrets.QUALITY_SHARING) &&
                 !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
@@ -74,7 +74,7 @@ public class StatusEffectHelper {
 
         boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
         for(ServerPlayerEntity serverPlayerEntity : nearPlayers) {
-            if (FishingCard.of(serverPlayerEntity).hasPerk(FishingPerks.PASSIVE_FISHING_XP)) {
+            if (FishingCard.of(serverPlayerEntity).hasPerk(TradeSecrets.PASSIVE_FISHING_XP)) {
                 xpBuffAffectedCount++;
             }
             if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
@@ -85,7 +85,7 @@ public class StatusEffectHelper {
     }
 
     private void prolongStatusEffects(ProgressionManager progressionManager){
-        if (!progressionManager.hasPerk(FishingPerks.SHARED_BUFFS)) {
+        if (!progressionManager.hasPerk(TradeSecrets.SHARED_BUFFS)) {
             return;
         }
 

@@ -3,8 +3,8 @@ package net.semperidem.fishingclub.fisher.perks.spells;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 
 public class SpellInstance {
     final Spell spell;
@@ -14,14 +14,14 @@ public class SpellInstance {
     private static final String NEXT_CAST_TAG = "next";
 
 
-    private SpellInstance(FishingPerk fishingPerk, long nextPossibleCastTime){
-        this.spell = Spells.getSpellFromPerk(fishingPerk);
+    private SpellInstance(TradeSecret tradeSecret, long nextPossibleCastTime){
+        this.spell = Spells.getSpellFromPerk(tradeSecret);
         this.nextPossibleCastTime = nextPossibleCastTime;
     }
 
-    public static SpellInstance getSpellInstance(FishingPerk fishingPerk, long nextPossibleCastTime){
-        if (!Spells.perkHasSpell(fishingPerk)) return null;
-        return new SpellInstance(fishingPerk, nextPossibleCastTime);
+    public static SpellInstance getSpellInstance(TradeSecret tradeSecret, long nextPossibleCastTime){
+        if (!Spells.perkHasSpell(tradeSecret)) return null;
+        return new SpellInstance(tradeSecret, nextPossibleCastTime);
     }
 
     public void resetCooldown(){
@@ -55,13 +55,13 @@ public class SpellInstance {
         return nextPossibleCastTime;
     }
 
-    public FishingPerk getPerk() {
+    public TradeSecret getPerk() {
         return spell.requiredPerk;
     }
 
     public static SpellInstance fromNbt(NbtCompound nbt) {
         String perkName = nbt.getString(KEY_TAG);
-        return new SpellInstance(FishingPerks.getPerkFromName(perkName), nbt.getLong(NEXT_CAST_TAG));
+        return new SpellInstance(TradeSecrets.getPerkFromName(perkName), nbt.getLong(NEXT_CAST_TAG));
     }
 
     public static NbtCompound toNbt(SpellInstance spellInstance) {

@@ -14,8 +14,8 @@ import net.semperidem.fishingclub.client.screen.Cacheable;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
-import net.semperidem.fishingclub.fisher.perks.FishingPerk;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.network.payload.AddPerkPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
@@ -53,7 +53,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private Texture background = BACKGROUND_GENERAL;
 
-    private FishingPerk selectedPerk;
+    private TradeSecret selectedPerk;
     private PerkButtonWidget selectedPerkButton;
 
     private MemberButton generalButton;
@@ -213,11 +213,11 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private void togglePerkButtons(Path tab) {
         for(PerkButtonWidget perkButton : perkButtons) {
-            perkButton.visible = perkButton.fishingPerk.getPath() == tab;
+            perkButton.visible = perkButton.tradeSecret.getPath() == tab;
         }
     }
 
-    protected void setPerk(PerkButtonWidget newSelectedPerkButton, FishingPerk perk) {
+    protected void setPerk(PerkButtonWidget newSelectedPerkButton, TradeSecret perk) {
         selectedPerk = perk;
         if (selectedPerkButton != null) {
             selectedPerkButton.isSelected = false;
@@ -302,17 +302,17 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     }
 
     private void setupPerkButtons(){
-        for(Path path : FishingPerks.SKILL_TREE.keySet()) {
+        for(Path path : TradeSecrets.SKILL_TREE.keySet()) {
             int treeHeight = 0;
-            for(FishingPerk perk : FishingPerks.SKILL_TREE.get(path)) {
+            for(TradeSecret perk : TradeSecrets.SKILL_TREE.get(path)) {
                 setupPerkButton(perk, treeHeight);
                 treeHeight = treeHeight + 24;
             }
         }
     }
 
-    private void setupPerkButton(FishingPerk fishingPerk, int perkY) {
-        FishingPerk perkToAdd = fishingPerk;
+    private void setupPerkButton(TradeSecret tradeSecret, int perkY) {
+        TradeSecret perkToAdd = tradeSecret;
         int perkX = 0;
         while(perkToAdd != null) {
             PerkButtonWidget perkButtonWidget = new PerkButtonWidget(

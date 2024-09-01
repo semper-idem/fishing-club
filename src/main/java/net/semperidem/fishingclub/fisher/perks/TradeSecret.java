@@ -8,28 +8,28 @@ import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
 
-import static net.semperidem.fishingclub.fisher.perks.FishingPerks.*;
+import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.*;
 
-public class FishingPerk {
+public class TradeSecret {
     static byte LAST_ID = 0;
     String name;
     String label;
     ArrayList<Text> description;
     ArrayList<Text> detailedDescription;
-    FishingPerk parent;
-    FishingPerk child;
+    TradeSecret parent;
+    TradeSecret child;
     Path path;
     Identifier icon;
     PerkReward reward;
     public final byte id;
 
 
-    FishingPerk(String name){
+    TradeSecret(String name){
         this.name = name;
         this.id = LAST_ID++;
     }
 
-    FishingPerk(String name, Path path){
+    TradeSecret(String name, Path path){
         this.id = LAST_ID++;
         this.name = name;
         this.path = path;
@@ -40,7 +40,7 @@ public class FishingPerk {
         }
         SKILL_TREE.get(path).add(this);
     }
-    FishingPerk(String name, FishingPerk parent){
+    TradeSecret(String name, TradeSecret parent){
         this.id = LAST_ID++;
         this.name = name;
         this.path = parent.path;
@@ -60,16 +60,16 @@ public class FishingPerk {
         return this.path;
     }
 
-    public FishingPerk getChild(){
+    public TradeSecret getChild(){
         return this.child;
     }
 
-    public FishingPerk withIcon(String iconName){
+    public TradeSecret withIcon(String iconName){
         this.icon = Identifier.of(FishingClub.MOD_ID, "textures/gui/skill/" + iconName);
         return this;
     }
 
-    public FishingPerk withReward(PerkReward perkReward){
+    public TradeSecret withReward(PerkReward perkReward){
         this.reward = perkReward;
         return this;
     }
@@ -86,20 +86,20 @@ public class FishingPerk {
     public String getName(){
         return name;
     }
-    public FishingPerk getParent(){
+    public TradeSecret getParent(){
         return parent;
     }
 
-    FishingPerk withLabel(String label){
+    TradeSecret withLabel(String label){
         this.label = label;
         return this;
     }
-    FishingPerk withDescription(String description){
+    TradeSecret withDescription(String description){
         this.description = splitLine(description);
         return this;
     }
 
-    FishingPerk withDetailedDesc(String detailedDescription){
+    TradeSecret withDetailedDesc(String detailedDescription){
         this.detailedDescription = splitLine(detailedDescription);
         return this;
     }

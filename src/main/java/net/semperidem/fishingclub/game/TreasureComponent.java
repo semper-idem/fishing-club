@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.game;
 
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class TreasureComponent {
@@ -21,7 +21,7 @@ public class TreasureComponent {
     public TreasureComponent(FishingGameController parent) {
         float treasureChance = TREASURE_MIN_CHANCE;
 
-        if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.hasPerk(FishingPerks.TREASURE_CHANCE_BOAT)) {
+        if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.hasPerk(TradeSecrets.TREASURE_CHANCE_BOAT)) {
             treasureChance = treasureChance * 2;
         }
 

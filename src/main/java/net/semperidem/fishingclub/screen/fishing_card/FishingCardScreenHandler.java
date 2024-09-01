@@ -10,7 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.FishingPerks;
+import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
@@ -68,7 +68,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
         instantSellSlot = new InstantSellSlot(
                 fishingCard, 4, 341, 226,
                 this, Path.GENERAL,
-                fishingCard.hasPerk(FishingPerks.INSTANT_FISH_CREDIT),
+                fishingCard.hasPerk(TradeSecrets.INSTANT_FISH_CREDIT),
                 FishUtil.DEFAULT_FISH_ITEM);
         addSlot(instantSellSlot);
     }
