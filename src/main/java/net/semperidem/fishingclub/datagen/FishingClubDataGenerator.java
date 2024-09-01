@@ -10,10 +10,6 @@ public class FishingClubDataGenerator implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
 		pack.addProvider(FCLootTableProviders::createLootTableProvider);
-
-		// Adding a provider example:
-		//
-		// pack.addProvider(AdvancementsProvider::new);
 	}
 
 }

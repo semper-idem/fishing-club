@@ -9,15 +9,15 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
-public record LearnTradeSecretPayload(int tradeSecretId) implements CustomPayload {
+public record LearnTradeSecretPayload(String tradeSecretName) implements CustomPayload {
     public static final CustomPayload.Id<LearnTradeSecretPayload> ID = new CustomPayload.Id<>(identifier("c2s_learn_trade_secret"));
-    public static final PacketCodec<RegistryByteBuf, LearnTradeSecretPayload> CODEC = PacketCodec.tuple(PacketCodecs.INTEGER, LearnTradeSecretPayload::tradeSecretId, LearnTradeSecretPayload::new);
+    public static final PacketCodec<RegistryByteBuf, LearnTradeSecretPayload> CODEC = PacketCodec.tuple(PacketCodecs.STRING, LearnTradeSecretPayload::tradeSecretName, LearnTradeSecretPayload::new);
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {
         return ID;
     }
     public static void consumePayload(LearnTradeSecretPayload payload, ServerPlayNetworking.Context context) {
-        FishingCard.of(context.player()).learnTradeSecret(payload.tradeSecretId);
+        FishingCard.of(context.player()).learnTradeSecret(payload.tradeSecretName);
     }
 }

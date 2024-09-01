@@ -53,27 +53,6 @@ public class FCRegistry {
         FCLootTables.register();
     }
 
-    public static void registerClient(){
-        FCNetworking.registerClient();
-        FCScreenHandlers.registerClient();
-        FCKeybindings.registerClient();
-        FCModelPredicateProvider.registerClient();
-        FCModels.initModels();
-        Species.Library.registerClient();
-        EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
-        EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
-        EntityRendererRegistry.register(FCEntityTypes.BOAT_ENTITY, (EntityRendererFactory.Context ctx) -> new CustomBoatEntityRenderer(ctx, false));
-        BlockEntityRendererFactories.register(FCBlocks.FISH_DISPLAY, FishDisplayEntityRenderer::new);
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.REED_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.ENERGY_DENSE_KELP, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.ENERGY_DENSE_KELP_PLANT, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.NUTRITIOUS_KELP_PLANT, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.WATERLOGGED_LILY_PAD_BLOCK, RenderLayer.getCutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(FCBlocks.DUCKWEED_BLOCK, RenderLayer.getCutout());
-        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> 2129968, FCBlocks.WATERLOGGED_LILY_PAD_BLOCK);
-    }
-
     //Server-side only
     // this is so we can modify vanilla fishing rod
 }

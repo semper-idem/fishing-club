@@ -5,6 +5,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.registry.FCRegistry;
+import net.semperidem.fishingclub.registry.FCRegistryClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,16 +25,8 @@ public class FishingClubClient implements ClientModInitializer {
         return sounds;
     }
 
-    public static void addSound(SoundInstance soundInstance) {
-
-    }
-
-    public static void removeSound(SoundInstance soundInstance) {
-
-    }
-
     @Override
     public void onInitializeClient() {
-       FCRegistry.registerClient();
+       FCRegistryClient.register();
     }
 }

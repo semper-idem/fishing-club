@@ -193,9 +193,9 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            handler.fishingCard.learnTradeSecret(selectedPerk.id);
+            handler.fishingCard.learnTradeSecret(selectedPerk.name());
             //this is prob not needed since we are using cardinal components TODO verify
-            ClientPlayNetworking.send(new LearnTradeSecretPayload(selectedPerk.id));
+            ClientPlayNetworking.send(new LearnTradeSecretPayload(selectedPerk.name()));
             unlockButton.visible = false;
         };
     }
@@ -215,7 +215,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private void togglePerkButtons(Path tab) {
         for(PerkButtonWidget perkButton : perkButtons) {
-            perkButton.visible = perkButton.tradeSecret.getPath() == tab;
+           // perkButton.visible = perkButton.tradeSecret.getPath() == tab;
         }
     }
 
@@ -304,13 +304,13 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     }
 
     private void setupPerkButtons(){
-        for(Path path : TradeSecrets.SKILL_TREE.keySet()) {
-            int treeHeight = 0;
-            for(TradeSecret perk : TradeSecrets.SKILL_TREE.get(path)) {
-                setupPerkButton(perk, treeHeight);
-                treeHeight = treeHeight + 24;
-            }
-        }
+//        for(Path path : TradeSecrets.SKILL_TREE.keySet()) {
+//            int treeHeight = 0;
+//            for(TradeSecret perk : TradeSecrets.SKILL_TREE.get(path)) {
+//                setupPerkButton(perk, treeHeight);
+//                treeHeight = treeHeight + 24;
+//            }
+//        }
     }
 
     private void setupPerkButton(TradeSecret tradeSecret, int perkY) {
@@ -326,7 +326,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             );
             perkButtons.add(perkButtonWidget);
             addDrawableChild(perkButtonWidget);
-            perkToAdd = perkToAdd.getChildren();
+//            perkToAdd = perkToAdd.getChildren();
             perkX += 26;
         }
     }

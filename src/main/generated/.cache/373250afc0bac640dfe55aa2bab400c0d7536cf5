@@ -1,2 +1,7 @@
-// 1.21	2024-08-30T20:52:33.8850584	fishing-club/Loot Tables
-692acc98521cf7b18bc1f72b4c158ecab5a9ca40 data\fishing-club\loot_table\junk.json
+// 1.21	2024-09-01T22:14:27.6392515	fishing-club/Loot Tables
+8f113cdec5228ae0802333394073cd435ee1b5c5 data\fishing-club\loot_table\junk_armor.json
+97d7e1ae915f461f8f3ddde4b4e429978634764f data\fishing-club\loot_table\junk_tools.json
+79c8d8e34d56892bc40f4676fee1e7879e4fa5a3 data\fishing-club\loot_table\junk_plant.json
+c0b8d014904485bbf6d3ec8506e1bc26957e273c data\fishing-club\loot_table\junk_rod.json
+937809e7830dddf2d87a722b688ff3e8325e6589 data\fishing-club\loot_table\junk.json
+1512302bc6b750ce079fe354fccd909af8f99b94 data\fishing-club\loot_table\junk_other.json

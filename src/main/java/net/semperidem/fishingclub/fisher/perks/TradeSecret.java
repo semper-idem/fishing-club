@@ -81,9 +81,10 @@ public class TradeSecret {
             tradeSecret.maxLevel = this.levelValues == null ? 0 : this.levelValues.length;
             tradeSecret.levelValues = this.levelValues;
             tradeSecret.costPerLevel = this.costPerLevel;
-
-            this.parent.children.add(tradeSecret);
-            tradeSecret.parent = this.parent;
+            if (this.parent != null) {
+                this.parent.children.add(tradeSecret);
+                tradeSecret.parent = this.parent;
+            }
 
             tradeSecret.longDescription = this.createLongDescriptions(tradeSecret);
 

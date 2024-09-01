@@ -240,8 +240,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return historyManager.getFishAtlas();
     }
 
-    public void learnTradeSecret(int tradeSecretId){
-        this.progressionManager.learnTradeSecret(tradeSecretId);
+    public void learnTradeSecret(String tradeSecretName) {
+        this.progressionManager.learnTradeSecret(tradeSecretName);
     }
 
     public boolean hasPerk(TradeSecret perk){

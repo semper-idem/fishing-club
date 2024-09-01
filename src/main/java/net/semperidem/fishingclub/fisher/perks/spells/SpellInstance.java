@@ -44,7 +44,7 @@ public class SpellInstance {
     }
 
     public String getKey(){
-        return spell.requiredPerk.getName();
+        return spell.requiredPerk.name();
     }
 
     public String getLabel(){
@@ -61,7 +61,7 @@ public class SpellInstance {
 
     public static SpellInstance fromNbt(NbtCompound nbt) {
         String perkName = nbt.getString(KEY_TAG);
-        return new SpellInstance(TradeSecrets.getPerkFromName(perkName), nbt.getLong(NEXT_CAST_TAG));
+        return new SpellInstance(TradeSecrets.fromName(perkName).orElseThrow(), nbt.getLong(NEXT_CAST_TAG));
     }
 
     public static NbtCompound toNbt(SpellInstance spellInstance) {

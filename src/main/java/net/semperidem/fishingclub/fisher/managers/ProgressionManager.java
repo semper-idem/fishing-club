@@ -164,16 +164,16 @@ public class ProgressionManager extends DataManager {
         sync();
     }
 
-    public List<Integer> getKnownTradeSecrets(){
-        return this.knownTradeSecrets;
+    public Set<String> getKnownTradeSecrets(){
+        return this.knownTradeSecrets.keySet();
     }
 
     public boolean knowsTradeSecret(TradeSecret tradeSecret) {
-        return this.knowsTradeSecret(tradeSecret.id);
+        return this.knowsTradeSecret(tradeSecret.name());
     }
 
-    public boolean knowsTradeSecret(int tradeSecretId) {
-        return this.knownTradeSecrets.contains(tradeSecretId);
+    public boolean knowsTradeSecret(String tradeSecretName) {
+        return this.knownTradeSecrets.containsKey(tradeSecretName);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class ProgressionManager extends DataManager {
 
     private void readKnownTradeSecrets(NbtCompound fishingCardNbt){
         this.knownTradeSecrets.clear();
-        this.knownTradeSecrets.addAll(Arrays.stream((fishingCardNbt.getIntArray(TRADE_SECRETS_TAG))).boxed().toList());
+        //this.knownTradeSecrets.addAll(Arrays.stream((fishingCardNbt.getIntArray(TRADE_SECRETS_TAG))).boxed().toList());
     }
 
     private void readSpells(NbtCompound progressionNbt){
@@ -211,7 +211,7 @@ public class ProgressionManager extends DataManager {
         progressionNbt.putInt(EXP_TAG, this.exp);
         progressionNbt.putInt(ADMIRATION_POINTS_TAG, this.admirationPoints);
         progressionNbt.putInt(RESET_COUNT, this.resetCount);
-        progressionNbt.putIntArray(TRADE_SECRETS_TAG, this.knownTradeSecrets);//todo with spells
+       // progressionNbt.putIntArray(TRADE_SECRETS_TAG, this.knownTradeSecrets);//todo with spells
         this.writeSpells(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
     }

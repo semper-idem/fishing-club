@@ -25,7 +25,6 @@ import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
@@ -186,7 +185,7 @@ public class Species<T extends WaterCreatureEntity> {
     static final float SCALE_RANGE = 0.6f;
     static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
 
-    public static class Library<T extends WaterCreatureEntity> {
+    public static class Library {
 
         private static final Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
 //        private static final Predicate<BiomeSelectionContext> ANY = context -> true;
@@ -294,7 +293,7 @@ public class Species<T extends WaterCreatureEntity> {
                     .entity(ButterfishEntity::new)
                     .attributes(ButterfishEntity.createFishAttributes())
                     .spawnBiome(COD_SPAWN, 15, 1, 2)
-                    .texturedModel(ButterfishEntityModel::getTexturedModelData)
+                    .texturedModel(ButterfishEntityModel::getTexturedModelData)//todo extract from side
                     .renderer(ButterfishEntityRenderer::new)
                     .build();
 
