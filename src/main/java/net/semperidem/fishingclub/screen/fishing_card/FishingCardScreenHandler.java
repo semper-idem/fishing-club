@@ -78,10 +78,10 @@ public class FishingCardScreenHandler extends ScreenHandler {
     }
 
     private void addFisherInventory(){
-        addFishingCardSlot(0, 323, 166, fishingCard.hasPerk(FishingPerks.FISHING_ROD_SLOT), Items.FISHING_ROD);
-        addFishingCardSlot(1, 341, 166, fishingCard.hasPerk(FishingPerks.BOAT_SLOT), Items.OAK_BOAT);
-        addFishingCardSlot(2, 323, 184, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), FCItems.FISHING_NET);
-        addFishingCardSlot(3, 341, 184, fishingCard.hasPerk(FishingPerks.NET_SLOT_UNLOCK), FCItems.FISHING_NET);
+        addFishingCardSlot(0, 323, 166, true, Items.FISHING_ROD);
+        addFishingCardSlot(1, 341, 166, true, Items.OAK_BOAT);
+        addFishingCardSlot(2, 323, 184, true, FCItems.FISHING_NET);
+        addFishingCardSlot(3, 341, 184, true, FCItems.FISHING_NET);
     }
 
     public void addPlayerInventorySlots(){

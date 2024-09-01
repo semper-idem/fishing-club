@@ -16,12 +16,10 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
 import net.semperidem.fishingclub.item.FishingNetItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCTags;
 import net.semperidem.fishingclub.world.ChunkQuality;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -120,14 +118,8 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
             }
             return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
         }
-        if (fishingCard.hasPerk(FishingPerks.DOUBLE_FISH_BOAT) && Math.random() < 0.09) {
+        if (fishingCard.hasPerk(FishingPerks.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
             rewardMultiplier = 2;
-        }
-        if (fishingCard.hasPerk(FishingPerks.TRIPLE_FISH_BOAT) && (Math.random() < 0.06)) {
-            rewardMultiplier = 3;
-        }
-        while (fishingCard.hasPerk(FishingPerks.INFINITY_FISH) && Math.random() < 0.03) {
-                rewardMultiplier++;
         }
 
         return rewardMultiplier;

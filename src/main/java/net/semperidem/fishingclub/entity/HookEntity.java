@@ -38,7 +38,6 @@ import net.semperidem.fishingclub.util.Util;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
@@ -581,10 +580,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         float catchRateReduction = 0;// FishingRodPartController.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
         if (this.getWorld().isRaining()) {
             float rainBonus = 0.125f;
-            if (fishingCard.hasPerk(FishingPerks.RAINY_FISH)) {
+            if (fishingCard.hasPerk(FishingPerks.CATCH_RATE_RAIN)) {
                 rainBonus *= 2;
             }
-            if (fishingCard.hasPerk(FishingPerks.RAINY_FISH_PLUS)) {
+            if (fishingCard.hasPerk(FishingPerks.FISH_QUALITY_RAIN)) {
                 rainBonus *= 2;
             }
             catchRateReduction += rainBonus;

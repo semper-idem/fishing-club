@@ -4,7 +4,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
-import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOAT_BOBBER_SIZE;
+import static net.semperidem.fishingclub.fisher.perks.FishingPerks.BOBBER_SIZE_BOAT;
 import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {
@@ -48,7 +48,7 @@ public class BobberComponent {
         float lengthMultiplier = 1;
 
         boolean isFromBoat = parent.fishingCard.isFishingFromBoat();
-        boolean hasPerk = parent.fishingCard.hasPerk(BOAT_BOBBER_SIZE);
+        boolean hasPerk = parent.fishingCard.hasPerk(BOBBER_SIZE_BOAT);
         boolean hasBuff = parent.player.hasStatusEffect(BOBBER_BUFF);
 
         if (isFromBoat) {

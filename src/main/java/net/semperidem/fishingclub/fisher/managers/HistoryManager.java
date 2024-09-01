@@ -118,10 +118,10 @@ public class HistoryManager extends DataManager {
 
         usedChunks.add(Chunk.create(chunkPos));
         sync();//checkChunk writes
-        if (trackedFor.hasPerk(FishingPerks.FREQUENT_CATCH_FIRST_CATCH)) {
+        if (trackedFor.hasPerk(FishingPerks.FIRST_CATCH_BUFF_CATCH_RATE)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
         }
-        if (trackedFor.hasPerk(FishingPerks.QUALITY_INCREASE_FIRST_CATCH)) {
+        if (trackedFor.hasPerk(FishingPerks.FIRST_CATCH_BUFF_QUALITY)) {
             trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
         }
         return true;
@@ -141,13 +141,6 @@ public class HistoryManager extends DataManager {
                 minGrade++;
             }
             minGrade++;
-        }
-        int daysSinceLastFishComponent = getDaysSinceLastCatch();
-        if (progressionManager.hasPerk(FishingPerks.QUALITY_TIME_INCREMENT) && daysSinceLastFishComponent > 0) {
-            minGrade = (int) (minGrade + Math.floor(daysSinceLastFishComponent / DAYS_SINCE_LAST_FISH_PERIOD));
-            if (Math.random() < (1 / DAYS_SINCE_LAST_FISH_PERIOD) * (daysSinceLastFishComponent % DAYS_SINCE_LAST_FISH_PERIOD)) {
-                minGrade++;
-            }
         }
         return minGrade;
     }

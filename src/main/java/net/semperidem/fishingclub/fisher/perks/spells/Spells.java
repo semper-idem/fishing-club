@@ -4,14 +4,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.FishingPerk;
 import net.semperidem.fishingclub.fisher.perks.FishingPerks;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.HashMap;
@@ -40,7 +37,7 @@ public class Spells {
     }
 
     static {
-        SUMMON_RAIN = new Spell(FishingPerks.RAIN_SUMMON.getName(), FishingPerks.RAIN_SUMMON, 72000,   new Spell.Effect() {
+        SUMMON_RAIN = new Spell(FishingPerks.SUMMON_RAIN.getName(), FishingPerks.SUMMON_RAIN, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
                 if (Math.random() < 0.1f) {
@@ -77,12 +74,6 @@ public class Spells {
             @Override
             public void targetedCast(ServerPlayerEntity source, Entity target) {
                 FishingCard.of(source).linkTarget(target);
-            }
-        });
-        SHARED_BAIT = new Spell(FishingPerks.SHARED_BAIT.getName(), FishingPerks.SHARED_BAIT, 6000,   new Spell.Effect() {
-            @Override
-            public void cast(ServerPlayerEntity source) {
-                FishingCard.of(source).shareBait();
             }
         });
         FISHERMAN_SUMMON_REQUEST = new Spell(FishingPerks.FISHERMAN_SUMMON.getName() + " - Request", FishingPerks.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
