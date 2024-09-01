@@ -5,7 +5,6 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.*;
@@ -14,7 +13,7 @@ public class TradeSecret {
     public final int id;
     Text label;
     Text shortDescription;
-    Text longDescription;
+    List<Text> longDescription;
     TradeSecret parent;
     List<TradeSecret> children = new ArrayList<>();
     Identifier texture;
@@ -48,14 +47,27 @@ public class TradeSecret {
             tradeSecret.label = Text.translatable(this.name);
             tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name);
             tradeSecret.shortDescription = Text.translatable(this.name + ".short_description");
-            tradeSecret.longDescription = Text.translatable(this.name + ".long_description");
             tradeSecret.maxLevel = this.levelValues == null ? 0 : this.levelValues.length;
             tradeSecret.levelValues = this.levelValues;
             tradeSecret.costPerLevel = this.costPerLevel;
 
             this.parent.children.add(tradeSecret);
             tradeSecret.parent = this.parent;
+
+            tradeSecret.longDescription = this.createLongDescriptions(tradeSecret);
+
             return tradeSecret;
+        }
+
+        private ArrayList<Text> createLongDescriptions(TradeSecret tradeSecret) {
+            ArrayList<Text> leveledLongDescriptions = new ArrayList<>();
+            for(int i = 0; i < tradeSecret.maxLevel; i++) {
+                leveledLongDescriptions.add(Text.translatable(this.name + ".long_description." + i));
+            }
+            if (leveledLongDescriptions.isEmpty()) {
+                leveledLongDescriptions.add(Text.translatable(this.name + ".long_description.0"));
+            }
+            return leveledLongDescriptions;
         }
 
         Builder costPerLevel(int... costPerLevel) {
