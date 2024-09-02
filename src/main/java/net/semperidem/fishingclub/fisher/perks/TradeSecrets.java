@@ -1,7 +1,19 @@
 package net.semperidem.fishingclub.fisher.perks;
 
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.FishEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
+import net.semperidem.fishingclub.entity.FishermanEntity;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
+import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCStatusEffects;
+
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 
 public class TradeSecrets {
     static final HashMap<String, TradeSecret> NAME_TO_SKILL = new HashMap<>();
@@ -79,9 +91,18 @@ public class TradeSecrets {
                 .parent(CATCH_RATE_RAIN)
                 .build();
         SUMMON_RAIN = TradeSecret.builder().name("rain_summon")
-                .levelValues(1, 0.875f, 0.75f, 0.675f, 0.5f)
+                .levelCooldown(1, 0.875f, 0.75f, 0.675f, 0.5f)
                 .costPerLevel(4, 1, 1, 1, 1)
                 .parent(FISH_QUALITY_RAIN)
+                .active(
+                        (source, target) -> {
+                            if (Math.random() < 0.1f) {
+                                source.getWorld().setThunderGradient(1);
+                            }
+                            source.getWorld().setRainGradient(1);
+                            return true;
+                            },
+                        72000)
                 .build();
 
         FIRST_CATCH = TradeSecret.builder()
@@ -89,13 +110,15 @@ public class TradeSecrets {
                 .build();
         FIRST_CATCH_BUFF_QUALITY = TradeSecret.builder()
                 .name("quality_increase_first_catch")
-                .levelValues(1, 1.25f, 1.5f, 1.75f, 2f)
+                .active(FCStatusEffects.QUALITY_BUFF, 0, 12000)
+                .levelDuration(1, 1.25f, 1.5f, 1.75f, 2f)
                 .costPerLevel(2,1,1,1,1)
                 .parent(FIRST_CATCH)
                 .build();
         FIRST_CATCH_BUFF_CATCH_RATE = TradeSecret.builder()
                 .name("frequent_catch_first_catch")
-                .levelValues(1, 1.25f, 1.5f, 1.75f, 2)
+                .active(FCStatusEffects.FREQUENCY_BUFF, 0, 12000)
+                .levelDuration(1, 1.25f, 1.5f, 1.75f, 2)
                 .costPerLevel(2, 1, 1, 1, 1)
                 .parent(FIRST_CATCH_BUFF_QUALITY)
                 .build();
@@ -118,23 +141,27 @@ public class TradeSecrets {
 
         FISHING_SCHOOL = TradeSecret.builder()
                 .name("fishing_school")
-                .levelValues(1, 1.5f, 2)
+                .levelDuration(1, 1.5f, 2)
+                .active(FCStatusEffects.BOBBER_BUFF, 24000, 6000)
                 .build();
         SLOWER_FISH = TradeSecret.builder()
                 .name("slower_fish")
-                .levelValues(0.1f, 0.25f, 0.5f)
+                .levelValues(1, 2, 4)
+                .active(FCStatusEffects.SLOW_FISH_BUFF, 24000, 6000)
                 .costPerLevel(1, 2, 4)
                 .parent(FISHING_SCHOOL)
                 .build();
         EXPERIENCE_BOOST = TradeSecret.builder()
                 .name("experience_boost")
-                .levelValues(0.1f, 0.25f, 0.5f, 1f)
+                .levelValues(1, 2, 4, 8)
+                .active(FCStatusEffects.EXP_BUFF, 24000, 6000)
                 .costPerLevel(1,2,3,4)
                 .parent(SLOWER_FISH)
                 .build();
         LUCKY_FISHING = TradeSecret.builder()
                 .name("lucky_fishing")
                 .levelValues(1, 2, 3)
+                .active(StatusEffects.LUCK, 24000, 6000)
                 .parent(EXPERIENCE_BOOST)
                 .build();
 
@@ -151,11 +178,30 @@ public class TradeSecrets {
 
         MAGIC_ROD_SUMMON = TradeSecret.builder()
                 .name("magic_rod_summon")
-                .levelValues(1,2,3)
+                .levelCooldown(1, 0.75f, 0.5f, 0.25f)
+                .active(
+                        (source, target) -> {
+                            ItemStack stackInHand = source.getMainHandStack();
+                            if (!(stackInHand.getItem() instanceof FishingRodCoreItem)) {
+                                return false;
+                            }
+                            ItemStack clonedRod = stackInHand.copy();
+                            clonedRod.set(FCComponents.EXPIRATION_TIME, (int)source.getWorld().getTime() + 24000);
+                            source.dropItem(clonedRod, false, false);
+                            return true;
+                        },
+                        96000)
                 .build();
 
         FISHERMAN_LINK = TradeSecret.builder()
                 .name("fisherman_link")
+                .active(
+                        (source, target) -> {
+                            FishingCard.of(source).linkTarget(target);
+                            return true;
+                        },
+                        100
+                )
                 .build();
         SHARED_BUFFS = TradeSecret.builder()
                 .name("shared_buffs")
@@ -164,6 +210,8 @@ public class TradeSecrets {
                 .build();
         QUALITY_CELEBRATION = TradeSecret.builder()
                 .name("quality_celebration")
+                .levelDuration(1, 1.5f, 2)
+                .active(FCStatusEffects.QUALITY_BUFF, 100, 1200)
                 .parent(FISHERMAN_LINK)
                 .build();
         DOUBLE_LINK = TradeSecret.builder()
@@ -173,13 +221,33 @@ public class TradeSecrets {
                 .build();
         FISHERMAN_SUMMON = TradeSecret.builder()
                 .name("fisherman_summon")
-                .levelValues(1, 0.875f, 0.75f, 0.675f, 0.5f)
+                .levelDuration(1, 0.875f, 0.75f, 0.675f, 0.5f)
                 .costPerLevel(3, 1, 1, 1, 1)
+                .active(
+                        (source, target) -> {
+                            FishingCard.of(source).requestSummon();
+                            return true;
+                            },
+                        72000
+                )
                 .parent(FISHERMAN_LINK)
                 .build();
         FREE_SHOP_SUMMON = TradeSecret.builder()
                 .name("free_shop_summon")
                 .costPerLevel(5)
+                .active(
+                        (source, target) -> {
+                            if (!(target instanceof FishEntity)) {
+                                return false;
+                            }
+                            if (!target.isSubmergedInWater()) {
+                                return false;
+                            }
+                            FishermanEntity.summonDerek(target.getPos(), source.getServerWorld(), ItemStack.EMPTY, source.getUuid());
+                            return true;
+                            },
+                        72000
+                )
                 .parent(FISHERMAN_SUMMON)
                 .build();
     }

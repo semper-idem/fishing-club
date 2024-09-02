@@ -123,6 +123,7 @@ public class LinkingManager extends DataManager {
     //TODO
     private void messageRequestSummon(PlayerEntity target) {
         target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.getHolder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
+        //change summon_accpept to just tp PLAYER_NAM to SUMMONER_NAME
         target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
 
     }

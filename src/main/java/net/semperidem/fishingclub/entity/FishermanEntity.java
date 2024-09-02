@@ -122,6 +122,7 @@ public class FishermanEntity extends PassiveEntity {
         this.summonerUUID = summonerUUID;
 
         if (spawnedFrom.isEmpty()) {
+            this.summonType = SummonType.SPELL;
             return;
         }
         this.summonType = SummonType.FISH;

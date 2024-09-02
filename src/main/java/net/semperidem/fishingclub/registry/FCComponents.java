@@ -18,6 +18,7 @@ import java.util.UUID;
 public class FCComponents {
     public static ComponentType<RodConfiguration> ROD_CONFIGURATION;
     public static ComponentType<Integer> LINE_LENGTH;
+    public static ComponentType<Integer> EXPIRATION_TIME;
     public static ComponentType<Float> CAST_POWER;
     public static ComponentType<Boolean> BROKEN;
     public static ComponentType<Integer> PART_QUALITY;
@@ -43,6 +44,16 @@ public class FCComponents {
     }
 
     public static void register() {
+        EXPIRATION_TIME =
+                Registry.register(
+                        Registries.DATA_COMPONENT_TYPE,
+                        FishingClub.identifier("expiration_time"),
+                        ComponentType.<Integer>builder()
+                                .codec(Codecs.NONNEGATIVE_INT)
+                                .packetCodec(PacketCodecs.VAR_INT)
+                                .cache()
+                                .build());
+
         LINE_LENGTH =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,

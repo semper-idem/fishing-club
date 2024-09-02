@@ -11,7 +11,6 @@ import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
-import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
 import net.semperidem.fishingclub.registry.FCItems;
@@ -27,7 +26,6 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
     public FishingCard fishingCard;
     public InstantSellSlot instantSellSlot;
-    private Path activeTab;
 
 
 
@@ -45,13 +43,6 @@ public class FishingCardScreenHandler extends ScreenHandler {
         this.isClient = playerInventory.player.getWorld().isClient();
     }
 
-    public Path getActiveTab(){
-        return activeTab;
-    }
-
-    public void setActiveTab(Path tab){
-        this.activeTab = tab;
-    }
 
     public boolean shouldRenderSellButton(){
 
@@ -67,14 +58,14 @@ public class FishingCardScreenHandler extends ScreenHandler {
     private void addInstantSellSlot(){
         instantSellSlot = new InstantSellSlot(
                 fishingCard, 4, 341, 226,
-                this, Path.GENERAL,
+                this,
                 fishingCard.hasPerk(TradeSecrets.INSTANT_FISH_CREDIT),
                 FishUtil.DEFAULT_FISH_ITEM);
         addSlot(instantSellSlot);
     }
 
     private void addFishingCardSlot(int index, int x, int y, boolean isUnlocked, Item itemBound) {
-        addSlot(new UnlockableBoundSlot(fishingCard, index, x, y, this, Path.GENERAL, isUnlocked, itemBound));
+        addSlot(new UnlockableBoundSlot(fishingCard, index, x, y, this, isUnlocked, itemBound));
     }
 
     private void addFisherInventory(){
@@ -86,7 +77,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
     public void addPlayerInventorySlots(){
         for(int x = 0; x < SLOTS_PER_ROW; ++x) {
-            addSlot(new TabSlot(playerInventory, x, 143 + x * SLOT_SIZE, 226, this, Path.GENERAL));
+            addSlot(new TabSlot(playerInventory, x, 143 + x * SLOT_SIZE, 226, this));
         }
         for(int y = 0; y < 3; ++y) {
             for(int x = 0; x < 9; ++x) {
@@ -94,7 +85,7 @@ public class FishingCardScreenHandler extends ScreenHandler {
                         x + (y * SLOTS_PER_ROW) + SLOTS_PER_ROW,
                         143 + x * SLOT_SIZE,
                         166 + y * SLOT_SIZE,
-                        this, Path.GENERAL
+                        this
                 ));
             }
         }

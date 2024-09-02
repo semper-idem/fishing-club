@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.perks.TradeSecret;
 import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
 import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
-import net.semperidem.fishingclub.fisher.perks.spells.Spells;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -27,16 +27,10 @@ public class ProgressionManager extends DataManager {
     private static final int RESET_COST_PER_RESET = 10000;
     private int resetCount = 0;
 
-    private final HashMap<String, Integer> knownTradeSecrets = new HashMap<>();
-    private final HashMap<String, SpellInstance> spells = new HashMap<>();
+    private final HashMap<String, TradeSecret.Instance> knownTradeSecrets = new HashMap<>();
 
     public ProgressionManager(FishingCard trackedFor) {
         super(trackedFor);
-    }
-
-    public void resetCooldown(){
-        spells.forEach((key, spell) -> spell.resetCooldown());
-        sync();
     }
 
 
@@ -45,10 +39,10 @@ public class ProgressionManager extends DataManager {
     }
 
     public void resetPerks() {
-        resetCount++;
+        this.resetCount++;
         int refundPerkPoints = knownTradeSecrets.size();
-        knownTradeSecrets.clear();
-        spells.clear();
+        //todo fix refund points calculation
+        this.knownTradeSecrets.clear();
         addPerkPoints(refundPerkPoints);
         sync();
     }
@@ -82,20 +76,13 @@ public class ProgressionManager extends DataManager {
         if (!hasRequiredPerk(tradeSecret)) {
             return;
         }
-        int currentLevel = this.knownTradeSecrets.getOrDefault(tradeSecretName, 0);
-        if (tradeSecret.maxLevel() <= currentLevel) {
-            return;
-        }
-        int nextLevelPoints = tradeSecret.cost(currentLevel);
+        TradeSecret.Instance instance = this.knownTradeSecrets.computeIfAbsent(tradeSecretName, tsn -> tradeSecret.instance());
+        int nextLevelPoints = instance.upgradeCost();
         if (!this.hasAdmirationPoints(nextLevelPoints)){
             return;
         }
-        this.admirationPoints -= currentLevel;
-        this.knownTradeSecrets.put(tradeSecretName, currentLevel + 1);
-        if (Spells.perkHasSpell(tradeSecret)) {
-            this.spells.put(tradeSecretName, SpellInstance.getSpellInstance(tradeSecret, 0));
-        }
-
+        this.admirationPoints -= nextLevelPoints;
+        instance.upgrade();
         this.sync();
     }
 
@@ -132,14 +119,15 @@ public class ProgressionManager extends DataManager {
         return this.admirationPoints >= count;
     }
 
-    public void useSpell(String perkName, Entity target){
-        if (!this.spells.containsKey(perkName)){
+    public void useTradeSecret(String tradeSecretName, @Nullable Entity target){
+        if (!(this.trackedFor.getHolder() instanceof ServerPlayerEntity serverHolder)){
             return;
         }
-        SpellInstance spellInstance = spells.get(perkName);
-        spellInstance.use((ServerPlayerEntity) trackedFor.getHolder(), target);
-        spells.put(perkName, spellInstance);
-        sync();
+        this.knownTradeSecrets.computeIfPresent(tradeSecretName, (key, instance) -> {
+            instance.use(serverHolder, target);
+            this.sync();
+            return instance;
+        });
     }
 
     public int nextLevelXP(){
@@ -187,21 +175,16 @@ public class ProgressionManager extends DataManager {
         this.admirationPoints = progressionNbt.getInt(ADMIRATION_POINTS_TAG);
         this.resetCount = progressionNbt.getInt(RESET_COUNT);
         this.readKnownTradeSecrets(progressionNbt);
-        this.readSpells(progressionNbt);
     }
 
-    private void readKnownTradeSecrets(NbtCompound fishingCardNbt){
+    private void readKnownTradeSecrets(NbtCompound progressionNbt){
         this.knownTradeSecrets.clear();
-        //this.knownTradeSecrets.addAll(Arrays.stream((fishingCardNbt.getIntArray(TRADE_SECRETS_TAG))).boxed().toList());
-    }
-
-    private void readSpells(NbtCompound progressionNbt){
-        spells.clear();
-        NbtList spellListTag = progressionNbt.getList(SPELLS_TAG, NbtElement.COMPOUND_TYPE);
-        for(int i = 0; i < spellListTag.size(); i++) {
-            SpellInstance spellInstance = SpellInstance.fromNbt(spellListTag.getCompound(i));
-            spells.put(spellInstance.getKey(), spellInstance);
-        }
+        progressionNbt.getList(TRADE_SECRETS_TAG, NbtElement.COMPOUND_TYPE).forEach(
+                element -> {
+                    TradeSecret.Instance instance = TradeSecret.Instance.fromNbt((NbtCompound) element);
+                    this.knownTradeSecrets.put(instance.name(), instance);
+                }
+        );
     }
 
     @Override
@@ -211,16 +194,16 @@ public class ProgressionManager extends DataManager {
         progressionNbt.putInt(EXP_TAG, this.exp);
         progressionNbt.putInt(ADMIRATION_POINTS_TAG, this.admirationPoints);
         progressionNbt.putInt(RESET_COUNT, this.resetCount);
-       // progressionNbt.putIntArray(TRADE_SECRETS_TAG, this.knownTradeSecrets);//todo with spells
-        this.writeSpells(progressionNbt);
+        this.writeKnownTradeSecrets(progressionNbt);
         fishingCardNbt.put(TAG, progressionNbt);
     }
 
-    public void writeSpells(NbtCompound progressionNbt){
-        NbtList spellsTag = new NbtList();
-        spells.forEach((fishingPerkNbt, spellInstance) -> spellsTag.add(SpellInstance.toNbt(spellInstance)));
-        progressionNbt.put(SPELLS_TAG, spellsTag);
+    private void writeKnownTradeSecrets(NbtCompound progressionNbt) {
+        NbtList tradeSecretsTag = new NbtList();
+        this.knownTradeSecrets.forEach((name, instance) -> tradeSecretsTag.add(TradeSecret.Instance.toNbt(instance)));
+        progressionNbt.put(TRADE_SECRETS_TAG, tradeSecretsTag);
     }
+
 
 
     private static final String TAG = "progression";

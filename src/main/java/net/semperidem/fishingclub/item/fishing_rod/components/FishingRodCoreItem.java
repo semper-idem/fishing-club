@@ -48,7 +48,10 @@ public class FishingRodCoreItem extends FishingRodItem {
         }
 
         ItemStack fishingRod = user.getStackInHand(hand);
-
+        long time = world.getTime();
+        if (fishingRod.getOrDefault(FCComponents.EXPIRATION_TIME, time).intValue() < time) {
+            fishingRod.damage(fishingRod.getMaxDamage() + 1, user, EquipmentSlot.MAINHAND);
+        }
         boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast) {
             user.sendMessage(Text.of("Can't use without line"), true);

@@ -34,7 +34,7 @@ import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.*;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
-import net.semperidem.fishingclub.util.Util;
+import net.semperidem.fishingclub.util.Utils;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
 import java.util.Collections;
@@ -315,7 +315,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
 
         if (this.isInFluid) {
-            double buoyancy = 0.03 + this.random.nextGaussian() * 0.005 + Math.sin(Util.getEntityDepth(this)) * -0.1f;
+            double buoyancy = 0.03 + this.random.nextGaussian() * 0.005 + Math.sin(Utils.getEntityDepth(this)) * -0.1f;
             VelocityUtil.addVelocityY(this, buoyancy);
         }
     }

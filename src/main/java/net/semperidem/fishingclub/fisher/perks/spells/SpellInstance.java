@@ -55,10 +55,6 @@ public class SpellInstance {
         return nextPossibleCastTime;
     }
 
-    public TradeSecret getPerk() {
-        return spell.requiredPerk;
-    }
-
     public static SpellInstance fromNbt(NbtCompound nbt) {
         String perkName = nbt.getString(KEY_TAG);
         return new SpellInstance(TradeSecrets.fromName(perkName).orElseThrow(), nbt.getLong(NEXT_CAST_TAG));

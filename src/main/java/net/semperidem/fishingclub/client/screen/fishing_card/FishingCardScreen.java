@@ -15,8 +15,6 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.perks.TradeSecret;
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
-import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
@@ -139,10 +137,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 
     private void initTabButton(){
         nextButtonX = buttonsX;
-        generalButton = getButtonForTab(Path.GENERAL);
-        hobbyistButton = getButtonForTab(Path.HOBBYIST);
-        opportunistButton = getButtonForTab(Path.OPPORTUNIST);
-        socialistButton = getButtonForTab(Path.SOCIALIST);
         setupPerkButtons();
     }
 
@@ -171,23 +165,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         unlockButton.visible = false;
     }
 
-    private MemberButton getButtonForTab(Path tab) {
-        MemberButton tabButton = new MemberButton(
-                nextButtonX,
-                buttonsY,
-                TAB_WIDTH,
-                TAB_HEIGHT,
-                Text.of(tab.name),
-                tabButtonAction(tab)
-        );
-        tabButton.setTexture(MemberButton.SMALL_WIDE_BUTTON_TEXTURE);
-        nextButtonX += TAB_WIDTH;
-        return tabButton;
-    }
-
-    private ButtonWidget.PressAction tabButtonAction(Path tab) {
-        return button -> setTab(button, tab);
-    }
 
 
 
@@ -200,24 +177,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         };
     }
 
-    private void setTab(ButtonWidget button, Path tab){
-        background = tab == Path.GENERAL ? BACKGROUND_GENERAL : BACKGROUND_PERK;
-        if (activeTabButton != null) {
-            activeTabButton.active = true;
-        }
-        unlockButton.visible = false;
-        selectedPerk = null;
-        activeTabButton = button;
-        button.active = false;
-        handler.setActiveTab(tab);
-        togglePerkButtons(tab);
-    }
 
-    private void togglePerkButtons(Path tab) {
-        for(PerkButtonWidget perkButton : perkButtons) {
-           // perkButton.visible = perkButton.tradeSecret.getPath() == tab;
-        }
-    }
 
     protected void setPerk(PerkButtonWidget newSelectedPerkButton, TradeSecret perk) {
         selectedPerk = perk;

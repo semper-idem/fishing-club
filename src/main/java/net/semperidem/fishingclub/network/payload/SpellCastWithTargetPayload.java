@@ -30,7 +30,7 @@ public record SpellCastWithTargetPayload(String spellName, UUID targetUUID) impl
 
     public static void consumePayload(SpellCastWithTargetPayload payload, ServerPlayNetworking.Context context) {
         try (MinecraftServer server = context.server()) {
-            FishingCard.of(context.player()).useSpell(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
+            FishingCard.of(context.player()).useTradeSecret(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
         }
     }
 }

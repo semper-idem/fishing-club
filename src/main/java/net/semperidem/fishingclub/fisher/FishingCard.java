@@ -132,7 +132,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
 
     public void resetCooldown(){
-        progressionManager.resetCooldown();
+       // progressionManager.resetCooldown();
     }
 
     public boolean hasRequiredPerk(TradeSecret perk){
@@ -168,8 +168,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return this.progressionManager.hasAdmirationPoints();
     }
 
-    public void useSpell(String perkName, Entity target){
-        progressionManager.useSpell(perkName, target);
+    public void useTradeSecret(String tradeSecret, @Nullable Entity target){
+        progressionManager.useTradeSecret(tradeSecret, target);
     }
 
     public int nextLevelXP(){

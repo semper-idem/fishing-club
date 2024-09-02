@@ -1,12 +1,17 @@
 package net.semperidem.fishingclub.util;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class Util {
+import java.util.List;
+
+public class Utils {
 
     public static  String getVectorString(Vec3d vector) {
         return String.format("%5.2f", vector.x) + String.format("%5.2f", vector.y) + String.format("%5.2f", vector.z);
@@ -23,4 +28,14 @@ public class Util {
         double depth = (nextYPos - nextYBlockPos) - waterLevel - waterLevelAbove;
         return MathHelper.clamp(depth, -2f, 0f);
     }
+
+    public static void castEffect(ServerPlayerEntity caster, StatusEffectInstance effect){
+        Box aoe = new Box(caster.getBlockPos());
+        aoe.expand(4);
+        List<Entity> iterableEntities = caster.getEntityWorld().getOtherEntities(null, aoe);
+        iterableEntities.add(caster);
+        iterableEntities.stream().filter(o -> o instanceof ServerPlayerEntity).forEach(o -> ((ServerPlayerEntity) o).addStatusEffect(effect));
+    }
+
+
 }

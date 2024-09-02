@@ -6,12 +6,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.perks.Path;
 import net.semperidem.fishingclub.registry.FCComponents;
 
 public class InstantSellSlot extends UnlockableBoundSlot {
-    public InstantSellSlot(Inventory inventory, int index, int x, int y, FishingCardScreenHandler parent, Path tab, boolean isUnlocked, Item boundItem) {
-        super(inventory, index, x, y, parent, tab, isUnlocked, boundItem);
+    public InstantSellSlot(Inventory inventory, int index, int x, int y, FishingCardScreenHandler parent, boolean isUnlocked, Item boundItem) {
+        super(inventory, index, x, y, parent, isUnlocked, boundItem);
     }
 
     @Override

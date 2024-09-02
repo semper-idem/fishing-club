@@ -23,14 +23,13 @@ public class Spells {
     static Spell FISHERMAN_LINK;
     static Spell FISHERMAN_SUMMON_REQUEST;
     static Spell FISHERMAN_SUMMON_ACCEPT;
-    static Spell SHARED_BAIT;
     static Spell MAGIC_ROD_SUMMON;
     static Spell FREE_SHOP_SUMMON;
     static HashMap<TradeSecret, Spell> perkToSpell = new HashMap<>();
 
-    private static void castEffect(ServerPlayerEntity caster,int range, StatusEffectInstance effect){
+    private static void castEffect(ServerPlayerEntity caster, StatusEffectInstance effect){
         Box aoe = new Box(caster.getBlockPos());
-        aoe.expand(range);
+        aoe.expand(4);
         List<Entity> iterableEntities = caster.getEntityWorld().getOtherEntities(null, aoe);
         iterableEntities.add(caster);
         iterableEntities.stream().filter(o -> o instanceof ServerPlayerEntity).forEach(o -> ((ServerPlayerEntity) o).addStatusEffect(effect));
@@ -49,25 +48,25 @@ public class Spells {
         FISHING_SCHOOL = new Spell(TradeSecrets.FISHING_SCHOOL.name(), TradeSecrets.FISHING_SCHOOL, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.BOBBER_BUFF, 6000));
+                castEffect(source, new StatusEffectInstance(FCStatusEffects.BOBBER_BUFF, 6000));
             }
         });
         SLOWER_FISH = new Spell(TradeSecrets.SLOWER_FISH.name(), TradeSecrets.SLOWER_FISH, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.SLOW_FISH_BUFF, 6000));
+                castEffect(source, new StatusEffectInstance(FCStatusEffects.SLOW_FISH_BUFF, 6000));
             }
         });
         EXPERIENCE_BOOST = new Spell(TradeSecrets.EXPERIENCE_BOOST.name(), TradeSecrets.EXPERIENCE_BOOST, 18000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.EXP_BUFF,  6000));
+                castEffect(source, new StatusEffectInstance(FCStatusEffects.EXP_BUFF,  6000));
             }
         });
         LUCKY_FISHING = new Spell(TradeSecrets.LUCKY_FISHING.name(), TradeSecrets.LUCKY_FISHING, 18000,  new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source){
-                castEffect(source, 4, new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,  6000));
+                castEffect(source, new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,  6000));
             }
         });
         FISHERMAN_LINK = new Spell(TradeSecrets.FISHERMAN_LINK.name(), TradeSecrets.FISHERMAN_LINK, 6000, new Spell.Effect() {
@@ -79,7 +78,7 @@ public class Spells {
         FISHERMAN_SUMMON_REQUEST = new Spell(TradeSecrets.FISHERMAN_SUMMON.name() + " - Request", TradeSecrets.FISHERMAN_SUMMON, 72000,   new Spell.Effect() {
             @Override
             public void cast(ServerPlayerEntity source) {
-                FishingCard.of(source).requestSummon();;
+                FishingCard.of(source).requestSummon();
             }
         });
         MAGIC_ROD_SUMMON = new Spell(TradeSecrets.MAGIC_ROD_SUMMON.name(), TradeSecrets.MAGIC_ROD_SUMMON, 600,   new Spell.Effect() {
@@ -102,7 +101,6 @@ public class Spells {
             public void cast(ServerPlayerEntity source){
                 //TODO Make only on Derek per world
                 //TODO Add condition to spawn only in water or near water
-                source.getServerWorld().spawnEntity(new FishermanEntity(source.getWorld(), ItemStack.EMPTY, source.getUuid()));
             }
         });
     }
