@@ -10,7 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
 import net.semperidem.fishingclub.registry.FCItems;

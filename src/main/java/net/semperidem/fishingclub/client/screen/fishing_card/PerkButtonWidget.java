@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 
 import java.awt.*;
 import java.util.function.Supplier;

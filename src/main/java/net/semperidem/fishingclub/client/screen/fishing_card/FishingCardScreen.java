@@ -14,7 +14,7 @@ import net.semperidem.fishingclub.client.screen.Cacheable;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
-import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
@@ -255,12 +255,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
                 TEXT_COLOR
         );
 
-        List<Text> lines = selectedPerk.getLongDescription();
-        int offset = 0;
-        for(Text line : lines) {
-            context.drawTextWithShadow(textRenderer, line, buttonsX, selectedPerkNameY + 20  + offset, TEXT_COLOR);
-            offset += textRenderer.fontHeight + 2;
-        }
+        Text lines = selectedPerk.longDescription(1);
+        context.drawTextWithShadow(textRenderer, lines, buttonsX, selectedPerkNameY + 20, TEXT_COLOR);
     }
 
     private void setupPerkButtons(){

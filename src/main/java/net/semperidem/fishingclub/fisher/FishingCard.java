@@ -15,7 +15,7 @@ import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
-import net.semperidem.fishingclub.fisher.perks.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;

@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.game;
 
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
 public class TreasureComponent {

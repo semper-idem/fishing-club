@@ -1,10 +1,8 @@
-package net.semperidem.fishingclub.fisher.perks;
+package net.semperidem.fishingclub.fisher.tradesecret;
 
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
@@ -13,7 +11,6 @@ import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.UUID;
 
 public class TradeSecrets {
     static final HashMap<String, TradeSecret> NAME_TO_SKILL = new HashMap<>();

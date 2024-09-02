@@ -13,7 +13,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 
 import java.util.ArrayList;
 import java.util.UUID;

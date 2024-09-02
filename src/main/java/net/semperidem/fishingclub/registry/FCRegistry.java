@@ -1,23 +1,12 @@
 package net.semperidem.fishingclub.registry;
 
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.entity.renderer.CustomBoatEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.FishDisplayEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
-import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.screen.dialog.DialogController;
 
 import java.util.HashMap;

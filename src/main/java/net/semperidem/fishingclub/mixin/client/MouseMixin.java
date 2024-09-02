@@ -28,7 +28,7 @@ public class MouseMixin {
             return;
         }
         if (FCKeybindings.SPELL_SELECT.isPressed()) {
-            SpellListWidget.scrollSpells((int) vertical);
+            SpellListWidget.scroll((int) vertical);
             ci.cancel();
             return;
         }

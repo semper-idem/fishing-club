@@ -2,16 +2,16 @@ package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class SpellListWidget{
-    public static SpellInstance selectedSpell;
+    public static TradeSecret.Instance selectedInstance;
     public static int selectedSpellIndex;
-    public static ArrayList<SpellInstance> availableSpells = new ArrayList<>();
+    public static ArrayList<TradeSecret.Instance> usableTradeSecrets = new ArrayList<>();
     public static boolean pressed = false;
     float xPercent = 0.55f;
     float yPercent = 0.55f;
@@ -25,7 +25,7 @@ public class SpellListWidget{
     }
 
     public void render(DrawContext context, float tickDelta){
-        if(selectedSpell == null){
+        if(selectedInstance == null){
             if (pressed) pressed = false;
             return;
         }
@@ -35,34 +35,34 @@ public class SpellListWidget{
         }
         int x = (int) (MinecraftClient.getInstance().getWindow().getScaledWidth() * xPercent);
         int y = (int) (MinecraftClient.getInstance().getWindow().getScaledHeight() * yPercent);
-        renderSpell(context, selectedSpell, x, y, Color.WHITE.getRGB(), 0x99000000);
-        if (availableSpells.size() > 1) {
-            renderSpell(context, prevSpell(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+        renderSpell(context, selectedInstance, x, y, Color.WHITE.getRGB(), 0x99000000);
+        if (usableTradeSecrets.size() > 1) {
+            renderSpell(context, previous(selectedSpellIndex), x, y - spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         }
-        if (availableSpells.size() > 2) {
-            renderSpell(context, nextSpell(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
+        if (usableTradeSecrets.size() > 2) {
+            renderSpell(context, next(selectedSpellIndex), x, y + spaceBetween, Color.WHITE.getRGB(), 0x66000000);
         }
     }
 
 
-    private void renderSpell(DrawContext context, SpellInstance spell, int x, int y, int color, int bgColor){
-        String spellName = spell.getLabel();
-        if (selectedSpell == spell) {
+    private void renderSpell(DrawContext context, TradeSecret.Instance instance, int x, int y, int color, int bgColor){
+        String spellName = instance.parent().name();
+        if (selectedInstance == instance) {
             spellName = "> " + spellName + " <";
         }
-        String spellCd = getCooldownString(spell);
+        String spellCd = getCooldownString(instance);
         int spellCdLen = MinecraftClient.getInstance().textRenderer.getWidth(spellCd);
         context.fill(x - 4, y - 4, x + entryWidth, y + 12, bgColor);
         context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, spellName , x,y, color);
         context.drawTextWithShadow(MinecraftClient.getInstance().textRenderer, spellCd , x + entryWidth - spellCdLen - 4,y, color);
     }
 
-    private int getCooldown(SpellInstance spellInstance) {
-        return (int) Math.max(0, spellInstance.getNextCast() - MinecraftClient.getInstance().world.getTime());
+    private int getCooldown(TradeSecret.Instance instance) {
+        return (int) Math.max(0, instance.nextUseTime() - MinecraftClient.getInstance().world.getTime());
     }
 
-    private String getCooldownString(SpellInstance spellInstance){
-        int cdTimer = getCooldown(spellInstance);
+    private String getCooldownString(TradeSecret.Instance instance){
+        int cdTimer = getCooldown(instance);
         String result = "";
         int cdSeconds = cdTimer / 20;
         int hours = cdSeconds / 3600;
@@ -78,33 +78,33 @@ public class SpellListWidget{
         return result;
     }
 
-    private SpellInstance prevSpell(int selectedSpellIndex){
-        int prevSpellIndex = selectedSpellIndex - 1;
-        if (prevSpellIndex < 0){
-            prevSpellIndex = availableSpells.size() - 1;
+    private TradeSecret.Instance previous(int selectedInstance){
+        int previousInstance = selectedInstance - 1;
+        if (previousInstance < 0){
+            previousInstance = usableTradeSecrets.size() - 1;
         }
-        return availableSpells.get(prevSpellIndex);
+        return usableTradeSecrets.get(previousInstance);
     }
 
-    private SpellInstance nextSpell(int selectedSpellIndex){
+    private TradeSecret.Instance next(int selectedSpellIndex){
         int nextSpellIndex = selectedSpellIndex + 1;
-        if (nextSpellIndex == availableSpells.size()){
+        if (nextSpellIndex == usableTradeSecrets.size()){
             nextSpellIndex = 0;
         }
-        return availableSpells.get(nextSpellIndex);
+        return usableTradeSecrets.get(nextSpellIndex);
 
     }
 
-    public static void scrollSpells(int scrollAmount){
-        if (availableSpells.size() == 0) return;
-        int index = availableSpells.indexOf(selectedSpell) + (int)Math.signum(scrollAmount);
-        if (index >= availableSpells.size()) {
+    public static void scroll(int scrollAmount){
+        if (usableTradeSecrets.size() == 0) return;
+        int index = usableTradeSecrets.indexOf(selectedInstance) + (int)Math.signum(scrollAmount);
+        if (index >= usableTradeSecrets.size()) {
             index = 0;
         }
         if (index < 0) {
-            index = availableSpells.size() - 1;
+            index = usableTradeSecrets.size() - 1;
         }
-        selectedSpell = availableSpells.get(index);
+        selectedInstance = usableTradeSecrets.get(index);
         selectedSpellIndex = index;
     }
 }

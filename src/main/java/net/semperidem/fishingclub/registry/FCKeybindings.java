@@ -9,10 +9,10 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
-import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
-import net.semperidem.fishingclub.network.payload.FishingCardPayload;
 import net.semperidem.fishingclub.network.payload.SpellCastWithTargetPayload;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.UUID;
 
 import static net.semperidem.fishingclub.FishingClub.MOD_ID;
 
@@ -48,19 +48,19 @@ public class FCKeybindings {
         if (!CAST_SPELL.wasPressed()) {
             return;
         }
-        if (SpellListWidget.selectedSpell == null) {
+        if (SpellListWidget.selectedInstance == null) {
             return;
         }
         if (client.player == null) {
             return;
         }
-        if (!SpellListWidget.selectedSpell.needsTarget()) {
-            ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedSpell.getKey(), client.player.getUuid()));
-            return;
-        }
         HitResult hitResult = client.player.raycast(5, 0, false);
+        UUID targetUUID = null;
+        if (hitResult instanceof EntityHitResult entityHitResult) {
+            targetUUID = entityHitResult.getEntity().getUuid();
+        }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedSpell.getKey(), ((EntityHitResult) hitResult).getEntity().getUuid()));
+            ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedInstance.name(), targetUUID));
         }
     }
 

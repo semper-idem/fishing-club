@@ -6,9 +6,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
-import net.semperidem.fishingclub.fisher.perks.TradeSecret;
-import net.semperidem.fishingclub.fisher.perks.TradeSecrets;
-import net.semperidem.fishingclub.fisher.perks.spells.SpellInstance;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

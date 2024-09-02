@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.fisher.perks;
+package net.semperidem.fishingclub.fisher.tradesecret;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -14,10 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static net.semperidem.fishingclub.fisher.perks.TradeSecrets.*;
+import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.*;
 
 public class TradeSecret {
     String name;
@@ -127,6 +126,18 @@ public class TradeSecret {
 
         public void upgrade() {
             this.level++;
+        }
+
+        public TradeSecret parent() {
+            return this.parent;
+        }
+
+        public int level(){
+            return this.level;
+        }
+
+        public long nextUseTime() {
+            return this.nextUseTime;
         }
 
         public void use(ServerPlayerEntity player, @Nullable Entity entity) {
