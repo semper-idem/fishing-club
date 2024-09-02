@@ -226,6 +226,10 @@ public class Species<T extends WaterCreatureEntity> {
         static HashMap<String, Species<?>> SPECIES_BY_NAME = new HashMap<>();
 
         public static void registerClient() {
+            BUTTERFISH = SpeciesBuilder.create(BUTTERFISH)
+                    .texturedModel(ButterfishEntityModel::getTexturedModelData)
+                    .renderer(ButterfishEntityRenderer::new)
+                    .build();
             SPECIES_BY_NAME.values().forEach(Species::registerClient);
         }
 
@@ -293,8 +297,6 @@ public class Species<T extends WaterCreatureEntity> {
                     .entity(ButterfishEntity::new)
                     .attributes(ButterfishEntity.createFishAttributes())
                     .spawnBiome(COD_SPAWN, 15, 1, 2)
-                    .texturedModel(ButterfishEntityModel::getTexturedModelData)//todo extract from side
-                    .renderer(ButterfishEntityRenderer::new)
                     .build();
 
 

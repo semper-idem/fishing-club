@@ -38,8 +38,16 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
 
    }
 
+    private SpeciesBuilder(Species<T> source) {
+        this.species = source;
+    }
+
     public static <T extends WaterCreatureEntity> SpeciesBuilder<T> create(String speciesName) {
         return new SpeciesBuilder<>(speciesName);
+    }
+
+    public static <T extends WaterCreatureEntity> SpeciesBuilder<T> create(Species<T> source) {
+        return new SpeciesBuilder<>(source);
     }
 
     public SpeciesBuilder<T> level(int level) {
