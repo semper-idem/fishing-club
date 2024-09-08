@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 public class BobberPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
     ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
-    ItemStat bobberWidth;
+    ItemStat bobberWidthMultiplier;
     ItemStat bobberControl;
     ItemStat waitTimeReductionMultiplier;
     ItemStat timeHookedMultiplier;
@@ -38,8 +38,8 @@ public class BobberPartItem extends PartItem {
         return this;
     }
 
-    public BobberPartItem bobberWidth(ItemStat bobberWidth) {
-        this.bobberWidth = bobberWidth;
+    public BobberPartItem bobberWidthMultiplier(ItemStat bobberWidthMultiplier) {
+        this.bobberWidthMultiplier = bobberWidthMultiplier;
         return this;
     }
 
@@ -80,7 +80,7 @@ public class BobberPartItem extends PartItem {
         attributes.bobberControl += this.bobberControl.value;
         attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
-        attributes.bobberWidth = this.bobberWidth.value;
+        attributes.bobberWidthMultiplier = this.bobberWidthMultiplier.value;
         super.apply(attributes);
     }
 

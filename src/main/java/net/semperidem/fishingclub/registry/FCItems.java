@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.registry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.jukebox.JukeboxSongs;
-import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -668,14 +667,14 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
-                .bobberWidth(ItemStat.MULTIPLIER_T1)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T1)
         );
         BOBBER_LEATHER_SLIME = registerItem("bobber_leather_slime", new BobberPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
                 .weightClass(2)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
-                .bobberWidth(ItemStat.MULTIPLIER_T1)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T1)
         );
         BOBBER_TURTLE_SLIME = registerItem("bobber_turtle_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
                 .weightClass(3)
@@ -684,21 +683,21 @@ public class FCItems {
         );
         BOBBER_ARMADILLO_SLIME = registerItem("bobber_armadillo_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
                 .weightClass(3)
-                .bobberWidth(ItemStat.MULTIPLIER_T2)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishControl(ItemStat.BASE_T2)
         );
         BOBBER_TURTLE_ENDER = registerItem("bobber_turtle_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
-                .bobberWidth(ItemStat.MULTIPLIER_T4)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T4)
                 .bobberControl(ItemStat.BASE_T3)
         );
         BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
-                .bobberWidth(ItemStat.MULTIPLIER_T2)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishControl(ItemStat.BASE_T3)
         );
         BOBBER_AMETHYST_ENDER = registerItem("bobber_amethyst_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
@@ -721,7 +720,7 @@ public class FCItems {
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
-                .bobberWidth(ItemStat.MULTIPLIER_T4)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T4)
                 .bobberControl(ItemStat.BASE_T4)
                 .fishControl(ItemStat.BASE_T2)
                 .fishQuality(1)
@@ -731,7 +730,7 @@ public class FCItems {
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T4)
-                .bobberWidth(ItemStat.MULTIPLIER_T2)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T2)
                 .bobberControl(ItemStat.BASE_T2)
                 .fishControl(ItemStat.BASE_T4)
                 .fishQuality(1)
@@ -750,7 +749,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T5)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T5)
-                .bobberWidth(ItemStat.MULTIPLIER_T5)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T5)
                 .bobberControl(ItemStat.BASE_T5)
                 .fishControl(ItemStat.BASE_T5)
                 .fishQuality(2));
@@ -761,7 +760,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T5)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T4)
-                .bobberWidth(ItemStat.MULTIPLIER_T4)
+                .bobberWidthMultiplier(ItemStat.MULTIPLIER_T4)
                 .bobberControl(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(4));

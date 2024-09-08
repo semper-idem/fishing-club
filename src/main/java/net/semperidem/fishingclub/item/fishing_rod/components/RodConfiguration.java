@@ -12,7 +12,6 @@ import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 public record RodConfiguration(
@@ -181,7 +180,7 @@ public record RodConfiguration(
         int maxLineLength = 0;
         float bobberControl = 0;
         float bobberControlMultiplier = 1;
-        float bobberWidth = 0;
+        float bobberWidthMultiplier = 0.5f;
         boolean canCast = false;
         int minOperatingTemperature = -1;
         int maxOperatingTemperature = 1;
@@ -263,8 +262,8 @@ public record RodConfiguration(
             return maxLineLength;
         }
 
-        public float bobberWidth() {
-            return bobberWidth;
+        public float bobberWidthMultiplier() {
+            return bobberWidthMultiplier;
         }
 
         public boolean canCast() {
@@ -318,7 +317,7 @@ public record RodConfiguration(
                     ", fishQuality=" + fishQuality +
                     ", weightMagnitude=" + weightMagnitude +
                     ", maxLineLength=" + maxLineLength +
-                    ", bobberWidth=" + bobberWidth +
+                    ", bobberWidth=" + bobberWidthMultiplier +
                     ", canCast=" + canCast +
                     ", fishControl=" + fishControl +
                     ", fishControlMultiplier=" + fishControlMultiplier +

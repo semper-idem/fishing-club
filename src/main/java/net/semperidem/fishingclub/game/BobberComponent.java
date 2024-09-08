@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.game;
 
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
 
@@ -9,12 +8,9 @@ import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {
     private static final float BASE_LENGTH = 0.25f;
-
-    private static final float BOAT_BASE_BONUS = 0.1f;
-    private static final float BOAT_PERK_BONUS = 0.1f;
     private static final float BUFF_BONUS = 0.1f;
 
-    private float length;
+    private final float length;
     private final float baseResistance;
 
     private final float minPositionX;
@@ -38,33 +34,19 @@ public class BobberComponent {
         this.positionX = payload.bobberPositionX();
     }
 
-    public void writeData(PacketByteBuf buf) {
-        buf.writeFloat(positionX);
-    }
-
 
     private float calculateLength(){
-
         float lengthMultiplier = 1;
 
-        boolean isFromBoat = parent.fishingCard.isFishingFromBoat();
-        boolean hasPerk = parent.fishingCard.knowsTradeSecret(BOBBER_SIZE_BOAT);
-        boolean hasBuff = parent.player.hasStatusEffect(BOBBER_BUFF);
+        lengthMultiplier +=  this.parent.fishingCard.tradeSecretValue(BOBBER_SIZE_BOAT);
 
-        if (isFromBoat) {
-            lengthMultiplier += BOAT_BASE_BONUS;
-        }
-
-        if (isFromBoat && hasPerk) {
-            lengthMultiplier += BOAT_PERK_BONUS;
-        }
-
-        if (hasBuff) {
+        if (parent.player.hasStatusEffect(BOBBER_BUFF)) {
             lengthMultiplier += BUFF_BONUS;
-
         }
 
-        return BASE_LENGTH * lengthMultiplier;
+        int levelDifference = this.parent.fishingCard.getLevel() - this.parent.hookedFish.level();
+        float levelDifferenceMultiplier = (float) MathHelper.clamp(levelDifference > 0 ? 1 + levelDifference * 0.01 : 1 - levelDifference * 0.05, 0.5, 2);
+        return BASE_LENGTH * levelDifferenceMultiplier * lengthMultiplier * this.parent.hookedUsing.attributes().bobberWidthMultiplier();
     }
 
     public void tick() {
