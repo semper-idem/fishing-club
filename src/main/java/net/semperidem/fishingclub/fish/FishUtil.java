@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FCComponents;
@@ -37,17 +38,21 @@ public class FishUtil {
     public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
 
     public static ItemStack getStackFromFish(SpecimenData fish){
-        return getStackFromFish(fish, 1);
+        return getStackFromFish(fish, FishingCard.DEFAULT).getFirst();
     }
 
-    public static ItemStack getStackFromFish(SpecimenData fish, int count){
+    public static List<ItemStack> getStackFromFish(SpecimenData fish, FishingCard card){
+        ArrayList<ItemStack> caughtFishStacks = new ArrayList<>();
+        int count = getRewardMultiplier(card);
         ItemStack fishReward = fish.asItemStack();
-        if (fish.isAlive()) {
-
-            setLore(fishReward, fish);
+        caughtFishStacks.add(fishReward);
+        if (count == 1) {
+            return caughtFishStacks;
         }
-        fishReward.setCount(count);
-        return fishReward;
+        for(int i = count - 1; i > 0; i--) {
+            caughtFishStacks.add(fish.sibling(card.holder()).asItemStack());
+        }
+        return caughtFishStacks;
     }
 
 
@@ -67,14 +72,16 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
     public static void fishCaught(ServerPlayerEntity player, SpecimenData fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
-        ItemStack fishStack = getStackFromFish(fish, getRewardMultiplier(fishingCard));
-        ItemStack fishingNetStack = getFishingNet(player, fishStack);
-        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
-        if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishStack, player)) {
-            return;
+        List<ItemStack> fishCaughtStacks = getStackFromFish(fish, fishingCard);
+        for(ItemStack fishCaughtStack : fishCaughtStacks) {
+            ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
+            CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+            if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishCaughtStack, player)) {
+                return;
+            }
+            giveItemStack(player, fishCaughtStack);
         }
-        giveItemStack(player, fishStack);
-    }
+   }
 
     public static void fishCaughtAt(ServerPlayerEntity player, SpecimenData fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
@@ -111,22 +118,29 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
     private static int getRewardMultiplier(FishingCard fishingCard){
         int rewardMultiplier = 1;
-        if (!fishingCard.isFishingFromBoat()) {
-            int luck = 0;
-            if (fishingCard.holder() != null) {
-                luck = (int) fishingCard.holder().getLuck();
-            }
-            return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
+        if (fishingCard.unsafeHolder() == null) {
+            return 1;
         }
-        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
-            rewardMultiplier = 2;
+        int luck = (int) fishingCard.holder().getLuck();
+        while (Math.random() < 0.02f * luck) {
+            rewardMultiplier++;
+        }
+
+        if (fishingCard.isFishingFromBoat() && fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
+            rewardMultiplier++;
+        }
+        if (!fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUANTITY)) {
+            return rewardMultiplier;
+        }
+        if (Math.random() < fishingCard.tradeSecretValue(TradeSecrets.FISH_QUANTITY)) {
+            rewardMultiplier++;
         }
 
         return rewardMultiplier;
     }
 
 
-    private static void setLore(ItemStack stack, SpecimenData fish) {
+    public static void setLore(ItemStack stack, SpecimenData fish) {
         stack.set(DataComponentTypes.LORE, new LoreComponent(getDetailsAsLore(fish)));
     }
 

@@ -81,15 +81,15 @@ public class TradeSecret {
         return new Instance(this, level);
     }
 
-    private int power(int level) {
+    public int power(int level) {
         return this.levelAffects == LevelChanges.VALUE ? 1 : (int) this.levelValues[level];
     }
 
-    private long duration(int level) {
+    public long duration(int level) {
         return (long) (this.baseDuration * (this.levelAffects == LevelChanges.DURATION ? this.levelValues[level] : 1));
     }
 
-    private long cooldown(int level) {
+    public long cooldown(int level) {
        return (long) (this.baseCooldown * (this.levelAffects == LevelChanges.COOLDOWN ? this.levelValues[level - 1] : 1));
     }
 
@@ -216,7 +216,7 @@ public class TradeSecret {
             tradeSecret.levelValues = this.levelValues;
             tradeSecret.levelAffects = this.levelAffects;
             tradeSecret.costPerLevel = this.costPerLevel;
-            tradeSecret.maxLevel = this.levelValues == null ? (this.costPerLevel == null ? 1 : this.costPerLevel.length) : this.levelValues.length;
+            tradeSecret.maxLevel = maxLevel();
             if (this.parent != null) {
                 this.parent.children.add(tradeSecret);
                 tradeSecret.parent = this.parent;
@@ -228,6 +228,15 @@ public class TradeSecret {
             return tradeSecret;
         }
 
+        private int maxLevel() {
+            if (this.levelValues != null) {
+                return this.levelValues.length;
+            }
+            if (this.costPerLevel != null) {
+                return this.costPerLevel.length;
+            }
+            return 1;
+        }
 
         public Builder active(BiFunction<ServerPlayerEntity, Entity, Boolean> active, int baseCooldown) {
             this.active = active;

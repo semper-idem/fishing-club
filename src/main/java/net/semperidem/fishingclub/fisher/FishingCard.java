@@ -250,6 +250,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         this.progressionManager.learnTradeSecret(tradeSecretName);
     }
 
+    public int tradeSecretValue(TradeSecret tradeSecret) {
+        return this.progressionManager.tradeSecretValue(tradeSecret);
+    }
+
     public boolean knowsTradeSecret(TradeSecret tradeSecret){
         return progressionManager.knowsTradeSecret(tradeSecret);
     }

@@ -167,6 +167,12 @@ public class ProgressionManager extends DataManager {
         return this.knownTradeSecrets.keySet();
     }
 
+    public int tradeSecretValue(TradeSecret tradeSecret) {
+        if (this.knowsTradeSecret(tradeSecret)) {
+            return tradeSecret.power(this.knownTradeSecrets.get(tradeSecret.name()).level());
+        }
+        return 0;
+    }
 
     public boolean knowsTradeSecret(TradeSecret tradeSecret) {
         return this.knowsTradeSecret(tradeSecret.name(), 1);

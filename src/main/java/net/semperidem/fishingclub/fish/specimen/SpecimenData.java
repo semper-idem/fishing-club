@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
+import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
@@ -115,6 +117,11 @@ public record SpecimenData(
 
         var level = calculateLevel(species, caughtByCard.getLevel());
         var quality = calculateQuality(caughtWith, caughtByCard, caughtUsing);
+        return init(species, level, quality, caughtBy, subspecies, !(caughtWith instanceof FishingExplosionEntity));
+    }
+
+    private static SpecimenData init(Species<? extends  WaterCreatureEntity> species, int level, int quality, PlayerEntity caughtBy, int subspecies, boolean isDead) {
+
         var weight = calculateWeight(species, level);
         var length = calculateLength(species, level);
 
@@ -122,6 +129,7 @@ public record SpecimenData(
         if (subspecies > 0) {
             label = Text.translatable(TropicalFishEntity.getToolTipForVariant(subspecies)).getString();
         }
+
         return new SpecimenData(
                 species,
                 label,
@@ -133,8 +141,8 @@ public record SpecimenData(
                 caughtBy == null ? UUID.randomUUID() : caughtBy.getUuid(),
                 caughtBy == null ? "x" : caughtBy.getNameForScoreboard(),
                 System.currentTimeMillis(),
-                !(caughtWith instanceof FishingExplosionEntity),
-               subspecies
+                isDead,
+                subspecies
         );
     }
 
@@ -262,7 +270,17 @@ public record SpecimenData(
 
         }
         fishItemStack.set(DataComponentTypes.ITEM_NAME, label);
+        if (this.isAlive) {
+            FishUtil.setLore(fishItemStack, this);
+        }
         return fishItemStack;
+    }
+
+    public SpecimenData sibling(PlayerEntity caughtBy) {
+        Random r = Random.create();
+        var level = MathHelper.clamp(r.nextInt(this.level), MIN_LEVEL, MAX_LEVEL);
+        var quality = MathHelper.clamp(r.nextInt(this.quality), MIN_QUALITY, MAX_QUALITY);
+        return init(this.species, level, quality, caughtBy, this.subspecies, false);
     }
 
     //private static final float FISHER_VEST_EXP_BONUS = 0.3f;todo
