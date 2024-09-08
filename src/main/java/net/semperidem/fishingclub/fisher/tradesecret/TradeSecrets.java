@@ -54,7 +54,7 @@ public class TradeSecrets {
 
         FISH_QUANTITY = TradeSecret.builder()
                 .name("fish_quantity")
-                .levelValues(0.1f, 0.15f, 0.2f)
+                .levelValues(0.05f, 0.1f, 0.2f)
                 .build();
 
         LINE_HEALTH_BOAT = TradeSecret.builder()
