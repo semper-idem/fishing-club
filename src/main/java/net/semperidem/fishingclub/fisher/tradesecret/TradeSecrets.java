@@ -90,7 +90,7 @@ public class TradeSecrets {
                 .build();
         FISH_QUALITY_RAIN = TradeSecret.builder()
                 .name("fish_quality_rain")
-                .levelValues(0.1f, 0.25f, 0.5f)
+                .levelValues(0.25f, 0.5f, 1f)
                 .costPerLevel(1,1,1)
                 .parent(CATCH_RATE_RAIN)
                 .conditional(TradeSecret.REQUIRES_RAIN)

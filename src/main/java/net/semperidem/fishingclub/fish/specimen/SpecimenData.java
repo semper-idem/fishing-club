@@ -91,7 +91,6 @@ public record SpecimenData(
     }
     public static SpecimenData init(IHookEntity caughtWith) {
 
-        var isAlbino = Math.random() < 0.01f;
         int luck;
         Random r = caughtWith.getRandom();
         if (caughtWith.getFishingCard().holder() instanceof PlayerEntity holder) {
@@ -100,6 +99,7 @@ public record SpecimenData(
             luck = 0;
         }
 
+        var isAlbino = Math.random() < (0.005f + luck * 0.001) * caughtWith.getWaitTime() / 1200;
         List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > luck * 100).toList();
         Species<?> species = availableSpecies.get(r.nextInt(availableSpecies.size()));
         return init(caughtWith,species, isAlbino ? -1 : 0);
@@ -166,14 +166,13 @@ public record SpecimenData(
     }
 
     private static int calculateQuality(IHookEntity caughtWith, FishingCard fisher, RodConfiguration rod) {
-
-        var fisherMean = MathHelper.clamp(fisher.getLevel() * 0.0025, 0, 0.25);
-        var rodMean = rod.attributes().fishQuality() * 0.025;
-        var circumstanceMean = caughtWith.getCircumstanceQuality(); //todo add method that handle this
+        var fisherMean = MathHelper.clamp(fisher.getLevel() * 0.005, 0, 0.5);
+        var rodMean = rod.attributes().fishQuality() * 0.05;
+        var circumstanceMean = caughtWith.getCircumstanceQuality();
         var mean = fisherMean + rodMean + circumstanceMean;
 
         return (int) MathHelper.clamp(
-                MathUtil.normal(MIN_LEVEL, 4, mean),//non-boosting min quality buff impl
+                MathUtil.normal(MIN_LEVEL, 4, MIN_LEVEL + mean),//non-boosting min quality buff impl
                 fisher.unsafeHolder() == null ? 0 : fisher.getMinGrade(caughtWith),
                 MAX_QUALITY
         );

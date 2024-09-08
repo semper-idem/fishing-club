@@ -3,8 +3,11 @@ package net.semperidem.fishingclub.entity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -14,6 +17,10 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -44,9 +51,12 @@ import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 
 public class HookEntity extends FishingBobberEntity implements IHookEntity {
-    private static final int MIN_WAIT = 600;
+    private static final int BASE_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 20;
+    private static final float RAIN_CATCH_RATE_BUFF = 0.125f;
+    private static final int MAX_THROW_RANGE = 128;
+    private static final float MAX_THROW_CATCH_RATE_REDUCTION = 0.5f;
 
     private int hookCountdown;
     private int waitCountdown;
@@ -576,35 +586,33 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void setWaitCountdown() {
-        float catchRate;
-        float catchRateReduction = 0;// FishingRodPartController.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
+        float catchRate = 1;
         if (this.getWorld().isRaining()) {
-            float rainBonus = 0.125f;
-            if (fishingCard.knowsTradeSecret(TradeSecrets.CATCH_RATE_RAIN)) {
-                rainBonus *= 2;
-            }
-            if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUALITY_RAIN)) {
-                rainBonus *= 2;
-            }
-            catchRateReduction += rainBonus;
+            catchRate += RAIN_CATCH_RATE_BUFF * (1 + this.fishingCard.tradeSecretValue(TradeSecrets.CATCH_RATE_RAIN));
         }
         if (FishUtil.hasFishingHat(this.playerOwner)) {
-            catchRateReduction += 0.15f;
+            catchRate += 0.15f;
             if (FishUtil.hasProperFishingEquipment(this.playerOwner)) {
-                catchRateReduction += 0.15f;
+                catchRate += 0.15f;
             }
         }
 
-        if (this.playerOwner.hasStatusEffect(FCStatusEffects.FREQUENCY_BUFF)) {
-            catchRateReduction += 0.1f;
+        StatusEffectInstance sei = this.playerOwner.getStatusEffect(FCStatusEffects.FREQUENCY_BUFF);
+        if (sei != null) {
+            catchRate += sei.getAmplifier() * 0.1f;
         }
-        catchRate = Math.max(.33f, (1 - catchRateReduction));
-        if (castCharge > 1) {
-            catchRate /= MathHelper.clamp((128 - this.distanceTraveled) / 128, 0.5, 1);
+
+        DynamicRegistryManager dynamicRegistryManager = playerOwner.getRegistryManager();
+        Optional<RegistryEntry.Reference<Enchantment>> maybeLure = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LURE);
+        int lureLevel = 0;
+        if (maybeLure.isPresent()) {
+            lureLevel = this.fishingRod.getEnchantments().getLevel(maybeLure.get());
         }
-        int minWait = (int) (MIN_WAIT * catchRate);
-        int maxWait = minWait * 2;
-        this.waitCountdown = 20;//MathHelper.nextInt(this.random, minWait, maxWait);
+        catchRate += lureLevel * 0.1f;
+
+        catchRate *= MathHelper.clamp((MAX_THROW_RANGE - this.distanceTraveled) / (MAX_THROW_RANGE / MAX_THROW_CATCH_RATE_REDUCTION), MAX_THROW_CATCH_RATE_REDUCTION, 1);
+        int expectedWait = (int) (BASE_WAIT * (1f / catchRate));
+        this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian()));
         this.lastWaitCountdown = this.waitCountdown;
     }
 
@@ -752,8 +760,13 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     public float getCircumstanceQuality() {
-        return CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos()))
-                .map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
+        float circumstanceQuality = 0.5f;
+        circumstanceQuality += CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos())).map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
+        circumstanceQuality += (this.getWaitTime() / 1200f);
+        if (this.getWorld().isRaining()) {
+            circumstanceQuality += (float) (0.25 * (1 + this.fishingCard.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)));
+        }
+        return circumstanceQuality;
     }
 
     @Override
