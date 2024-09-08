@@ -14,17 +14,17 @@ public class FishingGameController {
     public final PlayerEntity player;
     public final FishingCard fishingCard;
     public final SpecimenData hookedFish;
-    public final RodConfiguration hookedUsing;
+    public final RodConfiguration rodConfiguration;
 
     public float reelForce = 0;
     private boolean isReeling;
     private boolean isPulling;
 
-    public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration hookedUsing){
+    public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration){
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.fishingCard = FishingCard.of(playerEntity);
-        this.hookedUsing = hookedUsing;
+        this.rodConfiguration = rodConfiguration;
 
         progressComponent = new ProgressComponent(this);
         fishController = new FishController(this);

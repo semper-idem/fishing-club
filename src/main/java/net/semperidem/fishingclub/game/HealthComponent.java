@@ -12,7 +12,7 @@ public class HealthComponent {
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        int rodHealth = parent.hookedUsing.attributes().maxLineLength();
+        int rodHealth = parent.rodConfiguration.attributes().maxLineLength();
         int fisherHealth = parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT);
         this.health = MathHelper.clamp(
                 rodHealth + fisherHealth,

@@ -76,8 +76,8 @@ public class TradeSecrets {
                 .build();
         TREASURE_CHANCE_BOAT = TradeSecret.builder()
                 .name("treasure_chance_boat")
-                .levelValues(0.1f, 0.25f, 0.5f)
-                .costPerLevel(2, 2 ,2)
+                .levelValues(0.15f, 0.25f, 0.45f, 0.65f ,1f)
+                .costPerLevel(2, 2 ,2, 2, 3)
                 .parent(FISH_QUANTITY_BOAT)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();

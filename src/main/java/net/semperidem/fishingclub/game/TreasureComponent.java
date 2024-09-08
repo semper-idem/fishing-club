@@ -9,21 +9,18 @@ public class TreasureComponent {
     private static final float TREASURE_MIN_TRIGGER_POINT = 0.5f;
     private static final float TREASURE_MAX_TRIGGER_POINT = 0.25f;
 
-    private boolean isActive;
+    private final boolean isActive;
     private boolean canPullTreasure;
     private int pullTreasureTicks = 0;
     private float treasureTriggerPoint;
 
-
     private final FishingGameController parent;
-
 
     public TreasureComponent(FishingGameController parent) {
         float treasureChance = TREASURE_MIN_CHANCE;
 
-        if (parent.fishingCard.isFishingFromBoat() && parent.fishingCard.knowsTradeSecret(TradeSecrets.TREASURE_CHANCE_BOAT)) {
-            treasureChance = treasureChance * 2;
-        }
+        treasureChance *= (1 + parent.rodConfiguration.attributes().treasureBonus() * 0.01f);
+        treasureChance *= (1 + parent.fishingCard.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
 
         this.parent = parent;
         this.isActive = Math.random() < treasureChance;

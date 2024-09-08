@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.game.treasure;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCItems;
 
 import java.util.ArrayList;
@@ -115,8 +116,8 @@ public class Rewards {
     }
 
 
-    public static Reward roll(FishingCard fisher){
-        int grade = getGrade(fisher);
+    public static Reward roll(FishingCard fisher, RodConfiguration rodConfiguration){
+        int grade = getGrade(fisher, rodConfiguration);
         return new Reward(roll(fisher, getCost(fisher), grade), grade);
     }
 
@@ -125,8 +126,9 @@ public class Rewards {
         return (int) (60 + (60 + avgCost * Math.abs(random.nextGaussian() / 2)));
     }
 
-    public static int getGrade(FishingCard fisher){
+    public static int getGrade(FishingCard fisher, RodConfiguration rodConfiguration){
         float avgGrade = (float) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 3));
+        avgGrade += rodConfiguration.attributes().treasureRarityBonus() * 0.01f;
         return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
     }
 

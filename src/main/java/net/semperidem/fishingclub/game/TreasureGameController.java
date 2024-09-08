@@ -46,7 +46,7 @@ public class TreasureGameController {
 
     public TreasureGameController(FishingGameController parent) {
         this.parent = parent;
-        this.treasureReward = Rewards.roll(parent.fishingCard);
+        this.treasureReward = Rewards.roll(parent.fishingCard, parent.rodConfiguration);
         this.arrowSpeed = 1 + treasureReward.getGrade();
         this.treasureSpotSize = TREASURE_MAX_SPOT_SIZE - (treasureReward.getGrade() * TREASURE_GRADE_TO_SPOT_SIZE_RATIO);
     }
