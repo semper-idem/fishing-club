@@ -28,12 +28,12 @@ public class StatusEffectHelper {
 
     public int getMinGrade() {
         int minGrade = 0;
-        if (this.trackedFor.getHolder() == null) {
+        if (this.trackedFor.holder() == null) {
             return minGrade;
         }
-        if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
+        if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
-        } else if (this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
+        } else if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
             minGrade++;
         }
         return minGrade;
@@ -47,7 +47,7 @@ public class StatusEffectHelper {
     public float getExpMultiplier() {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = this.trackedFor.getHolder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = this.trackedFor.holder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
              multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
@@ -57,16 +57,16 @@ public class StatusEffectHelper {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
                 progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION) &&
-                !this.trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+                !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
     public int spreadStatusEffect(ProgressionManager progressionManager, SpecimenData fish) {
         int xpBuffAffectedCount = 0;
-        Box box = new Box(this.trackedFor.getHolder().getBlockPos());
+        Box box = new Box(this.trackedFor.holder().getBlockPos());
         box.expand(SPREAD_EFFECT_RANGE);
 
-        List<ServerPlayerEntity> nearPlayers = this.trackedFor.getHolder().getEntityWorld()
-                .getOtherEntities(this.trackedFor.getHolder(), box)
+        List<ServerPlayerEntity> nearPlayers = this.trackedFor.holder().getEntityWorld()
+                .getOtherEntities(this.trackedFor.holder(), box)
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
@@ -89,11 +89,11 @@ public class StatusEffectHelper {
             return;
         }
 
-        if (!this.trackedFor.getHolder().hasVehicle()) {
+        if (!this.trackedFor.holder().hasVehicle()) {
             return;
         }
 
-        if (!(this.trackedFor.getHolder().getVehicle() instanceof BoatEntity boatEntity)) {
+        if (!(this.trackedFor.holder().getVehicle() instanceof BoatEntity boatEntity)) {
             return;
         }
 
@@ -113,19 +113,19 @@ public class StatusEffectHelper {
     }
 
     private void processOneTimeBuff(){
-        if (!trackedFor.getHolder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
+        if (!trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
         consumeOneTimeBuff();
     }
 
     private void consumeOneTimeBuff(){
-        StatusEffectInstance sei = this.trackedFor.getHolder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        StatusEffectInstance sei = this.trackedFor.holder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
-        this.trackedFor.getHolder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        this.trackedFor.holder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
         if (effectPower > 0) {
             StatusEffectInstance lowerSei = new StatusEffectInstance(sei.getEffectType(), sei.getDuration(), effectPower - 1);
-            this.trackedFor.getHolder().addStatusEffect(lowerSei);
+            this.trackedFor.holder().addStatusEffect(lowerSei);
         }
     }
 }

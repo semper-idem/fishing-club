@@ -3,13 +3,16 @@ package net.semperidem.fishingclub.fisher.tradesecret;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 public class TradeSecrets {
@@ -93,10 +96,12 @@ public class TradeSecrets {
                 .parent(FISH_QUALITY_RAIN)
                 .active(
                         (source, target) -> {
-                            if (Math.random() < 0.1f) {
-                                source.getWorld().setThunderGradient(1);
-                            }
-                            source.getWorld().setRainGradient(1);
+                            source.getServerWorld().setWeather(
+                                    100 + source.getRandom().nextInt(300),
+                                    ServerWorld.RAIN_WEATHER_DURATION_PROVIDER.get(source.getRandom()),
+                                    true,
+                                    source.getRandom().nextFloat() < 0.1f
+                            );
                             return true;
                             },
                         72000)
@@ -251,6 +256,10 @@ public class TradeSecrets {
 
     public static Optional<TradeSecret> fromName(String name) {
         return Optional.of(NAME_TO_SKILL.get(name));
+    }
+
+    public static Collection<TradeSecret> all() {
+        return NAME_TO_SKILL.values();
     }
 
     public static int count() {

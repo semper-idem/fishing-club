@@ -25,7 +25,6 @@ public class PerkButtonWidget extends ButtonWidget {
         super(x, y, ICON_SIZE, ICON_SIZE, Text.empty(), button -> parent.setPerk((PerkButtonWidget) button, tradeSecret), Supplier::get);
         this.fishingCard = fishingCard;
         this.tradeSecret = tradeSecret;
-        this.visible = false;
         this.isSelected = false;
     }
 

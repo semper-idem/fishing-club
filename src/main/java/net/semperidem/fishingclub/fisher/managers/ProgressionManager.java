@@ -119,12 +119,14 @@ public class ProgressionManager extends DataManager {
     }
 
     public void useTradeSecret(String tradeSecretName, @Nullable Entity target){
-        if (!(this.trackedFor.getHolder() instanceof ServerPlayerEntity serverHolder)){
+        if (!(this.trackedFor.holder() instanceof ServerPlayerEntity serverHolder)){
             return;
         }
         this.knownTradeSecrets.computeIfPresent(tradeSecretName, (key, instance) -> {
-            instance.use(serverHolder, target);
-            this.sync();
+            boolean wasUsed = instance.use(serverHolder, target);
+            if (wasUsed) {
+                this.sync();
+            }
             return instance;
         });
     }
@@ -138,7 +140,7 @@ public class ProgressionManager extends DataManager {
             return;
         }
         //It was intentionally to not cast it to decimal but maybe we should
-        trackedFor.getHolder().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
+        trackedFor.holder().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
 
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
@@ -151,6 +153,16 @@ public class ProgressionManager extends DataManager {
         sync();
     }
 
+    public Collection<TradeSecret.Instance> tradeSecrets() {
+        return this.knownTradeSecrets.values();
+    }
+
+    public void unlockAllSecrets() {
+        for(TradeSecret tradeSecret : TradeSecrets.all()) {
+            this.knownTradeSecrets.put(tradeSecret.name(), tradeSecret.instanceOfLevel(tradeSecret.maxLevel()));
+        }
+        sync();
+    }
     public Set<String> getKnownTradeSecrets(){
         return this.knownTradeSecrets.keySet();
     }

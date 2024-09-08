@@ -63,7 +63,7 @@ public class TradeSecret {
         if (this.longDescription == null) {
             return Text.empty();
         }
-        if (level > this.longDescription.size()) {
+        if (level >= this.longDescription.size()) {
             return this.longDescription.getFirst();
         }
         return this.longDescription.get(level);
@@ -77,6 +77,10 @@ public class TradeSecret {
         return new Instance(this, 1);
     }
 
+    public Instance instanceOfLevel(int level) {
+        return new Instance(this, level);
+    }
+
     private int power(int level) {
         return this.levelAffects == LevelChanges.VALUE ? 1 : (int) this.levelValues[level];
     }
@@ -86,7 +90,7 @@ public class TradeSecret {
     }
 
     private long cooldown(int level) {
-       return (long) (this.baseCooldown * (this.levelAffects == LevelChanges.COOLDOWN ? this.levelValues[level] : 1));
+       return (long) (this.baseCooldown * (this.levelAffects == LevelChanges.COOLDOWN ? this.levelValues[level - 1] : 1));
     }
 
     public boolean hasActive() {
@@ -106,30 +110,30 @@ public class TradeSecret {
     }
 
     public static class Instance {
-        TradeSecret parent;
+        TradeSecret root;
         int level;
         long nextUseTime;
 
-        private Instance(TradeSecret parent, int level) {
-            this(parent, level, 0);
+        private Instance(TradeSecret root, int level) {
+            this(root, level, 0);
         }
 
-        private Instance(TradeSecret parent, int level, long nextUseTime) {
-            this.parent = parent;
+        private Instance(TradeSecret root, int level, long nextUseTime) {
+            this.root = root;
             this.level = level;
             this.nextUseTime = nextUseTime;
         }
 
         public int upgradeCost() {
-            return this.parent.cost(this.level + 1);
+            return this.root.cost(this.level + 1);
         }
 
         public void upgrade() {
             this.level++;
         }
 
-        public TradeSecret parent() {
-            return this.parent;
+        public TradeSecret root() {
+            return this.root;
         }
 
         public int level(){
@@ -140,36 +144,36 @@ public class TradeSecret {
             return this.nextUseTime;
         }
 
-        public void use(ServerPlayerEntity player, @Nullable Entity entity) {
+        public boolean use(ServerPlayerEntity player, @Nullable Entity entity) {
             long currentTime = player.getWorld().getTime();
             if (currentTime < this.nextUseTime) {
-                return;
+                return false;
             }
-            if (this.parent.effect != null) {
+            if (this.root.effect != null) {
                 Utils.castEffect(player, new StatusEffectInstance(
-                        this.parent.effect,
-                        (int) this.parent.duration(this.level),
-                        this.parent.power(this.level)
+                        this.root.effect,
+                        (int) this.root.duration(this.level),
+                        this.root.power(this.level)
                         ));
             }
-            if (this.parent.active == null) {
-                return;
+            if (this.root.active == null) {
+                return false;
             }
             int nextCooldown = 100;
-            if (this.parent.active.apply(player, entity)) {
-                nextCooldown = (int) this.parent.cooldown(this.level);
+            if (this.root.active.apply(player, entity)) {
+                nextCooldown = (int) this.root.cooldown(this.level);
             }
             this.nextUseTime = currentTime + nextCooldown;
-
+            return true;
         }
 
         public String name() {
-            return this.parent.name;
+            return this.root.name;
         }
 
         public static NbtCompound toNbt(Instance instance) {
             NbtCompound tag = new NbtCompound();
-            tag.putString("name", instance.parent.name);
+            tag.putString("name", instance.root.name);
             tag.putInt("level", instance.level);
             tag.putLong("nextUseTime", instance.nextUseTime);
             return tag;
@@ -177,6 +181,11 @@ public class TradeSecret {
 
         public static Instance fromNbt(NbtCompound nbtCompound) {//todo handle orElse
             return new Instance(TradeSecrets.fromName(nbtCompound.getString("name")).orElseThrow(), nbtCompound.getInt("level"), nbtCompound.getLong("nextUseTime"));
+        }
+
+        @Override
+        public String toString() {
+            return this.name() + "_" + this.level + "_" + this.nextUseTime;
         }
     }
 

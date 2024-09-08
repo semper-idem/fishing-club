@@ -14,6 +14,6 @@ public abstract class DataManager implements NbtData{
         if (trackedFor.isClient()) {
             return;
         }
-        FISHING_CARD.sync(trackedFor.getHolder(), ((buf, recipient) -> trackedFor.writeSyncPacket(buf, recipient, this)));
+        FISHING_CARD.sync(trackedFor.holder(), ((buf, recipient) -> trackedFor.writeSyncPacket(buf, recipient, this)));
     }
 }

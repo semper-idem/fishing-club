@@ -119,10 +119,10 @@ public class HistoryManager extends DataManager {
         usedChunks.add(Chunk.create(chunkPos));
         sync();//checkChunk writes
         if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
+            trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
         }
         if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_QUALITY)) {
-            trackedFor.getHolder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
+            trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
         }
         return true;
     }
@@ -146,10 +146,10 @@ public class HistoryManager extends DataManager {
     }
 
     private long getCurrentTime() {
-        if (trackedFor.getHolder() == null) {
+        if (trackedFor.holder() == null) {
             return 0;
         }
-        return trackedFor.getHolder().getWorld().getTime();
+        return trackedFor.holder().getWorld().getTime();
     }
 
     @Override

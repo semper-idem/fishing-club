@@ -15,6 +15,7 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.leaderboard.LeaderboardScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 
@@ -55,11 +56,6 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private TradeSecret selectedPerk;
     private PerkButtonWidget selectedPerkButton;
 
-    private MemberButton generalButton;
-    private MemberButton hobbyistButton;
-    private MemberButton opportunistButton;
-    private MemberButton socialistButton;
-    private ButtonWidget activeTabButton;
     private MemberButton unlockButton;
     public InstantSellButtonWidget instantSellSlotButton;
     private MemberButton leaderboardButton;
@@ -114,22 +110,17 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
         addDrawableChild(leaderboardButton);
 
         initButtons();
-        generalButton.onPress();
     }
 
 
     private void initButtons(){
-        initTabButton();
+        setupPerkButtons();
         initUnlockButton();
         initSellButton();
         addButtons();
     }
 
     private void addButtons(){
-        addDrawableChild(generalButton);
-        addDrawableChild(hobbyistButton);
-        addDrawableChild(opportunistButton);
-        addDrawableChild(socialistButton);
         addDrawableChild(unlockButton);
         addDrawableChild(instantSellSlotButton);
     }
@@ -242,7 +233,7 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
 //    }
 
     private void renderSelectedPerkDescription(DrawContext context){
-        if (selectedPerk == null || activeTabButton == generalButton) {
+        if (selectedPerk == null) {
             return;
         }
 
@@ -260,6 +251,11 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     }
 
     private void setupPerkButtons(){
+        final int[] idx = {0};
+        TradeSecrets.all().forEach(tradeSecret -> {
+            setupPerkButton(tradeSecret, idx[0] * 24);
+            idx[0]++;
+        });
 //        for(Path path : TradeSecrets.SKILL_TREE.keySet()) {
 //            int treeHeight = 0;
 //            for(TradeSecret perk : TradeSecrets.SKILL_TREE.get(path)) {
@@ -282,7 +278,10 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
             );
             perkButtons.add(perkButtonWidget);
             addDrawableChild(perkButtonWidget);
-//            perkToAdd = perkToAdd.getChildren();
+            if (perkToAdd.getChildren().isEmpty()) {
+                break;
+            }
+            perkToAdd = perkToAdd.getChildren().getFirst();
             perkX += 26;
         }
     }

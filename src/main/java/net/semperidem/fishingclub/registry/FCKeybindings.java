@@ -9,6 +9,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
+import net.semperidem.fishingclub.network.payload.SpellCastPayload;
 import net.semperidem.fishingclub.network.payload.SpellCastWithTargetPayload;
 import org.lwjgl.glfw.GLFW;
 
@@ -61,7 +62,9 @@ public class FCKeybindings {
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             ClientPlayNetworking.send(new SpellCastWithTargetPayload(SpellListWidget.selectedInstance.name(), targetUUID));
+            return;
         }
+        ClientPlayNetworking.send(new SpellCastPayload(SpellListWidget.selectedInstance.name()));
     }
 
     private static void spellSelect(MinecraftClient client) {

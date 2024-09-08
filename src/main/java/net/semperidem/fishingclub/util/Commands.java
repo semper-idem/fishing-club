@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,6 +28,13 @@ public class Commands {
     public static void registerSummonAccept(){
         rootCommand.then(literal("summon_accept").executes(context -> {
             ClientPlayNetworking.send(new SummonAcceptPayload());
+            return 0;
+        }));
+    }
+
+    public static void registerUnlockSecrets() {
+        rootCommand.then(literal("unlock_secrets").executes(context -> {
+            FishingCard.of(context.getSource().getPlayer()).unlockAllSecret();
             return 0;
         }));
     }
@@ -150,6 +158,7 @@ public class Commands {
     public static void register(){
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             registerSummonAccept();
+            registerUnlockSecrets();
             registerInfo();
             registerGoldFish();
             registerResetSpellCooldown();

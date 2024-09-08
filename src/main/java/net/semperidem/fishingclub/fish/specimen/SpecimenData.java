@@ -26,7 +26,6 @@ import net.semperidem.fishingclub.util.MathUtil;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public record SpecimenData(
         Species<?> species,
@@ -93,7 +92,7 @@ public record SpecimenData(
         var isAlbino = Math.random() < 0.01f;
         int luck;
         Random r = caughtWith.getRandom();
-        if (caughtWith.getFishingCard().getHolder() instanceof PlayerEntity holder) {
+        if (caughtWith.getFishingCard().holder() instanceof PlayerEntity holder) {
             luck = (int) holder.getLuck();
         } else {
             luck = 0;
@@ -112,7 +111,7 @@ public record SpecimenData(
 
         var caughtByCard = caughtWith.getFishingCard();
         var caughtUsing = caughtWith.getCaughtUsing();
-        var caughtBy = caughtByCard.getHolder();
+        var caughtBy = caughtByCard.unsafeHolder();
 
         var level = calculateLevel(species, caughtByCard.getLevel());
         var quality = calculateQuality(caughtWith, caughtByCard, caughtUsing);
@@ -167,7 +166,7 @@ public record SpecimenData(
 
         return (int) MathHelper.clamp(
                 MathUtil.normal(MIN_LEVEL, 4, mean),//non-boosting min quality buff impl
-                fisher.getMinGrade(caughtWith),
+                fisher.unsafeHolder() == null ? 0 : fisher.getMinGrade(caughtWith),
                 MAX_QUALITY
         );
     }

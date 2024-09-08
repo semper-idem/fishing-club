@@ -44,12 +44,12 @@ public class LinkingManager extends DataManager {
         if (sei.getDuration() < MIN_LENGTH_TO_SHARE) {
             return;
         }
-        if (trackedFor.getHolder() != source) {
-            trackedFor.getHolder().addStatusEffect(sei);
+        if (trackedFor.holder() != source) {
+            trackedFor.holder().addStatusEffect(sei);
         }
         linkedFishers.forEach(linkedFisher -> FishingCard.of(
                         trackedFor
-                                .getHolder()
+                                .holder()
                                 .getServer()
                                 .getPlayerManager()
                                 .getPlayer(linkedFisher)
@@ -71,7 +71,7 @@ public class LinkingManager extends DataManager {
     public void shareBait(ItemStack baitToShare) {
         linkedFishers.forEach(linkedFisher -> FishingCard.of(
                 trackedFor
-                        .getHolder()
+                        .holder()
                         .getServer()
                         .getPlayerManager()
                         .getPlayer(linkedFisher)
@@ -92,7 +92,7 @@ public class LinkingManager extends DataManager {
         UUID targetUUID = target.getUuid();
         if (linkedFishers.contains(targetUUID)) {
             linkedFishers.remove(targetUUID);
-            messageUnlink(trackedFor.getHolder(), playerTarget);
+            messageUnlink(trackedFor.holder(), playerTarget);
             return;
         }
 
@@ -101,7 +101,7 @@ public class LinkingManager extends DataManager {
             messageLimit();
         }
         linkedFishers.add(targetUUID);
-        messageLink(trackedFor.getHolder(), playerTarget);
+        messageLink(trackedFor.holder(), playerTarget);
         sync();
     }
 
@@ -110,11 +110,11 @@ public class LinkingManager extends DataManager {
     }
 
     private void requestSummonLink(UUID linkedFisherUUID) {
-        PlayerEntity linkedFisher = trackedFor.getHolder().getWorld().getPlayerByUuid(linkedFisherUUID);
+        PlayerEntity linkedFisher = trackedFor.holder().getWorld().getPlayerByUuid(linkedFisherUUID);
         if (linkedFisher == null) {
             return;
         }
-        FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.getHolder());
+        FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.holder());
         messageRequestSummon(linkedFisher);
         sync();
     }
@@ -122,7 +122,7 @@ public class LinkingManager extends DataManager {
 
     //TODO
     private void messageRequestSummon(PlayerEntity target) {
-        target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.getHolder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
+        target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.holder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
         //change summon_accpept to just tp PLAYER_NAM to SUMMONER_NAME
         target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
 
@@ -140,11 +140,11 @@ public class LinkingManager extends DataManager {
     }
 
     private void messageLimit(){
-        trackedFor.getHolder().sendMessage(Text.of("[Fishing Club] Link limit reached, removing oldest entry"), true);
+        trackedFor.holder().sendMessage(Text.of("[Fishing Club] Link limit reached, removing oldest entry"), true);
     }
 
     private void messageFail() {
-        trackedFor.getHolder().sendMessage(Text.of("[Fishing Club] You can only link players"), true);
+        trackedFor.holder().sendMessage(Text.of("[Fishing Club] You can only link players"), true);
     }
 
 

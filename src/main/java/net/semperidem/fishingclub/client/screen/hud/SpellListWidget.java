@@ -2,13 +2,16 @@ package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
+import net.semperidem.fishingclub.client.screen.DataBuffer;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class SpellListWidget{
+public class SpellListWidget implements DataBuffer {
     public static TradeSecret.Instance selectedInstance;
     public static int selectedSpellIndex;
     public static ArrayList<TradeSecret.Instance> usableTradeSecrets = new ArrayList<>();
@@ -17,14 +20,20 @@ public class SpellListWidget{
     float yPercent = 0.55f;
     private static final int spaceBetween = 16;
     private static final int entryWidth = 150;
-
+    private long lastRefreshTime;
+    private FishingCard card;
 
     public static void stickPress(){
         if (pressed) return;
         pressed = true;
     }
 
-    public void render(DrawContext context, float tickDelta){
+    public void render(DrawContext context, RenderTickCounter tickCounter){
+        if (this.card == null) {
+            this.card = FishingCard.of(MinecraftClient.getInstance().player);
+        }
+        this.refresh();
+        selectedInstance = usableTradeSecrets.get(selectedSpellIndex);
         if(selectedInstance == null){
             if (pressed) pressed = false;
             return;
@@ -46,7 +55,7 @@ public class SpellListWidget{
 
 
     private void renderSpell(DrawContext context, TradeSecret.Instance instance, int x, int y, int color, int bgColor){
-        String spellName = instance.parent().name();
+        String spellName = instance.root().name();
         if (selectedInstance == instance) {
             spellName = "> " + spellName + " <";
         }
@@ -96,8 +105,8 @@ public class SpellListWidget{
     }
 
     public static void scroll(int scrollAmount){
-        if (usableTradeSecrets.size() == 0) return;
-        int index = usableTradeSecrets.indexOf(selectedInstance) + (int)Math.signum(scrollAmount);
+        if (usableTradeSecrets.isEmpty()) return;
+        int index = usableTradeSecrets.indexOf(selectedInstance) + (int)Math.signum(scrollAmount * -1);
         if (index >= usableTradeSecrets.size()) {
             index = 0;
         }
@@ -106,5 +115,35 @@ public class SpellListWidget{
         }
         selectedInstance = usableTradeSecrets.get(index);
         selectedSpellIndex = index;
+    }
+
+    @Override
+    public long getTime() {
+        return card.holder().getWorld().getTime();
+    }
+
+    @Override
+    public int getRefreshRate() {
+        return 20;
+    }
+
+    @Override
+    public long lastRefreshTime() {
+        return this.lastRefreshTime;
+    }
+
+    @Override
+    public void lastRefreshTime(long time) {
+        this.lastRefreshTime = time;
+    }
+
+    @Override
+    public void refresh() {
+        usableTradeSecrets.clear();
+        usableTradeSecrets.addAll(card.tradeSecrets().stream().filter(tradeSecret -> tradeSecret.root().hasActive()).toList());
+        if (usableTradeSecrets.isEmpty()) {
+            return;
+        }
+        selectedInstance = usableTradeSecrets.getFirst();
     }
 }

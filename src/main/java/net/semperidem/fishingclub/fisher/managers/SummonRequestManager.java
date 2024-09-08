@@ -23,7 +23,7 @@ public class SummonRequestManager extends DataManager {
     }
 
     public boolean canAccept(){
-        return trackedFor.getHolder().getWorld().getTime() - requestTick < REQUEST_VALID_TIME;
+        return trackedFor.holder().getWorld().getTime() - requestTick < REQUEST_VALID_TIME;
     }
 
     public boolean isTarget(ServerPlayerEntity possibleTarget) {
@@ -31,7 +31,7 @@ public class SummonRequestManager extends DataManager {
     }
 
     public void execute() {
-        if (!(trackedFor.getHolder() instanceof ServerPlayerEntity source)) {
+        if (!(trackedFor.holder() instanceof ServerPlayerEntity source)) {
             return;
         }
         if (!canAccept()){

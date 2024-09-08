@@ -113,8 +113,8 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         int rewardMultiplier = 1;
         if (!fishingCard.isFishingFromBoat()) {
             int luck = 0;
-            if (fishingCard.getHolder() != null) {
-                luck = (int) fishingCard.getHolder().getLuck();
+            if (fishingCard.holder() != null) {
+                luck = (int) fishingCard.holder().getLuck();
             }
             return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
         }
@@ -227,7 +227,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
     public static Optional<SpecimenData> getFishOnHook(IHookEntity hookEntity) {
         float luck = 0.5f;
-        if (hookEntity.getFishingCard().getHolder() instanceof PlayerEntity playerEntity) {
+        if (hookEntity.getFishingCard().holder() instanceof PlayerEntity playerEntity) {
             luck = (playerEntity.getBlockY() + 128) / 384f;
             luck *= (1 + playerEntity.getLuck());
         }

@@ -26,9 +26,7 @@ import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 
 public final class FishingCard extends FishingCardInventory implements EntityComponentInitializer, AutoSyncedComponent {
@@ -135,6 +133,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
        // progressionManager.resetCooldown();
     }
 
+    public Collection<TradeSecret.Instance> tradeSecrets() {
+        return this.progressionManager.tradeSecrets();
+    }
+
     public boolean hasRequiredPerk(TradeSecret perk){
         return progressionManager.hasRequiredPerk(perk);
     }
@@ -188,8 +190,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return progressionManager.getExp();
     }
 
-    public @Nullable PlayerEntity getHolder(){
-        return holder;
+    public PlayerEntity unsafeHolder() {
+        return this.holder;
+    }
+
+    public PlayerEntity holder(){
+        return Objects.requireNonNull(this.holder, "Card holder did not load correctly");
     }
 
     public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source){
@@ -261,10 +267,14 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
             return false;
         }
         this.credit += credit;
-        LeaderboardTracker tracker = LeaderboardTracker.of(this.getHolder().getWorld().getScoreboard());
+        LeaderboardTracker tracker = LeaderboardTracker.of(this.holder().getWorld().getScoreboard());
         tracker.record(holder, this, tracker.highestCredit);
         FISHING_CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
         return true;
+    }
+
+    public void unlockAllSecret() {
+        this.progressionManager.unlockAllSecrets();
     }
 
     @Override

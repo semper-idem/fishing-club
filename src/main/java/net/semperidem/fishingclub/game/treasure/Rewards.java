@@ -138,7 +138,7 @@ public class Rewards {
             if (possibleRewards.size() == 0) break;
             int randomIndex = (int) (Math.random() * possibleRewards.size() - 1);
             TreasureReward reward = possibleRewards.get(randomIndex);
-            rollResult.add(reward.roll(card.getHolder()));
+            rollResult.add(reward.roll(card.holder()));
             costLeft -= reward.cost;
         }
         return rollResult;
