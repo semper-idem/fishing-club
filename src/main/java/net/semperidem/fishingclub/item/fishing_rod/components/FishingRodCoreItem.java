@@ -74,7 +74,7 @@ public class FishingRodCoreItem extends FishingRodItem {
             return TypedActionResult.fail(fishingRod);
         }
 
-        if (FishingCard.of(user).hasPerk(TradeSecrets.BOBBER_THROW_CHARGE)) {
+        if (FishingCard.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE)) {
             user.setCurrentHand(hand); // Sets hand as "active"
             return TypedActionResult.consume(fishingRod);
         }
@@ -96,13 +96,15 @@ public class FishingRodCoreItem extends FishingRodItem {
 
     private void castHook(World world, PlayerEntity user, ItemStack fishingRod) {
         if (!world.isClient) {
-            float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (user.isSneaking() ? 1 : -1) * 0.15f;
+            boolean canPrecisionCast = FishingCard.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE, 2);
+            float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (canPrecisionCast && user.isSneaking() ? 1 : -1) * 0.15f;
             fishingRod.set(FCComponents.CAST_POWER, power);
             fishingRod.damage(1, user, EquipmentSlot.MAINHAND);
             if (fishingRod.getDamage() >= fishingRod.getMaxDamage()) {
                RodConfiguration.dropContent(user, fishingRod);
             }
             updateClientInventory((ServerPlayerEntity) user);
+            user.sendMessage(Text.of("Throw with power of: " + power), true);
             world.spawnEntity(new HookEntity(user, world, fishingRod));
         }
         world.playSound(

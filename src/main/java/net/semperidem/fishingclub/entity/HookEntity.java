@@ -580,10 +580,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         float catchRateReduction = 0;// FishingRodPartController.getStat(fishingRod, FishingRodStatType.CATCH_RATE);
         if (this.getWorld().isRaining()) {
             float rainBonus = 0.125f;
-            if (fishingCard.hasPerk(TradeSecrets.CATCH_RATE_RAIN)) {
+            if (fishingCard.knowsTradeSecret(TradeSecrets.CATCH_RATE_RAIN)) {
                 rainBonus *= 2;
             }
-            if (fishingCard.hasPerk(TradeSecrets.FISH_QUALITY_RAIN)) {
+            if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUALITY_RAIN)) {
                 rainBonus *= 2;
             }
             catchRateReduction += rainBonus;

@@ -48,7 +48,7 @@ public class BobberComponent {
         float lengthMultiplier = 1;
 
         boolean isFromBoat = parent.fishingCard.isFishingFromBoat();
-        boolean hasPerk = parent.fishingCard.hasPerk(BOBBER_SIZE_BOAT);
+        boolean hasPerk = parent.fishingCard.knowsTradeSecret(BOBBER_SIZE_BOAT);
         boolean hasBuff = parent.player.hasStatusEffect(BOBBER_BUFF);
 
         if (isFromBoat) {

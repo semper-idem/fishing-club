@@ -118,7 +118,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
             }
             return Math.random() > 0.02 * luck ? 2 : rewardMultiplier;
         }
-        if (fishingCard.hasPerk(TradeSecrets.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
+        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_QUANTITY_BOAT) && Math.random() < 0.09) {
             rewardMultiplier = 2;
         }
 

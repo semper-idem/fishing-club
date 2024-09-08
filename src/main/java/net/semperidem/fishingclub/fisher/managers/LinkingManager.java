@@ -31,10 +31,10 @@ public class LinkingManager extends DataManager {
     }
 
     private int getLinkLimit() {
-        if (trackedFor.hasPerk(TradeSecrets.DOUBLE_LINK)) {
+        if (trackedFor.knowsTradeSecret(TradeSecrets.DOUBLE_LINK)) {
             return DOUBLE_LINK_LIMIT;
         }
-        if (trackedFor.hasPerk(TradeSecrets.FISHERMAN_LINK)) {
+        if (trackedFor.knowsTradeSecret(TradeSecrets.FISHERMAN_LINK)) {
             return LINK_LIMIT;
         }
         return 0;

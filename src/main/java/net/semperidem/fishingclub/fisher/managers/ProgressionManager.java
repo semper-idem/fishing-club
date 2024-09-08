@@ -167,13 +167,22 @@ public class ProgressionManager extends DataManager {
         return this.knownTradeSecrets.keySet();
     }
 
+
     public boolean knowsTradeSecret(TradeSecret tradeSecret) {
-        return this.knowsTradeSecret(tradeSecret.name());
+        return this.knowsTradeSecret(tradeSecret.name(), 1);
     }
 
-    public boolean knowsTradeSecret(String tradeSecretName) {
-        return this.knownTradeSecrets.containsKey(tradeSecretName);
+    public boolean knowsTradeSecret(TradeSecret tradeSecret, int level) {
+        return this.knowsTradeSecret(tradeSecret.name(), level);
     }
+
+    public boolean knowsTradeSecret(String tradeSecretName, int level) {
+        if (!this.knownTradeSecrets.containsKey(tradeSecretName)) {
+            return false;
+        }
+        return this.knownTradeSecrets.get(tradeSecretName).level() >= level;
+    }
+
 
     @Override
     public void readNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {

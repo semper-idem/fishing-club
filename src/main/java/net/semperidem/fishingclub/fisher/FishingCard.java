@@ -250,8 +250,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         this.progressionManager.learnTradeSecret(tradeSecretName);
     }
 
-    public boolean hasPerk(TradeSecret perk){
-        return progressionManager.knowsTradeSecret(perk);
+    public boolean knowsTradeSecret(TradeSecret tradeSecret){
+        return progressionManager.knowsTradeSecret(tradeSecret);
+    }
+
+    public boolean knowsTradeSecret(TradeSecret tradeSecret, int level) {
+        return progressionManager.knowsTradeSecret(tradeSecret, level);
     }
 
     public boolean canUnlockPerk(TradeSecret perk){

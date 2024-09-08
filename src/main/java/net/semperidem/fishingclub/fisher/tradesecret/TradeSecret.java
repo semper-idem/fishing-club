@@ -213,10 +213,10 @@ public class TradeSecret {
             tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name);
             tradeSecret.shortDescription = Text.translatable(this.name + ".short_description");
             tradeSecret.longDescription = this.createLongDescriptions(tradeSecret);
-            tradeSecret.maxLevel = this.levelValues == null ? 0 : this.levelValues.length;
             tradeSecret.levelValues = this.levelValues;
             tradeSecret.levelAffects = this.levelAffects;
             tradeSecret.costPerLevel = this.costPerLevel;
+            tradeSecret.maxLevel = this.levelValues == null ? (this.costPerLevel == null ? 1 : this.costPerLevel.length) : this.levelValues.length;
             if (this.parent != null) {
                 this.parent.children.add(tradeSecret);
                 tradeSecret.parent = this.parent;

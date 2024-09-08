@@ -36,22 +36,25 @@ public abstract class LivingEntityMixin extends Entity{
         super(type, world);
     }
 
-
     @Inject(method = "stopUsingItem", at = @At("TAIL"))
     private void onStopUsingItem(CallbackInfo ci){
-        pullPower = 0;
+        this.pullPower = 0;
     }
 
     @Inject(method = "tickItemStackUsage", at = @At("TAIL"))
     private void onTickItemStackUsage(ItemStack activeStack, CallbackInfo ci){
-        int power;
-        if (activeStack.isIn(FCTags.ROD_CORE) || activeStack.isOf(FCItems.HARPOON_ROD)){
-            power = FishingRodCoreItem.getChargePower(getItemUseTime());
-            tickPullPower(power);
-        } else {
+        if (!((LivingEntity)(Object)this instanceof PlayerEntity player)) {
             return;
         }
-        tickPullPower(power);
+        if (!activeStack.isIn(FCTags.ROD_CORE)) {
+            return;
+        }
+        int currentPower = FishingRodCoreItem.getChargePower(getItemUseTime());
+        if (currentPower == this.pullPower || currentPower == 0) {
+            return;
+        }
+        this.pullPower = currentPower;
+        player.sendMessage(Text.of("[" + "✦".repeat(currentPower) + "]"), true);
     }
 
 
@@ -101,13 +104,6 @@ public abstract class LivingEntityMixin extends Entity{
         }
     }
 
-    @Unique
-    private void tickPullPower(int power){
-        if (power != this.pullPower && power != 0) {
-            this.pullPower = power;
-            this.sendMessage(Text.of("[" + ">".repeat(power) + "]"));
-        }
-    }
     @Shadow public abstract int getItemUseTime();
 
 }

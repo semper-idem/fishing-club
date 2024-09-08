@@ -74,7 +74,7 @@ public class StatusEffectHelper {
 
         boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
         for(ServerPlayerEntity serverPlayerEntity : nearPlayers) {
-            if (FishingCard.of(serverPlayerEntity).hasPerk(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
+            if (FishingCard.of(serverPlayerEntity).knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
                 xpBuffAffectedCount++;
             }
             if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {

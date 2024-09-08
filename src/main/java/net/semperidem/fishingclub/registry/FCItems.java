@@ -30,8 +30,6 @@ public class FCItems {
     public static Item FISH_COIN_BUNDLE;
     public static Item FISHER_HAT;
     public static Item FISHER_VEST;
-    public static Item HARPOON_ROD;
-    public static Item LINE_ARROW;
     public static Item ILLEGAL_GOODS;
     public static Item GOLD_FISH;
     public static Item DEBUG;
@@ -220,8 +218,6 @@ public class FCItems {
         FISH_COIN_BUNDLE = registerItem(("fish_coin_bundle"), new FishCoinBundleItem(new Item.Settings().maxCount(1)));
         FISHER_HAT = registerItem(("fisher_hat"), new ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
         FISHER_VEST = registerItem(("fisher_vest"), new ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
-        HARPOON_ROD = registerItem(("harpoon_rod"), new HarpoonRodItem(new Item.Settings().maxCount(1).maxDamage(64)));
-        LINE_ARROW = registerItem(("line_arrow"), new LineArrowItem(new Item.Settings()));
         ILLEGAL_GOODS = registerItem(("illegal_goods"), new IllegalGoodsItem(new Item.Settings().rarity(RARE).maxCount(1)));
         GOLD_FISH = registerItem(("gold_fish"), new Item(new Item.Settings().maxCount(1)));
         DEBUG = registerItem("debug", new DebugItem(new Item.Settings()));

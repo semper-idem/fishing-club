@@ -51,7 +51,7 @@ public class PerkButtonWidget extends ButtonWidget {
     private void renderBackground(DrawContext context){
         if (!fishingCard.hasRequiredPerk(tradeSecret)) {
             RenderSystem.setShaderColor(0.6f,0.6f,0.6f,0.6f);
-        } else if (fishingCard.hasPerk(tradeSecret)) {
+        } else if (fishingCard.knowsTradeSecret(tradeSecret)) {
             RenderSystem.setShaderColor(0.5f,1,0.5f,1);
         }
         context.drawTexture(SKILL_ICON, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
@@ -61,7 +61,7 @@ public class PerkButtonWidget extends ButtonWidget {
         if (tradeSecret.getParent() == null) {
             return;
         }
-        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.hasPerk(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
+        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.knowsTradeSecret(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
     }
 
     private void renderIcon(DrawContext context){

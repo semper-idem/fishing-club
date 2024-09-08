@@ -118,10 +118,10 @@ public class HistoryManager extends DataManager {
 
         usedChunks.add(Chunk.create(chunkPos));
         sync();//checkChunk writes
-        if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
+        if (trackedFor.knowsTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
             trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
         }
-        if (trackedFor.hasPerk(TradeSecrets.FIRST_CATCH_BUFF_QUALITY)) {
+        if (trackedFor.knowsTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_QUALITY)) {
             trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
         }
         return true;

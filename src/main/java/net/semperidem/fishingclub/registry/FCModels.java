@@ -30,9 +30,6 @@ public class FCModels {
 
 		EntityRendererRegistry.register(FCEntityTypes.DEREK_ENTITY, FishermanEntityRenderer::new);
 		EntityRendererRegistry.register(FCEntityTypes.HOOK_ENTITY, HookEntityRenderer::new);
-		EntityRendererRegistry.register(FCEntityTypes.HARPOON_ENTITY, HarpoonEntityRenderer::new);
-		EntityRendererRegistry.register(FCEntityTypes.LINE_ARROW_ENTITY, LineArrowEntityRenderer::new);
-
 	}
 
 

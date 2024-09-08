@@ -15,8 +15,6 @@ public class FCEntityTypes {
 
 	public static EntityType<FishermanEntity> DEREK_ENTITY;
 	public static EntityType<HookEntity> HOOK_ENTITY;
-	public static EntityType<HarpoonEntity> HARPOON_ENTITY;
-	public static EntityType<LineArrowEntity> LINE_ARROW_ENTITY;
 	public static EntityType<CustomBoatEntity> BOAT_ENTITY;
 
 
@@ -42,29 +40,6 @@ public class FCEntityTypes {
 					.dimensions(0.25f, 0.25f)
 					.disableSaving()
 					.maxTrackingRange(10)
-					.build());
-
-		HARPOON_ENTITY =
-			Registry.register(
-				Registries.ENTITY_TYPE,
-				FishingClub.identifier("harpoon_entity"),
-				EntityType.Builder.<HarpoonEntity>create(HarpoonEntity::new, SpawnGroup.MISC)
-					.dimensions(0.5f, 0.5f)
-					.disableSummon()
-					.maxTrackingRange(4)
-					.trackingTickInterval(20)
-					.build());
-
-		LINE_ARROW_ENTITY =
-			Registry.register(
-				Registries.ENTITY_TYPE,
-				FishingClub.identifier("line_arrow_entity"),
-				EntityType.Builder.create(LineArrowEntity::new, SpawnGroup.MISC)
-					.dimensions(0.5f, 0.5f)
-					.disableSummon()
-					.disableSaving()
-					.maxTrackingRange(4)
-					.trackingTickInterval(20)
 					.build());
 
 		BOAT_ENTITY =
