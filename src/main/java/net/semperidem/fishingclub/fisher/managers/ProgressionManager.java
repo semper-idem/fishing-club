@@ -56,11 +56,12 @@ public class ProgressionManager extends DataManager {
         this.admirationPoints += (level - currentLevel);
         sync();
     }
+
     public int getExp() {
         return exp;
     }
 
-    public void learnTradeSecret(String tradeSecretName){
+    public void learnTradeSecret(String tradeSecretName) {
         if (!hasAdmirationPoints()) {
             return;
         }
@@ -68,7 +69,7 @@ public class ProgressionManager extends DataManager {
             return;
         }
         Optional<TradeSecret> maybeTradeSecret = TradeSecrets.fromName(tradeSecretName);
-        if (maybeTradeSecret.isEmpty()){
+        if (maybeTradeSecret.isEmpty()) {
             return;
         }
         TradeSecret tradeSecret = maybeTradeSecret.get();
@@ -77,7 +78,7 @@ public class ProgressionManager extends DataManager {
         }
         TradeSecret.Instance instance = this.knownTradeSecrets.computeIfAbsent(tradeSecretName, tsn -> tradeSecret.instance());
         int nextLevelPoints = instance.upgradeCost();
-        if (!this.hasAdmirationPoints(nextLevelPoints)){
+        if (!this.hasAdmirationPoints(nextLevelPoints)) {
             return;
         }
         this.admirationPoints -= nextLevelPoints;
@@ -86,8 +87,7 @@ public class ProgressionManager extends DataManager {
     }
 
 
-
-    public boolean hasRequiredPerk(TradeSecret tradeSecret){
+    public boolean hasRequiredPerk(TradeSecret tradeSecret) {
         return tradeSecret.getParent() == null;
     }
 
@@ -101,16 +101,16 @@ public class ProgressionManager extends DataManager {
         return !this.knownTradeSecrets.containsKey(tradeSecret.name());
     }
 
-    public void addPerkPoints(int amount){
+    public void addPerkPoints(int amount) {
         this.admirationPoints += amount;
         sync();
     }
 
-    public int getAdmirationPoints(){
+    public int getAdmirationPoints() {
         return this.admirationPoints;
     }
 
-    public boolean hasAdmirationPoints(){
+    public boolean hasAdmirationPoints() {
         return this.admirationPoints > 0;
     }
 
@@ -118,8 +118,8 @@ public class ProgressionManager extends DataManager {
         return this.admirationPoints >= count;
     }
 
-    public void useTradeSecret(String tradeSecretName, @Nullable Entity target){
-        if (!(this.trackedFor.holder() instanceof ServerPlayerEntity serverHolder)){
+    public void useTradeSecret(String tradeSecretName, @Nullable Entity target) {
+        if (!(this.trackedFor.holder() instanceof ServerPlayerEntity serverHolder)) {
             return;
         }
         this.knownTradeSecrets.computeIfPresent(tradeSecretName, (key, instance) -> {
@@ -131,11 +131,11 @@ public class ProgressionManager extends DataManager {
         });
     }
 
-    public int nextLevelXP(){
+    public int nextLevelXP() {
         return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
-    public void grantExperience(double gainedXP){
+    public void grantExperience(double gainedXP) {
         if (gainedXP < 0) {
             return;
         }
@@ -158,20 +158,24 @@ public class ProgressionManager extends DataManager {
     }
 
     public void unlockAllSecrets() {
-        for(TradeSecret tradeSecret : TradeSecrets.all()) {
+        for (TradeSecret tradeSecret : TradeSecrets.all()) {
             this.knownTradeSecrets.put(tradeSecret.name(), tradeSecret.instanceOfLevel(tradeSecret.maxLevel()));
         }
         sync();
     }
-    public Set<String> getKnownTradeSecrets(){
+
+    public Set<String> getKnownTradeSecrets() {
         return this.knownTradeSecrets.keySet();
     }
 
     public int tradeSecretValue(TradeSecret tradeSecret) {
-        if (this.knowsTradeSecret(tradeSecret)) {
-            return tradeSecret.power(this.knownTradeSecrets.get(tradeSecret.name()).level());
+        if (!this.knowsTradeSecret(tradeSecret)) {
+            return 0;
         }
-        return 0;
+        if (!tradeSecret.isActive(this.trackedFor)) {
+            return 0;
+        }
+        return tradeSecret.value(this.knownTradeSecrets.get(tradeSecret.name()).level());
     }
 
     public boolean knowsTradeSecret(TradeSecret tradeSecret) {
@@ -203,7 +207,7 @@ public class ProgressionManager extends DataManager {
         this.readKnownTradeSecrets(progressionNbt);
     }
 
-    private void readKnownTradeSecrets(NbtCompound progressionNbt){
+    private void readKnownTradeSecrets(NbtCompound progressionNbt) {
         this.knownTradeSecrets.clear();
         progressionNbt.getList(TRADE_SECRETS_TAG, NbtElement.COMPOUND_TYPE).forEach(
                 element -> {
@@ -231,12 +235,11 @@ public class ProgressionManager extends DataManager {
     }
 
 
-
     private static final String TAG = "progression";
     private static final String LEVEL_TAG = "level";
     private static final String EXP_TAG = "exp";
     private static final String ADMIRATION_POINTS_TAG = "perk_points";
     private static final String RESET_COUNT = "reset_count";
-    private static final String TRADE_SECRETS_TAG ="perks";
-    private static final String SPELLS_TAG ="spells";
+    private static final String TRADE_SECRETS_TAG = "perks";
+    private static final String SPELLS_TAG = "spells";
 }

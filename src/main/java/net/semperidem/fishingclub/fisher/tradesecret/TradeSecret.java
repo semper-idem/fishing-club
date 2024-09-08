@@ -3,18 +3,22 @@ package net.semperidem.fishingclub.fisher.tradesecret;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.util.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.*;
 
@@ -34,6 +38,7 @@ public class TradeSecret {
     BiFunction<ServerPlayerEntity, @Nullable Entity, Boolean> active;
     int baseCooldown;
     int baseDuration;
+    Predicate<PlayerEntity> condition;
 
     public String name() {
         return this.name;
@@ -81,12 +86,16 @@ public class TradeSecret {
         return new Instance(this, level);
     }
 
-    public int power(int level) {
-        return this.levelAffects == LevelChanges.VALUE ? 1 : (int) this.levelValues[level];
+    public boolean isActive(FishingCard card){
+        return condition.test(card.holder());
+    }
+
+    public int value(int level) {
+        return this.levelAffects == LevelChanges.VALUE ? (int) this.levelValues[level - 1] : 1;
     }
 
     public long duration(int level) {
-        return (long) (this.baseDuration * (this.levelAffects == LevelChanges.DURATION ? this.levelValues[level] : 1));
+        return (long) (this.baseDuration * (this.levelAffects == LevelChanges.DURATION ? this.levelValues[level - 1] : 1));
     }
 
     public long cooldown(int level) {
@@ -153,7 +162,7 @@ public class TradeSecret {
                 Utils.castEffect(player, new StatusEffectInstance(
                         this.root.effect,
                         (int) this.root.duration(this.level),
-                        this.root.power(this.level)
+                        this.root.value(this.level)
                         ));
             }
             if (this.root.active == null) {
@@ -198,11 +207,12 @@ public class TradeSecret {
         private TradeSecret parent;
         private float[] levelValues;
         private int[] costPerLevel;
-        private LevelChanges levelAffects;
+        private LevelChanges levelAffects = LevelChanges.VALUE;
         private BiFunction<ServerPlayerEntity, Entity, Boolean> active;
         private int baseCooldown;
         private int baseDuration;
         private RegistryEntry<StatusEffect> effect;
+        private Predicate<PlayerEntity> condition;
 
         TradeSecret build() {
             TradeSecret tradeSecret = new TradeSecret();
@@ -225,6 +235,7 @@ public class TradeSecret {
             tradeSecret.effect = this.effect;
             tradeSecret.baseDuration = this.baseDuration;
             tradeSecret.baseCooldown = this.baseCooldown;
+            tradeSecret.condition = this.condition;
             return tradeSecret;
         }
 
@@ -237,6 +248,12 @@ public class TradeSecret {
             }
             return 1;
         }
+
+        public Builder conditional(Predicate<PlayerEntity> condition) {
+            this.condition = condition;
+            return this;
+        }
+
 
         public Builder active(BiFunction<ServerPlayerEntity, Entity, Boolean> active, int baseCooldown) {
             this.active = active;
@@ -297,4 +314,6 @@ public class TradeSecret {
     }
 
 
+    public static final Predicate<PlayerEntity> REQUIRES_BOAT = o -> o.getVehicle() instanceof BoatEntity;
+    public static final Predicate<PlayerEntity> REQUIRES_RAIN = o -> o.getWorld().isRaining();
 }

@@ -119,7 +119,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.fishingCard = FishingCard.of(this.playerOwner);
         this.castCharge = this.fishingRod.getOrDefault(FCComponents.CAST_POWER, 1f);
         this.configuration = RodConfiguration.of(this.fishingRod);
-        if (this.configuration.hook().getItem() instanceof HookPartItem aHookPartItem) {
+        if (this.configuration.hook().orElse(ItemStack.EMPTY).getItem() instanceof HookPartItem aHookPartItem) {
             this.hookPartItem = aHookPartItem;
         }
         this.maxEntityMagnitude = this.configuration.attributes().weightMagnitude();
@@ -244,7 +244,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        if (this.hookPartItem != null  && entityHitResult.getEntity() != this && this.hookPartItem.getDamage() > 0) {
+        if (this.hookPartItem != null && entityHitResult.getEntity() != this && this.hookPartItem.getDamage() > 0) {
         }
         this.updateHookEntity(entityHitResult.getEntity());
         if (this.hookedEntity == this || this.hookedEntity == null) {
@@ -424,7 +424,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isFreezing() {
-        return this.core.minOperatingTemperature() >= this.temperature;
+        return this.core.minOperatingTemperature() > this.temperature;
     }
 
     private boolean isBurning() {
@@ -471,7 +471,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
 
 
-        reelFish();
+        this.reelFish();
         return true;
     }
 
@@ -503,7 +503,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickFishBite(ServerWorld serverWorld) {
-        if (this.configuration.bobber().getItem() instanceof BobberPartItem bobberPartItem) {
+        if (this.configuration.bobber().orElse(ItemStack.EMPTY).getItem() instanceof BobberPartItem bobberPartItem) {
             bobberPartItem.onFishBiteEffect();
         }
         if (Math.random() < configuration.attributes().baitFailChance()) {
@@ -622,7 +622,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.discard();
             return 0;
         }
-        if (this.isFreezing() && MathHelper.clamp(0.005 * this.frozenTicks,0, 0.5) > Math.random()) {
+        if (this.isFreezing() && MathHelper.clamp(0.005 * this.frozenTicks, 0, 0.5) > Math.random()) {
             RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
             this.fishingRod.setDamage(this.fishingRod.getMaxDamage());
         }
@@ -686,7 +686,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 //        }
         this.damageRod(2, PartItem.DamageSource.REEL_FISH);
         if (this.caughtFish == null) {
-           this.reelJunk();
+            this.reelJunk();
             this.discard();
             return;
         }
@@ -696,7 +696,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private void reelJunk() {
         if (!(this.getWorld() instanceof ServerWorld serverWorld)) {
-           return;
+            return;
         }
         if (!(this.playerOwner instanceof ServerPlayerEntity serverPlayer)) {
             return;
@@ -753,8 +753,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     @Override
     public float getCircumstanceQuality() {
         return CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos()))
-            .map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
-	}
+                .map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
+    }
 
     @Override
     public int maxWeight() {

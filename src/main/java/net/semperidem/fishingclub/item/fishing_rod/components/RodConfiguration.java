@@ -12,22 +12,24 @@ import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 public record RodConfiguration(
-        ItemStack line,
-        ItemStack bobber,
-        ItemStack reel,
-        ItemStack bait,
-        ItemStack hook,
+        Optional<ItemStack> line,
+        Optional<ItemStack> bobber,
+        Optional<ItemStack> reel,
+        Optional<ItemStack> bait,
+        Optional<ItemStack> hook,
         AttributeComposite attributes
 ) {
 
     public static final RodConfiguration EMPTY = new RodConfiguration(
-            ItemStack.EMPTY,
-            ItemStack.EMPTY,
-            ItemStack.EMPTY,
-            ItemStack.EMPTY,
-            ItemStack.EMPTY,
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
+            Optional.empty(),
             new AttributeComposite()
     );
 
@@ -43,11 +45,11 @@ public record RodConfiguration(
             ItemStack hook
     ) {
         return new RodConfiguration(
-                line,
-                bobber,
-                reel,
-                bait,
-                hook,
+                line.isEmpty() ? Optional.empty() : Optional.of(line),
+                bobber.isEmpty() ? Optional.empty() : Optional.of(bobber),
+                reel.isEmpty() ? Optional.empty() : Optional.of(reel),
+                bait.isEmpty() ? Optional.empty() : Optional.of(bait),
+                hook.isEmpty() ? Optional.empty() : Optional.of(hook),
                 new AttributeComposite(
                         line,
                         bobber,
@@ -61,21 +63,27 @@ public record RodConfiguration(
     public static RodConfiguration valid(ItemStack core) {
         RodConfiguration configuration = of(core);
         return of(
-                configuration.line,
-                configuration.bobber,
-                configuration.reel,
-                configuration.bait,
-                configuration.hook
+                configuration.line.orElse(ItemStack.EMPTY),
+                configuration.bobber.orElse(ItemStack.EMPTY),
+                configuration.reel.orElse(ItemStack.EMPTY),
+                configuration.bait.orElse(ItemStack.EMPTY),
+                configuration.hook.orElse(ItemStack.EMPTY)
         );
     }
 
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ItemStack.CODEC.fieldOf("line").forGetter(RodConfiguration::line),
-            ItemStack.CODEC.fieldOf("bobber").forGetter(RodConfiguration::bobber),
-            ItemStack.CODEC.fieldOf("reel").forGetter(RodConfiguration::reel),
-            ItemStack.CODEC.fieldOf("bait").forGetter(RodConfiguration::bait),
-            ItemStack.CODEC.fieldOf("hook").forGetter(RodConfiguration::hook)
-    ).apply(instance, RodConfiguration::of));
+            ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line),
+            ItemStack.CODEC.optionalFieldOf("bobber").forGetter(RodConfiguration::bobber),
+            ItemStack.CODEC.optionalFieldOf("reel").forGetter(RodConfiguration::reel),
+            ItemStack.CODEC.optionalFieldOf("bait").forGetter(RodConfiguration::bait),
+            ItemStack.CODEC.optionalFieldOf("hook").forGetter(RodConfiguration::hook)
+    ).apply(instance, (line, bobber, reel, bait, hook) -> of(
+            line.orElse(ItemStack.EMPTY),
+            line.orElse(ItemStack.EMPTY),
+            line.orElse(ItemStack.EMPTY),
+            line.orElse(ItemStack.EMPTY),
+            line.orElse(ItemStack.EMPTY)
+    )));
 
     public static PacketCodec<RegistryByteBuf, RodConfiguration> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
@@ -98,23 +106,23 @@ public record RodConfiguration(
     }
 
     private RodConfiguration equipLine(ItemStack line) {
-        return of(line, this.bobber, this.reel, this.bait, this.hook);
+        return of(line, this.bobber.orElse(ItemStack.EMPTY), this.reel.orElse(ItemStack.EMPTY), this.bait.orElse(ItemStack.EMPTY), this.hook.orElse(ItemStack.EMPTY));
     }
 
     private RodConfiguration equipBobber(ItemStack bobber) {
-        return of(this.line, bobber, this.reel, this.bait, this.hook);
+        return of(this.line.orElse(ItemStack.EMPTY), bobber, this.reel.orElse(ItemStack.EMPTY), this.bait.orElse(ItemStack.EMPTY), this.hook.orElse(ItemStack.EMPTY));
     }
 
     private RodConfiguration equipReel(ItemStack reel) {
-        return of(this.line, this.bobber, reel, this.bait, this.hook);
+        return of(this.line.orElse(ItemStack.EMPTY), this.bobber.orElse(ItemStack.EMPTY), reel, this.bait.orElse(ItemStack.EMPTY), this.hook.orElse(ItemStack.EMPTY));
     }
 
     private RodConfiguration equipBait(ItemStack bait) {
-        return of(this.line, this.bobber, this.reel, bait, this.hook);
+        return of(this.line.orElse(ItemStack.EMPTY), this.bobber.orElse(ItemStack.EMPTY), this.reel.orElse(ItemStack.EMPTY), bait, this.hook.orElse(ItemStack.EMPTY));
     }
 
     private RodConfiguration equipHook(ItemStack hook) {
-        return of(this.line, this.bobber, this.reel, this.bait, hook);
+        return of(this.line.orElse(ItemStack.EMPTY), this.bobber.orElse(ItemStack.EMPTY), this.reel.orElse(ItemStack.EMPTY), this.bait.orElse(ItemStack.EMPTY), hook);
     }
 
     public static void dropContent(PlayerEntity holder, ItemStack core) {
@@ -128,11 +136,11 @@ public record RodConfiguration(
 
     public RodInventory inventory(PlayerEntity playerEntity) {
         RodInventory parts = new RodInventory(playerEntity);
-        parts.setStack(0, reel);
-        parts.setStack(1, line);
-        parts.setStack(2, bobber);
-        parts.setStack(3, hook);
-        parts.setStack(4, bait);
+        parts.setStack(0, reel.orElse(ItemStack.EMPTY));
+        parts.setStack(1, line.orElse(ItemStack.EMPTY));
+        parts.setStack(2, bobber.orElse(ItemStack.EMPTY));
+        parts.setStack(3, hook.orElse(ItemStack.EMPTY));
+        parts.setStack(4, bait.orElse(ItemStack.EMPTY));
         return parts;
     }
 

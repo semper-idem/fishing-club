@@ -59,35 +59,41 @@ public class TradeSecrets {
 
         LINE_HEALTH_BOAT = TradeSecret.builder()
                 .name("line_health_boat")
-                .levelValues(50, 100, 200)
+                .levelValues(16, 32, 64)
+                .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         BOBBER_SIZE_BOAT = TradeSecret.builder()
                 .name("bobber_size_boat")
                 .levelValues(0.05f, 0.1f, 0.2f)
                 .parent(LINE_HEALTH_BOAT)
+                .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         FISH_QUANTITY_BOAT = TradeSecret.builder()
                 .name("fish_quantity_boat")
                 .levelValues(0.05f, 0.1f, 0.2f)
-                .parent(BOBBER_SIZE_BOAT)
+            .parent(BOBBER_SIZE_BOAT)
+                .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         TREASURE_CHANCE_BOAT = TradeSecret.builder()
                 .name("treasure_chance_boat")
                 .levelValues(0.1f, 0.25f, 0.5f)
                 .costPerLevel(2, 2 ,2)
                 .parent(FISH_QUANTITY_BOAT)
+                .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
 
         CATCH_RATE_RAIN = TradeSecret.builder()
                 .name("catch_rate_rain")
                 .levelValues(0.25f, 0.5f, 1)
                 .costPerLevel(1,2,3)
+                .conditional(TradeSecret.REQUIRES_RAIN)
                 .build();
         FISH_QUALITY_RAIN = TradeSecret.builder()
                 .name("fish_quality_rain")
                 .levelValues(0.1f, 0.25f, 0.5f)
                 .costPerLevel(1,1,1)
                 .parent(CATCH_RATE_RAIN)
+                .conditional(TradeSecret.REQUIRES_RAIN)
                 .build();
         SUMMON_RAIN = TradeSecret.builder().name("rain_summon")
                 .levelCooldown(1, 0.875f, 0.75f, 0.675f, 0.5f)

@@ -33,6 +33,9 @@ public class SpellListWidget implements DataBuffer {
             this.card = FishingCard.of(MinecraftClient.getInstance().player);
         }
         this.refresh();
+        if (usableTradeSecrets.isEmpty()) {
+            return;
+        }
         selectedInstance = usableTradeSecrets.get(selectedSpellIndex);
         if(selectedInstance == null){
             if (pressed) pressed = false;
