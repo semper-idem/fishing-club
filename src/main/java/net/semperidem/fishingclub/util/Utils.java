@@ -30,8 +30,16 @@ public class Utils {
     }
 
     public static void castEffect(ServerPlayerEntity caster, StatusEffectInstance effect){
+        castEffect(caster, effect, 4);
+    }
+
+    public static void castEffect(ServerPlayerEntity caster, StatusEffectInstance effect, int range){
+        if (range == 0) {
+            caster.addStatusEffect(effect);
+            return;
+        }
         Box aoe = new Box(caster.getBlockPos());
-        aoe.expand(4);
+        aoe.expand(range);
         List<Entity> iterableEntities = caster.getEntityWorld().getOtherEntities(null, aoe);
         iterableEntities.add(caster);
         iterableEntities.stream().filter(o -> o instanceof ServerPlayerEntity).forEach(o -> ((ServerPlayerEntity) o).addStatusEffect(effect));

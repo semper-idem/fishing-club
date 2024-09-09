@@ -118,6 +118,7 @@ public class HistoryManager extends DataManager {
 
         usedChunks.add(Chunk.create(chunkPos));
         sync();//checkChunk writes
+        trackedFor.useTradeSecret();
         if (trackedFor.knowsTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
             trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
         }
@@ -131,15 +132,12 @@ public class HistoryManager extends DataManager {
         return (int) Math.floor((lastCatchTime - getCurrentTime()) / (1f * DAY_LENGTH));
     }
 
-    public int getMinGrade(IHookEntity caughtWith, ProgressionManager progressionManager) {
+    public int minQualityIncrement(IHookEntity caughtWith, ProgressionManager progressionManager) {
         int minGrade = 0;
         if (isFirstCatchInChunk(caughtWith)) {
             minGrade++;
         }
-        if (isFirstCatchOfTheDay()) {
-            if (progressionManager.knowsTradeSecret(TradeSecrets.FIRST_CATCH)) {
-                minGrade++;
-            }
+        if (isFirstCatchOfTheDay() && progressionManager.knowsTradeSecret(TradeSecrets.FIRST_CATCH)) {
             minGrade++;
         }
         return minGrade;

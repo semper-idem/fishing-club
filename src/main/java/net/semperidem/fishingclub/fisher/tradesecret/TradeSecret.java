@@ -44,27 +44,27 @@ public class TradeSecret {
         return this.name;
     }
 
-    public List<TradeSecret> getChildren(){
+    public List<TradeSecret> getChildren() {
         return this.children;
     }
 
-    public Identifier getTexture(){
+    public Identifier getTexture() {
         return this.texture;
     }
 
-    public TradeSecret getParent(){
+    public TradeSecret getParent() {
         return parent;
     }
 
-    public Text getLabel(){
+    public Text getLabel() {
         return label;
     }
 
-    public Text shortDescription(){
+    public Text shortDescription() {
         return this.shortDescription;
     }
 
-    public Text longDescription(int level){
+    public Text longDescription(int level) {
         if (this.longDescription == null) {
             return Text.empty();
         }
@@ -78,7 +78,7 @@ public class TradeSecret {
         return this.maxLevel;
     }
 
-    public Instance instance(){
+    public Instance instance() {
         return new Instance(this, 1);
     }
 
@@ -86,7 +86,7 @@ public class TradeSecret {
         return new Instance(this, level);
     }
 
-    public boolean isActive(FishingCard card){
+    public boolean isActive(FishingCard card) {
         return condition.test(card.holder());
     }
 
@@ -99,7 +99,7 @@ public class TradeSecret {
     }
 
     public long cooldown(int level) {
-       return (long) (this.baseCooldown * (this.levelAffects == LevelChanges.COOLDOWN ? this.levelValues[level - 1] : 1));
+        return (long) (this.baseCooldown * (this.levelAffects == LevelChanges.COOLDOWN ? this.levelValues[level - 1] : 1));
     }
 
     public boolean hasActive() {
@@ -145,7 +145,7 @@ public class TradeSecret {
             return this.root;
         }
 
-        public int level(){
+        public int level() {
             return this.level;
         }
 
@@ -160,10 +160,13 @@ public class TradeSecret {
             }
             if (this.root.effect != null) {
                 Utils.castEffect(player, new StatusEffectInstance(
-                        this.root.effect,
-                        (int) this.root.duration(this.level),
-                        this.root.value(this.level)
-                        ));
+                                this.root.effect,
+                                (int) this.root.duration(this.level),
+                                this.root.value(this.level)
+                        ),
+                        this.root.baseCooldown > 0 ? 4 : 0
+                );
+                return true;
             }
             if (this.root.active == null) {
                 return false;
@@ -270,7 +273,7 @@ public class TradeSecret {
 
         private ArrayList<Text> createLongDescriptions(TradeSecret tradeSecret) {
             ArrayList<Text> leveledLongDescriptions = new ArrayList<>();
-            for(int i = 0; i < tradeSecret.maxLevel; i++) {
+            for (int i = 0; i < tradeSecret.maxLevel; i++) {
                 leveledLongDescriptions.add(Text.translatable(this.name + ".long_description." + i));
             }
             if (leveledLongDescriptions.isEmpty()) {

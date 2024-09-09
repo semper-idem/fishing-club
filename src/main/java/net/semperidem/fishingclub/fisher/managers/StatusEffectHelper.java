@@ -26,20 +26,29 @@ public class StatusEffectHelper {
         this.trackedFor = trackedFor;
     }
 
-    public int getMinGrade() {
+    public int minQualityIncrement() {
         int minGrade = 0;
         if (this.trackedFor.holder() == null) {
             return minGrade;
         }
         if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
-        } else if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)){
-            minGrade++;
         }
+        StatusEffectInstance sei = this.trackedFor.holder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        if (sei == null) {
+            return minGrade;
+        }
+        int oneTimeQualityLevel = sei.getAmplifier() + 1;
+        int oneTimeQualityDuration = sei.getDuration();
+        this.trackedFor.holder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        if (oneTimeQualityLevel > 0) {
+            this.trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.ONE_TIME_QUALITY_BUFF, oneTimeQualityDuration + 600, oneTimeQualityLevel - 1));
+        }
+        minGrade++;
         return minGrade;
     }
 
-    public void fishCaught(ProgressionManager progressionManager){
+    public void fishCaught(ProgressionManager progressionManager) {
         processOneTimeBuff();
         prolongStatusEffects(progressionManager);
     }
@@ -48,7 +57,7 @@ public class StatusEffectHelper {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
         if ((xpBuffInstance = this.trackedFor.holder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
-             multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
+            multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
     }
@@ -56,8 +65,8 @@ public class StatusEffectHelper {
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
         return
                 fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
-                progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION) &&
-                !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+                        progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION) &&
+                        !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
     public int spreadStatusEffect(ProgressionManager progressionManager, SpecimenData fish) {
@@ -73,7 +82,7 @@ public class StatusEffectHelper {
                 .toList();
 
         boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
-        for(ServerPlayerEntity serverPlayerEntity : nearPlayers) {
+        for (ServerPlayerEntity serverPlayerEntity : nearPlayers) {
             if (FishingCard.of(serverPlayerEntity).knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
                 xpBuffAffectedCount++;
             }
@@ -84,7 +93,7 @@ public class StatusEffectHelper {
         return xpBuffAffectedCount;
     }
 
-    private void prolongStatusEffects(ProgressionManager progressionManager){
+    private void prolongStatusEffects(ProgressionManager progressionManager) {
         if (!progressionManager.knowsTradeSecret(TradeSecrets.SHARED_BUFFS)) {
             return;
         }
@@ -112,14 +121,14 @@ public class StatusEffectHelper {
                 ));
     }
 
-    private void processOneTimeBuff(){
+    private void processOneTimeBuff() {
         if (!trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
             return;
         }
         consumeOneTimeBuff();
     }
 
-    private void consumeOneTimeBuff(){
+    private void consumeOneTimeBuff() {
         StatusEffectInstance sei = this.trackedFor.holder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
         int effectPower = sei.getAmplifier();
         this.trackedFor.holder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);

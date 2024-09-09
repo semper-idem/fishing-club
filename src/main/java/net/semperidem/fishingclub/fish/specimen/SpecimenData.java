@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -173,7 +172,7 @@ public record SpecimenData(
 
         return (int) MathHelper.clamp(
                 MathUtil.normal(MIN_LEVEL, 4, MIN_LEVEL + mean),//non-boosting min quality buff impl
-                fisher.unsafeHolder() == null ? 0 : fisher.getMinGrade(caughtWith),
+                fisher.unsafeHolder() == null ? 0 : fisher.minQuality(caughtWith),
                 MAX_QUALITY
         );
     }

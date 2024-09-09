@@ -16,6 +16,7 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;
@@ -170,6 +171,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return this.progressionManager.hasAdmirationPoints();
     }
 
+    public void useTradeSecret(TradeSecret tradeSecret, @Nullable Entity target) {
+        progressionManager.useTradeSecret(tradeSecret.name(), target);
+    }
+
     public void useTradeSecret(String tradeSecret, @Nullable Entity target){
         progressionManager.useTradeSecret(tradeSecret, target);
     }
@@ -221,11 +226,12 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public boolean isFishingFromBoat(){
         return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
     }
-    public int getMinGrade(IHookEntity caughtWith){
-        int minGrade = 1;
-        minGrade += historyManager.getMinGrade(caughtWith, progressionManager);
-        minGrade += statusEffectHelper.getMinGrade();
-        return Math.min(5, minGrade);
+
+    public int minQuality(IHookEntity caughtWith){
+        int minQuality = 1;
+        minQuality += historyManager.minQualityIncrement(caughtWith, progressionManager);
+        minQuality += statusEffectHelper.minQualityIncrement();
+        return Math.min(5, minQuality);
     }
 
     public void fishCaught(SpecimenData fish){
