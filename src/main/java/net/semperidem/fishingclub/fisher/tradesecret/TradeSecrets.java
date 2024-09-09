@@ -178,7 +178,7 @@ public class TradeSecrets {
                 .build();
         PASSIVE_FISHING_XP_BUFF = TradeSecret.builder()
                 .name("passive_fishing_xp_buff")
-                .levelValues(1, 2, 5, 10)
+                .levelValues(0, 1, 4, 9)//spread exp buff with each level up to skill value
                 .costPerLevel(1, 2, 3, 4)
                 .parent(WATCH_AND_LEARN)
                 .build();

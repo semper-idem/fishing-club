@@ -1,9 +1,12 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Box;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
@@ -150,7 +153,20 @@ public class ProgressionManager extends DataManager {
             LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
             nextLevelXP = nextLevelXP();
         }
+        this.sharePassiveExp(gainedXP);
         sync();
+    }
+
+    public void sharePassiveExp(double gainedXP) {
+        this.trackedFor
+                .holder()
+                .getEntityWorld()
+                .getOtherEntities(null, new Box(this.trackedFor.holder().getBlockPos()).expand(4))
+                .stream()
+                .filter(entity -> entity instanceof ServerPlayerEntity)
+                .map(entity -> FishingCard.of((PlayerEntity) entity))
+                .filter(card -> card.knowsTradeSecret(TradeSecrets.WATCH_AND_LEARN))
+                .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN) * gainedXP));
     }
 
     public Collection<TradeSecret.Instance> tradeSecrets() {

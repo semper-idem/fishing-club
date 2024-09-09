@@ -237,34 +237,13 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void fishCaught(SpecimenData fish){
 
-        var xEffects = this.statusEffectHelper.getExpMultiplier();
-        var xGroup = 1 + 0.1f * this.statusEffectHelper.spreadStatusEffect(this.progressionManager, fish);
-
-        progressionManager.grantExperience(fish.experience(1 * xGroup * xEffects));
-        historyManager.fishCaught(fish);
-        statusEffectHelper.fishCaught(progressionManager);
+        this.progressionManager.grantExperience(fish.experience(this.statusEffectHelper.getExpMultiplier()));
+        this.historyManager.fishCaught(fish);
+        this.statusEffectHelper.fishCaught(fish);
 
         LeaderboardTracker tracker = LeaderboardTracker.of(holder.getScoreboard());
         tracker.record(holder, fish);
         tracker.record(holder, this, tracker.highestLevel);
-
-        this.sharePassiveExp(fish);
-    }
-
-    public void sharePassiveExp(SpecimenData fish) {
-        Box aoe = new Box(this.holder().getBlockPos());
-        aoe.expand(4);
-        List<Entity> iterableEntities = this.holder().getEntityWorld().getOtherEntities(null, aoe);
-        iterableEntities.add(this.holder);
-        iterableEntities.stream()
-                .filter(o -> o instanceof ServerPlayerEntity)
-                .map(o -> FishingCard.of((PlayerEntity) o))
-                .forEach(o -> {
-                    float passiveRatio = o.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN);
-                    if (passiveRatio > 0) {
-                        o.grantExperience(fish.experience(passiveRatio));
-                    }
-                });
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {

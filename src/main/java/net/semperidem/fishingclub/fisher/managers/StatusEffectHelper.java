@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fisher.managers;
 
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -7,6 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 import net.semperidem.fishingclub.status_effects.IncreaseFishingExpStatusEffect;
@@ -18,7 +20,6 @@ public class StatusEffectHelper {
     private static final int FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER = 4;
     private static final int SPREAD_EFFECT_RANGE = 4;
     private static final int PROLONG_EFFECT_LENGTH = 200;
-    private static final int ONE_TIME_BUFF_LENGTH = 2400;
 
     FishingCard trackedFor;
 
@@ -34,23 +35,13 @@ public class StatusEffectHelper {
         if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
         }
-        StatusEffectInstance sei = this.trackedFor.holder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
-        if (sei == null) {
-            return minGrade;
-        }
-        int oneTimeQualityLevel = sei.getAmplifier() + 1;
-        int oneTimeQualityDuration = sei.getDuration();
-        this.trackedFor.holder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
-        if (oneTimeQualityLevel > 0) {
-            this.trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.ONE_TIME_QUALITY_BUFF, oneTimeQualityDuration + 600, oneTimeQualityLevel - 1));
-        }
-        minGrade++;
         return minGrade;
     }
 
-    public void fishCaught(ProgressionManager progressionManager) {
-        processOneTimeBuff();
-        prolongStatusEffects(progressionManager);
+    public void fishCaught(SpecimenData fish) {
+        this.prolongStatusEffects();
+        this.celebrateFishQuality(fish);
+        this.stackPassiveExp();
     }
 
     public float getExpMultiplier() {
@@ -62,42 +53,44 @@ public class StatusEffectHelper {
         return multiplier;
     }
 
-    private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
+    public void celebrateFishQuality(SpecimenData fish) {
+        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
+            return;
+        }
+
         if (fish.quality() < FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER) {
-            return false;
+            return;
         }
-        if (!progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
-            return false;
-        }
-        return !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+
+        this.trackedFor.useTradeSecret(TradeSecrets.QUALITY_CELEBRATION, null);
     }
 
-    public int spreadStatusEffect(ProgressionManager progressionManager, SpecimenData fish) {
-        int xpBuffAffectedCount = 0;
-        Box box = new Box(this.trackedFor.holder().getBlockPos());
-        box.expand(SPREAD_EFFECT_RANGE);
-
-        List<ServerPlayerEntity> nearPlayers = this.trackedFor.holder().getEntityWorld()
-                .getOtherEntities(this.trackedFor.holder(), box)
+    public void stackPassiveExp() {
+        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
+            return;
+        }
+        final int maxAmplifier = this.trackedFor.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
+        this.trackedFor.holder().getEntityWorld()
+                .getOtherEntities(this.trackedFor.holder(), new Box(this.trackedFor.holder().getBlockPos()).expand(4))
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
-                .map(ServerPlayerEntity.class::cast)
-                .toList();
+                .map(entity -> FishingCard.of((PlayerEntity)entity))
+                .forEach(card -> {
+                    int nextAmplifier = 0;
+                    int nextDuration = 600;
 
-        boolean spreadQualityBuff = shouldSpreadQualityBuff(progressionManager, fish);
-        for (ServerPlayerEntity serverPlayerEntity : nearPlayers) {
-            if (FishingCard.of(serverPlayerEntity).knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
-                xpBuffAffectedCount++;
-            }
-            if (spreadQualityBuff && !serverPlayerEntity.hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
-                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(FCStatusEffects.ONE_TIME_QUALITY_BUFF, ONE_TIME_BUFF_LENGTH));
-            }
-        }
-        return xpBuffAffectedCount;
+                    StatusEffectInstance currentExpBuff = card.holder().getStatusEffect(FCStatusEffects.EXP_BUFF);
+                    if (currentExpBuff != null && currentExpBuff.getAmplifier() >= maxAmplifier) {
+                        nextAmplifier = Math.min(maxAmplifier, currentExpBuff.getAmplifier() + 1);
+                        nextDuration += currentExpBuff.getDuration();
+                    }
+
+                    card.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.EXP_BUFF, nextAmplifier, Math.min(6000, nextDuration)));
+                });
     }
 
-    private void prolongStatusEffects(ProgressionManager progressionManager) {
-        if (!progressionManager.knowsTradeSecret(TradeSecrets.SHARED_BUFFS)) {
+    private void prolongStatusEffects() {
+        if (!trackedFor.knowsTradeSecret(TradeSecrets.SHARED_BUFFS)) {
             return;
         }
 
@@ -122,22 +115,5 @@ public class StatusEffectHelper {
                                 )
                         )
                 ));
-    }
-
-    private void processOneTimeBuff() {
-        if (!trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF)) {
-            return;
-        }
-        consumeOneTimeBuff();
-    }
-
-    private void consumeOneTimeBuff() {
-        StatusEffectInstance sei = this.trackedFor.holder().getStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
-        int effectPower = sei.getAmplifier();
-        this.trackedFor.holder().removeStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
-        if (effectPower > 0) {
-            StatusEffectInstance lowerSei = new StatusEffectInstance(sei.getEffectType(), sei.getDuration(), effectPower - 1);
-            this.trackedFor.holder().addStatusEffect(lowerSei);
-        }
     }
 }
