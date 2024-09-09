@@ -39,6 +39,16 @@ public class Commands {
         }));
     }
 
+    public static void registerUnlink() {
+        rootCommand.then(literal("link").then(argument("player", word())).executes(context -> {
+            if (context.getSource().getPlayer() instanceof ServerPlayerEntity serverPlayerEntity) {
+                ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(getString(context, "player"));
+                FishingCard.of(serverPlayerEntity).linkTarget(target);
+            }
+            return 0;
+        }));
+    }
+
     public static void registerLevelUp(){
         rootCommand.then(literal("level_up").executes(context -> {
             FishingCard fishingCard = FishingCard.of(context.getSource().getPlayer());

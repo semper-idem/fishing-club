@@ -184,6 +184,13 @@ public class ProgressionManager extends DataManager {
         return this.knownTradeSecrets.keySet();
     }
 
+    public int tradeSecretLevel(TradeSecret tradeSecret) {
+        if (!this.knowsTradeSecret(tradeSecret)) {
+            return 0;
+        }
+        return this.knownTradeSecrets.get(tradeSecret.name()).level();
+    }
+
     public int tradeSecretValue(TradeSecret tradeSecret) {
         if (!this.knowsTradeSecret(tradeSecret)) {
             return 0;

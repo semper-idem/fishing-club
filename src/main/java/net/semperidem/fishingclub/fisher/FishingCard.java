@@ -204,8 +204,8 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return Objects.requireNonNull(this.holder, "Card holder did not load correctly");
     }
 
-    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source){
-        linkingManager.shareStatusEffect(sei, source);
+    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> sharedWith){
+        linkingManager.shareStatusEffect(sei, source, sharedWith);
     }
 
     public void setSummonRequest(ServerPlayerEntity target){
@@ -252,6 +252,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void learnTradeSecret(String tradeSecretName) {
         this.progressionManager.learnTradeSecret(tradeSecretName);
+    }
+
+    public int tradeSecretLevel(TradeSecret tradeSecret) {
+        return this.progressionManager.tradeSecretLevel(tradeSecret);
     }
 
     public int tradeSecretValue(TradeSecret tradeSecret) {
@@ -311,10 +315,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void requestSummon(){
         linkingManager.requestSummon();
-    }
-
-    public void shareBait() {
-        linkingManager.shareBait(historyManager.getLastUsedBait().copy());
     }
 
     public boolean isMember() {

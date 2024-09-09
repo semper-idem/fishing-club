@@ -4,25 +4,25 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class LinkingManager extends DataManager {
-    private static final int LINK_LIMIT = 1;
-    private static final int DOUBLE_LINK_LIMIT = LINK_LIMIT * 2;
-    private static final float SHARED_EFFECT_LENGTH = 0.9f;
-    private static final int MIN_LENGTH_TO_SHARE = 20;
+    private static final float SHARED_EFFECT_DURATION = 0.75f;
+    private static final int MIN_LENGTH_TO_SHARE = 200;
 
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
 
@@ -30,37 +30,49 @@ public class LinkingManager extends DataManager {
         super(trackedFor);
     }
 
-    private int getLinkLimit() {
-        if (trackedFor.knowsTradeSecret(TradeSecrets.DOUBLE_LINK)) {
-            return DOUBLE_LINK_LIMIT;
-        }
-        if (trackedFor.knowsTradeSecret(TradeSecrets.FISHERMAN_LINK)) {
-            return LINK_LIMIT;
-        }
-        return 0;
+    private int linkLimit() {
+        return this.trackedFor.tradeSecretLevel(TradeSecrets.FISHERMAN_LINK);
     }
 
-    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source) {
+    public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> sharedWith) {
+        if (!sei.getEffectType().value().isBeneficial()) {
+            return;
+        }
+
         if (sei.getDuration() < MIN_LENGTH_TO_SHARE) {
             return;
         }
-        if (trackedFor.holder() != source) {
-            trackedFor.holder().addStatusEffect(sei);
+
+        if (this.trackedFor.holder() == source) {
+            return;
         }
-        linkedFishers.forEach(linkedFisher -> FishingCard.of(
-                        trackedFor
-                                .holder()
-                                .getServer()
-                                .getPlayerManager()
-                                .getPlayer(linkedFisher)
-                ).shareStatusEffect(getWeakerEffect(sei), source)//this is prob too complicated todo verify
-        );
+        this.linkedFishers.stream()
+                .filter(linkedFishersUUID -> !sharedWith.contains(linkedFishersUUID))
+                .forEach(linkedFisher -> {
+                    MinecraftServer server = trackedFor.holder().getServer();
+                    if (server == null) {
+                        return;
+                    }
+                    PlayerEntity linkedFisherPlayer = server.getPlayerManager().getPlayer(linkedFisher);
+                    if (linkedFisherPlayer == null) {
+                        return;
+                    }
+
+                    if (!(linkedFisherPlayer.getMainHandStack().getItem() instanceof FishingRodCoreItem)){
+                        return;
+                    }
+
+                    StatusEffectInstance weakerStatusEffectInstance = this.getWeakerEffect(sei);
+                    linkedFisherPlayer.addStatusEffect(weakerStatusEffectInstance);
+                    sharedWith.add(linkedFisher);
+                    FishingCard.of(linkedFisherPlayer).shareStatusEffect(this.getWeakerEffect(sei), source, sharedWith);
+                });
     }
 
     private StatusEffectInstance getWeakerEffect(StatusEffectInstance sei) {
         return new StatusEffectInstance(
                 sei.getEffectType(),
-                (int) (sei.getDuration() * SHARED_EFFECT_LENGTH),
+                (int) (sei.getDuration() * SHARED_EFFECT_DURATION),
                 sei.getAmplifier(),
                 sei.isAmbient(),
                 sei.shouldShowParticles(),
@@ -68,23 +80,13 @@ public class LinkingManager extends DataManager {
         );
     }
 
-    public void shareBait(ItemStack baitToShare) {
-        linkedFishers.forEach(linkedFisher -> FishingCard.of(
-                trackedFor
-                        .holder()
-                        .getServer()
-                        .getPlayerManager()
-                        .getPlayer(linkedFisher)
-        ).setSharedBait(baitToShare.copy()));
-    }
-
-    public void linkTarget(Entity target){
-        int linkLimit = getLinkLimit();
+    public void linkTarget(Entity target) {
+        int linkLimit = linkLimit();
         if (linkLimit == 0) {
             return;
         }
 
-        if (!(target instanceof PlayerEntity playerTarget)){
+        if (!(target instanceof PlayerEntity playerTarget)) {
             messageFail();
             return;
         }
@@ -93,12 +95,13 @@ public class LinkingManager extends DataManager {
         if (linkedFishers.contains(targetUUID)) {
             linkedFishers.remove(targetUUID);
             messageUnlink(trackedFor.holder(), playerTarget);
+            this.sync();
             return;
         }
 
         if (linkedFishers.size() == linkLimit) {
-            linkedFishers.remove(0);
             messageLimit();
+            return;
         }
         linkedFishers.add(targetUUID);
         messageLink(trackedFor.holder(), playerTarget);
@@ -120,10 +123,9 @@ public class LinkingManager extends DataManager {
     }
 
 
-    //TODO
+    //TODO review messages
     private void messageRequestSummon(PlayerEntity target) {
-        target.sendMessage(Text.of("[Fishing Club] Your friend:" + trackedFor.holder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
-        //change summon_accpept to just tp PLAYER_NAM to SUMMONER_NAME
+        target.sendMessage(Text.of("[Fishing Club] Your fishing friend:" + trackedFor.holder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
         target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
 
     }
@@ -139,12 +141,12 @@ public class LinkingManager extends DataManager {
         target.sendMessage(Text.of("[Fishing Club]" + source.getDisplayName().getString() + " has unlinked from you"), true);
     }
 
-    private void messageLimit(){
-        trackedFor.holder().sendMessage(Text.of("[Fishing Club] Link limit reached, removing oldest entry"), true);
+    private void messageLimit() {
+        trackedFor.holder().sendMessage(Text.of("[Fishing Club] Link limit reached, Cast  Link  on already linked player to remove it or type command /fishing-club link PLAYER_NAME"), true);
     }
 
     private void messageFail() {
-        trackedFor.holder().sendMessage(Text.of("[Fishing Club] You can only link players"), true);
+        trackedFor.holder().sendMessage(Text.of("[Fishing Club] You can only link with players"), true);
     }
 
 
@@ -165,5 +167,5 @@ public class LinkingManager extends DataManager {
         nbtCompound.put(TAG, linkedFishersNbt);
     }
 
-    private static final String TAG ="linked";
+    private static final String TAG = "linked";
 }

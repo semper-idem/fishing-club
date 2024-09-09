@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.fisher.managers;
 
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -8,12 +7,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 import net.semperidem.fishingclub.status_effects.IncreaseFishingExpStatusEffect;
-
-import java.util.List;
 
 public class StatusEffectHelper {
     private static final float QUALITY_BUFF_SUCCESS_CHANCE = 0.25f;
@@ -39,7 +35,6 @@ public class StatusEffectHelper {
     }
 
     public void fishCaught(SpecimenData fish) {
-        this.prolongStatusEffects();
         this.celebrateFishQuality(fish);
         this.stackPassiveExp();
     }
@@ -87,33 +82,5 @@ public class StatusEffectHelper {
 
                     card.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.EXP_BUFF, nextAmplifier, Math.min(6000, nextDuration)));
                 });
-    }
-
-    private void prolongStatusEffects() {
-        if (!trackedFor.knowsTradeSecret(TradeSecrets.SHARED_BUFFS)) {
-            return;
-        }
-
-        if (!this.trackedFor.holder().hasVehicle()) {
-            return;
-        }
-
-        if (!(this.trackedFor.holder().getVehicle() instanceof BoatEntity boatEntity)) {
-            return;
-        }
-
-        boatEntity.getPassengerList()
-                .stream()
-                .filter(PlayerEntity.class::isInstance)
-                .map(PlayerEntity.class::cast)
-                .forEach(playerEntity -> playerEntity.getStatusEffects().forEach(
-                        sei -> sei.upgrade(
-                                new StatusEffectInstance(
-                                        sei.getEffectType(),
-                                        sei.getDuration() + PROLONG_EFFECT_LENGTH,
-                                        sei.getAmplifier()
-                                )
-                        )
-                ));
     }
 }

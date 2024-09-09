@@ -26,6 +26,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
@@ -100,7 +103,7 @@ public abstract class LivingEntityMixin extends Entity{
         }
         FishingCard fishingCard = FishingCard.of((ServerPlayerEntity)(Object)this);
         if (fishingCard != null) {
-            fishingCard.shareStatusEffect(effect, (LivingEntity)(Object)this);
+            fishingCard.shareStatusEffect(effect, (LivingEntity)(Object)this, new HashSet<>());
         }
     }
 

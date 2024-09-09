@@ -12,7 +12,6 @@ import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 public class TradeSecrets {
@@ -39,9 +38,7 @@ public class TradeSecrets {
     public static TradeSecret PASSIVE_FISHING_XP_BUFF;
     public static TradeSecret WATCH_AND_LEARN;
     public static TradeSecret QUALITY_CELEBRATION;
-    public static TradeSecret SHARED_BUFFS;
     public static TradeSecret FISHERMAN_LINK;
-    public static TradeSecret DOUBLE_LINK;
     public static TradeSecret FISHERMAN_SUMMON;
     public static TradeSecret MAGIC_ROD_SUMMON;
     public static TradeSecret FREE_SHOP_SUMMON;
@@ -202,6 +199,7 @@ public class TradeSecrets {
 
         FISHERMAN_LINK = TradeSecret.builder()
                 .name("fisherman_link")
+                .costPerLevel(1, 3, 9)
                 .active(
                         (source, target) -> {
                             FishingCard.of(source).linkTarget(target);
@@ -210,21 +208,11 @@ public class TradeSecrets {
                         100
                 )
                 .build();
-        SHARED_BUFFS = TradeSecret.builder()
-                .name("shared_buffs")
-                .levelValues(1, 2, 4)
-                .parent(FISHERMAN_LINK)
-                .build();
         QUALITY_CELEBRATION = TradeSecret.builder()
                 .name("quality_celebration")
                 .levelDuration(1, 1.5f, 2)
                 .active(FCStatusEffects.QUALITY_BUFF, 100, 1200)
                 .parent(FISHERMAN_LINK)
-                .build();
-        DOUBLE_LINK = TradeSecret.builder()
-                .name("double_link")
-                .parent(FISHERMAN_LINK)
-                .costPerLevel(3)
                 .build();
         FISHERMAN_SUMMON = TradeSecret.builder()
                 .name("fisherman_summon")
