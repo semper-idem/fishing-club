@@ -177,7 +177,7 @@ public record SpecimenData(
         );
     }
 
-    public int experience(double xFisher) {
+public int experience(double xFisher) {
 
         var xRarity = (50 / (this.species().rarity() + 9));//expected values from 1 to 200
         var xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;

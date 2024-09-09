@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
@@ -246,6 +247,24 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         LeaderboardTracker tracker = LeaderboardTracker.of(holder.getScoreboard());
         tracker.record(holder, fish);
         tracker.record(holder, this, tracker.highestLevel);
+
+        this.sharePassiveExp(fish);
+    }
+
+    public void sharePassiveExp(SpecimenData fish) {
+        Box aoe = new Box(this.holder().getBlockPos());
+        aoe.expand(4);
+        List<Entity> iterableEntities = this.holder().getEntityWorld().getOtherEntities(null, aoe);
+        iterableEntities.add(this.holder);
+        iterableEntities.stream()
+                .filter(o -> o instanceof ServerPlayerEntity)
+                .map(o -> FishingCard.of((PlayerEntity) o))
+                .forEach(o -> {
+                    float passiveRatio = o.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN);
+                    if (passiveRatio > 0) {
+                        o.grantExperience(fish.experience(passiveRatio));
+                    }
+                });
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
