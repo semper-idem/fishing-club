@@ -160,7 +160,7 @@ public class TradeSecrets {
                 .build();
         EXPERIENCE_BOOST = TradeSecret.builder()
                 .name("experience_boost")
-                .levelValues(1, 2, 4, 8)
+                .levelValues(0, 1, 4, 9)
                 .active(FCStatusEffects.EXP_BUFF, 24000, 6000)
                 .costPerLevel(1,2,3,4)
                 .parent(SLOWER_FISH)

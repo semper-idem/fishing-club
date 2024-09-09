@@ -9,14 +9,14 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.status_effects.IncreaseFishingExpStatusEffect;
 
 import java.util.List;
 
 public class StatusEffectHelper {
     private static final float QUALITY_BUFF_SUCCESS_CHANCE = 0.25f;
-    private static final float EXP_MULTIPLIER_PER_AMPLIFIER = 0.1f;
     private static final int FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER = 4;
-    private static final int SPREAD_EFFECT_RANGE = 3;
+    private static final int SPREAD_EFFECT_RANGE = 4;
     private static final int PROLONG_EFFECT_LENGTH = 200;
     private static final int ONE_TIME_BUFF_LENGTH = 2400;
 
@@ -57,16 +57,19 @@ public class StatusEffectHelper {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
         if ((xpBuffInstance = this.trackedFor.holder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
-            multiplier += EXP_MULTIPLIER_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
+            multiplier += IncreaseFishingExpStatusEffect.BONUS_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
     }
 
     private boolean shouldSpreadQualityBuff(ProgressionManager progressionManager, SpecimenData fish) {
-        return
-                fish.quality() >= FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER &&
-                        progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION) &&
-                        !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
+        if (fish.quality() < FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER) {
+            return false;
+        }
+        if (!progressionManager.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
+            return false;
+        }
+        return !this.trackedFor.holder().hasStatusEffect(FCStatusEffects.ONE_TIME_QUALITY_BUFF);
     }
 
     public int spreadStatusEffect(ProgressionManager progressionManager, SpecimenData fish) {

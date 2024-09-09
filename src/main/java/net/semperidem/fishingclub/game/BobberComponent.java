@@ -1,14 +1,15 @@
 package net.semperidem.fishingclub.game;
 
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.status_effects.IncreaseBobberSizeStatusEffect;
 
 import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOBBER_SIZE_BOAT;
 import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {
     private static final float BASE_LENGTH = 0.25f;
-    private static final float BUFF_BONUS = 0.1f;
 
     private final float length;
     private final float baseResistance;
@@ -40,8 +41,9 @@ public class BobberComponent {
 
         lengthMultiplier +=  this.parent.fishingCard.tradeSecretValue(BOBBER_SIZE_BOAT);
 
-        if (parent.player.hasStatusEffect(BOBBER_BUFF)) {
-            lengthMultiplier += BUFF_BONUS;
+        StatusEffectInstance sei = this.parent.player.getStatusEffect(BOBBER_BUFF);
+        if (sei != null){
+            lengthMultiplier += IncreaseBobberSizeStatusEffect.SIZE_INCREMENT * (sei.getAmplifier() + 1);
         }
 
         int levelDifference = this.parent.fishingCard.getLevel() - this.parent.hookedFish.level();
