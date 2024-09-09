@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -13,7 +12,6 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,15 +85,17 @@ public class HistoryManager extends DataManager {
 
     public void fishCaught(SpecimenData fish) {
         recordFishCaught(fish);
-        firstFishCaught();
-        sync();
+        firstCatchOfTheDay();
+        this.sync();
     }
 
-    private void firstFishCaught() {
+    private void firstCatchOfTheDay() {
         if (!isFirstCatchOfTheDay()) {
             return;
         }
-        firstCatchOfTheDay = getCurrentTime();
+        this.firstCatchOfTheDay = getCurrentTime();
+        this.trackedFor.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE, null);
+        this.trackedFor.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_QUALITY, null);
     }
 
     public ItemStack getLastUsedBait() {
@@ -107,6 +107,9 @@ public class HistoryManager extends DataManager {
     }
 
     public boolean isFirstCatchInChunk(IHookEntity caughtWith) {
+        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.CHANGE_OF_SCENERY)) {
+            return false;
+        }
         if (!(caughtWith instanceof Entity caughtWithEntity)) {
             return false;
         }
@@ -117,19 +120,8 @@ public class HistoryManager extends DataManager {
         }
 
         usedChunks.add(Chunk.create(chunkPos));
-        sync();//checkChunk writes
-        trackedFor.useTradeSecret();
-        if (trackedFor.knowsTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE)) {
-            trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.FREQUENCY_BUFF,1200));
-        }
-        if (trackedFor.knowsTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_QUALITY)) {
-            trackedFor.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.QUALITY_BUFF,1200));
-        }
+        this.sync();//checkChunk writes
         return true;
-    }
-
-    public int getDaysSinceLastCatch() {
-        return (int) Math.floor((lastCatchTime - getCurrentTime()) / (1f * DAY_LENGTH));
     }
 
     public int minQualityIncrement(IHookEntity caughtWith, ProgressionManager progressionManager) {

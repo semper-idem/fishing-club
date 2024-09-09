@@ -59,8 +59,8 @@ public class FishingCardScreenHandler extends ScreenHandler {
         instantSellSlot = new InstantSellSlot(
                 fishingCard, 4, 341, 226,
                 this,
-                fishingCard.knowsTradeSecret(TradeSecrets.INSTANT_FISH_CREDIT),
-                FishUtil.DEFAULT_FISH_ITEM);
+                fishingCard.knowsTradeSecret(TradeSecrets.INSTANT_FISH_CREDIT)
+                );
         addSlot(instantSellSlot);
     }
 

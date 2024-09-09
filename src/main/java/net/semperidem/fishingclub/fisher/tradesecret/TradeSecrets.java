@@ -117,14 +117,14 @@ public class TradeSecrets {
                 .build();
         FIRST_CATCH_BUFF_QUALITY = TradeSecret.builder()
                 .name("quality_increase_first_catch")
-                .active(FCStatusEffects.QUALITY_BUFF, 0, 12000)
+                .active(FCStatusEffects.QUALITY_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2f)
                 .costPerLevel(2,1,1,1,1)
                 .parent(FIRST_CATCH)
                 .build();
         FIRST_CATCH_BUFF_CATCH_RATE = TradeSecret.builder()
                 .name("frequent_catch_first_catch")
-                .active(FCStatusEffects.FREQUENCY_BUFF, 0, 12000)
+                .active(FCStatusEffects.FREQUENCY_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2)
                 .costPerLevel(2, 1, 1, 1, 1)
                 .parent(FIRST_CATCH_BUFF_QUALITY)

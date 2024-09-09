@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -25,6 +26,7 @@ import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
@@ -224,6 +226,7 @@ public class Species<T extends WaterCreatureEntity> {
         public static Species<TropicalFishEntity> TROPICAL_FISH;
         public static Species<?> DEFAULT;
         static HashMap<String, Species<?>> SPECIES_BY_NAME = new HashMap<>();
+        private static HashSet<Item> SELLABLE_ITEMS = new HashSet<>();
 
         public static void registerClient() {
             BUTTERFISH = SpeciesBuilder.create(BUTTERFISH)
@@ -235,6 +238,10 @@ public class Species<T extends WaterCreatureEntity> {
 
         public static <T extends WaterCreatureEntity> Iterator<Species<?>> iterator() {
             return SPECIES_BY_NAME.values().iterator();
+        }
+
+        public static boolean isSellable(ItemStack itemStack) {
+            return SELLABLE_ITEMS.contains(itemStack.getItem());
         }
 
         public static Collection<Species<?>> values() {
@@ -305,6 +312,7 @@ public class Species<T extends WaterCreatureEntity> {
 
         public static <T extends WaterCreatureEntity> void add(Species<T> species) {
             SPECIES_BY_NAME.put(species.name, species);
+            SELLABLE_ITEMS.add(species.item);
         }
 
         public static Species<?> fromName(String name) {
