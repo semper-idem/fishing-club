@@ -5,13 +5,16 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.util.Utils;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,6 +174,13 @@ public class TradeSecret {
             if (this.root.active == null) {
                 return false;
             }
+            ItemStack heldItem = player.getMainHandStack();
+
+            if (heldItem.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).quality() < 4) {
+                return false;
+            }
+
+            heldItem.decrement(1);
             int nextCooldown = 100;
             if (this.root.active.apply(player, entity)) {
                 nextCooldown = (int) this.root.cooldown(this.level);

@@ -17,6 +17,7 @@ import java.util.Optional;
 public class TradeSecrets {
     static final HashMap<String, TradeSecret> NAME_TO_SKILL = new HashMap<>();
     public static TradeSecret BOBBER_THROW_CHARGE;
+    public static TradeSecret FISH_WHISPERER;
     public static TradeSecret FISH_QUANTITY;
     public static TradeSecret BOBBER_SIZE_BOAT;//todo add open water check on all boat perks
     public static TradeSecret FISH_QUANTITY_BOAT;
@@ -41,12 +42,15 @@ public class TradeSecrets {
     public static TradeSecret FISHERMAN_LINK;
     public static TradeSecret FISHERMAN_SUMMON;
     public static TradeSecret MAGIC_ROD_SUMMON;
-    public static TradeSecret FREE_SHOP_SUMMON;
 
     public static void register() {
         BOBBER_THROW_CHARGE = TradeSecret.builder()
                 .name("bobber_throw_charge")
                 .costPerLevel(2, 1)
+                .build();
+
+        FISH_WHISPERER = TradeSecret.builder()
+                .name("fish_whisperer")
                 .build();
 
         FISH_QUANTITY = TradeSecret.builder()
@@ -226,24 +230,6 @@ public class TradeSecrets {
                         72000
                 )
                 .parent(FISHERMAN_LINK)
-                .build();
-        FREE_SHOP_SUMMON = TradeSecret.builder()
-                .name("free_shop_summon")
-                .costPerLevel(5)
-                .active(
-                        (source, target) -> {
-                            if (!(target instanceof FishEntity)) {
-                                return false;
-                            }
-                            if (!target.isSubmergedInWater()) {
-                                return false;
-                            }
-                            FishermanEntity.summonDerek(target.getPos(), source.getServerWorld(), ItemStack.EMPTY, source.getUuid());
-                            return true;
-                            },
-                        72000
-                )
-                .parent(FISHERMAN_SUMMON)
                 .build();
     }
 

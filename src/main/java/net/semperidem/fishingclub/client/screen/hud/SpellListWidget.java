@@ -2,10 +2,13 @@ package net.semperidem.fishingclub.client.screen.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderTickCounter;
 import net.semperidem.fishingclub.client.screen.DataBuffer;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
+import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCKeybindings;
 
 import java.awt.*;
@@ -34,6 +37,14 @@ public class SpellListWidget implements DataBuffer {
         }
         this.refresh();
         if (usableTradeSecrets.isEmpty()) {
+            return;
+        }
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        SpecimenData heldSpecimen = player.getMainHandStack().getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT);
+        if (heldSpecimen.quality() < 4) {
             return;
         }
         selectedInstance = usableTradeSecrets.get(selectedSpellIndex);

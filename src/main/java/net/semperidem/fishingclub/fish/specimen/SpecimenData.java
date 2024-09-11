@@ -20,6 +20,8 @@ import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.util.MathUtil;
@@ -90,16 +92,21 @@ public record SpecimenData(
     }
     public static SpecimenData init(IHookEntity caughtWith) {
 
-        int luck;
+        int luck = 0;
+
+
         Random r = caughtWith.getRandom();
+        if (caughtWith.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+            luck++;
+        }
         if (caughtWith.getFishingCard().holder() instanceof PlayerEntity holder) {
             luck = (int) holder.getLuck();
-        } else {
-            luck = 0;
+
         }
 
         var isAlbino = Math.random() < (0.005f + luck * 0.001) * caughtWith.getWaitTime() / 1200;
-        List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > luck * 100).toList();
+        int finalLuck = luck;
+        List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > finalLuck * 100).toList();
         Species<?> species = availableSpecies.get(r.nextInt(availableSpecies.size()));
         return init(caughtWith,species, isAlbino ? -1 : 0);
     }
