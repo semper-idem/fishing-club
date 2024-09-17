@@ -58,9 +58,9 @@ public class PerkButtonWidget extends ButtonWidget {
     }
 
     private void renderLink(DrawContext context){
-        if (tradeSecret.getParent() == null) {
-            return;
-        }
+       // if (tradeSecret.getRequiredSecrets() == null) {
+         //   return;
+        //}
         context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.knowsTradeSecret(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
     }
 

@@ -6,7 +6,6 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
@@ -76,7 +75,7 @@ public class ProgressionManager extends DataManager {
             return;
         }
         TradeSecret tradeSecret = maybeTradeSecret.get();
-        if (!hasRequiredPerk(tradeSecret)) {
+        if (!hasRequiredSecrets(tradeSecret)) {
             return;
         }
         TradeSecret.Instance instance = this.knownTradeSecrets.computeIfAbsent(tradeSecretName, tsn -> tradeSecret.instance());
@@ -90,15 +89,15 @@ public class ProgressionManager extends DataManager {
     }
 
 
-    public boolean hasRequiredPerk(TradeSecret tradeSecret) {
-        return tradeSecret.getParent() == null;
+    public boolean hasRequiredSecrets(TradeSecret tradeSecret) {
+        return tradeSecret.getRequiredSecrets().stream().allMatch(o -> this.knowsTradeSecret(tradeSecret));
     }
 
-    public boolean canUnlockPerk(TradeSecret tradeSecret) {
+    public boolean canLearnSecret(TradeSecret tradeSecret) {
         if (!hasAdmirationPoints()) {
             return false;
         }
-        if (!this.hasRequiredPerk(tradeSecret)) {
+        if (!this.hasRequiredSecrets(tradeSecret)) {
             return false;
         }
         return !this.knownTradeSecrets.containsKey(tradeSecret.name());
@@ -106,7 +105,7 @@ public class ProgressionManager extends DataManager {
 
     public void addPerkPoints(int amount) {
         this.admirationPoints += amount;
-        sync();
+        this.sync();
     }
 
     public int getAdmirationPoints() {

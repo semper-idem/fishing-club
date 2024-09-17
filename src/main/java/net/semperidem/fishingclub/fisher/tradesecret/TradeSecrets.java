@@ -1,10 +1,8 @@
 package net.semperidem.fishingclub.fisher.tradesecret;
 
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCComponents;
@@ -66,20 +64,20 @@ public class TradeSecrets {
         BOBBER_SIZE_BOAT = TradeSecret.builder()
                 .name("bobber_size_boat")
                 .levelValues(0.05f, 0.1f, 0.2f)
-                .parent(LINE_HEALTH_BOAT)
+                .require(LINE_HEALTH_BOAT)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         FISH_QUANTITY_BOAT = TradeSecret.builder()
                 .name("fish_quantity_boat")
                 .levelValues(0.05f, 0.1f, 0.2f)
-                .parent(BOBBER_SIZE_BOAT)
+                .require(BOBBER_SIZE_BOAT)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         TREASURE_CHANCE_BOAT = TradeSecret.builder()
                 .name("treasure_chance_boat")
                 .levelValues(0.15f, 0.25f, 0.45f, 0.65f ,1f)
                 .costPerLevel(2, 2 ,2, 2, 3)
-                .parent(FISH_QUANTITY_BOAT)
+                .require(FISH_QUANTITY_BOAT)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
 
@@ -93,13 +91,14 @@ public class TradeSecrets {
                 .name("fish_quality_rain")
                 .levelValues(0.25f, 0.5f, 1f)
                 .costPerLevel(1,1,1)
-                .parent(CATCH_RATE_RAIN)
+                .require(CATCH_RATE_RAIN)
                 .conditional(TradeSecret.REQUIRES_RAIN)
                 .build();
         SUMMON_RAIN = TradeSecret.builder().name("rain_summon")
                 .levelCooldown(1, 0.875f, 0.75f, 0.675f, 0.5f)
                 .costPerLevel(4, 1, 1, 1, 1)
-                .parent(FISH_QUALITY_RAIN)
+                .require(FISH_QUALITY_RAIN)
+                .require(FISH_WHISPERER)
                 .active(
                         (source, target) -> {
                             source.getServerWorld().setWeather(
@@ -121,14 +120,14 @@ public class TradeSecrets {
                 .active(FCStatusEffects.QUALITY_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2f)
                 .costPerLevel(2,1,1,1,1)
-                .parent(FIRST_CATCH)
+                .require(FIRST_CATCH)
                 .build();
         FIRST_CATCH_BUFF_CATCH_RATE = TradeSecret.builder()
                 .name("frequent_catch_first_catch")
                 .active(FCStatusEffects.FREQUENCY_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2)
                 .costPerLevel(2, 1, 1, 1, 1)
-                .parent(FIRST_CATCH_BUFF_QUALITY)
+                .require(FIRST_CATCH_BUFF_QUALITY)
                 .build();
 
         CHANGE_OF_SCENERY = TradeSecret.builder()
@@ -139,6 +138,7 @@ public class TradeSecrets {
         INSTANT_FISH_CREDIT = TradeSecret.builder()
                 .name("instant_fish_credit")
                 .levelValues(0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1)
+                .require(FISH_WHISPERER)
                 .costPerLevel(1, 2, 3, 4, 5, 6)
                 .build();
 
@@ -151,26 +151,27 @@ public class TradeSecrets {
                 .name("fishing_school")
                 .levelDuration(1, 1.5f, 2)
                 .active(FCStatusEffects.BOBBER_BUFF, 24000, 6000)
+                .require(FISH_WHISPERER)
                 .build();
         SLOWER_FISH = TradeSecret.builder()
                 .name("slower_fish")
                 .levelValues(1, 2, 4)
                 .active(FCStatusEffects.SLOW_FISH_BUFF, 24000, 6000)
                 .costPerLevel(1, 2, 4)
-                .parent(FISHING_SCHOOL)
+                .require(FISHING_SCHOOL)
                 .build();
         EXPERIENCE_BOOST = TradeSecret.builder()
                 .name("experience_boost")
                 .levelValues(0, 1, 4, 9)
                 .active(FCStatusEffects.EXP_BUFF, 24000, 6000)
                 .costPerLevel(1,2,3,4)
-                .parent(SLOWER_FISH)
+                .require(SLOWER_FISH)
                 .build();
         LUCKY_FISHING = TradeSecret.builder()
                 .name("lucky_fishing")
                 .levelValues(1, 2, 3)
                 .active(StatusEffects.LUCK, 24000, 6000)
-                .parent(EXPERIENCE_BOOST)
+                .require(EXPERIENCE_BOOST)
                 .build();
 
         WATCH_AND_LEARN = TradeSecret.builder()
@@ -181,7 +182,7 @@ public class TradeSecrets {
                 .name("passive_fishing_xp_buff")
                 .levelValues(0, 1, 4, 9)//spread exp buff with each level up to skill value
                 .costPerLevel(1, 2, 3, 4)
-                .parent(WATCH_AND_LEARN)
+                .require(WATCH_AND_LEARN)
                 .build();
 
         MAGIC_ROD_SUMMON = TradeSecret.builder()
@@ -204,6 +205,7 @@ public class TradeSecrets {
         FISHERMAN_LINK = TradeSecret.builder()
                 .name("fisherman_link")
                 .costPerLevel(1, 3, 9)
+                .require(FISH_WHISPERER)
                 .active(
                         (source, target) -> {
                             FishingCard.of(source).linkTarget(target);
@@ -216,7 +218,7 @@ public class TradeSecrets {
                 .name("quality_celebration")
                 .levelDuration(1, 1.5f, 2)
                 .active(FCStatusEffects.QUALITY_BUFF, 100, 1200)
-                .parent(FISHERMAN_LINK)
+                .require(FISHERMAN_LINK)
                 .build();
         FISHERMAN_SUMMON = TradeSecret.builder()
                 .name("fisherman_summon")
@@ -229,7 +231,7 @@ public class TradeSecrets {
                             },
                         72000
                 )
-                .parent(FISHERMAN_LINK)
+                .require(FISHERMAN_LINK)
                 .build();
     }
 

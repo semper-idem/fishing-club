@@ -10,14 +10,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
-import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;
@@ -140,7 +138,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public boolean hasRequiredPerk(TradeSecret perk){
-        return progressionManager.hasRequiredPerk(perk);
+        return progressionManager.hasRequiredSecrets(perk);
     }
 
     public void setLevel(int level) {
@@ -271,7 +269,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public boolean canUnlockPerk(TradeSecret perk){
-        return progressionManager.canUnlockPerk(perk);
+        return progressionManager.canLearnSecret(perk);
     }
 
     public void linkTarget(Entity target){

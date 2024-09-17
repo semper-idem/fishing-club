@@ -30,7 +30,7 @@ public class TradeSecret {
     Text label;
     Text shortDescription;
     List<Text> longDescription;
-    TradeSecret parent;
+    List<TradeSecret> requiredSecrets;
     List<TradeSecret> children = new ArrayList<>();
     Identifier texture;
     int maxLevel = 1;
@@ -55,8 +55,8 @@ public class TradeSecret {
         return this.texture;
     }
 
-    public TradeSecret getParent() {
-        return parent;
+    public List<TradeSecret> getRequiredSecrets() {
+        return requiredSecrets;
     }
 
     public Text getLabel() {
@@ -177,6 +177,7 @@ public class TradeSecret {
             ItemStack heldItem = player.getMainHandStack();
 
             if (heldItem.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).quality() < 4) {
+                player.sendMessage(Text.of("Sacrifice must be made, high quality fish is required"));
                 return false;
             }
 
@@ -217,7 +218,7 @@ public class TradeSecret {
 
     static class Builder {
         private String name;
-        private TradeSecret parent;
+        private List<TradeSecret> requirements = new ArrayList<>();
         private float[] levelValues;
         private int[] costPerLevel;
         private LevelChanges levelAffects = LevelChanges.VALUE;
@@ -240,9 +241,9 @@ public class TradeSecret {
             tradeSecret.levelAffects = this.levelAffects;
             tradeSecret.costPerLevel = this.costPerLevel;
             tradeSecret.maxLevel = maxLevel();
-            if (this.parent != null) {
-                this.parent.children.add(tradeSecret);
-                tradeSecret.parent = this.parent;
+            if (this.requirements != null) {
+                this.requirements.forEach(parent -> parent.children.add(tradeSecret));
+                tradeSecret.requiredSecrets = this.requirements;
             }
             tradeSecret.active = this.active;
             tradeSecret.effect = this.effect;
@@ -319,8 +320,8 @@ public class TradeSecret {
             return this;
         }
 
-        Builder parent(TradeSecret parent) {
-            this.parent = parent;
+        Builder require(TradeSecret requiredSecret) {
+            this.requirements.add(requiredSecret);
             return this;
         }
 

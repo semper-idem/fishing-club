@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FCComponents;
@@ -122,6 +121,9 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
             return 1;
         }
         int luck = (int) fishingCard.holder().getLuck();
+        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+            luck++;
+        }
         while (Math.random() < 0.02f * luck) {
             rewardMultiplier++;
         }
@@ -242,6 +244,9 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         if (hookEntity.getFishingCard().holder() instanceof PlayerEntity playerEntity) {
             luck = (playerEntity.getBlockY() + 128) / 384f;
             luck *= (1 + playerEntity.getLuck());
+            if (hookEntity.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+                luck++;
+            }
         }
 
         if (Math.random() < 0.05 / luck) {
