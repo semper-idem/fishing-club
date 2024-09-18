@@ -34,7 +34,6 @@ import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
-    public static final Item DEFAULT_FISH_ITEM = FCItems.FISH;
 
     public static ItemStack getStackFromFish(SpecimenData fish){
         return getStackFromFish(fish, FishingCard.DEFAULT).getFirst();

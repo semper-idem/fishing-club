@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.entity.player.PlayerEntity;
-import net.semperidem.fishingclub.client.screen.hud.SpellListWidget;
+import net.semperidem.fishingclub.client.screen.hud.TradeSecretCastScreen;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.network.payload.LinePayload;
 import net.semperidem.fishingclub.registry.FCKeybindings;
@@ -25,11 +25,6 @@ public class MouseMixin {
     private void onScroll(long window, double horizontal, double vertical, CallbackInfo ci){
         PlayerEntity player = this.client.player;
         if (player == null) {
-            return;
-        }
-        if (FCKeybindings.SPELL_SELECT.isPressed()) {
-            SpellListWidget.scroll((int) vertical);
-            ci.cancel();
             return;
         }
         boolean isFishing = player.fishHook instanceof HookEntity;

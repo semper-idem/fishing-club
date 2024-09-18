@@ -32,7 +32,6 @@ public class FCItems {
     public static Item ILLEGAL_GOODS;
     public static Item GOLD_FISH;
     public static Item DEBUG;
-    public static Item FISH;
     public static Item TACKLE_BOX;
     public static Item FISH_DISPLAY_BAMBOO;
     public static Item YELLOW_FISH_TUNE;

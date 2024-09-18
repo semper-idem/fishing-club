@@ -42,7 +42,6 @@
     "client.renderer.SalmonEntityRendererMixin",
     "client.renderer.TropicalFishEntityRendererMixin",
     "client.ui.DebugHudMixin",
-    "client.ui.InGameHudMixin",
     "client.ui.InventoryScreenMixin"
   ],
   "server": [

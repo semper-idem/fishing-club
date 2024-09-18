@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
+import net.semperidem.fishingclub.item.FishItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
 import org.spongepowered.asm.mixin.Final;
@@ -143,7 +144,7 @@ public abstract class HeldItemRendererMixin {
             cancellable = true
     )
     private static void getHandRenderType(ClientPlayerEntity player, CallbackInfoReturnable<HeldItemRenderer.HandRenderType> cir) {
-        if (player.getMainHandStack().isOf(FCItems.FISH)) {
+        if (player.getMainHandStack().getItem() instanceof FishItem) {
             cir.setReturnValue(HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS);
         }
     }
