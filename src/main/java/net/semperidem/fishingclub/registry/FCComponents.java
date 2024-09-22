@@ -20,8 +20,6 @@ public class FCComponents {
     public static ComponentType<Integer> LINE_LENGTH;
     public static ComponentType<Integer> EXPIRATION_TIME;
     public static ComponentType<Float> CAST_POWER;
-    public static ComponentType<Boolean> BROKEN;
-    public static ComponentType<Integer> PART_QUALITY;
     public static ComponentType<Integer> TIER;
     public static ComponentType<SpecimenData> SPECIMEN;
     public static ComponentType<Long> CREATION_TICK;
@@ -39,8 +37,6 @@ public class FCComponents {
                                 .packetCodec(RodConfiguration.PACKET_CODEC)
                                 .cache()
                                 .build());
-
-
     }
 
     public static void register() {
@@ -71,24 +67,6 @@ public class FCComponents {
                         ComponentType.<Float>builder()
                                 .codec(Codecs.POSITIVE_FLOAT)
                                 .packetCodec(PacketCodecs.FLOAT)
-                                .build());
-
-        BROKEN =
-                Registry.register(
-                        Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("part_broken"),
-                        ComponentType.<Boolean>builder()
-                                .codec(Codec.BOOL)
-                                .packetCodec(PacketCodecs.BOOL)
-                                .build());
-
-        PART_QUALITY =
-                Registry.register(
-                        Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("part_quality"),
-                        ComponentType.<Integer>builder()
-                                .codec(Codecs.NONNEGATIVE_INT)
-                                .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
 
         TIER =

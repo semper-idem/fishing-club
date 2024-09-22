@@ -33,11 +33,6 @@ public class HookPartItem extends PartItem {
     public HookPartItem(Settings settings) {
         super(settings);
         this.type = RodConfiguration.PartType.HOOK;
-        this.setDamageMultiplier(DamageSource.CAST, 0);
-        this.setDamageMultiplier(DamageSource.BITE, 1);
-        this.setDamageMultiplier(DamageSource.REEL_FISH, 2);
-        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
-        this.setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
     public HookPartItem weightClass(int weightClass) {

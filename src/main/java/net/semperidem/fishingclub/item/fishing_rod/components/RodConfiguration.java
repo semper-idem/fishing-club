@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -154,23 +155,13 @@ public record RodConfiguration(
     }
 
 
-    public void damage(int amount, PartItem.DamageSource damageSource, PlayerEntity player, ItemStack fishingRod) {
-        for (ItemStack part : this.attributes().parts) {
-            damagePart(amount, damageSource, part, player, fishingRod);
-        }
-    }
-
-
-    private void damagePart(int amount, PartItem.DamageSource damageSource, ItemStack partStack, PlayerEntity player, ItemStack fishingRod) {
-        if (!(partStack.getItem() instanceof PartItem partItem)) {
+    public void damage(int amount, PlayerEntity player, ItemStack fishingRod) {
+        if (this.bait.isEmpty()) {
             return;
         }
-        if (partStack.getOrDefault(FCComponents.BROKEN, false)) {
-            return;
-        }
-        partItem.damage(partStack, amount, damageSource, player, fishingRod);
-        partStack.getDamage();
-        partStack.getMaxDamage();
+        ItemStack baitStack = this.bait.get();
+        baitStack.damage(amount, player, EquipmentSlot.MAINHAND);
+        fishingRod.set(FCComponents.ROD_CONFIGURATION, this.equipBait(baitStack));
     }
 
     public static class AttributeComposite {
@@ -237,10 +228,6 @@ public record RodConfiguration(
 
         boolean validateAndApply(ItemStack part) {
             if (!(part.getItem() instanceof PartItem partItem)) {
-                return false;
-            }
-
-            if (part.getOrDefault(FCComponents.BROKEN, false)) {
                 return false;
             }
 

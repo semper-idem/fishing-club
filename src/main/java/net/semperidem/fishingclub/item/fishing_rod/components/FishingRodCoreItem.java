@@ -66,10 +66,6 @@ public class FishingRodCoreItem extends FishingRodItem {
             this.reelRod(world, user, fishingRod);
             return TypedActionResult.success(fishingRod, world.isClient());
         }
-        if (fishingRod.getOrDefault(FCComponents.BROKEN, false)) {
-            user.sendMessage(Text.of("Broken."), true);
-            return TypedActionResult.fail(fishingRod);
-        }
         if (hasNoFishingRod(user)) {
             return TypedActionResult.fail(fishingRod);
         }

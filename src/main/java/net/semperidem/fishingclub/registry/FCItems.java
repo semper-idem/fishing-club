@@ -49,44 +49,13 @@ public class FCItems {
     public static ItemGroup ITEM_GROUP;
 
     public static FishingRodCoreItem CORE_BAMBOO;
-    public static FishingRodCoreItem CORE_BAMBOO_WOOD;
-    public static FishingRodCoreItem CORE_OAK_WOOD;
-    public static FishingRodCoreItem CORE_BIRCH_WOOD;
-    public static FishingRodCoreItem CORE_SPRUCE_WOOD;
-    public static FishingRodCoreItem CORE_ACACIA_WOOD;
-    public static FishingRodCoreItem CORE_JUNGLE_WOOD;
-    public static FishingRodCoreItem CORE_CHERRY_WOOD;
-    public static FishingRodCoreItem CORE_DARK_OAK_WOOD;
-    public static FishingRodCoreItem CORE_MANGROVE_WOOD;
-    public static FishingRodCoreItem CORE_CRIMSON_WOOD;
-    public static FishingRodCoreItem CORE_WARPED_WOOD;
+    public static FishingRodCoreItem CORE_WOOD;
 
     public static FishingRodCoreItem CORE_BONE;
-    public static FishingRodCoreItem CORE_WITHER_BONE;
     public static FishingRodCoreItem CORE_IRON;
-    public static FishingRodCoreItem CORE_BAMBOO_IRON;
-    public static FishingRodCoreItem CORE_OAK_IRON;
-    public static FishingRodCoreItem CORE_BIRCH_IRON;
-    public static FishingRodCoreItem CORE_SPRUCE_IRON;
-    public static FishingRodCoreItem CORE_ACACIA_IRON;
-    public static FishingRodCoreItem CORE_JUNGLE_IRON;
-    public static FishingRodCoreItem CORE_CHERRY_IRON;
-    public static FishingRodCoreItem CORE_DARK_OAK_IRON;
-    public static FishingRodCoreItem CORE_MANGROVE_IRON;
-    public static FishingRodCoreItem CORE_CRIMSON_IRON;
-    public static FishingRodCoreItem CORE_WARPED_IRON;
-    public static FishingRodCoreItem CORE_COPPER;
-    public static FishingRodCoreItem CORE_BAMBOO_COPPER;
-    public static FishingRodCoreItem CORE_OAK_COPPER;
-    public static FishingRodCoreItem CORE_BIRCH_COPPER;
-    public static FishingRodCoreItem CORE_SPRUCE_COPPER;
-    public static FishingRodCoreItem CORE_ACACIA_COPPER;
-    public static FishingRodCoreItem CORE_JUNGLE_COPPER;
-    public static FishingRodCoreItem CORE_CHERRY_COPPER;
-    public static FishingRodCoreItem CORE_DARK_OAK_COPPER;
-    public static FishingRodCoreItem CORE_MANGROVE_COPPER;
-    public static FishingRodCoreItem CORE_CRIMSON_COPPER;
-    public static FishingRodCoreItem CORE_WARPED_COPPER;
+    public static FishingRodCoreItem CORE_BLAZE;
+    public static FishingRodCoreItem CORE_BREEZE;
+
     public static FishingRodCoreItem CORE_PRISMARINE_BLAZE;
     public static FishingRodCoreItem CORE_NETHERITE;
     public static FishingRodCoreItem CORE_NAUTILUS_BREEZE;
@@ -285,71 +254,8 @@ public class FCItems {
                 .bobberControlCeiling(ItemStat.BASE_T42)
                 .fishControlCeiling(ItemStat.BASE_T42)
         );
-        CORE_BAMBOO_WOOD = registerItem("core_bamboo_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        CORE_WOOD = registerItem("core_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(VANILLA_ROD_DURABILITY).rarity(COMMON))
                 .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T3)
-                .fishControlCeiling(ItemStat.BASE_T4)
-        );
-        CORE_OAK_WOOD = registerItem("core_oak_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(VANILLA_ROD_DURABILITY).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_BIRCH_WOOD = registerItem("core_birch_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(640).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_SPRUCE_WOOD = registerItem("core_spruce_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(640).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_ACACIA_WOOD = registerItem("core_acacia_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_JUNGLE_WOOD = registerItem("core_jungle_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_CHERRY_WOOD = registerItem("core_cherry_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_DARK_OAK_WOOD = registerItem("core_dark_oak_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(640).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T2)
-                .fishControlCeiling(ItemStat.BASE_T2)
-        );
-        CORE_MANGROVE_WOOD = registerItem("core_mangrove_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T42)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-        );
-        CORE_CRIMSON_WOOD = registerItem("core_crimson_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .maxOperatingTemperature(1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_WARPED_WOOD = registerItem("core_warped_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
-                .weightClass(2)
-                .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T2)
                 .bobberControlCeiling(ItemStat.BASE_T5)
                 .fishControlCeiling(ItemStat.BASE_T5)
@@ -360,182 +266,28 @@ public class FCItems {
                 .castPower(ItemStat.MULTIPLIER_T1)
                 .fishControlCeiling(ItemStat.BASE_T4)
                 .bobberControlCeiling(ItemStat.BASE_T5)
+                .luck(1)
         );
-        CORE_WITHER_BONE = registerItem("core_wither_bone", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+
+        CORE_IRON = registerItem("core_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
+                .weightClass(3)
+                .castPower(ItemStat.MULTIPLIER_T2)
+                .fishControlCeiling(ItemStat.BASE_T4)
+                .bobberControlCeiling(ItemStat.BASE_T5)
+        );
+        CORE_BLAZE = registerItem("core_blaze", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
+                .weightClass(2)
+                .maxOperatingTemperature(1)
+                .castPower(ItemStat.MULTIPLIER_T2)
+                .fishControlCeiling(ItemStat.BASE_T4)
+                .bobberControlCeiling(ItemStat.BASE_T5)
+        );
+        CORE_BREEZE = registerItem("core_breeze", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T2)
                 .fishControlCeiling(ItemStat.BASE_T4)
                 .bobberControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_IRON = registerItem("core_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(COMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_BAMBOO_IRON = registerItem("core_bamboo_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_OAK_IRON = registerItem("core_oak_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .luck(1)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_BIRCH_IRON = registerItem("core_birch_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .luck(1)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_SPRUCE_IRON = registerItem("core_spruce_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .luck(1)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_ACACIA_IRON = registerItem("core_acacia_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_JUNGLE_IRON = registerItem("core_jungle_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_CHERRY_IRON = registerItem("core_cherry_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_DARK_OAK_IRON = registerItem("core_dark_oak_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(4)
-                .minOperatingTemperature(-1)
-                .bobberControlCeiling(ItemStat.BASE_T2)
-                .fishControlCeiling(ItemStat.BASE_T2)
-        );
-        CORE_MANGROVE_IRON = registerItem("core_mangrove_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-                .fishControlCeiling(ItemStat.BASE_T42)
-        );
-        CORE_CRIMSON_IRON = registerItem("core_crimson_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_WARPED_IRON = registerItem("core_warped_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-
-        );
-        CORE_COPPER = registerItem("core_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(COMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_BAMBOO_COPPER = registerItem("core_bamboo_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_OAK_COPPER = registerItem("core_oak_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-                .luck(1)
-        );
-        CORE_BIRCH_COPPER = registerItem("core_birch_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-                .luck(1)
-        );
-        CORE_SPRUCE_COPPER = registerItem("core_spruce_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .luck(1)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_ACACIA_COPPER = registerItem("core_acacia_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_JUNGLE_COPPER = registerItem("core_jungle_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_CHERRY_COPPER = registerItem("core_cherry_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_DARK_OAK_COPPER = registerItem("core_dark_oak_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(4)
-                .bobberControlCeiling(ItemStat.BASE_T4)
-                .fishControlCeiling(ItemStat.BASE_T4));
-        CORE_MANGROVE_COPPER = registerItem("core_mangrove_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(UNCOMMON))
-                .weightClass(3)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-                .fishControlCeiling(ItemStat.BASE_T42)
-        );
-        CORE_CRIMSON_COPPER = registerItem("core_crimson_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .maxOperatingTemperature(1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
-        );
-        CORE_WARPED_COPPER = registerItem("core_warped_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
-                .weightClass(3)
-                .maxOperatingTemperature(1)
-                .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
         );
         CORE_PRISMARINE_BLAZE = registerItem("core_prismarine_blaze", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(RARE))
                 .weightClass(3)
@@ -579,27 +331,27 @@ public class FCItems {
     }
 
     public static void registerReel() {
-        REEL_WOOD = registerItem("reel_wood", new ReelPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        REEL_WOOD = registerItem("reel_wood", new ReelPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .bobberControl(ItemStat.BASE_T1)
                 .fishControl(ItemStat.BASE_T1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        REEL_BONE = registerItem("reel_bone", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        REEL_BONE = registerItem("reel_bone", new ReelPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .bobberControl(ItemStat.BASE_T2)
                 .fishControl(ItemStat.BASE_T2)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        REEL_PRISMARINE = registerItem("reel_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        REEL_PRISMARINE = registerItem("reel_prismarine", new ReelPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .bobberControl(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T3)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        REEL_IRON = registerItem("reel_iron", new ReelPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        REEL_IRON = registerItem("reel_iron", new ReelPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .bobberControl(ItemStat.BASE_T2)
@@ -607,13 +359,13 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        REEL_IRON_PRISMARINE = registerItem("reel_iron_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        REEL_IRON_PRISMARINE = registerItem("reel_iron_prismarine", new ReelPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .bobberControl(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T3)
         );
-        REEL_AMETHYST_PRISMARINE = registerItem("reel_amethyst_prismarine", new ReelPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        REEL_AMETHYST_PRISMARINE = registerItem("reel_amethyst_prismarine", new ReelPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -622,7 +374,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishQuality(1)
         );
-        REEL_NAUTILUS_ECHO = registerItem("reel_nautilus_echo", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
+        REEL_NAUTILUS_ECHO = registerItem("reel_nautilus_echo", new ReelPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -631,7 +383,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T4)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
         );
-        REEL_NAUTILUS_AMETHYST = registerItem("reel_nautilus_amethyst", new ReelPartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
+        REEL_NAUTILUS_AMETHYST = registerItem("reel_nautilus_amethyst", new ReelPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -639,7 +391,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(1)
         );
-        REEL_HEART_AMETHYST = registerItem("reel_heart_amethyst", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        REEL_HEART_AMETHYST = registerItem("reel_heart_amethyst", new ReelPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -648,7 +400,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .fishQuality(3)
         );
-        REEL_HEART_ECHO = registerItem("reel_heart_echo", new ReelPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        REEL_HEART_ECHO = registerItem("reel_heart_echo", new ReelPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -661,45 +413,45 @@ public class FCItems {
     }
 
     public static void registerBobber() {
-        BOBBER_PLANT_SLIME = registerItem("bobber_plant_slime", new BobberPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        BOBBER_PLANT_SLIME = registerItem("bobber_plant_slime", new BobberPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .bobberWidthMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        BOBBER_LEATHER_SLIME = registerItem("bobber_leather_slime", new BobberPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        BOBBER_LEATHER_SLIME = registerItem("bobber_leather_slime", new BobberPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .bobberWidthMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        BOBBER_TURTLE_SLIME = registerItem("bobber_turtle_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        BOBBER_TURTLE_SLIME = registerItem("bobber_turtle_slime", new BobberPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .bobberControl(ItemStat.BASE_T2)
         );
-        BOBBER_ARMADILLO_SLIME = registerItem("bobber_armadillo_slime", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        BOBBER_ARMADILLO_SLIME = registerItem("bobber_armadillo_slime", new BobberPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .bobberWidthMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishControl(ItemStat.BASE_T2)
         );
-        BOBBER_TURTLE_ENDER = registerItem("bobber_turtle_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        BOBBER_TURTLE_ENDER = registerItem("bobber_turtle_ender", new BobberPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
                 .bobberWidthMultiplier(ItemStat.MULTIPLIER_T4)
                 .bobberControl(ItemStat.BASE_T3)
         );
-        BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        BOBBER_ARMADILLO_MAGMA = registerItem("bobber_armadillo_magma", new BobberPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T4)
                 .bobberWidthMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishControl(ItemStat.BASE_T3)
         );
-        BOBBER_AMETHYST_ENDER = registerItem("bobber_amethyst_ender", new BobberPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        BOBBER_AMETHYST_ENDER = registerItem("bobber_amethyst_ender", new BobberPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
@@ -707,14 +459,14 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T2)
                 .fishQuality(2)
         );
-        BOBBER_NAUTILUS = registerItem("bobber_nautilus", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE))
+        BOBBER_NAUTILUS = registerItem("bobber_nautilus", new BobberPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .bobberControl(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T3)
         );
-        BOBBER_TURTLE_ECHO = registerItem("bobber_turtle_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE))
+        BOBBER_TURTLE_ECHO = registerItem("bobber_turtle_echo", new BobberPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -724,7 +476,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T2)
                 .fishQuality(1)
         );
-        BOBBER_ARMADILLO_ECHO = registerItem("bobber_armadillo_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE))
+        BOBBER_ARMADILLO_ECHO = registerItem("bobber_armadillo_echo", new BobberPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -734,14 +486,14 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T4)
                 .fishQuality(1)
         );
-        BOBBER_AMETHYST_ECHO = registerItem("bobber_amethyst_echo", new BobberPartItem(new Item.Settings().maxDamage(640).rarity(RARE))
+        BOBBER_AMETHYST_ECHO = registerItem("bobber_amethyst_echo", new BobberPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .bobberControl(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(1));
-        BOBBER_NAUTILUS_ECHO = registerItem("bobber_nautilus_echo", new BobberPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        BOBBER_NAUTILUS_ECHO = registerItem("bobber_nautilus_echo", new BobberPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -752,7 +504,7 @@ public class FCItems {
                 .bobberControl(ItemStat.BASE_T5)
                 .fishControl(ItemStat.BASE_T5)
                 .fishQuality(2));
-        BOBBER_HEART = registerItem("bobber_heart", new BobberPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        BOBBER_HEART = registerItem("bobber_heart", new BobberPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -767,25 +519,25 @@ public class FCItems {
 
     public static void registerLine() {
 
-        LINE_PLANT = registerItem("line_plant", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        LINE_PLANT = registerItem("line_plant", new LinePartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .maxLineLength(4)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        LINE_WOOL = registerItem("line_wool", new LinePartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .maxLineLength(8)
                 .fishControl(ItemStat.BASE_T2)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        LINE_STRIDER = registerItem("line_strider", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        LINE_STRIDER = registerItem("line_strider", new LinePartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(1)
                 .maxOperatingTemperature(1)
                 .maxLineLength(16)
                 .fishControl(ItemStat.BASE_T3)
         );
-        LINE_PHANTOM = registerItem("line_phantom", new LinePartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        LINE_PHANTOM = registerItem("line_phantom", new LinePartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxLineLength(32)
@@ -793,19 +545,19 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishQuality(1)
         );
-        LINE_EVOKER = registerItem("line_evoker", new LinePartItem(new Item.Settings().maxDamage(1280).rarity(RARE))
+        LINE_EVOKER = registerItem("line_evoker", new LinePartItem(new Item.Settings().rarity(RARE))
                 .weightClass(4)
                 .maxLineLength(64)
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(1)
         );
-        LINE_PIGLIN = registerItem("line_piglin", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
+        LINE_PIGLIN = registerItem("line_piglin", new LinePartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .maxOperatingTemperature(1)
                 .maxLineLength(64)
                 .fishControl(ItemStat.BASE_T3)
         );
-        LINE_HEART = registerItem("line_heart", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
+        LINE_HEART = registerItem("line_heart", new LinePartItem(new Item.Settings().rarity(RARE))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -813,7 +565,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T5)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T5)
         );
-        LINE_HEART_PIGLIN = registerItem("line_heart_piglin", new LinePartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        LINE_HEART_PIGLIN = registerItem("line_heart_piglin", new LinePartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -822,7 +574,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T5)
                 .fishQuality(1)
         );
-        LINE_HEART_EVOKER = registerItem("line_heart_evoker", new LinePartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        LINE_HEART_EVOKER = registerItem("line_heart_evoker", new LinePartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -834,7 +586,7 @@ public class FCItems {
     }
 
     private static void registerHook() {
-        HOOK_FLINT = registerItem("hook_flint", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        HOOK_FLINT = registerItem("hook_flint", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T1)
@@ -842,7 +594,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T2)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
         );
-        HOOK_FLINT_POISON = registerItem("hook_flint_poison", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        HOOK_FLINT_POISON = registerItem("hook_flint_poison", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T1)
@@ -852,7 +604,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_FLINT_SHARP = registerItem("hook_flint_sharp", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        HOOK_FLINT_SHARP = registerItem("hook_flint_sharp", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T1)
@@ -862,7 +614,7 @@ public class FCItems {
                 .damage(2)
                 .biteFailChance(new ItemStat(0.1f, 1))
         );
-        HOOK_FLINT_SERRATED = registerItem("hook_flint_serrated", new HookPartItem(new Item.Settings().maxDamage(320).rarity(COMMON))
+        HOOK_FLINT_SERRATED = registerItem("hook_flint_serrated", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(1)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T1)
@@ -873,7 +625,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .reelDamage(3)
         );
-        HOOK_BONE = registerItem("hook_bone", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        HOOK_BONE = registerItem("hook_bone", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -881,7 +633,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        HOOK_BONE_POISON = registerItem("hook_bone_poison", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        HOOK_BONE_POISON = registerItem("hook_bone_poison", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -891,7 +643,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_BONE_SHARP = registerItem("hook_bone_sharp", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        HOOK_BONE_SHARP = registerItem("hook_bone_sharp", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -901,7 +653,7 @@ public class FCItems {
                 .damage(2)
                 .biteFailChance(ItemStat.MULTIPLIER_T01)
         );
-        HOOK_BONE_SERRATED = registerItem("hook_bone_serrated", new HookPartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        HOOK_BONE_SERRATED = registerItem("hook_bone_serrated", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -912,7 +664,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .reelDamage(3)
         );
-        HOOK_COPPER = registerItem("hook_copper", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER = registerItem("hook_copper", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -921,7 +673,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T1)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
         );
-        HOOK_COPPER_POISON = registerItem("hook_copper_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER_POISON = registerItem("hook_copper_poison", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -932,7 +684,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T8)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_COPPER_SHARP = registerItem("hook_copper_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER_SHARP = registerItem("hook_copper_sharp", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -943,7 +695,7 @@ public class FCItems {
                 .damage(3)
                 .biteFailChance(ItemStat.MULTIPLIER_T0125)
         );
-        HOOK_COPPER_SERRATED = registerItem("hook_copper_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER_SERRATED = registerItem("hook_copper_serrated", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -955,7 +707,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T6)
                 .reelDamage(4)
         );
-        HOOK_COPPER_AUTO = registerItem("hook_copper_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER_AUTO = registerItem("hook_copper_auto", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -965,7 +717,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .autoHookChance(ItemStat.MULTIPLIER_T1)
         );
-        HOOK_COPPER_STICKY = registerItem("hook_copper_sticky", new HookPartItem(new Item.Settings().maxDamage(640).rarity(COMMON))
+        HOOK_COPPER_STICKY = registerItem("hook_copper_sticky", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -975,7 +727,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T1)
                 .sticky(true)
         );
-        HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON = registerItem("hook_iron", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -984,7 +736,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T3)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
         );
-        HOOK_IRON_POISON = registerItem("hook_iron_poison", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON_POISON = registerItem("hook_iron_poison", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -995,7 +747,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T8)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_IRON_SHARP = registerItem("hook_iron_sharp", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON_SHARP = registerItem("hook_iron_sharp", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1006,7 +758,7 @@ public class FCItems {
                 .damage(3)
                 .biteFailChance(ItemStat.MULTIPLIER_T0125)
         );
-        HOOK_IRON_SERRATED = registerItem("hook_iron_serrated", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON_SERRATED = registerItem("hook_iron_serrated", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1018,7 +770,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T6)
                 .reelDamage(4)
         );
-        HOOK_IRON_AUTO = registerItem("hook_iron_auto", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON_AUTO = registerItem("hook_iron_auto", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1028,7 +780,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
                 .autoHookChance(ItemStat.MULTIPLIER_T1)
         );
-        HOOK_IRON_STICKY = registerItem("hook_iron_sticky", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
+        HOOK_IRON_STICKY = registerItem("hook_iron_sticky", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1038,7 +790,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
                 .sticky(true)
         );
-        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD = registerItem("hook_gold", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1047,7 +799,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T2)
                 .fishQuality(1)
         );
-        HOOK_GOLD_POISON = registerItem("hook_gold_poison", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD_POISON = registerItem("hook_gold_poison", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1058,7 +810,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T9)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_GOLD_SHARP = registerItem("hook_gold_sharp", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD_SHARP = registerItem("hook_gold_sharp", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1069,7 +821,7 @@ public class FCItems {
                 .damage(4)
                 .biteFailChance(ItemStat.MULTIPLIER_T015)
         );
-        HOOK_GOLD_SERRATED = registerItem("hook_gold_serrated", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD_SERRATED = registerItem("hook_gold_serrated", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1079,7 +831,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .reelDamage(5)
         );
-        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1089,7 +841,7 @@ public class FCItems {
                 .fishQuality(1)
                 .autoHookChance(ItemStat.MULTIPLIER_T2)
         );
-        HOOK_GOLD_STICKY = registerItem("hook_gold_sticky", new HookPartItem(new Item.Settings().maxDamage(640).rarity(UNCOMMON))
+        HOOK_GOLD_STICKY = registerItem("hook_gold_sticky", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T3)
@@ -1099,7 +851,7 @@ public class FCItems {
                 .fishQuality(1)
                 .sticky(true)
         );
-        HOOK_PRISMARINE = registerItem("hook_prismarine", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE = registerItem("hook_prismarine", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1107,7 +859,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T3)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
         );
-        HOOK_PRISMARINE_POISON = registerItem("hook_prismarine_poison", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE_POISON = registerItem("hook_prismarine_poison", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1117,7 +869,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T9)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
         );
-        HOOK_PRISMARINE_SHARP = registerItem("hook_prismarine_sharp", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE_SHARP = registerItem("hook_prismarine_sharp", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1127,7 +879,7 @@ public class FCItems {
                 .damage(4)
                 .biteFailChance(ItemStat.MULTIPLIER_T015)
         );
-        HOOK_PRISMARINE_SERRATED = registerItem("hook_prismarine_serrated", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE_SERRATED = registerItem("hook_prismarine_serrated", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1137,7 +889,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .reelDamage(5)
         );
-        HOOK_PRISMARINE_AUTO = registerItem("hook_prismarine_auto", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE_AUTO = registerItem("hook_prismarine_auto", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1146,7 +898,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
                 .autoHookChance(ItemStat.MULTIPLIER_T2)
         );
-        HOOK_PRISMARINE_STICKY = registerItem("hook_prismarine_sticky", new HookPartItem(new Item.Settings().maxDamage(1280).rarity(UNCOMMON))
+        HOOK_PRISMARINE_STICKY = registerItem("hook_prismarine_sticky", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .fishRarity(ItemStat.BASE_T2)
@@ -1156,7 +908,7 @@ public class FCItems {
                 .autoHookChance(ItemStat.MULTIPLIER_T2)
                 .sticky(true)
         );
-        HOOK_NAUTILUS = registerItem("hook_nautilus", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(RARE))
+        HOOK_NAUTILUS = registerItem("hook_nautilus", new HookPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1166,7 +918,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T3)
                 .fishQuality(2)
         );
-        HOOK_NAUTILUS_POISON = registerItem("hook_nautilus_poison", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        HOOK_NAUTILUS_POISON = registerItem("hook_nautilus_poison", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1179,7 +931,7 @@ public class FCItems {
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_WITHER)
         );
-        HOOK_NAUTILUS_SHARP = registerItem("hook_nautilus_sharp", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        HOOK_NAUTILUS_SHARP = registerItem("hook_nautilus_sharp", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1191,7 +943,7 @@ public class FCItems {
                 .damage(6)
                 .biteFailChance(ItemStat.MULTIPLIER_T01)
         );
-        HOOK_NAUTILUS_SERRATED = registerItem("hook_nautilus_serrated", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        HOOK_NAUTILUS_SERRATED = registerItem("hook_nautilus_serrated", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1202,7 +954,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T10)
                 .reelDamage(7)
         );
-        HOOK_NAUTILUS_AUTO = registerItem("hook_nautilus_auto", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        HOOK_NAUTILUS_AUTO = registerItem("hook_nautilus_auto", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1213,7 +965,7 @@ public class FCItems {
                 .fishQuality(2)
                 .autoHookChance(ItemStat.MULTIPLIER_T3)
         );
-        HOOK_NAUTILUS_STICKY = registerItem("hook_nautilus_sticky", new HookPartItem(new Item.Settings().maxDamage(2560).rarity(EPIC))
+        HOOK_NAUTILUS_STICKY = registerItem("hook_nautilus_sticky", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1224,7 +976,7 @@ public class FCItems {
                 .fishQuality(2)
                 .sticky(true)
         );
-        HOOK_NETHERITE = registerItem("hook_netherite", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(RARE))
+        HOOK_NETHERITE = registerItem("hook_netherite", new HookPartItem(new Item.Settings().rarity(RARE))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1233,7 +985,7 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T5)
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T5)
         );
-        HOOK_NETHERITE_POISON = registerItem("hook_netherite_poison", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        HOOK_NETHERITE_POISON = registerItem("hook_netherite_poison", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1245,7 +997,7 @@ public class FCItems {
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_POISON)
                 .addOnEntityHitEffects(HookPartItem.ON_HIT_FIRE)
         );
-        HOOK_NETHERITE_SHARP = registerItem("hook_netherite_sharp", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        HOOK_NETHERITE_SHARP = registerItem("hook_netherite_sharp", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1256,7 +1008,7 @@ public class FCItems {
                 .damage(9)
                 .biteFailChance(ItemStat.MULTIPLIER_T02)
         );
-        HOOK_NETHERITE_SERRATED = registerItem("hook_netherite_serrated", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        HOOK_NETHERITE_SERRATED = registerItem("hook_netherite_serrated", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1268,7 +1020,7 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T10)
                 .reelDamage(10)
         );
-        HOOK_NETHERITE_AUTO = registerItem("hook_netherite_auto", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        HOOK_NETHERITE_AUTO = registerItem("hook_netherite_auto", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1278,7 +1030,7 @@ public class FCItems {
                 .fishControlMultiplier(ItemStat.MULTIPLIER_T5)
                 .autoHookChance(ItemStat.MULTIPLIER_T3)
         );
-        HOOK_NETHERITE_STICKY = registerItem("hook_netherite_sticky", new HookPartItem(new Item.Settings().maxDamage(5120).rarity(EPIC))
+        HOOK_NETHERITE_STICKY = registerItem("hook_netherite_sticky", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
@@ -1413,7 +1165,7 @@ public class FCItems {
     }
 
     public static void registerLineEarly() {
-        LINE_SPIDER = FCItems.registerItem("line_spider", new LinePartItem(new Item.Settings().maxDamage(160).rarity(COMMON))
+        LINE_SPIDER = FCItems.registerItem("line_spider", new LinePartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(2)
                 .minOperatingTemperature(0)
                 .maxOperatingTemperature(1)

@@ -365,7 +365,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (tension <= 1 || this.maxEntityMagnitude < this.weightRatio) {
             return;
         }
-        this.configuration.damage(10, PartItem.DamageSource.REEL_ENTITY, this.playerOwner, this.fishingRod);
         this.discard();
     }
 
@@ -495,7 +494,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
         this.waitCountdown = 0;
         this.fishTravelCountdown = 0;
-        this.damageRod(4, PartItem.DamageSource.BITE);
 
         if (tickAutoHookedFish()) {
             return;
@@ -537,7 +535,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
 
-        this.configuration.damage(1, PartItem.DamageSource.BITE, this.playerOwner, this.fishingRod);
+        this.configuration.damage(1, this.playerOwner, this.fishingRod);
     }
 
     private void tickFishTrail(ServerWorld serverWorld) {
@@ -636,11 +634,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         if (this.hasHookEntity()) {
             this.reelEntity();
-            return 0;
+            return 3;
         }
         if (this.hookCountdown > 0) {
             this.reelFish();
-            return 0;
+            return 2;
         }
         if (this.getWorld().getFluidState(getBlockPos()).getHeight() > 0) {
             this.reelWater();
@@ -648,7 +646,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         if (this.isOnGround() || getVelocity().y == 0) {
             this.reelGround();
-            return 0;
+            return 3;
         }
         this.discard();
         return 0;
@@ -678,7 +676,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return;
         }
         VelocityUtil.addVelocity(this.hookedEntity, this.getPullVectorNT().multiply(-1));
-        this.damageRod(2, PartItem.DamageSource.REEL_ENTITY);
         if (!(this.playerOwner instanceof ServerPlayerEntity)) {
             return;
         }
@@ -692,7 +689,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 //        if (reactionBonus > 0) {
 //            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
 //        }
-        this.damageRod(2, PartItem.DamageSource.REEL_FISH);
         if (this.caughtFish == null) {
             this.reelJunk();
             this.discard();
@@ -720,7 +716,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void reelWater() {
-        this.damageRod(2, PartItem.DamageSource.REEL_WATER);
         this.discard();
     }
 
@@ -736,7 +731,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (this.hookedEntity != this.playerOwner) {
             this.pullOwner();
         }
-        this.damageRod(2, PartItem.DamageSource.REEL_GROUND);
         this.discard();
     }
 
@@ -744,9 +738,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         VelocityUtil.addVelocity(this.playerOwner, this.getPullVector().multiply(0.5f));
     }
 
-    private void damageRod(int amount, PartItem.DamageSource damageSource) {
-        this.configuration.damage(amount, damageSource, this.playerOwner, this.fishingRod);
-    }
 
     @Override
     public FishingCard getFishingCard() {

@@ -8,10 +8,6 @@ public class LinePartItem extends PartItem {
     public LinePartItem(Settings settings) {
         super(settings);
         this.type = RodConfiguration.PartType.LINE;
-        this.destructible = true;
-        this.setDamageMultiplier(DamageSource.BITE, 1);
-        this.setDamageMultiplier(DamageSource.REEL_FISH, 2);
-        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 5);
     }
 
     public LinePartItem weightClass(int weightClass) {

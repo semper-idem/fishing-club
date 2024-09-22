@@ -9,9 +9,6 @@ public class ReelPartItem extends PartItem {
     public ReelPartItem(Settings settings) {
         super(settings);
         this.type = RodConfiguration.PartType.REEL;
-        this.setDamageMultiplier(DamageSource.CAST, 0);
-        this.setDamageMultiplier(DamageSource.REEL_FISH, 1);
-        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 3);
     }
 
     public ReelPartItem weightClass(int weightClass) {

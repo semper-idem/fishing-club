@@ -21,12 +21,6 @@ public class BaitPartItem extends PartItem{
     public BaitPartItem(Settings settings) {
         super(settings);
         this.type = RodConfiguration.PartType.BAIT;
-        this.destructible = true;
-        this.setDamageMultiplier(DamageSource.BITE, 1);
-        this.setDamageMultiplier(DamageSource.REEL_FISH, 3);
-        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 1);
-        this.setDamageMultiplier(DamageSource.REEL_WATER, 1.5f);
-        this.setDamageMultiplier(DamageSource.REEL_GROUND, 1);
     }
 
     public BaitPartItem minOperatingTemperature(int minOperatingTemperature) {

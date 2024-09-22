@@ -12,10 +12,6 @@ public class BobberPartItem extends PartItem {
     public BobberPartItem(Settings settings) {
         super(settings);
         this.type = RodConfiguration.PartType.BOBBER;
-        this.setDamageMultiplier(DamageSource.CAST, 0);
-        this.setDamageMultiplier(DamageSource.REEL_ENTITY, 0);
-        this.setDamageMultiplier(DamageSource.REEL_WATER, 1);
-        this.setDamageMultiplier(DamageSource.REEL_GROUND, 2);
     }
 
     public BobberPartItem weightClass(int weightClass) {

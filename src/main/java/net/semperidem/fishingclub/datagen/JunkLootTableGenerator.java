@@ -44,7 +44,7 @@ public record JunkLootTableGenerator(RegistryWrapper.WrapperLookup registries) i
                                 .with(ItemEntry.builder(FCItems.CORE_ACACIA_WOOD))
                                 .with(ItemEntry.builder(FCItems.CORE_BAMBOO_WOOD))
                                 .with(ItemEntry.builder(FCItems.CORE_BIRCH_WOOD))
-                                .with(ItemEntry.builder(FCItems.CORE_OAK_WOOD))
+                                .with(ItemEntry.builder(FCItems.CORE_WOOD))
                                 .with(ItemEntry.builder(FCItems.CORE_DARK_OAK_WOOD))
                                 .with(ItemEntry.builder(FCItems.CORE_SPRUCE_WOOD))
                                 .with(ItemEntry.builder(FCItems.CORE_MANGROVE_WOOD))
