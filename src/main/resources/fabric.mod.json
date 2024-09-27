@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "fishing-club",
+  "id": "fishingclub",
   "version": "0.0.1",
-  "name": "fishing-club",
+  "name": "fishingclub",
   "description": "",
   "authors": [],
   "contact": {
     "repo": ""
   },
   "license": "MPL-2.0",
-  "icon": "assets/fishing-club/icon32.png",
+  "icon": "assets/fishingclub/icon32.png",
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
@@ -37,16 +37,16 @@
   },
   "custom": {
     "cardinal-components": [
-      "fishing-club:fishing_card",
-      "fishing-club:specimen_component",
-      "fishing-club:specimen_display_component",
-      "fishing-club:fishing_king",
-      "fishing-club:leaderboard_tracker",
-      "fishing-club:chunk_quality"
+      "fishingclub:fishing_card",
+      "fishingclub:specimen_component",
+      "fishingclub:specimen_display_component",
+      "fishingclub:fishing_king",
+      "fishingclub:leaderboard_tracker",
+      "fishingclub:chunk_quality"
     ]
   },
   "mixins": [
     "fishingclub.mixins.json"
   ],
-  "accessWidener": "fishing-club.accesswidener"
+  "accessWidener": "fishingclub.accesswidener"
 }

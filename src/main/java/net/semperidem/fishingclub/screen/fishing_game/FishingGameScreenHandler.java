@@ -5,19 +5,23 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.semperidem.fishingclub.game.FishingGameController;
-import net.semperidem.fishingclub.network.payload.FishingGamePayload;
+import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
 
 public class FishingGameScreenHandler extends ScreenHandler {
-    public final FishingGameController fishGameLogic;
+    public final FishingGameController controller;
 
-    public FishingGameScreenHandler(int syncId, PlayerInventory playerInventory, FishingGamePayload payload) {
+    public FishingGameScreenHandler(int syncId, PlayerInventory playerInventory, FishingGameStartS2CPayload payload) {
         super(FCScreenHandlers.FISHING_GAME_SCREEN, syncId);
-        this.fishGameLogic = new FishingGameController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());
+        this.controller = new FishingGameController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());
     }
 
-    public void consumeBobberMovement(float reelForce, boolean isReeling, boolean isPulling) {
-        fishGameLogic.consumeBobberMovementPacket(reelForce, isReeling, isPulling);
+    public void consumeBobberMove(float reelForce) {
+        this.controller.consumeBobberMove(reelForce);
+    }
+
+    public void consumeReel(boolean isReeling) {
+        this.controller.consumeReel(isReeling);
     }
 
 
@@ -27,7 +31,7 @@ public class FishingGameScreenHandler extends ScreenHandler {
     * */
     @Override
     public void sendContentUpdates() {
-        fishGameLogic.tick();
+        this.controller.tick();
     }
 
     @Override

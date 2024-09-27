@@ -1,6 +1,0 @@
-{
-    "parent": "fishing-club:item/cloned_rod",
-    "textures": {
-        "layer0": "fishing-club:item/cloned_rod_cast"
-    }
-}

@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class HealthComponent {
     private static final float BASE_HEALTH = 1;
@@ -22,7 +22,7 @@ public class HealthComponent {
     }
 
 
-    public void consumeData(FishingGameTickPayload payload) {
+    public void updateClient(FishingGameTickS2CPayload payload) {
         this.health = payload.health();
     }
 

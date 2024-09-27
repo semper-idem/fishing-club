@@ -1,0 +1,6 @@
+{
+    "parent": "fishingclub:item/member_fishing_rod",
+    "textures": {
+        "layer0": "fishingclub:item/member_fishing_rod_cast"
+    }
+}

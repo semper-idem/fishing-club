@@ -1,0 +1,11 @@
+{
+  "effect.fishingclub.quality_buff": "Fish Quality+",
+  "effect.fishingclub.frequency_buff": "Fish Catch-rate+",
+  "effect.fishingclub.exp_buff": "Fish Exp+",
+  "effect.fishingclub.slow_fish_buff": "Fish Slow-Mo",
+  "effect.fishingclub.bobber_buff": "Bobber Width+",
+  "effect.fishingclub.one_time_quality_buff": "One-time Fish Quality+",
+  "effect.fishingclub.shared_bait_buff": "Shared Bait",
+  "block.fishingclub.tackle_box": "Tackle Box",
+  "item.fishingclub.butterfish": "Raw Butterfish"
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "fishingclub:energy_dense_kelp"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "fishingclub:blocks/energy_dense_kelp_plant"
+}

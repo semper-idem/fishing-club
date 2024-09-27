@@ -19,7 +19,7 @@ import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
 public class FCScreenHandlers {
     public static ExtendedScreenHandlerType<FishingCardScreenHandler, FishingCardPayload> FISHING_CARD_SCREEN;
-    public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGamePayload> FISHING_GAME_SCREEN;
+    public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGameStartS2CPayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<DialogScreenHandler, DialogPayload> DIALOG_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
     public static ExtendedScreenHandlerType<ConfigurationScreenHandler, ConfigurationPayload> CONFIGURATION_SCREEN;
@@ -37,7 +37,7 @@ public class FCScreenHandlers {
                         Registries.SCREEN_HANDLER,
                         FishingClub.identifier("fishing_game_screen_handler"),
                         new ExtendedScreenHandlerType<>(
-                                FishingGameScreenHandler::new, FishingGamePayload.CODEC));
+                                FishingGameScreenHandler::new, FishingGameStartS2CPayload.CODEC));
         DIALOG_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,

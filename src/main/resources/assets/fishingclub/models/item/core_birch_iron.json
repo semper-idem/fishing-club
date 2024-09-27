@@ -1,0 +1,6 @@
+﻿{
+    "parent": "fishingclub:item/core",
+    "textures": {
+        "layer0": "fishingclub:item/core_birch_iron"
+    }
+}

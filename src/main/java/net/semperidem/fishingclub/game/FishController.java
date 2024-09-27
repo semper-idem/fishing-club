@@ -5,7 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 import net.semperidem.fishingclub.registry.FCStatusEffects;
 import net.semperidem.fishingclub.status_effects.DecreaseFishSpeedStatusEffect;
 
@@ -62,7 +62,7 @@ public class FishController {
     }
 
 
-    public void consumeData(FishingGameTickPayload payload) {
+    public void updateClient(FishingGameTickS2CPayload payload) {
         this.positionX = payload.fishPositionX();
         this.positionY = payload.fishPositionY();
     }

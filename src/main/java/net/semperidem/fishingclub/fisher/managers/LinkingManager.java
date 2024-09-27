@@ -126,7 +126,7 @@ public class LinkingManager extends DataManager {
     //TODO review messages
     private void messageRequestSummon(PlayerEntity target) {
         target.sendMessage(Text.of("[Fishing Club] Your fishing friend:" + trackedFor.holder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
-        target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishing-club summon_accept"))), false);
+        target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishingclub summon_accept"))), false);
 
     }
 
@@ -142,7 +142,7 @@ public class LinkingManager extends DataManager {
     }
 
     private void messageLimit() {
-        trackedFor.holder().sendMessage(Text.of("[Fishing Club] Link limit reached, Cast  Link  on already linked player to remove it or type command /fishing-club link PLAYER_NAME"), true);
+        trackedFor.holder().sendMessage(Text.of("[Fishing Club] Link limit reached, Cast  Link  on already linked player to remove it or type command /fishingclub link PLAYER_NAME"), true);
     }
 
     private void messageFail() {

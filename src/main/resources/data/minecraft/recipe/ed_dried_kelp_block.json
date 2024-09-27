@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "#": {
-      "item": "fishing-club:dried_energy_dense_kelp"
+      "item": "fishingclub:dried_energy_dense_kelp"
     }
   },
   "pattern": [
@@ -13,6 +13,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "fishing-club:dried_energy_dense_kelp_block"
+    "id": "fishingclub:dried_energy_dense_kelp_block"
   }
 }

@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.game.treasure.Reward;
 import net.semperidem.fishingclub.game.treasure.Rewards;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class TreasureGameController {
     private final FishingGameController parent;
 
 
-    public void consumeData(FishingGameTickPayload payload) {
+    public void updateClient(FishingGameTickS2CPayload payload) {
         arrowPos = payload.arrowPos();
         treasureHookedTicks = payload.treasureHookedTicks();
         isWon = payload.isWon();

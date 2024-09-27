@@ -1,7 +1,7 @@
 {
   "variants": {
     "flowering=true": {
-      "model": "fishing-club:block/flowering_lily_pad"
+      "model": "fishingclub:block/flowering_lily_pad"
     },
     "flowering=false": {
       "model": "minecraft:block/lily_pad"

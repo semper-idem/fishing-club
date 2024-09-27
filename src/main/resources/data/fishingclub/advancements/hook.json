@@ -1,0 +1,16 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "fishingclub:hook_copper",
+      "fishingclub:hook_iron",
+      "fishingclub:hook_gold",
+      "fishingclub:hook_netherite"
+    ]
+  }
+}

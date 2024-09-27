@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "down": "fishingclub:block/fisher_workbench_bottom",
+    "east": "fishingclub:block/fisher_workbench_east",
+    "north": "fishingclub:block/fisher_workbench_north",
+    "south": "fishingclub:block/fisher_workbench_south",
+    "particle": "fishingclub:block/fisher_workbench_bottom",
+    "up": "fishingclub:block/fisher_workbench_top",
+    "west": "fishingclub:block/fisher_workbench_west"
+  }
+}

@@ -7,20 +7,19 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class FishingGameController {
 
-    public final PlayerEntity player;
-    public final FishingCard fishingCard;
-    public final SpecimenData hookedFish;
-    public final RodConfiguration rodConfiguration;
+    final PlayerEntity player;
+    final FishingCard fishingCard;
+    final SpecimenData hookedFish;
+    final RodConfiguration rodConfiguration;
 
     public float reelForce = 0;
-    private boolean isReeling;
-    private boolean isPulling;
+    private boolean isReeling = false;
 
-    public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration){
+    public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.fishingCard = FishingCard.of(playerEntity);
@@ -34,57 +33,58 @@ public class FishingGameController {
         treasureGameController = new TreasureGameController(this);
     }
 
-    public void consumeTick(FishingGameTickPayload payload) {
-        bobberComponent.consumeData(payload);
-        fishController.consumeData(payload);
-        healthComponent.consumeData(payload);
-        progressComponent.consumeData(payload);
-        treasureComponent.consumeData(payload);
-        treasureGameController.consumeData(payload);
+    public void updateClient(FishingGameTickS2CPayload payload) {
+        bobberComponent.updateClient(payload);
+        fishController.updateClient(payload);
+        healthComponent.updateClient(payload);
+        progressComponent.updateClient(payload);
+        treasureComponent.updateClient(payload);
+        treasureGameController.updateClient(payload);
     }
 
     public void tick() {
-        if (isTreasureHuntActive()) {
-            treasureGameController.tick();
-        } else {
-            tickInner();
+        this.tickLogic();
+        this.sendUpdate();
+    }
+
+    private void sendUpdate() {
+        ServerPlayNetworking.send((ServerPlayerEntity)this.player, new FishingGameTickS2CPayload(
+                bobberComponent.getPositionX(),
+                fishController.getPositionX(),
+                fishController.getPositionY(),
+                healthComponent.getHealth(),
+                progressComponent.getProgress(),
+                treasureComponent.canPullTreasure(),
+                treasureGameController.getArrowPos(),
+                treasureGameController.getTreasureHookedTicks(),
+                treasureGameController.isWon()
+        ));
+    }
+
+    private void tickLogic() {
+        if (this.treasureGameController.isActive()) {
+            this.treasureGameController.tick();
+            return;
         }
-        if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPlayNetworking.send(serverPlayerEntity, new FishingGameTickPayload(
-                    bobberComponent.getPositionX(),
-                    fishController.getPositionX(),
-                    fishController.getPositionY(),
-                    healthComponent.getHealth(),
-                    progressComponent.getProgress(),
-                    treasureComponent.canPullTreasure(),
-                    treasureGameController.getArrowPos(),
-                    treasureGameController.getTreasureHookedTicks(),
-                    treasureGameController.isWon()
-            ));
-        }
+       this.fishController.tick();
+       this.bobberComponent.tick();
+       this.progressComponent.tick();
+       this.healthComponent.tick();
+       this.treasureComponent.tick();
     }
 
-    private void tickInner(){
-        fishController.tick();
-        bobberComponent.tick();
-        progressComponent.tick();
-        healthComponent.tick();
-        treasureComponent.tick();
+    public boolean isReeling() {
+        return isReeling;
     }
 
-    public boolean isReeling(){
-        return  isReeling;
-    }
-    public boolean isPulling(){
-        return  isPulling;
-    }
-
-    public void consumeBobberMovementPacket(float reelForce, boolean isReeling, boolean isPulling) {
+    public void consumeBobberMove(float reelForce) {
         this.reelForce = reelForce;
-        this.isReeling = isReeling;
-        this.isPulling = isPulling;
-
     }
+
+    public void consumeReel(boolean isReeling) {
+        this.isReeling = isReeling;
+    }
+
 
     public float getFishPosX() {
         return fishController.getPositionX();
@@ -118,23 +118,23 @@ public class FishingGameController {
         return healthComponent.getHealth();
     }
 
-    public boolean canPullTreasure(){
+    public boolean canPullTreasure() {
         return treasureComponent.canPullTreasure();
     }
 
-    public float getTreasureSpotSize(){
+    public float getTreasureSpotSize() {
         return treasureGameController.getTreasureSpotSize();
     }
 
-    public int getTimeLeft(){
+    public int getTimeLeft() {
         return treasureGameController.getTimeLeft();
     }
 
-    public float getArrowPos(){
+    public float getArrowPos() {
         return treasureGameController.getArrowPos();
     }
 
-    public float getNextArrowPos(){
+    public float getNextArrowPos() {
         return treasureGameController.getNextArrowPos();
     }
 
@@ -146,7 +146,7 @@ public class FishingGameController {
         treasureGameController.start();
     }
 
-    public boolean isTreasureHuntActive(){
+    public boolean isTreasureHuntActive() {
         return treasureGameController.isActive();
     }
 

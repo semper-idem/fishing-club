@@ -1,0 +1,14 @@
+{
+    "parent": "item/handheld_rod",
+    "textures": {
+        "layer0": "fishingclub:item/cloned_rod"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "casting": 1
+            },
+            "model": "fishingclub:item/cloned_rod_cast"
+        }
+    ]
+}

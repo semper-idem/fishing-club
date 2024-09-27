@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.network.PacketByteBuf;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class ProgressComponent {
     private final FishingGameController parent;
@@ -23,7 +23,7 @@ public class ProgressComponent {
 
 
 
-    public void consumeData(FishingGameTickPayload payload) {
+    public void updateClient(FishingGameTickS2CPayload payload) {
         this.progress = payload.progress();
     }
 
@@ -44,7 +44,7 @@ public class ProgressComponent {
         if (!parent.isReeling()) {
             return;
         }
-        if (bobberHasFish && !parent.isPulling()) {
+        if (bobberHasFish) {
             grantProgress();
         } else {
             revokeProgress();

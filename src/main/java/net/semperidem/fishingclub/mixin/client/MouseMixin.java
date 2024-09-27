@@ -23,6 +23,7 @@ public class MouseMixin {
 
     @Inject(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
     private void onScroll(long window, double horizontal, double vertical, CallbackInfo ci){
+        System.out.println("Hot swapped");
         PlayerEntity player = this.client.player;
         if (player == null) {
             return;

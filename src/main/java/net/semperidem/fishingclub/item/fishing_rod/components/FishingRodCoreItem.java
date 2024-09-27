@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -20,9 +21,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
 
 import java.util.List;
 
@@ -34,16 +37,20 @@ public class FishingRodCoreItem extends FishingRodItem {
     int maxOperatingTemperature = 0;
     int luck = 0;
     int weightClass = 0;
+    boolean debug = true;
 
     public FishingRodCoreItem(Settings settings) {
         super(settings);
     }
 
 
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (world.isClient) {
+            return TypedActionResult.success(user.getStackInHand(hand));
+        }
+        if (debug) {
+            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.DEFAULT, Items.FISHING_ROD.getDefaultStack().get(FCComponents.ROD_CONFIGURATION)));
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
@@ -97,7 +104,7 @@ public class FishingRodCoreItem extends FishingRodItem {
             fishingRod.set(FCComponents.CAST_POWER, power);
             fishingRod.damage(1, user, EquipmentSlot.MAINHAND);
             if (fishingRod.getDamage() >= fishingRod.getMaxDamage()) {
-               RodConfiguration.dropContent(user, fishingRod);
+                RodConfiguration.dropContent(user, fishingRod);
             }
             updateClientInventory((ServerPlayerEntity) user);
             user.sendMessage(Text.of("Throw with power of: " + power), true);
@@ -222,5 +229,5 @@ public class FishingRodCoreItem extends FishingRodItem {
     }
 
 
-    public static int[] WEIGHT_CLASS = {0,5,25,50,100,999999};
+    public static int[] WEIGHT_CLASS = {0, 5, 25, 50, 100, 999999};
 }

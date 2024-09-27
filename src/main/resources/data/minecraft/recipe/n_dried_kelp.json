@@ -3,11 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "fishing-club:dried_nutritious_kelp_block"
+      "item": "fishingclub:dried_nutritious_kelp_block"
     }
   ],
   "result": {
     "count": 9,
-    "id": "fishing-club:dried_nutritious_kelp"
+    "id": "fishingclub:dried_nutritious_kelp"
   }
 }

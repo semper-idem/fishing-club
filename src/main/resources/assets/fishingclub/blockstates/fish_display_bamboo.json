@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "fishingclub:block/fish_display_bamboo"
+    },
+    "facing=east": {
+      "model": "fishingclub:block/fish_display_bamboo"
+    },
+    "facing=west": {
+      "model": "fishingclub:block/fish_display_bamboo"
+    },
+    "facing=south": {
+      "model": "fishingclub:block/fish_display_bamboo"
+    }
+  }
+}

@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.game;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -14,158 +13,112 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.FishingGameController;
-import net.semperidem.fishingclub.network.payload.FishingGameInputPayload;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
-import org.lwjgl.glfw.GLFW;
 
 public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
-    private static final String TEXTURE_DIR_ROOT = "textures/gui/fishing_game/";
-
-    private static final int DEFAULT_COLOR = 0xFFFFFF;
-    private static final int TREASURE_COLOR = 0xFFBB33;
-
-    private static final String HEALTH_LABEL = "Line Health:";
-    private static final String TREASURE_LABEL = "Treasure!";
-    private static final String TREASURE_REEL_LABEL  = "[Enter]";
-
-    private static final int backgroundWidth = 160, backgroundHeight = 160;
-    private static final int barWidth = 128, barHeight = 8;
-    private static final int bobberWidth = 128, bobberHeight = 8;
-    private static final int fishIconWidth = 8, fishIconHeight = 8;
-
-    private static final int treasureBarWidth = backgroundWidth, treasureBarHeight = 28;
-    private static final int treasureArrowWidth = 10, treasureArrowHeight = treasureBarHeight;
-    private static final int treasureSpotWidth = 24, treasureSpotHeight = treasureBarHeight;
-    private static final int treasureMarkWidth = 16, treasureMarkHeight = 16;
-
-
-    private static final Texture BACKGROUND = new Texture("background.png", backgroundWidth, backgroundHeight);
-    private static final Texture BACKGROUND_EMPTY = new Texture("background_empty.png", backgroundWidth, backgroundHeight);
-    private static final Texture BOBBER = new Texture("bobber.png", bobberWidth, bobberHeight);
-    private static final Texture FISH = new Texture("fish_icon.png", fishIconWidth, fishIconHeight);
-    private static final Texture PROGRESS_BAR = new Texture("progress_bar.png", barWidth, barHeight);
-
-    private static final Texture TREASURE_BAR = new Texture("treasure_bar.png", treasureBarWidth, treasureBarHeight);
-    private static final Texture TREASURE_ARROW = new Texture("treasure_arrow.png", treasureArrowWidth, treasureArrowHeight);
-    private static final Texture TREASURE_SPOT = new Texture("treasure_spot.png", treasureSpotWidth, treasureSpotHeight);
-    private static final Texture TREASURE_MARK = new Texture("treasure_mark.png", treasureMarkWidth, treasureMarkHeight);
-
-    private int x, y;
-    private int barX,barY;
-    private int bobberX, bobberY;
-    private int fishX,fishY;
-    private int progressBarX,progressBarY;
-
-    private int treasureBarX, treasureBarY;
-    private int treasureArrowX, treasureArrowY;
-    private int treasureSpotX, treasureSpotY;
-    private int treasureMarkX, treasureMarkY;
-
-    private static final float safeZone = 0.01f;
-    private float halfScreen;
-    private int halfBobber = 0;
-
-    private int halfFish = fishIconWidth / 2;
-    boolean lightTick = false;
-    public final FishingGameController fishGameLogic;
+    public final FishingGameController controller;
+    private static final Identifier ATLAS = FishingClub.identifier("textures/gui/fishing_game/atlas.png");
 
     private final float startingPitch;
     private final float startingYaw;
     private float targetYaw;
     private float targetBodyYaw;
     private float targetPitch;
-    private boolean swayTracked = false;
-    PlayerEntity clientPlayer;
+    private final PlayerEntity clientPlayer;
 
-    public FishingGameScreen(FishingGameScreenHandler fishGameScreenHandler, PlayerInventory playerInventory, Text text) {
-        super(fishGameScreenHandler, playerInventory, text);
-        this.fishGameLogic = fishGameScreenHandler.fishGameLogic;
-        clientPlayer = playerInventory.player;
-        startingYaw = clientPlayer.getYaw();
-        startingPitch = clientPlayer.getPitch();
+    private long tick = 0;
+
+    private static final float MIN_MOVE = 0.01f;
+
+    private int baseFishX;
+    private int baseFishY;
+
+    private int baseProgressX;
+    private int baseProgressY;
+
+    private int baseTreasureX;
+    private int baseTreasureY;
+
+    public FishingGameScreen(FishingGameScreenHandler handler, PlayerInventory playerInventory, Text text) {
+        super(handler, playerInventory, text);
+        this.controller = this.handler.controller;
+        this.clientPlayer = playerInventory.player;
+        this.startingYaw = this.clientPlayer.getYaw();
+        this.startingPitch = this.clientPlayer.getPitch();
+    }
+
+
+    @Override
+    protected void handledScreenTick() {
+        ClientPlayNetworking.send(
+                new FishingGameInputKeyboardPayload(
+                        InputUtil.isKeyPressed(
+                                MinecraftClient.getInstance().getWindow().getHandle(),
+                                InputUtil.GLFW_KEY_SPACE
+                        )
+                )
+        );
+        tick++;
     }
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        double distanceFromCenterPercent = (halfScreen - mouseX) / halfScreen;
-        float reelForce = (Math.abs(distanceFromCenterPercent) > safeZone) ?
-                (float) (distanceFromCenterPercent * -0.05f) :
-                0;
-        this.handler.fishGameLogic.reelForce = reelForce;
-        updateCameraTarget();
-        //todo this make reeling/pulling not have impact if im not moving mouse
-        super.mouseMoved(mouseX, mouseY);
+        if (this.client == null) {
+            return;
+        }
+
+        int centerX = (int) (this.client.getWindow().getWidth() * 0.5f);
+        double distanceFromCenterPercent = (centerX - mouseX) / centerX;
+        if (Math.abs(distanceFromCenterPercent) < MIN_MOVE) {
+            return;
+        }
+
+        this.controller.reelForce = (float) distanceFromCenterPercent * -0.05f;
+        ClientPlayNetworking.send(new FishingGameInputMousePayload(this.handler.controller.reelForce));
+        this.updateCameraTarget();
     }
 
-    private boolean keyPressed(int keyCode){
-        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),keyCode);//todo use vanila keybindings
+    public void update(FishingGameTickS2CPayload fishingGameTickPayload) {
+        this.controller.updateClient(fishingGameTickPayload);
     }
-
-    public void consumeTick(FishingGameTickPayload fishingGameTickPayload) {
-        fishGameLogic.consumeTick(fishingGameTickPayload);
-        ClientPlayNetworking.send(new FishingGameInputPayload(this.handler.fishGameLogic.reelForce, isReeling(), isPulling()));
-    }
-    boolean isReeling(){
-        return keyPressed(GLFW.GLFW_KEY_SPACE);
-    }
-
-    boolean isPulling(){
-        return keyPressed(GLFW.GLFW_KEY_ENTER);
-    }
-
 
     @Override
     protected void init() {
         super.init();
-        x = (this.width - backgroundWidth) / 2;
-        y = (this.height- backgroundHeight) / 2;
-        halfBobber = (int) (fishGameLogic.getBobberSize() * bobberWidth / 2);
-        halfScreen = width / 2f;
+        if (this.client == null) {
+            return;
+        }
 
-        barX = x + 16;
-        barY = y + backgroundHeight - barHeight - 16;
+        this.x = (int) (this.client.getWindow().getScaledWidth() * 0.5f) - 90;//half of back
+        this.y = this.client.getWindow().getScaledHeight() - 100;//back
 
-        bobberX = barX + barWidth / 2 - halfBobber;
-        bobberY = barY;
+        this.baseFishX = this.x;
+        this.baseFishY = this.y + 48;
 
-        fishX = barX + barWidth / 2 - fishIconWidth / 2;
-        fishY = barY;
+        this.baseProgressX = this.x + 3;
+        this.baseProgressY = this.y + 3;
 
-        progressBarX = barX;
-        progressBarY = y + 16;
-
-        treasureBarX = x;
-        treasureBarY = y + backgroundHeight - treasureBarHeight;
-
-        treasureArrowX = treasureBarX;
-        treasureArrowY = treasureBarY;
-
-        treasureSpotX = x;
-        treasureSpotY = treasureBarY;
-
-        treasureMarkX = x + (backgroundWidth - treasureMarkWidth) / 2;
-        treasureMarkY = y + backgroundHeight / 2 - 36;
-
+        this.baseTreasureX = this.baseFishX;
+        this.baseTreasureY = this.baseFishY;
     }
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {}
 
-    @Override
-    public void handledScreenTick() {
-        lightTick = !lightTick;
-    }
-
     private void updateCameraTarget() {
         if (MinecraftClient.getInstance().options.getPerspective() != Perspective.THIRD_PERSON_BACK) {
-            swayTracked = false;
             return;
         }
-        swayTracked = true;
-        targetYaw = startingYaw + this.handler.fishGameLogic.reelForce * 800;
-        targetBodyYaw = startingYaw + this.handler.fishGameLogic.reelForce * 6000;
-        targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.fishGameLogic.reelForce )) * 1000) * 4));
+        this.targetYaw = startingYaw + this.handler.controller.reelForce * 800;
+        this.targetBodyYaw = startingYaw + this.handler.controller.reelForce * 6000;
+        this.targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.controller.reelForce )) * 1000) * 4));
+        this.clientPlayer.setPitch(getNextFramePitch());
+        this.clientPlayer.setYaw(getNextFrameYaw());
+        this.clientPlayer.setHeadYaw(getNextFrameYaw());
+        this.clientPlayer.setBodyYaw(getNextFrameBodyYaw());
     }
 
     private float getNextFramePitch(){
@@ -182,168 +135,51 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
 
     }
 
-    private void updateCamera(){
-        if (!swayTracked) {
-            return;
-        }
-        clientPlayer.setPitch(getNextFramePitch());
-        clientPlayer.setYaw(getNextFrameYaw());
-        clientPlayer.setHeadYaw(getNextFrameYaw());
-        clientPlayer.setBodyYaw(getNextFrameBodyYaw());
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.drawTexture(ATLAS, this.x, this.y, 0, 0, 180, 60, 180, 120);
     }
+
+    public void renderFront(DrawContext context) {
+        context.drawTexture(ATLAS, this.x, this.baseFishY, 0, 60, 180, 12, 180, 120);
+    }
+
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.getMatrices().push();
-        updateCamera();
-        if (isTreasureHooked()) {
-            renderTreasure(drawContext, delta);
-        } else {
-            renderFish(drawContext, delta);
-        }
-        renderInfo(drawContext);
-        drawContext.getMatrices().pop();
-    }
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context, mouseX, mouseY, delta);
+        //Fish
+        context.enableScissor(this.baseFishX, this.baseFishY - 20, this.baseFishX + 174, this.baseFishY + 9);
 
-    private void renderFish(DrawContext drawContext, float delta){
-        renderFishBackground(drawContext);
-        renderBobber(drawContext, delta);
-        renderFishIcon(drawContext, delta);
-        renderProgressBar(drawContext);
-        renderTreasureMark(drawContext);
-    }
-
-    private void renderTreasure(DrawContext drawContext, float delta){
-        renderTreasureBackground(drawContext);
-        renderTreasureBar(drawContext);
-        renderTreasureSpot(drawContext);
-        renderTreasureArrow(drawContext, delta);
-    }
-
-    private void renderTreasureBar(DrawContext drawContext){
-        TREASURE_BAR.render(drawContext, treasureBarX, treasureBarY);
-    }
-
-    private void renderTreasureArrow(DrawContext drawContext, float delta){
-        treasureArrowX = (int) (x + getArrowPos(delta) * (treasureBarWidth - treasureArrowWidth));
-        TREASURE_ARROW.render(drawContext, treasureArrowX, treasureArrowY);
-    }
-
-    private void renderTreasureSpot(DrawContext drawContext){
-        drawContext.getMatrices().push();
-        float spotWidth = (treasureBarWidth * fishGameLogic.getTreasureSpotSize());
-        float spotScale = spotWidth / treasureSpotWidth;
-        drawContext.getMatrices().scale(spotScale, 1,1);
-        treasureSpotX = (int) ((x + (treasureBarWidth - spotWidth) / 2) * (1 / spotScale));
-        TREASURE_SPOT.render(drawContext, treasureSpotX, treasureSpotY);
-        drawContext.getMatrices().pop();
-    }
-
-    private void renderTreasureMark(DrawContext drawContext){
-        if (!canPullTreasure()) return;
-        int shakeOffset = lightTick ? 1 : 0;
-        TREASURE_MARK.render(drawContext, treasureMarkX, treasureMarkY + shakeOffset);
-    }
-
-    private void renderTreasureBackground(DrawContext drawContext){
-        BACKGROUND_EMPTY.render(drawContext, x,y);
-    }
-
-    private void renderFishBackground(DrawContext drawContext){
-        BACKGROUND.render(drawContext, x, y);
-    }
-
-    private void renderBobber(DrawContext drawContext, float delta){
-        drawContext.getMatrices().push();
-        float bobberScale = barWidth * fishGameLogic.getBobberSize() / barWidth;
-        drawContext.getMatrices().scale(bobberScale,1f,1f);
-        if (fishGameLogic.bobberHasFish()) {
-            RenderSystem.setShaderColor(1f,1,0.5f,1);
-        }
-        bobberX = (int) ( (barX + barWidth * getBobberStartPos(delta) - halfBobber) * (1f / bobberScale));
-        BOBBER.render(drawContext, bobberX, bobberY);
-        RenderSystem.setShaderColor(1f,1,1,1);
-        drawContext.getMatrices().pop();
-    }
-
-    private void renderFishIcon(DrawContext drawContext, float delta){
-        fishX = (int) (barX + barWidth * getFishPos(delta)) - halfFish;
-        fishY = barY - (int)((fishGameLogic.getFishPosY() * 4)) ;
-        FISH.render(drawContext, fishX, fishY);
-    }
-
-    private void renderProgressBar(DrawContext drawContext) {
-        int progressBarWidth = (int) (barWidth * fishGameLogic.getProgress());
-        PROGRESS_BAR.render(drawContext, progressBarX, progressBarY, progressBarWidth,barHeight);
-    }
-
-    private void renderInfo(DrawContext drawContext) {
-        String infoLabel = (isTreasureHooked() || canPullTreasure())? TREASURE_LABEL : HEALTH_LABEL;
-        String infoValue = isTreasureHooked() ? getTimeLeft() : canPullTreasure() ? TREASURE_REEL_LABEL : getLineHealth();
-        int labelColor = canPullTreasure() && ! isTreasureHooked() ? (
-                lightTick ?
-                        DEFAULT_COLOR :
-                        TREASURE_COLOR)
-                : DEFAULT_COLOR;
-
-        drawContext.drawTextWithShadow(textRenderer, infoLabel, (int) (x + (backgroundWidth - textRenderer.getWidth(infoLabel)) / 2f), y + 75,labelColor);
-        drawContext.drawTextWithShadow(textRenderer, infoValue, (int) (x + (backgroundWidth - textRenderer.getWidth(infoValue)) / 2f), y + 90,DEFAULT_COLOR);
-    }
-
-    private String getTimeLeft(){
-        return String.valueOf(fishGameLogic.getTimeLeft());
-    }
-
-    private String getLineHealth(){
-        return String.format("%.1f" ,fishGameLogic.getLineHealth());
-    }
-
-    private boolean canPullTreasure(){
-        return fishGameLogic.canPullTreasure();
-    }
-
-    private boolean isTreasureHooked(){
-        return fishGameLogic.isTreasureHuntActive();
-    }
+        //Treasure
+        int currentTreasureX = this.baseTreasureX + 100;
+        context.drawTexture(ATLAS, currentTreasureX + 3, this.baseTreasureY - 8, 35, 100, 6, 6, 180, 120);
+        context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY, 35, 106, 11, 13, 180, 120);
+       // context.drawTexture(ATLAS, this.baseFishX, this.baseFishY, 72, 80, 14, 12, 180, 120);
+        context.disableScissor();
+        //Progress
+        context.drawTexture(ATLAS, this.baseProgressX, this.baseProgressY, 0, 72, (int)(174 * 1f), 8, 180, 120);
 
 
-    private float getFishPos(float delta) {
-        return getDeltaPosition(fishGameLogic.getFishPosX(),fishGameLogic.getNextFishPosX(), delta);
-    }
+        context.drawTexture(ATLAS, currentTreasureX - 3,  this.baseTreasureY - 40, 0, 80, 18, 40, 180, 120);
+        context.drawTexture(ATLAS, currentTreasureX + 4, (int) (this.baseTreasureY - 40 + 16 + 24 * 0.6f), 18, 80, 4, (int) (24 * 0.4f), 180, 120);
 
-    private float getBobberStartPos(float delta){
-        return getDeltaPosition(fishGameLogic.getBobberPos(), fishGameLogic.getNextBobberPos(), delta);
-    }
+        int buttonU = Math.sin(tick) > 0 ? 0 : 10;
+        context.drawTexture(ATLAS, currentTreasureX - 7, this.baseTreasureY - 1, 22, 80 + buttonU, 26, 10, 180, 120);
+        boolean isWon = true;
+        int treasureResultU = isWon ? 0 : 8;
+        context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY - 36, 22, 100 + treasureResultU, 13, 8, 180, 120);
+//        context.drawTexture(ATLAS, this.x, this.y + 60 - 12, 0, 60, 180, 12, 180, 120);
+//        context.drawTexture(ATLAS, this.x, this.y + 60 - 12, 0, 60, 180, 12, 180, 120);
+        this.renderFront(context);
 
-    private float getArrowPos(float delta){
-        return getDeltaPosition(fishGameLogic.getArrowPos(), fishGameLogic.getNextArrowPos(), delta);
-    }
-
-    private static float getDeltaPosition(float initialPosition, float nextPosition, float delta){
-     return initialPosition + (nextPosition - initialPosition) * delta;
-    }
-
-    @Override
-    public boolean shouldPause() {
-        return false;
-    }
-
-    static class Texture {
-        Identifier texture;
-        int textureWidth;
-        int textureHeight;
-
-        Texture(String fileName, int textureWidth, int textureHeight){
-            this.texture = FishingClub.identifier(TEXTURE_DIR_ROOT + fileName);
-            this.textureWidth = textureWidth;
-            this.textureHeight = textureHeight;
-        }
-        private void render(DrawContext drawContext, int x, int y){
-            render(drawContext,x, y, textureWidth, textureHeight);
-        }
-
-        private void render(DrawContext drawContext, int x, int y, int width, int height){
-            drawContext.drawTexture(this.texture , x, y, 0, 0, width, height, this.textureWidth, this.textureHeight);
-        }
+        //Bobber
+        boolean isPulling = false;
+        boolean isSuccessful = false;
+        int bobberU = isSuccessful ? 12 : 0;
+        int bobberV = isPulling ? 9 : 0;
+        context.enableScissor(this.baseFishX + 3, this.baseFishY, this.baseFishX + 174, this.baseFishY + 9);
+        //context.drawTexture(ATLAS, this.baseFishX, this.baseFishY, 48 + bobberU, 80 + bobberV, 12, 9, 180, 120);
+        context.disableScissor();
     }
 }

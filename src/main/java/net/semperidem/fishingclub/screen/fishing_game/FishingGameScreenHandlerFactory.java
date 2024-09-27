@@ -8,10 +8,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.network.payload.FishingGamePayload;
+import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGamePayload> {
+public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGameStartS2CPayload> {
     private final SpecimenData fish;
     private final RodConfiguration rodConfiguration;
 
@@ -27,11 +27,11 @@ public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFac
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    return new FishingGameScreenHandler(syncId, inv, new FishingGamePayload(this.fish, this.rodConfiguration));
+    return new FishingGameScreenHandler(syncId, inv, new FishingGameStartS2CPayload(this.fish, this.rodConfiguration));
     }
 
     @Override
-    public FishingGamePayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new FishingGamePayload(this.fish, this.rodConfiguration);
+    public FishingGameStartS2CPayload getScreenOpeningData(ServerPlayerEntity player) {
+        return new FishingGameStartS2CPayload(this.fish, this.rodConfiguration);
     }
 }

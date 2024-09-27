@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "fishingclub:fisher_hat"
+    ]
+  }
+}

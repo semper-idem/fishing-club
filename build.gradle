@@ -83,7 +83,7 @@ java {
     withSourcesJar()
 }
 loom {
-    accessWidenerPath = file("src/main/resources/fishing-club.accesswidener")
+    accessWidenerPath = file("src/main/resources/fishingclub.accesswidener")
 }
 
 jar {

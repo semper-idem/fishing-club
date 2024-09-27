@@ -6,7 +6,7 @@ import net.semperidem.fishingclub.registry.FCRegistry;
 import net.semperidem.fishingclub.util.Commands;
 
 public class FishingClub implements ModInitializer {
-    public static final String MOD_ID = "fishing-club";
+    public static final String MOD_ID = "fishingclub";
 
     @Override
     public void onInitialize() {

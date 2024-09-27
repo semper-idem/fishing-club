@@ -1,0 +1,38 @@
+{
+  "variants": {
+    "flowering=true": [
+      {
+        "model": "fishingclub:block/flowering_waterlogged_lily_pad"
+      },
+      {
+        "model": "fishingclub:block/flowering_waterlogged_lily_pad",
+        "y": 90
+      },
+      {
+        "model": "fishingclub:block/flowering_waterlogged_lily_pad",
+        "y": 180
+      },
+      {
+        "model": "fishingclub:block/flowering_waterlogged_lily_pad",
+        "y": 270
+      }
+    ],
+    "flowering=false": [
+      {
+        "model": "fishingclub:block/waterlogged_lily_pad"
+      },
+      {
+        "model": "fishingclub:block/waterlogged_lily_pad",
+        "y": 90
+      },
+      {
+        "model": "fishingclub:block/waterlogged_lily_pad",
+        "y": 180
+      },
+      {
+        "model": "fishingclub:block/waterlogged_lily_pad",
+        "y": 270
+      }
+    ]
+  }
+}

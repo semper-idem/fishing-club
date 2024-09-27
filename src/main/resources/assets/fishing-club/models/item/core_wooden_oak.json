@@ -1,6 +1,0 @@
-{
-    "parent": "fishing-club:item/core",
-    "textures": {
-        "layer0": "minecraft:item/stick"
-    }
-}

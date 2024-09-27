@@ -10,7 +10,7 @@ public class FCNetworking {
     private static void registerPayload() {
         PayloadTypeRegistry.playS2C().register(CoinFlipResultPayload.ID, CoinFlipResultPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(HookLinePayload.ID, HookLinePayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(FishingGameTickPayload.ID, FishingGameTickPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(FishingGameTickS2CPayload.ID, FishingGameTickS2CPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(StopPlayingPayload.ID, StopPlayingPayload.CODEC);
 
         PayloadTypeRegistry.playC2S().register(LinePayload.ID, LinePayload.CODEC);
@@ -25,7 +25,8 @@ public class FCNetworking {
         PayloadTypeRegistry.playC2S().register(SpellCastPayload.ID, SpellCastPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SellFishDirectPayload.ID, SellFishDirectPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SummonAcceptPayload.ID, SummonAcceptPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(FishingGameInputPayload.ID, FishingGameInputPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(FishingGameInputMousePayload.ID, FishingGameInputMousePayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(FishingGameInputKeyboardPayload.ID, FishingGameInputKeyboardPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(LearnTradeSecretPayload.ID, LearnTradeSecretPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ConfigurationPayload.ID, ConfigurationPayload.CODEC);
     }
@@ -33,7 +34,7 @@ public class FCNetworking {
     public static void registerClient() {
         ClientPlayNetworking.registerGlobalReceiver(HookLinePayload.ID, HookLinePayload::consumePayload);
         ClientPlayNetworking.registerGlobalReceiver(CoinFlipResultPayload.ID, CoinFlipResultPayload::consumePayload);
-        ClientPlayNetworking.registerGlobalReceiver(FishingGameTickPayload.ID, FishingGameTickPayload::consumePayload);
+        ClientPlayNetworking.registerGlobalReceiver(FishingGameTickS2CPayload.ID, FishingGameTickS2CPayload::consumePayload);
         ClientPlayNetworking.registerGlobalReceiver(StopPlayingPayload.ID, StopPlayingPayload::consumePayload);
     }
 
@@ -52,7 +53,8 @@ public class FCNetworking {
         ServerPlayNetworking.registerGlobalReceiver(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishDirectPayload.ID, SellFishDirectPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SummonAcceptPayload.ID, SummonAcceptPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(FishingGameInputPayload.ID, FishingGameInputPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(FishingGameInputMousePayload.ID, FishingGameInputMousePayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(FishingGameInputKeyboardPayload.ID, FishingGameInputKeyboardPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(ConfigurationPayload.ID, ConfigurationPayload::consumePayload);
     }
 }

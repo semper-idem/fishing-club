@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.network.payload.FishingGameTickPayload;
+import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class TreasureComponent {
 
@@ -27,7 +27,7 @@ public class TreasureComponent {
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
     }
 
-    public void consumeData(FishingGameTickPayload payload) {
+    public void updateClient(FishingGameTickS2CPayload payload) {
         this.canPullTreasure = payload.canPullTreasure();
     }
 
@@ -47,10 +47,8 @@ public class TreasureComponent {
         }
 
         pullTreasureTicks--;
-        if (parent.isPulling()) {
             pullTreasureTicks = 0;
             parent.startTreasureHunt();
-        }
     }
 
     public boolean canPullTreasure() {

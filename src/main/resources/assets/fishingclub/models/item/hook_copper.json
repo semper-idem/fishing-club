@@ -1,0 +1,6 @@
+{
+    "parent": "fishingclub:item/hook",
+    "textures": {
+        "layer0": "fishingclub:item/hook_copper"
+    }
+}
