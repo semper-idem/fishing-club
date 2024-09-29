@@ -18,8 +18,6 @@ public class FishController {
     private static final int STAMINA_PER_LEVEL = 250;
     private static final int STAMINA_BASE = 200;
 
-    public static final float FISH_LENGTH = 0.0625f; // 1/16
-
     private final FishingGameController parent;
     private final float minStamina;
     private final float maxStamina;
@@ -27,9 +25,6 @@ public class FishController {
 
     private float stamina;
     private final MovementPatternInstance patternInstance;
-
-    private final float minPositionX;
-    private final float maxPositionX;
 
     private float positionX;
     private float nextPositionX;
@@ -53,8 +48,6 @@ public class FishController {
         positionX = nextPositionX;
         positionY = 0;
         baseSpeed = parent.hookedFish.level() * 0.005f;
-        minPositionX = 0 + FISH_LENGTH / 2;
-        maxPositionX = 1 - FISH_LENGTH / 2;
 
         patternInstance = new MovementPatternInstance(species.movement(), parent.hookedFish.level());
         lastSegmentIndex = 0;
@@ -67,11 +60,6 @@ public class FishController {
         this.positionY = payload.fishPositionY();
     }
 
-    public void writeData(PacketByteBuf buf) {
-        buf.writeFloat(positionX);
-        buf.writeFloat(positionY);
-    }
-
     public void tick() {
         totalDistanceTraveled +=speed;
         tickMovement();
@@ -79,7 +67,7 @@ public class FishController {
     }
 
     private void tickMovement() {
-        positionX = nextPositionX;
+        this.positionX = this.nextPositionX;
         calculateNextPositionX();
         tickJump();
     }
@@ -89,8 +77,8 @@ public class FishController {
         calculateCurrentSegment(distanceTraveled);
         nextPositionX = MathHelper.clamp(
                 getCurve(distanceTraveled, currentSegment) + getWave(distanceTraveled),
-                minPositionX,
-                maxPositionX
+                0,
+                1
         );
     }
 

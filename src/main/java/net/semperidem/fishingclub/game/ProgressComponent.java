@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.game;
 
-import net.minecraft.network.PacketByteBuf;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class ProgressComponent {
@@ -13,7 +12,6 @@ public class ProgressComponent {
     private final float loss;
 
     private float progress;
-    private boolean isWinning = false;
 
     public ProgressComponent(FishingGameController parent) {
         this.parent = parent;
@@ -27,32 +25,20 @@ public class ProgressComponent {
         this.progress = payload.progress();
     }
 
-    public void writeData(PacketByteBuf buf) {
-        buf.writeFloat(progress);
-    }
-
     private float getProgressMultiplierBonus() {
         return 1;//FishingRodPartController.getStat(parent.hookedFish.caughtUsing, FishingRodStatType.PROGRESS_MULTIPLIER_BONUS);
     }
 
     public void tick() {
         boolean bobberHasFish = parent.bobberComponent.hasFish(parent.fishController);
-        if (!bobberHasFish && !parent.fishController.isFishJumping()) {
-            revokeProgress();
-        }
-
-        if (!parent.isReeling()) {
+        if (bobberHasFish && parent.isReeling()) {
+            grantProgress();
             return;
         }
-        if (bobberHasFish) {
-            grantProgress();
-        } else {
-            revokeProgress();
-        }
+        revokeProgress(parent.isReeling() ? 2 : 0.25f);
     }
 
     private void grantProgress(){
-        isWinning = true;
         if (progress < 1) {
             progress = Math.min(1, progress + gain);
             return;
@@ -60,15 +46,13 @@ public class ProgressComponent {
         parent.winGame();
     }
 
-    private void revokeProgress(){
-        isWinning = false;
+    private void revokeProgress(float multiplier){
         if (progress > 0) {
-            progress = Math.max(0, progress - loss);
+            progress = Math.max(0, progress - loss * multiplier);
         }
-    }
-
-    public boolean isWinning(){
-        return isWinning;
+        if (multiplier > 1) {
+            this.parent.healthComponent.damage();
+        }
     }
 
     public float getProgress(){

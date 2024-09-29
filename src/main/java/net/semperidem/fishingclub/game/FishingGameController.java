@@ -39,7 +39,9 @@ public class FishingGameController {
         healthComponent.updateClient(payload);
         progressComponent.updateClient(payload);
         treasureComponent.updateClient(payload);
+        this.isReeling = payload.isReeling();
         treasureGameController.updateClient(payload);
+
     }
 
     public void tick() {
@@ -55,9 +57,12 @@ public class FishingGameController {
                 healthComponent.getHealth(),
                 progressComponent.getProgress(),
                 treasureComponent.canPullTreasure(),
-                treasureGameController.getArrowPos(),
-                treasureGameController.getTreasureHookedTicks(),
-                treasureGameController.isWon()
+                treasureComponent.getProgress(),
+                treasureComponent.getPosition(),
+                treasureGameController.getProgress(),
+                treasureGameController.getTicksLeft(),
+                isReeling(),
+                treasureGameController.isDone()
         ));
     }
 
@@ -69,7 +74,6 @@ public class FishingGameController {
        this.fishController.tick();
        this.bobberComponent.tick();
        this.progressComponent.tick();
-       this.healthComponent.tick();
        this.treasureComponent.tick();
     }
 
@@ -83,6 +87,9 @@ public class FishingGameController {
 
     public void consumeReel(boolean isReeling) {
         this.isReeling = isReeling;
+        if (!isReeling) {
+            this.treasureGameController.letReel();
+        }
     }
 
 
@@ -122,22 +129,6 @@ public class FishingGameController {
         return treasureComponent.canPullTreasure();
     }
 
-    public float getTreasureSpotSize() {
-        return treasureGameController.getTreasureSpotSize();
-    }
-
-    public int getTimeLeft() {
-        return treasureGameController.getTimeLeft();
-    }
-
-    public float getArrowPos() {
-        return treasureGameController.getArrowPos();
-    }
-
-    public float getNextArrowPos() {
-        return treasureGameController.getNextArrowPos();
-    }
-
     public boolean bobberHasFish() {
         return bobberComponent.hasFish(fishController);
     }
@@ -167,6 +158,29 @@ public class FishingGameController {
         serverPlayer.closeHandledScreen();
     }
 
+    public float getTreasureStartProgress() {
+        return this.treasureComponent.getProgress();
+    }
+
+    public float getTreasureStartPosition() {
+        return this.treasureComponent.getPosition();
+    }
+
+    public float getTreasureProgress() {
+        return this.treasureGameController.getProgress();
+    }
+
+    public String getTreasureTimeLeft() {
+        return String.valueOf(this.treasureGameController.getTimeLeft());
+    }
+
+    public boolean isTreasureDone() {
+        return this.treasureGameController.isDone();
+    }
+
+    public int getLevel() {
+        return this.hookedFish.level();
+    }
 
     FishController fishController;
     BobberComponent bobberComponent;

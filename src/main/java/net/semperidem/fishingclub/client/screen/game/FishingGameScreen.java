@@ -12,6 +12,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.game.BobberComponent;
+import net.semperidem.fishingclub.game.FishController;
 import net.semperidem.fishingclub.game.FishingGameController;
 import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
 import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
@@ -36,11 +38,17 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     private int baseFishX;
     private int baseFishY;
 
+    private int baseBobberX;
+    private int baseBobberY;
+
     private int baseProgressX;
     private int baseProgressY;
 
     private int baseTreasureX;
+    private int currentTreasureX;
     private int baseTreasureY;
+
+    private int treasureStartTick = -1;
 
     public FishingGameScreen(FishingGameScreenHandler handler, PlayerInventory playerInventory, Text text) {
         super(handler, playerInventory, text);
@@ -70,7 +78,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
             return;
         }
 
-        int centerX = (int) (this.client.getWindow().getWidth() * 0.5f);
+        int centerX = (int) (this.client.getWindow().getScaledWidth() * 0.5f);
         double distanceFromCenterPercent = (centerX - mouseX) / centerX;
         if (Math.abs(distanceFromCenterPercent) < MIN_MOVE) {
             return;
@@ -93,93 +101,162 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         }
 
         this.x = (int) (this.client.getWindow().getScaledWidth() * 0.5f) - 90;//half of back
-        this.y = this.client.getWindow().getScaledHeight() - 100;//back
+        this.y = this.client.getWindow().getScaledHeight() - 51;//back
 
-        this.baseFishX = this.x;
-        this.baseFishY = this.y + 48;
+        this.baseFishX = this.x - 14;
+        this.baseFishY = this.y + 38;
+
+        this.baseBobberX = this.x + 2;
+        this.baseBobberY = this.baseFishY;
 
         this.baseProgressX = this.x + 3;
         this.baseProgressY = this.y + 3;
 
-        this.baseTreasureX = this.baseFishX;
-        this.baseTreasureY = this.baseFishY;
+        this.baseTreasureX = this.x - 3;
+        this.baseTreasureY = this.baseFishY + 3;
     }
 
     @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {}
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    }
 
     private void updateCameraTarget() {
-        if (MinecraftClient.getInstance().options.getPerspective() != Perspective.THIRD_PERSON_BACK) {
-            return;
-        }
         this.targetYaw = startingYaw + this.handler.controller.reelForce * 800;
         this.targetBodyYaw = startingYaw + this.handler.controller.reelForce * 6000;
-        this.targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.controller.reelForce )) * 1000) * 4));
+        this.targetPitch = startingPitch - (24.28f - (float) (Math.sqrt((0.05f - Math.abs(this.handler.controller.reelForce)) * 1000) * 4));
         this.clientPlayer.setPitch(getNextFramePitch());
         this.clientPlayer.setYaw(getNextFrameYaw());
         this.clientPlayer.setHeadYaw(getNextFrameYaw());
         this.clientPlayer.setBodyYaw(getNextFrameBodyYaw());
     }
 
-    private float getNextFramePitch(){
+    private float getNextFramePitch() {
         float currentPitch = clientPlayer.getPitch();
-        return currentPitch  + ((targetPitch - currentPitch) / 20);
+        return currentPitch + ((targetPitch - currentPitch) / 20);
     }
-    private float getNextFrameYaw(){
+
+    private float getNextFrameYaw() {
         float currentYaw = clientPlayer.getYaw();
-        return currentYaw  + ((targetYaw - currentYaw) / 10);
+        return currentYaw + ((targetYaw - currentYaw) / 10);
     }
-    private float getNextFrameBodyYaw(){
+
+    private float getNextFrameBodyYaw() {
         float currentBodyYaw = clientPlayer.getBodyYaw();
-       return currentBodyYaw  + ((targetBodyYaw - currentBodyYaw) / 5);
+        return currentBodyYaw + ((targetBodyYaw - currentBodyYaw) / 5);
 
     }
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(ATLAS, this.x, this.y, 0, 0, 180, 60, 180, 120);
+        context.drawTexture(ATLAS, this.x, this.y, 0, 0, 180, 50, 180, 120);
     }
 
     public void renderFront(DrawContext context) {
-        context.drawTexture(ATLAS, this.x, this.baseFishY, 0, 60, 180, 12, 180, 120);
+        context.drawTexture(ATLAS, this.x, this.baseFishY, 0, 50, 180, 12, 180, 120);
     }
 
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context, mouseX, mouseY, delta);
-        //Fish
-        context.enableScissor(this.baseFishX, this.baseFishY - 20, this.baseFishX + 174, this.baseFishY + 9);
+        context.enableScissor(this.x + 3, this.baseFishY - 20, this.x + 177, this.baseFishY + 9);
 
-        //Treasure
-        int currentTreasureX = this.baseTreasureX + 100;
-        context.drawTexture(ATLAS, currentTreasureX + 3, this.baseTreasureY - 8, 35, 100, 6, 6, 180, 120);
-        context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY, 35, 106, 11, 13, 180, 120);
-       // context.drawTexture(ATLAS, this.baseFishX, this.baseFishY, 72, 80, 14, 12, 180, 120);
+        //Fish
+        context.drawTexture(ATLAS, (int) (this.baseFishX + 174 * controller.getFishPosX() + 8), (int) (this.baseFishY - 20 * controller.getFishPosY()), 70, 70, 16, 14, 180, 120);
         context.disableScissor();
         //Progress
-        context.drawTexture(ATLAS, this.baseProgressX, this.baseProgressY, 0, 72, (int)(174 * 1f), 8, 180, 120);
+        float progress = this.controller.getProgress();
+        context.drawTexture(ATLAS, this.baseProgressX, this.baseProgressY, 0, 62, (int) (174 * progress), 8, 180, 120);
 
 
-        context.drawTexture(ATLAS, currentTreasureX - 3,  this.baseTreasureY - 40, 0, 80, 18, 40, 180, 120);
-        context.drawTexture(ATLAS, currentTreasureX + 4, (int) (this.baseTreasureY - 40 + 16 + 24 * 0.6f), 18, 80, 4, (int) (24 * 0.4f), 180, 120);
+        boolean treasureAvailable = this.controller.canPullTreasure();
+        boolean treasureActive = this.controller.isTreasureHuntActive();
 
-        int buttonU = Math.sin(tick) > 0 ? 0 : 10;
-        context.drawTexture(ATLAS, currentTreasureX - 7, this.baseTreasureY - 1, 22, 80 + buttonU, 26, 10, 180, 120);
-        boolean isWon = true;
-        int treasureResultU = isWon ? 0 : 8;
-        context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY - 36, 22, 100 + treasureResultU, 13, 8, 180, 120);
-//        context.drawTexture(ATLAS, this.x, this.y + 60 - 12, 0, 60, 180, 12, 180, 120);
-//        context.drawTexture(ATLAS, this.x, this.y + 60 - 12, 0, 60, 180, 12, 180, 120);
-        this.renderFront(context);
+        if(!treasureActive) {
+            String progressString = (int) (progress * 100) + "%";
+            int progressStringWidth = (int) (this.client.textRenderer.getWidth(progressString) * 0.5f);
+            context.drawText(this.client.textRenderer, progressString, this.baseProgressX + 87 - progressStringWidth, this.baseProgressY, progress > 0.5f ? 0xDDDDDD : 0x888888, true);
 
+            int level = this.controller.getLevel();
+            int levelWidth = this.client.textRenderer.getWidth(String.valueOf(level));
+            String levelString = "Level:";
+            context.drawText(this.client.textRenderer, String.valueOf(level), this.x + 60 - levelWidth, this.y + 15, 0xffeace, true);
+            context.drawText(this.client.textRenderer, levelString, this.x + 6, this.y + 15, 0xffeace, true);
+
+            int health = (int) this.controller.getLineHealth();
+            String healthString = "Health:";
+            int healthWidth = this.client.textRenderer.getWidth(String.valueOf(health));
+            context.drawText(this.client.textRenderer, String.valueOf(health), this.x + 60 - healthWidth, this.y + 26, 0xffeace, true);
+            context.drawText(this.client.textRenderer, healthString, this.x + 6, this.y + 26, 0xffeace, true);
+
+            String expectedFish = "[?]";
+            context.drawText(this.client.textRenderer, expectedFish, this.x + 94, this.y + 20, 0xffeace, true);
+            this.currentTreasureX = this.baseTreasureX + (int) (this.controller.getTreasureStartPosition() * 174);
+        }
+        if (treasureAvailable && !treasureActive) {
+            if (this.treasureStartTick < 0) {
+                this.treasureStartTick = (int) this.tick + 10;
+            }
+            context.enableScissor(this.x + 3, this.baseTreasureY - 20, this.x + 177, this.baseTreasureY + 9);
+            //Treasure
+            int timeSinceStart = (int) ((this.tick - this.treasureStartTick) * 0.5f);
+            int popupY = timeSinceStart > 6 ? (int) (6 + (timeSinceStart * 0.2) % 2) : timeSinceStart;
+            if (timeSinceStart < 50) {
+                context.drawTexture(ATLAS, currentTreasureX + 3, this.baseTreasureY - popupY, 33, 90, 6, 6, 180, 120);
+            }
+            context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY, 33, 96, 11, 13, 180, 120);
+            context.disableScissor();
+            float pickupProgress = this.controller.getTreasureStartProgress();
+            if (pickupProgress > 0) {
+                context.fill(currentTreasureX - 1, this.baseTreasureY, currentTreasureX + 12, this.baseTreasureY - 3, 0xFF270038);
+                context.fill(currentTreasureX, this.baseTreasureY - 1, (int) (currentTreasureX + 11 * pickupProgress), this.baseTreasureY - 2, 0xFFA400EB);
+
+            }
+        }
         //Bobber
-        boolean isPulling = false;
-        boolean isSuccessful = false;
+        this.renderFront(context);
+        boolean isPulling = controller.isReeling();
+        boolean isSuccessful = controller.bobberHasFish();
         int bobberU = isSuccessful ? 12 : 0;
         int bobberV = isPulling ? 9 : 0;
+        float bobberWidthScale = this.controller.getBobberSize() / BobberComponent.BASE_LENGTH;
+        //left
+        int bobberX = (int) (this.baseBobberX + 176 * controller.getBobberPos() - 6 * bobberWidthScale);
+        context.drawTexture(ATLAS, bobberX,
+                this.baseBobberY, 46 + bobberU, 70 + bobberV, 6, 9, 180, 120);
+        //right
+        context.drawTexture(ATLAS,
+                (int) ((this.baseBobberX + 176 * controller.getBobberPos()) + 6 * bobberWidthScale - 6),
+                this.baseBobberY, 52 + bobberU, 70 + bobberV, 6, 9, 180, 120);
+
+
+        if (!treasureActive) {
+            return;
+        }
+        context.fill(this.x + 1, this.y + 1, this.x + 179, this.y + 49, 0xAA000000);
+
+
         context.enableScissor(this.baseFishX + 3, this.baseFishY, this.baseFishX + 174, this.baseFishY + 9);
-        //context.drawTexture(ATLAS, this.baseFishX, this.baseFishY, 48 + bobberU, 80 + bobberV, 12, 9, 180, 120);
+        //Treasure (again)
+        context.drawTexture(ATLAS, currentTreasureX, this.baseTreasureY, 33, 96, 11, 13, 180, 120);
         context.disableScissor();
+
+        //Treasure widget bg
+        context.drawTexture(ATLAS, currentTreasureX - 3, this.baseTreasureY - 50, 0, 70, 17, 40, 180, 120);
+        //Treasure progress
+        double treasureProgress = this.controller.getTreasureProgress();//next line replace cast to float with cast to int for stable progress
+        context.drawTexture(ATLAS, currentTreasureX + 4, (int) (this.baseTreasureY - 35 + 26 * (1 - treasureProgress)), 17, (float) (70 + 26 * (1 - treasureProgress)), 3, (int) (26 * treasureProgress), 180, 120);
+
+        int buttonU = Math.sin(tick) > 0 ? 0 : 10;
+        context.drawTexture(ATLAS, currentTreasureX - 7, this.baseTreasureY - 11, 20, 70 + buttonU, 26, 10, 180, 120);
+        boolean isDone = this.controller.isTreasureDone();
+        if (!isDone) {
+            int timeLeftWidth = (int) (this.client.textRenderer.getWidth(this.controller.getTreasureTimeLeft()) * 0.5f);
+            context.drawText(this.client.textRenderer, this.controller.getTreasureTimeLeft(), currentTreasureX - timeLeftWidth + 6, this.baseTreasureY - 45, 0xFFFFFF, true);
+            return;
+        }
+        int treasureResultU = this.controller.getTreasureProgress() >= 1 ? 0 : 8;
+
+        context.drawTexture(ATLAS, currentTreasureX - 1, (int) (this.baseTreasureY - 46 + (this.tick * 0.2f % 2)), 20, 90 + treasureResultU, 13, 8, 180, 120);
     }
 }

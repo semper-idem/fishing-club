@@ -79,10 +79,10 @@ public record RodConfiguration(
             ItemStack.CODEC.optionalFieldOf("hook").forGetter(RodConfiguration::hook)
     ).apply(instance, (line, bobber, reel, bait, hook) -> of(
             line.orElse(ItemStack.EMPTY),
-            line.orElse(ItemStack.EMPTY),
-            line.orElse(ItemStack.EMPTY),
-            line.orElse(ItemStack.EMPTY),
-            line.orElse(ItemStack.EMPTY)
+            bobber.orElse(ItemStack.EMPTY),
+            reel.orElse(ItemStack.EMPTY),
+            bait.orElse(ItemStack.EMPTY),
+            hook.orElse(ItemStack.EMPTY)
     )));
 
     public static PacketCodec<RegistryByteBuf, RodConfiguration> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
@@ -171,7 +171,7 @@ public record RodConfiguration(
         int maxLineLength = 0;
         float bobberControl = 0;
         float bobberControlMultiplier = 1;
-        float bobberWidthMultiplier = 0.5f;
+        float bobberWidthMultiplier = 1f;
         boolean canCast = false;
         int minOperatingTemperature = -1;
         int maxOperatingTemperature = 1;
@@ -199,7 +199,9 @@ public record RodConfiguration(
                 ItemStack hook
         ) {
             this.canCast = this.validateAndApply(line);
-            this.validateAndApply(bobber);
+            if (!this.validateAndApply(bobber)) {
+                this.applyNoBobberPenalty();
+            }
             if (!this.validateAndApply(bait)) {
                 this.applyNoBaitPenalty();
             }
@@ -209,6 +211,10 @@ public record RodConfiguration(
             if (!this.validateAndApply(hook)) {
                 this.applyNoHookPenalty();
             }
+        }
+
+        void applyNoBobberPenalty() {
+            this.bobberWidthMultiplier *= 0.5f;
         }
 
         void applyNoReelPenalty() {

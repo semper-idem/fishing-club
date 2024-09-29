@@ -26,13 +26,8 @@ public class HealthComponent {
         this.health = payload.health();
     }
 
-    public void tick() {
-        if (!parent.progressComponent.isWinning()) {
-            return;
-        }
-        if (parent.hookedFish.damage() != 0) {
-            health -= (parent.hookedFish.damage());
-        }
+    public void damage() {
+        health -= this.parent.hookedFish.damage();
 
         if (health <= 0) {
             parent.loseGame();

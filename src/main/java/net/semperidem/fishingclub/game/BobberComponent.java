@@ -9,7 +9,7 @@ import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOBBER_
 import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {
-    private static final float BASE_LENGTH = 0.25f;
+    public static final float BASE_LENGTH = 0.0682f;
 
     private final float length;
     private final float baseResistance;
@@ -84,11 +84,14 @@ public class BobberComponent {
         return length;
     }
 
+    public boolean hasPoint(float pointPosition){
+        return Math.abs(positionX - pointPosition) <= length * 0.5f;
+    }
+
     public boolean hasFish(FishController fishController) {
         if (fishController.isFishJumping()) {
             return false;
         }
-        float fishPositionX = fishController.getPositionX();
-        return Math.abs(positionX - fishPositionX) <= (length - FishController.FISH_LENGTH + 0.001) * 0.5f;
+        return hasPoint(fishController.getPositionX());
     }
 }
