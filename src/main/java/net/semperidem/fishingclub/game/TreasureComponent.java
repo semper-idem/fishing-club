@@ -25,9 +25,9 @@ public class TreasureComponent {
         treasureChance *= (1 + parent.fishingCard.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
 
         this.parent = parent;
-        this.isActive = true;//Math.random() < treasureChance;
-        this.treasureTriggerPoint = 0;//(float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
-        this.position = 0.2f;//(float) Math.random();
+        this.isActive = Math.random() < treasureChance;
+        this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
+        this.position = (float) Math.random();
     }
 
     public void updateClient(FishingGameTickS2CPayload payload) {

@@ -27,7 +27,6 @@ public class FCRegistry {
 
 // in the initializer
     public static void register(){
-        FCTags.register();
         FCBlocks.register();
         FCItems.register();
         FCEntityTypes.register();

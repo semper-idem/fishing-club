@@ -52,7 +52,7 @@ public class FCItems {
     public static FishingRodCoreItem CORE_WOOD;
 
     public static FishingRodCoreItem CORE_BONE;
-    public static FishingRodCoreItem CORE_IRON;
+    public static FishingRodCoreItem CORE_COPPER;
     public static FishingRodCoreItem CORE_BLAZE;
     public static FishingRodCoreItem CORE_BREEZE;
 
@@ -269,7 +269,7 @@ public class FCItems {
                 .luck(1)
         );
 
-        CORE_IRON = registerItem("core_iron", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
+        CORE_COPPER = registerItem("core_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
                 .weightClass(3)
                 .castPower(ItemStat.MULTIPLIER_T2)
                 .fishControlCeiling(ItemStat.BASE_T4)

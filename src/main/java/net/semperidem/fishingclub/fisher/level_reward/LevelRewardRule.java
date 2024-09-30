@@ -62,8 +62,8 @@ public class LevelRewardRule {
         //ITEMS
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
-        addRule(create(5, 0, 0).withRewards(itemReward(FCItems.CORE_IRON.getDefaultStack(), 1)));
-        addRule(create(50, 0, 0).withRewards(itemReward(FCItems.CORE_IRON.getDefaultStack(), 1)));
+        addRule(create(5, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack(), 1)));
+        addRule(create(50, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack(), 1)));
 
         //Trophy //TODO ADD TROPHY, CHANGE PER PRESTIGE
         addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));

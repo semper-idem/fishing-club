@@ -37,7 +37,7 @@ public class TreasureReward {
     ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
         if (rewardStack.isIn(FCTags.ROD_CORE)) {
-            return FCItems.CORE_IRON.getDefaultStack();
+            return FCItems.CORE_COPPER.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {
