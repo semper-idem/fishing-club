@@ -18,7 +18,6 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
@@ -33,6 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -521,7 +521,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.hookCountdown = 45;//(int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
         this.lastHookCountdown = hookCountdown;
 
-        Optional<SpecimenData> caughtFish = FishUtil.getFishOnHook(this);
+        Optional<SpecimenData> caughtFish = FishUtil.fishOnHook(this);
 
         float biteStrength = 1;
         if (caughtFish.isPresent()) {

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
+import com.google.common.collect.Range;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -82,14 +83,26 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
         this.species.staminaLevel = staminaLevel;
         return this;
     }
+
+
+    public SpeciesBuilder <T> temperature(Range<Float> temperature) {
+        this.species.temperature = temperature;
+        return this;
+    }
+
+    public SpeciesBuilder <T> saltiness(Range<Float> saltiness) {
+        this.species.saltiness = saltiness;
+        return this;
+    }
+
     public SpeciesBuilder <T> spawnBiome(
-            Predicate<BiomeSelectionContext> biomes,
+            Predicate<BiomeSelectionContext> spawnCondition,
             int weight,
             int min,
             int max
     ) {
         BiomeModifications.addSpawn(
-                biomes,
+                spawnCondition,
                 SpawnGroup.WATER_AMBIENT,
                 this.species.entityType,
                 weight,

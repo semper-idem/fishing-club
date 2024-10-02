@@ -16,18 +16,18 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
+import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.util.MathUtil;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public record SpecimenData(
@@ -90,26 +90,28 @@ public record SpecimenData(
     public static SpecimenData init(Species<TropicalFishEntity> species, int subspecies) {
         return init(new IHookEntity() {}, species, subspecies);
     }
-    public static SpecimenData init(IHookEntity caughtWith) {
+    public static Optional<SpecimenData> init(IHookEntity caughtWith) {
 
         int luck = 0;
-
-
-        Random r = caughtWith.getRandom();
-        if (caughtWith.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+        FishingCard fishingCard = caughtWith.getFishingCard();
+        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
             luck++;
         }
-        if (caughtWith.getFishingCard().holder() instanceof PlayerEntity holder) {
-            luck = (int) holder.getLuck();
-
+        if (fishingCard.holder() instanceof PlayerEntity holder) {
+            luck += (int) holder.getLuck();
         }
 
         var isAlbino = Math.random() < (0.005f + luck * 0.001) * caughtWith.getWaitTime() / 1200;
-        int finalLuck = luck;
-        List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > finalLuck * 100).toList();
-        Species<?> species = availableSpecies.get(r.nextInt(availableSpecies.size()));
-        return init(caughtWith,species, isAlbino ? -1 : 0);
+        return species(caughtWith).map(value -> init(caughtWith, value, isAlbino ? -1 : 0));
     }
+
+    private static Optional<Species<?>> species(IHookEntity iHookEntity) {
+        if (iHookEntity instanceof HookEntity hookEntity) {
+            return Species.Library.drawRandom(hookEntity);
+        }
+        return Species.Library.drawRandom(iHookEntity);
+    }
+
 
     public ModelIdentifier getModelId() {
         return this.isAlbino() ? species().albinoModelId() : species().modelId();
@@ -319,8 +321,8 @@ public int experience(double xFisher) {
 
 
     public static final SpecimenData DEFAULT =
-            new SpecimenData(Species.Library.DEFAULT.name(),
-                    Species.Library.DEFAULT.name(),
+            new SpecimenData(net.semperidem.fishingclub.fish.Species.Library.DEFAULT.name(),
+                    net.semperidem.fishingclub.fish.Species.Library.DEFAULT.name(),
                     MIN_LEVEL, MIN_QUALITY,
                     0,
                     0,

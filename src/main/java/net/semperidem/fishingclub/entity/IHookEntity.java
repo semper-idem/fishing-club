@@ -1,8 +1,15 @@
 package net.semperidem.fishingclub.entity;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.biome.Biome;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
+
+import java.util.Optional;
 
 
 public interface IHookEntity {
@@ -30,4 +37,5 @@ public interface IHookEntity {
     default int getWaitTime() {
         return 0;
     }
+
 }

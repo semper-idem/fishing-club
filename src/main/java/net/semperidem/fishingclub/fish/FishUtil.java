@@ -4,7 +4,6 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -238,29 +237,20 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         stack.set(DataComponentTypes.LORE, new LoreComponent(lore));
     }
 
-    public static Optional<SpecimenData> getFishOnHook(IHookEntity hookEntity) {
+    public static Optional<SpecimenData> fishOnHook(IHookEntity iHookEntity) {
         float luck = 0.5f;
-        if (hookEntity.getFishingCard().holder() instanceof PlayerEntity playerEntity) {
-            luck = (playerEntity.getBlockY() + 128) / 384f;
+        if (iHookEntity.getFishingCard().holder() instanceof PlayerEntity playerEntity) {
             luck *= (1 + playerEntity.getLuck());
-            if (hookEntity.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+            if (iHookEntity.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
                 luck++;
             }
+            luck *= (float) MathHelper.clamp((playerEntity.getBlockY() + 128) / 192f, 0, 1.5);
         }
 
         if (Math.random() < 0.05 / luck) {
            return Optional.empty();
         }
-
-        int attempts = 10;
-        int maxWeight = hookEntity.maxWeight();
-        for(int i = 0; i < attempts; i++) {
-            SpecimenData hooked = SpecimenData.init(hookEntity);
-            if (hooked.weight() > maxWeight) {
-                return Optional.of(hooked);
-            }
-        }
-        return Optional.empty();
+        return SpecimenData.init(iHookEntity);
     }
 
     public static int getTemperature (World world, BlockPos pos) {

@@ -166,7 +166,7 @@ public record RodConfiguration(
 
     public static class AttributeComposite {
 
-        /** TODO
+        /** DONE
          * Map to limit in kgs
          * If fish min weight > kg limit remove from pool
          * Caught fish weight must be lower the kg limit
@@ -203,14 +203,14 @@ public record RodConfiguration(
          *  apply freezing to player
          *  chance to break parts
          * */
-        int minOperatingTemperature = -1;
+        int minOperatingTemperature = -2;
 
         /** TODO
          *  If hookEntity temperature is higher than max
          *  apply fire to player
          *  after x seconds line,bobber,hook and bait breaks
          * */
-        int maxOperatingTemperature = 1;
+        int maxOperatingTemperature = 2;
 
         /** TODO
          * Increases average fish quality
@@ -218,7 +218,7 @@ public record RodConfiguration(
         float fishQuality = 0;
 
 
-        /** TODO
+        /** DONE
          * Increase average fish rarity
          * */
         float fishRarity = 0;
@@ -316,8 +316,20 @@ public record RodConfiguration(
             return 0.5f + this.bobberControl / (this.bobberControl + 100);
         }
 
-        public int weightClass() {
-            return this.weightClass;
+        public float maxFishWeight() {
+            return switch(this.weightClass) {
+                case 6 -> 2500f;
+                case 5 -> 500f;
+                case 4 -> 100f;
+                case 3 -> 25f;
+                case 2 -> 12.5f;
+                case 1 -> 5f;
+                default -> 1;
+            };
+        }
+
+        public float fishRarity() {
+            return this.fishRarity / (this.fishRarity + 100);
         }
 
         public int weightMagnitude() {

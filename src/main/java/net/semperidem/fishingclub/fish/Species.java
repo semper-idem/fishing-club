@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fish;
 
+import com.google.common.collect.Range;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
@@ -16,18 +17,22 @@ import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.Biome;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.entity.HookEntity;
+import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityModel;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityRenderer;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
+import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.util.MathUtil;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import net.minecraft.util.math.random.Random;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Species<T extends WaterCreatureEntity> {
@@ -43,6 +48,11 @@ public class Species<T extends WaterCreatureEntity> {
     float lengthRange;
     float minWeight;
     float weightRange;
+    //-2 for end, -1 for freezing, 0 for other,1 for desert 2 for nether
+    Range<Float> temperature = Range.all();
+    //0 for river, 1 for other, 2 for ocean
+    Range<Float> saltiness = Range.all();
+
 
     /**
      * Positive decimal point number
@@ -181,15 +191,52 @@ public class Species<T extends WaterCreatureEntity> {
                 this.layerId,
                 this.texturedModelDataProvider
         );
-}
+    }
 
+    public boolean canHook(HookEntity hookEntity) {
+        if (hookEntity.getCaughtUsing().attributes().maxFishWeight() < this.minWeight) {
+            return false;
+        }
+        RegistryEntry<Biome> biomeEntry = hookEntity.getWorld().getBiome(hookEntity.getBlockPos());
+        if (!this.saltiness.contains(biomeSaltiness(biomeEntry))){
+            return false;
+        }
+        return this.temperature.contains(biomeTemperature(biomeEntry));
+    }
     public static final double WEIRD_RANGE = 0.7D;
     static final float SCALE_RANGE = 0.6f;
     static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
 
-    public static class Library {
+    private static float biomeSaltiness(RegistryEntry<Biome> biomeEntry) {
+        if (biomeEntry.isIn(BiomeTags.IS_OCEAN)) {
+            return 2;
+        }
+        if (!biomeEntry.isIn(BiomeTags.IS_RIVER)) {
+            return 1;
+        }
+        return 0;
+    }
 
-        private static final Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
+    //prob could be done smarter:)
+    private static float biomeTemperature(RegistryEntry<Biome> biomeEntry) {
+        if (biomeEntry.isIn(BiomeTags.IS_NETHER)) {
+            return 2;
+        }
+        if (biomeEntry.isIn(BiomeTags.IS_END)) {
+            return -2;
+        }
+        float vanillaTemperature = biomeEntry.value().getTemperature();
+        if (vanillaTemperature > 1) {
+            return 1;
+        }
+        if (vanillaTemperature <= 0) {
+            return -1;
+        }
+        return 0;
+    }
+    public static class Library {
+        public static final Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
+        public static final Predicate<BiomeSelectionContext> NONE = context -> false;
 //        private static final Predicate<BiomeSelectionContext> ANY = context -> true;
 //        private static final Predicate<BiomeSelectionContext> COLD = context -> context.getBiome().getTemperature() <= -1.2;
 //        private static final Predicate<BiomeSelectionContext> NORMAL = context -> context.getBiome().getTemperature() < 1 && context.getBiome().getTemperature() >= 0.2;
@@ -240,6 +287,38 @@ public class Species<T extends WaterCreatureEntity> {
             return SPECIES_BY_NAME.values().iterator();
         }
 
+        public static Optional<Species<?>> drawRandom(IHookEntity hookEntity) {
+            Random r = hookEntity.getRandom();
+            int rNormal = (int) (Math.abs(r.nextGaussian() + 1) + 1) * 100;
+            List<Species<?>> availableSpecies = Species.Library.values().stream().filter(s -> s.rarity() > rNormal).toList();
+            if (availableSpecies.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(availableSpecies.get(r.nextInt(availableSpecies.size())));
+        }
+
+        public static Optional<Species<?>> drawRandom(HookEntity hookEntity) {
+            final int[] lastWeight = {0};
+            RodConfiguration.AttributeComposite rodAttributes = hookEntity.getCaughtUsing().attributes();
+            float rarityMultiplier = rodAttributes.fishRarity();
+            HashMap<Integer, Species<?>> weightedSpecies = new HashMap<>();
+            SPECIES_BY_NAME.values().stream().filter(species -> species.canHook(hookEntity)).forEach(
+                    species -> {
+                        int range = (int) (lastWeight[0] + species.rarity * rarityMultiplier);
+                        weightedSpecies.put(range, species);
+                        lastWeight[0] = range;
+                    }
+            );
+            float r = (float) (lastWeight[0] * Math.random());
+
+            for(Integer weight : weightedSpecies.keySet()) {
+                if (weight > r) {
+                    return Optional.ofNullable(weightedSpecies.get(weight));
+                }
+            }
+            return Optional.empty();
+        }
+
         public static boolean isSellable(ItemStack itemStack) {
             return SELLABLE_ITEMS.contains(itemStack.getItem());
         }
@@ -258,6 +337,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .staminaLevel(4)
                     .vanillaEntity(EntityType.TROPICAL_FISH)
                     .vanillaItem(Items.TROPICAL_FISH)
+                    .saltiness(Range.atLeast(2F))
+                    .temperature(Range.closed(1F, 1F))
                     .build();
 
 
@@ -270,6 +351,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .staminaLevel(4)
                     .vanillaEntity(EntityType.PUFFERFISH)
                     .vanillaItem(Items.PUFFERFISH)
+                    .saltiness(Range.atLeast(2F))
+                    .temperature(Range.closed(1F, 1F))
                     .build();
 
             SOCKEYE_SALMON = SpeciesBuilder
@@ -280,6 +363,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .weightMinAndRange(0, 1)
                     .staminaLevel(4)
                     .vanillaEntity(EntityType.SALMON)
+                    .saltiness(Range.closed(0F, 2F))
+                    .temperature(Range.closed(-1F, 0F))
                     .vanillaItem(Items.SALMON)
                     .build();
             COD  = SpeciesBuilder
@@ -292,6 +377,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .staminaLevel(0)
                     .vanillaEntity(EntityType.COD)
                     .vanillaItem(Items.COD)
+                    .saltiness(Range.closed(1F, 2F))
+                    .temperature(Range.closed(-1F, 0F))
                     .build();
             BUTTERFISH = SpeciesBuilder
                     .<ButterfishEntity>create("Butterfish")
@@ -304,6 +391,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .entity(ButterfishEntity::new)
                     .attributes(ButterfishEntity.createFishAttributes())
                     .spawnBiome(COD_SPAWN, 15, 1, 2)
+                    .saltiness(Range.closed(1F, 1F))
+                    .temperature(Range.closed(0F, 0F))
                     .build();
 
 
