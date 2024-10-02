@@ -47,7 +47,7 @@ public class FishController {
         nextPositionX = 0.5f;
         positionX = nextPositionX;
         positionY = 0;
-        baseSpeed = parent.hookedFish.level() * 0.005f;
+        baseSpeed = parent.hookedFish.level() * 0.05f;
 
         patternInstance = new MovementPatternInstance(species.movement(), parent.hookedFish.level());
         lastSegmentIndex = 0;
@@ -136,7 +136,7 @@ public class FishController {
 
     public void calculateSpeed() {
         float staminaPercent = getStaminaPercentage();
-        speed = baseSpeed + 0.75f * staminaPercent;
+        speed = baseSpeed + 0.5f * staminaPercent;
         StatusEffectInstance sei = this.parent.player.getStatusEffect(FCStatusEffects.SLOW_FISH_BUFF);
         if (sei != null) {
             speed *= 1 - ((sei.getAmplifier() + 1) * DecreaseFishSpeedStatusEffect.SLOW_AMOUNT);

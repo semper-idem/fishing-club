@@ -48,7 +48,7 @@ public class BobberComponent {
 
         int levelDifference = this.parent.fishingCard.getLevel() - this.parent.hookedFish.level();
         float levelDifferenceMultiplier = (float) MathHelper.clamp(levelDifference > 0 ? 1 + levelDifference * 0.01 : 1 - levelDifference * 0.05, 0.5, 2);
-        return BASE_LENGTH * levelDifferenceMultiplier * lengthMultiplier * this.parent.rodConfiguration.attributes().bobberWidthMultiplier();
+        return BASE_LENGTH * levelDifferenceMultiplier * lengthMultiplier * this.parent.rodConfiguration.attributes().bobberWidth();
     }
 
     public void tick() {

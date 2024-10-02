@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
 import net.semperidem.fishingclub.registry.FCItems;
@@ -46,9 +47,9 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         addPartSlot(rodInventory,44, 115, FCItems.BAIT_ROTTEN_FLESH);
     }
 
-    private void addPartSlot(RodInventory rodInventory, int x, int y, Item boundItem){
+    private void addPartSlot(RodInventory rodInventory, int x, int y, PartItem boundItem){
 
-        addSlot(new PartSlot(rodInventory, rodSlot++,x, y, boundItem, equipPart()));
+        addSlot(new PartSlot(rodInventory, rodSlot++,x, y, boundItem, equipPart(boundItem.type())));
     }
 
     public RodConfiguration getConfiguration() {
@@ -56,7 +57,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         return configuration;
     }
 
-    public Consumer<ItemStack> equipPart(){
+    public Consumer<ItemStack> equipPart(RodConfiguration.PartType partType){
 
         return (partStack) -> {
 
@@ -65,8 +66,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
             if (rodConfiguration == null) {
                 this.configuration = RodConfiguration.EMPTY;
             }
-
-            this.configuration = this.configuration.equip(partStack);
+            this.configuration = partStack.isEmpty() ? this.configuration.unEquip(partType) : this.configuration.equip(partStack);
 
             this.core.set(ROD_CONFIGURATION, this.configuration);
         };

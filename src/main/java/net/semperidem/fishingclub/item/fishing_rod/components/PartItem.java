@@ -28,6 +28,10 @@ public abstract class PartItem extends Item {
         }
     }
 
+    public RodConfiguration.PartType type() {
+        return this.type;
+    }
+
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.fishQuality += this.fishQuality;
         validateWeightCapacity(attributes);

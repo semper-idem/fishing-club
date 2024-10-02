@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class LinePartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
     int maxLineLength;
 
     public LinePartItem(Settings settings) {
@@ -40,16 +39,10 @@ public class LinePartItem extends PartItem {
         return this;
     }
 
-    public LinePartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
-        return this;
-    }
-
     @Override
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.maxLineLength = this.maxLineLength;
         attributes.fishControl += this.fishControl.value;
-        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
         super.apply(attributes);
     }
 }

@@ -91,6 +91,17 @@ public record RodConfiguration(
         return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
     }
 
+    public RodConfiguration unEquip(PartType partType) {
+        return switch (partType) {
+            case PartType.LINE -> equipLine(ItemStack.EMPTY);
+            case PartType.BOBBER -> equipBobber(ItemStack.EMPTY);
+            case PartType.REEL -> equipReel(ItemStack.EMPTY);
+            case PartType.BAIT -> equipBait(ItemStack.EMPTY);
+            case PartType.HOOK -> equipHook(ItemStack.EMPTY);
+            default -> this;
+        };
+    }
+
     public RodConfiguration equip(ItemStack part) {
         if (!(part.getItem() instanceof PartItem partItem)) {
             return this;
@@ -166,20 +177,20 @@ public record RodConfiguration(
 
     public static class AttributeComposite {
 
+        /** TODO
+         * Map to kgs
+         * If fish min weight >*/
         int weightClass = 0;
+
         int weightMagnitude = 2;
         int maxLineLength = 0;
         float bobberControl = 0;
-        float bobberControlMultiplier = 1;
-        float bobberWidthMultiplier = 1f;
         boolean canCast = false;
         int minOperatingTemperature = -1;
         int maxOperatingTemperature = 1;
         float fishQuality = 0;
         float fishRarity = 0;
-        float fishRarityMultiplier = 1;
         float fishControl = 0;
-        float fishControlMultiplier = 0;
         float treasureBonus = 0;
         float treasureRarityBonus = 0;
         float timeHookedMultiplier = 1;
@@ -214,7 +225,7 @@ public record RodConfiguration(
         }
 
         void applyNoBobberPenalty() {
-            this.bobberWidthMultiplier *= 0.5f;
+            this.bobberControl = 0;
         }
 
         void applyNoReelPenalty() {
@@ -229,7 +240,6 @@ public record RodConfiguration(
             this.waitTimeReductionMultiplier *= ItemStat.MULTIPLIER_T025.value;
             this.timeHookedMultiplier *= ItemStat.MULTIPLIER_T05.value;
             this.fishRarity -= ItemStat.BASE_T5.value;
-            this.fishRarityMultiplier *= ItemStat.MULTIPLIER_T05.value;
         }
 
         boolean validateAndApply(ItemStack part) {
@@ -242,6 +252,9 @@ public record RodConfiguration(
             return true;
         }
 
+        public float bobberWidth() {
+            return 0.5f + this.bobberControl / (this.bobberControl + 100);
+        }
 
         public int weightClass() {
             return this.weightClass;
@@ -253,10 +266,6 @@ public record RodConfiguration(
 
         public int maxLineLength() {
             return maxLineLength;
-        }
-
-        public float bobberWidthMultiplier() {
-            return bobberWidthMultiplier;
         }
 
         public boolean canCast() {
@@ -279,20 +288,6 @@ public record RodConfiguration(
             return fishQuality;
         }
 
-        public float fishControl(ItemStack coreStack) {
-            if (!(coreStack.getItem() instanceof FishingRodCoreItem coreItem)) {
-               return 0;
-            }
-            return MathHelper.clamp(fishControl * fishControlMultiplier, 0, coreItem.fishControlCeiling.value);
-        }
-
-        public float bobberControl(ItemStack coreStack) {
-            if (!(coreStack.getItem() instanceof FishingRodCoreItem coreItem)) {
-                return 0;
-            }
-            return MathHelper.clamp(bobberControl * bobberControlMultiplier, 0, coreItem.bobberControlCeiling.value);
-        }
-
         public float treasureBonus() {
             return this.treasureBonus;
         }
@@ -310,10 +305,8 @@ public record RodConfiguration(
                     ", fishQuality=" + fishQuality +
                     ", weightMagnitude=" + weightMagnitude +
                     ", maxLineLength=" + maxLineLength +
-                    ", bobberWidth=" + bobberWidthMultiplier +
                     ", canCast=" + canCast +
                     ", fishControl=" + fishControl +
-                    ", fishControlMultiplier=" + fishControlMultiplier +
                     ", treasureBonus=" + treasureBonus +
                     ", treasureRarityBonus=" + treasureRarityBonus +
                     ",";

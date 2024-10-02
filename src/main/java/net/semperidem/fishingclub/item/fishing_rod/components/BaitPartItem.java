@@ -7,11 +7,9 @@ import java.util.HashMap;
 public class BaitPartItem extends PartItem{
     HashMap<Species<?>, Float> speciesBoost = new HashMap<>();
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat treasureBonus = ItemStat.BASE_T1;
     ItemStat treasureRarityBonus = ItemStat.BASE_T1;
     ItemStat fishRarity = ItemStat.BASE_T1;
-    ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat fishQuantityBonus = ItemStat.BASE_T1;
@@ -50,11 +48,6 @@ public class BaitPartItem extends PartItem{
 
     public BaitPartItem fishRarity(ItemStat fishRarity) {
         this.fishRarity = fishRarity;
-        return this;
-    }
-
-    public BaitPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
-        this.fishRarityMultiplier = fishRarityMultiplier;
         return this;
     }
 
@@ -103,11 +96,9 @@ public class BaitPartItem extends PartItem{
     @Override
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.fishControl += this.fishControl.value;
-        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
         attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
         attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         attributes.fishRarity += this.fishRarity.value;
-        attributes.fishRarityMultiplier += this.fishRarityMultiplier.value;
         attributes.treasureBonus += this.treasureBonus.value;
         attributes.treasureRarityBonus += this.treasureRarityBonus.value;
         super.apply(attributes);

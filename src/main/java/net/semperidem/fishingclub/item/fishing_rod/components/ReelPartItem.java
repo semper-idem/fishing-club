@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class ReelPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat bobberControl = ItemStat.BASE_T1;
     ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
 
@@ -36,11 +35,6 @@ public class ReelPartItem extends PartItem {
         return this;
     }
 
-    public ReelPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
-        return this;
-    }
-
     public ReelPartItem bobberControl(ItemStat bobberControl) {
         this.bobberControl = bobberControl;
         return this;
@@ -54,7 +48,6 @@ public class ReelPartItem extends PartItem {
     @Override
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.fishControl += this.fishControl.value;
-        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
         attributes.bobberControl += this.bobberControl.value;
         attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         super.apply(attributes);

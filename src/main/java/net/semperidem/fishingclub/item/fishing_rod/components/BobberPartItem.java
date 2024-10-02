@@ -2,8 +2,6 @@ package net.semperidem.fishingclub.item.fishing_rod.components;
 
 public class BobberPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
-    ItemStat bobberWidthMultiplier;
     ItemStat bobberControl;
     ItemStat waitTimeReductionMultiplier;
     ItemStat timeHookedMultiplier;
@@ -34,11 +32,6 @@ public class BobberPartItem extends PartItem {
         return this;
     }
 
-    public BobberPartItem bobberWidthMultiplier(ItemStat bobberWidthMultiplier) {
-        this.bobberWidthMultiplier = bobberWidthMultiplier;
-        return this;
-    }
-
     public BobberPartItem setFishBiteEffect(Runnable fishBiteEffect) {
         this.fishBiteEffect = fishBiteEffect;
         return this;
@@ -51,11 +44,6 @@ public class BobberPartItem extends PartItem {
 
     public BobberPartItem fishControl(ItemStat fishControl) {
         this.fishControl = fishControl;
-        return this;
-    }
-
-    public BobberPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
         return this;
     }
 
@@ -72,11 +60,9 @@ public class BobberPartItem extends PartItem {
     @Override
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.fishControl += this.fishControl.value;
-        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
         attributes.bobberControl += this.bobberControl.value;
         attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
-        attributes.bobberWidthMultiplier = this.bobberWidthMultiplier.value;
         super.apply(attributes);
     }
 

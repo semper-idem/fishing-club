@@ -15,13 +15,11 @@ import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat fishControlMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat biteFailChance = ItemStat.MULTIPLIER_T3;
     ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
     ItemStat treasureBonus = ItemStat.BASE_T1;
     ItemStat treasureRarityBonus = ItemStat.BASE_T1;
     ItemStat fishRarity = ItemStat.BASE_T1;
-    ItemStat fishRarityMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat timeHookedMultiplier = ItemStat.MULTIPLIER_T3;
     ItemStat waitTimeReductionMultiplier = ItemStat.MULTIPLIER_T3;
     boolean sharp = false;
@@ -75,11 +73,6 @@ public class HookPartItem extends PartItem {
         return this;
     }
 
-    public HookPartItem fishControlMultiplier(ItemStat fishControlMultiplier) {
-        this.fishControlMultiplier = fishControlMultiplier;
-        return this;
-    }
-
     public HookPartItem treasureBonus(ItemStat treasureBonus) {
         this.treasureBonus = treasureBonus;
         return this;
@@ -92,11 +85,6 @@ public class HookPartItem extends PartItem {
 
     public HookPartItem fishRarity(ItemStat fishRarity) {
         this.fishRarity = fishRarity;
-        return this;
-    }
-
-    public HookPartItem fishRarityMultiplier(ItemStat fishRarityMultiplier) {
-        this.fishRarityMultiplier = fishRarityMultiplier;
         return this;
     }
 
@@ -113,12 +101,10 @@ public class HookPartItem extends PartItem {
     @Override
     void apply(RodConfiguration.AttributeComposite attributes) {
         attributes.fishControl += this.fishControl.value;
-        attributes.fishControlMultiplier *= this.fishControlMultiplier.value;
         attributes.baitFailChance = this.biteFailChance.value;
         attributes.timeHookedMultiplier *= this.timeHookedMultiplier.value;
         attributes.waitTimeReductionMultiplier *= this.waitTimeReductionMultiplier.value;
         attributes.fishRarity += this.fishRarity.value;
-        attributes.fishRarityMultiplier += this.fishRarityMultiplier.value;
         attributes.treasureBonus += this.treasureBonus.value;
         attributes.treasureRarityBonus += this.treasureRarityBonus.value;
         super.apply(attributes);
