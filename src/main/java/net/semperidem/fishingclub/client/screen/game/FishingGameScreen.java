@@ -5,15 +5,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.game.BobberComponent;
-import net.semperidem.fishingclub.game.FishController;
 import net.semperidem.fishingclub.game.FishingGameController;
 import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
 import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
@@ -22,7 +19,7 @@ import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 
 public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
     public final FishingGameController controller;
-    private static final Identifier ATLAS = FishingClub.identifier("textures/gui/fishing_game/atlas.png");
+    private static final Identifier ATLAS = FishingClub.identifier("textures/gui/fishing_game.png");
 
     private final float startingPitch;
     private final float startingYaw;
