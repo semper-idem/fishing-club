@@ -6,16 +6,15 @@ import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class HealthComponent {
     private static final float BASE_HEALTH = 1;
-    private static final float MAX_HEALTH = 1024;
+    private static final float MAX_HEALTH = 32;
     private float health;
     private final FishingGameController parent;
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        int rodHealth = parent.rodConfiguration.attributes().maxLineLength();
         int fisherHealth = parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT);
         this.health = MathHelper.clamp(
-                rodHealth + fisherHealth,
+                fisherHealth,
                 BASE_HEALTH,
                 MAX_HEALTH
         );

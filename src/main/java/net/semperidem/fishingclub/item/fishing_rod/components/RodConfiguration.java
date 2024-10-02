@@ -60,17 +60,6 @@ public record RodConfiguration(
         );
     }
 
-    public static RodConfiguration valid(ItemStack core) {
-        RodConfiguration configuration = of(core);
-        return of(
-                configuration.line.orElse(ItemStack.EMPTY),
-                configuration.bobber.orElse(ItemStack.EMPTY),
-                configuration.reel.orElse(ItemStack.EMPTY),
-                configuration.bait.orElse(ItemStack.EMPTY),
-                configuration.hook.orElse(ItemStack.EMPTY)
-        );
-    }
-
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line),
             ItemStack.CODEC.optionalFieldOf("bobber").forGetter(RodConfiguration::bobber),
@@ -178,26 +167,98 @@ public record RodConfiguration(
     public static class AttributeComposite {
 
         /** TODO
-         * Map to kgs
-         * If fish min weight >*/
+         * Map to limit in kgs
+         * If fish min weight > kg limit remove from pool
+         * Caught fish weight must be lower the kg limit
+         * */
         int weightClass = 0;
 
+        /** DONE
+         * Akin to weight class
+         * Dictates relation for entities pulled by hookEntity
+         * */
         int weightMagnitude = 2;
-        int maxLineLength = 0;
-        float bobberControl = 0;
-        boolean canCast = false;
-        int minOperatingTemperature = -1;
-        int maxOperatingTemperature = 1;
-        float fishQuality = 0;
-        float fishRarity = 0;
-        float fishControl = 0;
-        float treasureBonus = 0;
-        float treasureRarityBonus = 0;
-        float timeHookedMultiplier = 1;
-        float waitTimeReductionMultiplier = 1;
-        float baitFailChance = 0;
 
-        HashSet<ItemStack> parts = new HashSet<>();
+        /** DONE
+         * Max range between fisher and hookEntity
+         * */
+        int maxLineLength = 0;
+
+        /** TODO
+         * Bobber width
+         * Health in Game
+         * Mouse move dead-zone
+         * Fish influence on Bobber
+         * */
+        float bobberControl = 0;
+
+        /** DONE
+         * If rod has broken part that's "required"
+         * blocks casting of rod
+         * */
+        boolean canCast = false;
+
+        /** TODO
+         *  If hookEntity temperature is lower than min
+         *  apply freezing to player
+         *  chance to break parts
+         * */
+        int minOperatingTemperature = -1;
+
+        /** TODO
+         *  If hookEntity temperature is higher than max
+         *  apply fire to player
+         *  after x seconds line,bobber,hook and bait breaks
+         * */
+        int maxOperatingTemperature = 1;
+
+        /** TODO
+         * Increases average fish quality
+         * */
+        float fishQuality = 0;
+
+
+        /** TODO
+         * Increase average fish rarity
+         * */
+        float fishRarity = 0;
+
+        /** TODO
+         * Decrease damage fish deals to player
+         * Slows fish base speed
+         * Increase fish stamina drain
+         * */
+        float fishControl = 0;
+
+        /** TODO
+         * Increase chance of treasure appearing
+         * */
+        float treasureBonus = 0;
+
+        /** TODO
+         * Increase chance of junk appearing
+         * */
+        float junkBonus = 0;
+
+        /** TODO
+         * Increase average grade of treasure
+         * */
+        float treasureRarityBonus = 0;
+
+        /** TODO
+         * Impacts period of time when fish can be pull when they bite
+         * */
+        float timeHookedMultiplier = 1;
+
+        /** TODO
+         * Impacts period of time when waiting for fish to bait*/
+        float waitTimeReductionMultiplier = 1;
+
+
+        /** TODO
+         * Chance for bait to lose all of its durability
+         * */
+        float baitFailChance = 0;
 
         AttributeComposite() {
         }
@@ -248,7 +309,6 @@ public record RodConfiguration(
             }
 
             partItem.apply(this);
-            parts.add(part);
             return true;
         }
 
