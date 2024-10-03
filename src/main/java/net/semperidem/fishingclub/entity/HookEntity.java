@@ -32,7 +32,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -65,6 +64,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private float fishAngle;
     private int lastHookCountdown;
     private int frozenTicks;
+    private int burningSeconds;
     private int temperatureTicks;
     private static final int TEMPERATURE_INTERVAL = 20;
     private int temperature = 0;
@@ -432,19 +432,29 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.setWaitCountdown();
     }
 
+    private boolean isFreezing(int temperature) {
+        return temperature > this.temperature;
+    }
+
     private boolean isFreezing() {
-        return this.core.minOperatingTemperature() > this.temperature;
+        return isFreezing(this.core.minOperatingTemperature());
+    }
+
+    private boolean isBurning(int temperature) {
+        return temperature <= this.temperature;
     }
 
     private boolean isBurning() {
-        return this.core.maxOperatingTemperature() <= this.temperature;
+        return isBurning(this.configuration.attributes().maxOperatingTemperature());
     }
 
     private void tickTemperature() {
         this.temperature = FishUtil.getTemperature(this.getWorld(), this.getBlockPos());
         if (this.isFreezing()) {
-            this.playerOwner.inPowderSnow = true;
-            this.playerOwner.setFrozenTicks(this.playerOwner.getFrozenTicks() + 3);
+            if (this.frozenTicks > 1000) {
+                this.playerOwner.inPowderSnow = true;
+                this.playerOwner.setFrozenTicks(this.playerOwner.getFrozenTicks() + 3);
+            }
             this.frozenTicks++;
             return;
         }
@@ -454,8 +464,16 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
         }
         this.temperatureTicks = 0;
-        if (!this.isBurning()) {
+        if (this.isBurning()) {
+            this.burningSeconds++;
             this.playerOwner.setFireTicks(100);
+            if (burningSeconds > 10) {
+                for(RodConfiguration.PartType partType : RodConfiguration.PartType.values()) {
+                    if (this.isBurning(this.configuration.maxTemperatureOfPart(partType))) {
+                        this.configuration.unEquip(partType);
+                    }
+                }
+            }
             int nextDamage = (int) (this.fishingRod.getDamage() + this.fishingRod.getMaxDamage() * 0.01);
             if (this.fishingRod.getMaxDamage() <= nextDamage) {
                 RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
@@ -622,28 +640,28 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return this.hookedEntity != null && this.hookedEntity != this;
     }
 
-
-    private void processFreezingReel() {
+    private void onReelFreeze() {
         if (this.frozenTicks < 100) {
             return;
         }
         float breakChance = (float) MathHelper.clamp(this.frozenTicks / (this.frozenTicks + 2000f), 0.05, 0.5);
+        if (Math.random() < breakChance) {
+            RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
+            this.fishingRod.setCount(0);
+        }
+        for (RodConfiguration.PartType partType : RodConfiguration.PartType.values()) {
+            onReelFreezePart(partType, breakChance);
+        }
+    }
 
-        if (Math.random() < breakChance) {
-            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+    private void onReelFreezePart(RodConfiguration.PartType partType, float breakChance) {
+        if (!this.isFreezing(this.configuration.minTemperatureOfPart(partType))) {
+            return;
         }
-        if (Math.random() < breakChance) {
-            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        if (Math.random() > breakChance) {
+            return;
         }
-        if (Math.random() < breakChance) {
-            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
-        }
-        if (Math.random() < breakChance) {
-            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
-        }
-        if (Math.random() < breakChance) {
-            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
-        }
+        RodConfiguration.destroyPart(this.fishingRod, partType);
     }
 
     @Override
@@ -652,10 +670,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.discard();
             return 0;
         }
-        if (this.isFreezing() && MathHelper.clamp(0.005 * this.frozenTicks, 0, 0.5) > Math.random()) {
-            this.processFreezingReel();
-            RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
-            this.fishingRod.setDamage(this.fishingRod.getMaxDamage());
+        if (this.isFreezing()) {
+            this.onReelFreeze();
         }
         if (this.hasHookEntity()) {
             this.reelEntity();

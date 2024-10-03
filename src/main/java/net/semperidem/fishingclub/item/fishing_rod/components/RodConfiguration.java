@@ -126,17 +126,17 @@ public record RodConfiguration(
     }
 
     public static void dropContent(PlayerEntity holder, ItemStack core) {
-        RodConfiguration rodConfiguration = core.get(FCComponents.ROD_CONFIGURATION);
-        if (rodConfiguration == null) {
+        RodConfiguration configuration = core.get(FCComponents.ROD_CONFIGURATION);
+        if (configuration == null) {
             return;
         }
-        rodConfiguration.inventory(holder).dropContent();
+        configuration.inventory(holder).dropContent();
         core.set(FCComponents.ROD_CONFIGURATION, EMPTY);
     }
 
     public static void destroyPart(ItemStack core, PartType partType) {
-        RodConfiguration rodConfiguration = core.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
-        core.set(FCComponents.ROD_CONFIGURATION, rodConfiguration.unEquip(partType));
+        RodConfiguration configuration = core.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
+        core.set(FCComponents.ROD_CONFIGURATION, configuration.unEquip(partType));
     }
 
     public RodInventory inventory(PlayerEntity playerEntity) {
@@ -167,6 +167,31 @@ public record RodConfiguration(
         ItemStack baitStack = this.bait.get();
         baitStack.damage(amount, player, EquipmentSlot.MAINHAND);
         fishingRod.set(FCComponents.ROD_CONFIGURATION, this.equipBait(baitStack));
+    }
+
+    private ItemStack rodPart(PartType partType) {
+       return switch (partType) {
+            case PartType.LINE -> this.line().orElse(ItemStack.EMPTY);
+            case BOBBER -> this.bobber().orElse(ItemStack.EMPTY);
+            case REEL -> this.reel().orElse(ItemStack.EMPTY);
+            case BAIT -> this.bait().orElse(ItemStack.EMPTY);
+            case HOOK -> this.hook().orElse(ItemStack.EMPTY);
+            case INVALID -> ItemStack.EMPTY;
+        };
+    }
+
+    public int maxTemperatureOfPart(PartType partType) {
+        if (this.rodPart(partType).getItem() instanceof PartItem partItem) {
+            return  partItem.maxOperatingTemperature;
+        }
+        return this.attributes.maxOperatingTemperature;
+    }
+
+    public int minTemperatureOfPart(PartType partType) {
+        if (this.rodPart(partType).getItem() instanceof PartItem partItem) {
+            return partItem.minOperatingTemperature;
+        }
+        return this.attributes.minOperatingTemperature;
     }
 
     public static class AttributeComposite {
@@ -203,14 +228,14 @@ public record RodConfiguration(
          * */
         boolean canCast = false;
 
-        /** TODO
+        /** DONE
          *  If hookEntity temperature is lower than min
          *  apply freezing to player
          *  chance to break parts on reel
          * */
         int minOperatingTemperature = -2;
 
-        /** TODO
+        /** DONE
          *  If hookEntity temperature is higher than max
          *  apply fire to player
          *  after x seconds line,bobber,hook and bait breaks
