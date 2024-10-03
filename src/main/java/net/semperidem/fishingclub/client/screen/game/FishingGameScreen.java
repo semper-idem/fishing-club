@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.game.BobberComponent;
 import net.semperidem.fishingclub.game.FishingGameController;
 import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
 import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
@@ -30,7 +31,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
 
     private long tick = 0;
 
-    private static final float MIN_MOVE = 0.01f;
+    private static final float MIN_MOVE = 0.03f;
 
     private int baseFishX;
     private int baseFishY;
@@ -76,12 +77,14 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         }
 
         int centerX = (int) (this.client.getWindow().getScaledWidth() * 0.5f);
+        float bobberSizeScale = this.controller.getBobberSize() / BobberComponent.BASE_LENGTH;
+        float inverseBobberSizeScale = BobberComponent.BASE_LENGTH  / this.controller.getBobberSize();
+        float deadZone = MIN_MOVE * inverseBobberSizeScale;
         double distanceFromCenterPercent = (centerX - mouseX) / centerX;
-        if (Math.abs(distanceFromCenterPercent) < MIN_MOVE) {
+        if (Math.abs(distanceFromCenterPercent) < deadZone) {
             return;
         }
-
-        this.controller.reelForce = (float) distanceFromCenterPercent * -0.05f;
+        this.controller.reelForce = (float) (distanceFromCenterPercent - Math.copySign(deadZone, distanceFromCenterPercent)) * -0.02f * bobberSizeScale;
         ClientPlayNetworking.send(new FishingGameInputMousePayload(this.handler.controller.reelForce));
         this.updateCameraTarget();
     }

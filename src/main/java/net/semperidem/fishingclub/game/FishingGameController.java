@@ -75,6 +75,7 @@ public class FishingGameController {
        this.bobberComponent.tick();
        this.progressComponent.tick();
        this.treasureComponent.tick();
+       this.healthComponent.tick();
     }
 
     public boolean isReeling() {

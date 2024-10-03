@@ -35,22 +35,22 @@ public class ProgressComponent {
             grantProgress();
             return;
         }
-        revokeProgress(parent.isReeling() ? 2 : 0.25f);
+        revokeProgress();
     }
 
     private void grantProgress(){
-        if (progress < 1) {
-            progress = Math.min(1, progress + gain);
-            return;
+        progress = Math.min(1, progress + gain);
+
+        if (progress >= 1) {
+            parent.winGame();
         }
-        parent.winGame();
     }
 
-    private void revokeProgress(float multiplier){
+    private void revokeProgress(){
         if (progress > 0) {
-            progress = Math.max(0, progress - loss * multiplier);
+            progress = (float) Math.max(0, progress - loss * (this.parent.isReeling() ? 2 : 0.25));
         }
-        if (multiplier > 1) {
+        if (this.parent.isReeling()) {
             this.parent.healthComponent.damage();
         }
     }

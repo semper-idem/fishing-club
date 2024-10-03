@@ -58,7 +58,7 @@ public class TradeSecrets {
 
         LINE_HEALTH_BOAT = TradeSecret.builder()
                 .name("line_health_boat")
-                .levelValues(16, 32, 64)
+                .levelValues(2, 3, 4)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
         BOBBER_SIZE_BOAT = TradeSecret.builder()

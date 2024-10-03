@@ -5,32 +5,36 @@ import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class HealthComponent {
-    private static final float BASE_HEALTH = 1;
-    private static final float MAX_HEALTH = 32;
     private float health;
     private final FishingGameController parent;
+    private final float strainTriggerDistance;
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        int fisherHealth = parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT);
-        this.health = MathHelper.clamp(
-                fisherHealth,
-                BASE_HEALTH,
-                MAX_HEALTH
-        );
+        this.health = MathHelper.clamp(parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT), 1, 4);
+        this.strainTriggerDistance = this.parent.rodConfiguration.attributes().bobberWidth() * BobberComponent.BASE_LENGTH;
     }
-
 
     public void updateClient(FishingGameTickS2CPayload payload) {
         this.health = payload.health();
     }
 
-    public void damage() {
-        health -= this.parent.hookedFish.damage();
-
-        if (health <= 0) {
-            parent.loseGame();
+    public void tick() {
+        if (this.health <= 0) {
+            this.parent.loseGame();
         }
+
+        float bobberToFishDistance = Math.abs(this.parent.getFishPosX() - this.parent.getBobberPos());
+        if (bobberToFishDistance < this.strainTriggerDistance) {
+            return;
+        }
+        float damageScale = MathHelper.clamp(bobberToFishDistance / this.strainTriggerDistance, 0, 1);
+        this.health -= this.parent.hookedFish.damage() * damageScale;
+
+    }
+
+    public void damage() {
+        this.health -= this.parent.hookedFish.damage();
     }
 
     public float getHealth() {

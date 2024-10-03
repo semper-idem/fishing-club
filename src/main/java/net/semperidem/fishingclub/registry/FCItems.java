@@ -251,49 +251,35 @@ public class FCItems {
         CORE_BAMBOO = registerItem("core_bamboo", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
                 .weightClass(1)
                 .castPower(ItemStat.MULTIPLIER_T1)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-                .fishControlCeiling(ItemStat.BASE_T42)
         );
         CORE_WOOD = registerItem("core_wood", new FishingRodCoreItem(new Item.Settings().maxDamage(VANILLA_ROD_DURABILITY).rarity(COMMON))
                 .weightClass(2)
                 .castPower(ItemStat.MULTIPLIER_T2)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
         );
         CORE_BONE = registerItem("core_bone", new FishingRodCoreItem(new Item.Settings().maxDamage(1280).rarity(COMMON))
                 .weightClass(1)
                 .minOperatingTemperature(-1)
                 .castPower(ItemStat.MULTIPLIER_T1)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
                 .luck(1)
         );
 
         CORE_COPPER = registerItem("core_copper", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
                 .weightClass(3)
                 .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
         );
         CORE_BLAZE = registerItem("core_blaze", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
                 .weightClass(2)
                 .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
         );
         CORE_BREEZE = registerItem("core_breeze", new FishingRodCoreItem(new Item.Settings().maxDamage(2560).rarity(UNCOMMON))
                 .weightClass(2)
                 .minOperatingTemperature(-1)
                 .castPower(ItemStat.MULTIPLIER_T2)
-                .fishControlCeiling(ItemStat.BASE_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
         );
         CORE_PRISMARINE_BLAZE = registerItem("core_prismarine_blaze", new FishingRodCoreItem(new Item.Settings().maxDamage(5120).rarity(RARE))
                 .weightClass(3)
                 .maxOperatingTemperature(1)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
                 .luck(3)
         );
         CORE_NETHERITE = registerItem("core_netherite", new FishingRodCoreItem(new Item.Settings().maxDamage(20480).rarity(RARE))
@@ -301,32 +287,24 @@ public class FCItems {
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T4)
-                .bobberControlCeiling(ItemStat.BASE_T5)
-                .fishControlCeiling(ItemStat.BASE_T5)
                 .luck(1));
         CORE_NAUTILUS_BREEZE = registerItem("core_nautilus_breeze", new FishingRodCoreItem(new Item.Settings().maxDamage(10240).rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T5)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-                .fishControlCeiling(ItemStat.BASE_T42)
                 .luck(2));
         CORE_NAUTILUS_BLAZE = registerItem("core_nautilus_blaze", new FishingRodCoreItem(new Item.Settings().maxDamage(10240).rarity(EPIC))
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T4)
-                .bobberControlCeiling(ItemStat.BASE_T42)
-                .fishControlCeiling(ItemStat.BASE_T42)
                 .luck(4));
         CORE_NAUTILUS_END = registerItem("core_nautilus_end", new FishingRodCoreItem(new Item.Settings().maxDamage(20480).rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .castPower(ItemStat.MULTIPLIER_T4)
-                .fishControlCeiling(ItemStat.BASE_T6)
-                .bobberControlCeiling(ItemStat.BASE_T6)
                 .luck(1));
     }
 
@@ -472,7 +450,7 @@ public class FCItems {
                 .weightClass(5)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
-                .bobberControl(ItemStat.BASE_T3)
+                .bobberControl(ItemStat.BASE_T5)
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(1));
         BOBBER_NAUTILUS_ECHO = registerItem("bobber_nautilus_echo", new BobberPartItem(new Item.Settings().rarity(EPIC))
@@ -481,7 +459,7 @@ public class FCItems {
                 .maxOperatingTemperature(1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T4)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T5)
-                .bobberControl(ItemStat.BASE_T5)
+                .bobberControl(ItemStat.BASE_T6)
                 .fishControl(ItemStat.BASE_T5)
                 .fishQuality(2));
         BOBBER_HEART = registerItem("bobber_heart", new BobberPartItem(new Item.Settings().rarity(EPIC))
@@ -490,7 +468,7 @@ public class FCItems {
                 .maxOperatingTemperature(1)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .waitTimeReductionMultiplier(ItemStat.MULTIPLIER_T5)
-                .bobberControl(ItemStat.BASE_T3)
+                .bobberControl(ItemStat.BASE_T5)
                 .fishControl(ItemStat.BASE_T3)
                 .fishQuality(4));
     }

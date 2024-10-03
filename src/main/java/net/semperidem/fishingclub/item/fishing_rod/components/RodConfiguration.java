@@ -186,7 +186,7 @@ public record RodConfiguration(
 
         /** TODO
          * Bobber width
-         * Health in Game
+         * Distance at which you take damage
          * Mouse move dead-zone
          * Fish influence on Bobber
          * */
@@ -313,7 +313,7 @@ public record RodConfiguration(
         }
 
         public float bobberWidth() {
-            return 0.5f + this.bobberControl / (this.bobberControl + 100);
+            return 0.75f + this.bobberControl / (this.bobberControl + 50);
         }
 
         public float maxFishWeight() {
@@ -374,11 +374,12 @@ public record RodConfiguration(
                     ", weightCapacity=" + weightClass +
                     ", minOperatingTemperature=" + minOperatingTemperature +
                     ", maxOperatingTemperature=" + maxOperatingTemperature +
+                    ", bobberControl=" + bobberControl +
+                    ", fishControl=" + fishControl +
                     ", fishQuality=" + fishQuality +
                     ", weightMagnitude=" + weightMagnitude +
                     ", maxLineLength=" + maxLineLength +
                     ", canCast=" + canCast +
-                    ", fishControl=" + fishControl +
                     ", treasureBonus=" + treasureBonus +
                     ", treasureRarityBonus=" + treasureRarityBonus +
                     ",";

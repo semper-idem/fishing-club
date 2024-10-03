@@ -13,6 +13,7 @@ public class BobberComponent {
 
     private final float length;
     private final float baseResistance;
+    private float speed;
 
     private final float minPositionX;
     private final float maxPositionX;
@@ -56,11 +57,12 @@ public class BobberComponent {
     }
 
     public float getNextPositionX(){
-        return MathHelper.clamp(positionX + getSpeed(parent.reelForce), minPositionX, maxPositionX);
+        this.speed = getSpeed(parent.reelForce);
+        return MathHelper.clamp(positionX + this.speed, minPositionX, maxPositionX);
     }
 
     private float getSpeed(float reelForce){
-        return MathHelper.clamp(getCurrentResistance() + reelForce, -1f, 1f);
+        return MathHelper.clamp(getCurrentResistance() + reelForce + this.speed * 0.5f, -1f, 1f);
     }
 
     private float getBaseResistance() {
@@ -73,7 +75,7 @@ public class BobberComponent {
         if (Math.abs(fishDistanceFromCenterPercent) < 0.01f) {
             return 0;
         }
-        return (fishDistanceFromCenterPercent) * baseResistance * parent.fishController.getStaminaPercentage();
+        return (fishDistanceFromCenterPercent) * baseResistance * parent.fishController.getStaminaPercentage() * (2 / this.parent.rodConfiguration.attributes().bobberWidth() - 1);
     }
 
     public float getPositionX() {

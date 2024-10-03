@@ -31,8 +31,6 @@ import java.util.List;
 
 public class FishingRodCoreItem extends FishingRodItem {
     ItemStat castPower = ItemStat.MULTIPLIER_T3;
-    ItemStat bobberControlCeiling;
-    ItemStat fishControlCeiling;
     int minOperatingTemperature = 0;
     int maxOperatingTemperature = 0;
     int luck = 0;
@@ -216,17 +214,6 @@ public class FishingRodCoreItem extends FishingRodItem {
         return this;
     }
 
-    public FishingRodCoreItem fishControlCeiling(ItemStat fishControl) {
-        this.fishControlCeiling = fishControl;
-        return this;
-    }
-
-
-    public FishingRodCoreItem bobberControlCeiling(ItemStat bobberControl) {
-
-        this.bobberControlCeiling = bobberControl;
-        return this;
-    }
 
 
     public static int[] WEIGHT_CLASS = {0, 5, 25, 50, 100, 999999};
