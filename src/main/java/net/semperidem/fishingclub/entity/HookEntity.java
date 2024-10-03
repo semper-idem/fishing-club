@@ -622,6 +622,30 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return this.hookedEntity != null && this.hookedEntity != this;
     }
 
+
+    private void processFreezingReel() {
+        if (this.frozenTicks < 100) {
+            return;
+        }
+        float breakChance = (float) MathHelper.clamp(this.frozenTicks / (this.frozenTicks + 2000f), 0.05, 0.5);
+
+        if (Math.random() < breakChance) {
+            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        }
+        if (Math.random() < breakChance) {
+            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        }
+        if (Math.random() < breakChance) {
+            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        }
+        if (Math.random() < breakChance) {
+            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        }
+        if (Math.random() < breakChance) {
+            RodConfiguration.destroyPart(this.fishingRod, RodConfiguration.PartType.HOOK);
+        }
+    }
+
     @Override
     public int use(ItemStack fishingRod) {//Return value is damage to fishingRod
         if (this.playerOwner == null) {
@@ -629,6 +653,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             return 0;
         }
         if (this.isFreezing() && MathHelper.clamp(0.005 * this.frozenTicks, 0, 0.5) > Math.random()) {
+            this.processFreezingReel();
             RodConfiguration.dropContent(this.playerOwner, this.fishingRod);
             this.fishingRod.setDamage(this.fishingRod.getMaxDamage());
         }

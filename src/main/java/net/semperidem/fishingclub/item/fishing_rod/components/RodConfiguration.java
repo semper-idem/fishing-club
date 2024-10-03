@@ -134,6 +134,11 @@ public record RodConfiguration(
         core.set(FCComponents.ROD_CONFIGURATION, EMPTY);
     }
 
+    public static void destroyPart(ItemStack core, PartType partType) {
+        RodConfiguration rodConfiguration = core.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
+        core.set(FCComponents.ROD_CONFIGURATION, rodConfiguration.unEquip(partType));
+    }
+
     public RodInventory inventory(PlayerEntity playerEntity) {
         RodInventory parts = new RodInventory(playerEntity);
         parts.setStack(0, reel.orElse(ItemStack.EMPTY));
@@ -184,7 +189,7 @@ public record RodConfiguration(
          * */
         int maxLineLength = 0;
 
-        /** TODO
+        /** DONE
          * Bobber width
          * Distance at which you take damage
          * Mouse move dead-zone
@@ -201,7 +206,7 @@ public record RodConfiguration(
         /** TODO
          *  If hookEntity temperature is lower than min
          *  apply freezing to player
-         *  chance to break parts
+         *  chance to break parts on reel
          * */
         int minOperatingTemperature = -2;
 
