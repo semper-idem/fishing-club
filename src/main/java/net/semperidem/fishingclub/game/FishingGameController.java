@@ -8,6 +8,7 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandlerFactory;
 
 public class FishingGameController {
 
@@ -17,6 +18,7 @@ public class FishingGameController {
     final RodConfiguration rodConfiguration;
 
     public float reelForce = 0;
+    private int fishCaughtSlot = -1;
     private boolean isReeling = false;
 
     public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
@@ -148,11 +150,10 @@ public class FishingGameController {
         }
         FishUtil.fishCaught(serverPlayer, this.hookedFish);
         FishUtil.giveReward(serverPlayer, this.treasureGameController.getRewards());
-        serverPlayer.closeHandledScreen();
+        player.openHandledScreen(new FishingGamePostScreenHandlerFactory(this.hookedFish));
     }
 
     public void loseGame() {
-        //this.hookedUsing.damage(4, PartItem.DamageSource.BITE, this.player);
         if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }

@@ -6,14 +6,15 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
-public record FishingGameInputKeyboardPayload(boolean reel) implements CustomPayload {
+public record FishingGameInputKeyboardPayload(boolean isPressed) implements CustomPayload {
     public static final Id<FishingGameInputKeyboardPayload> ID = new Id<>(identifier("c2s_fishing_game_input_keyboard"));
     public static final PacketCodec<RegistryByteBuf, FishingGameInputKeyboardPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.BOOL,
-            FishingGameInputKeyboardPayload::reel,
+            FishingGameInputKeyboardPayload::isPressed,
             FishingGameInputKeyboardPayload::new
     );
 
@@ -23,9 +24,20 @@ public record FishingGameInputKeyboardPayload(boolean reel) implements CustomPay
     }
 
     public static void consumePayload(FishingGameInputKeyboardPayload payload, ServerPlayNetworking.Context context) {
-        if (!(context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) {
+        if ((context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) {
+            handleGame(screenHandler, payload);
             return;
         }
-        screenHandler.consumeReel(payload.reel);
+
+        if ((context.player().currentScreenHandler instanceof FishingGamePostScreenHandler screenHandler)) {
+           handlePost(screenHandler, payload);
+        }
+    }
+    private static void handlePost(FishingGamePostScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+        screenHandler.nextStage(!payload.isPressed);
+    }
+
+    private static void handleGame(FishingGameScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+        screenHandler.consumeReel(payload.isPressed);
     }
 }

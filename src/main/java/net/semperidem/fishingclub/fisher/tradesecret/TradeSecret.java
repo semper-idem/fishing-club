@@ -165,7 +165,7 @@ public class TradeSecret {
                 Utils.castEffect(player, new StatusEffectInstance(
                                 this.root.effect,
                                 (int) this.root.duration(this.level),
-                                this.root.value(this.level)
+                                (int) this.root.value(this.level)
                         ),
                         this.root.baseCooldown > 0 ? 4 : 0
                 );

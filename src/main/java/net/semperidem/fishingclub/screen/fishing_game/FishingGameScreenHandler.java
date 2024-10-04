@@ -4,9 +4,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.game.FishingGameController;
 import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
+import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandlerFactory;
 
 public class FishingGameScreenHandler extends ScreenHandler {
     public final FishingGameController controller;
@@ -43,4 +45,5 @@ public class FishingGameScreenHandler extends ScreenHandler {
     public boolean canUse(PlayerEntity player) {
         return true;
     }
+
 }

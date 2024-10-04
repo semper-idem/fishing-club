@@ -61,7 +61,7 @@ public record RodConfiguration(
     public static Codec<RodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemStack.CODEC.optionalFieldOf("line").forGetter(RodConfiguration::line),
             ItemStack.CODEC.optionalFieldOf("bobber").forGetter(RodConfiguration::bobber),
-            ItemStack.CODEC.optionalFieldOf("reel").forGetter(RodConfiguration::reel),
+            ItemStack.CODEC.optionalFieldOf("isPressed").forGetter(RodConfiguration::reel),
             ItemStack.CODEC.optionalFieldOf("bait").forGetter(RodConfiguration::bait),
             ItemStack.CODEC.optionalFieldOf("hook").forGetter(RodConfiguration::hook)
     ).apply(instance, (line, bobber, reel, bait, hook) -> of(
@@ -231,7 +231,7 @@ public record RodConfiguration(
         /** DONE
          *  If hookEntity temperature is lower than min
          *  apply freezing to player
-         *  chance to break parts on reel
+         *  chance to break parts on isPressed
          * */
         int minOperatingTemperature = -2;
 
