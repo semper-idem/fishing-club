@@ -8,11 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 public record RodConfiguration(
@@ -154,9 +152,11 @@ public record RodConfiguration(
         if (!(obj instanceof RodConfiguration other)) {
             return false;
         }
-
-        //fixme
-        return this.line.equals(other.line);
+        return this.line.equals(other.line)
+                & this.hook.equals(other.hook)
+                & this.bobber.equals(other.bobber)
+                & this.bait.equals(other.bait)
+                & this.reel.equals(other.reel);
     }
 
 
@@ -260,32 +260,27 @@ public record RodConfiguration(
          * */
         float fishControl = 0;
 
-        /** TODO
+        /** DONE
          * Increase chance of treasure appearing
          * */
         float treasureBonus = 0;
 
-        /** TODO
-         * Increase chance of junk appearing
-         * */
-        float junkBonus = 0;
-
-        /** TODO
+        /** DONE
          * Increase average grade of treasure
          * */
         float treasureRarityBonus = 0;
 
-        /** TODO
+        /** DONE
          * Impacts period of time when fish can be pull when they bite
          * */
         float timeHookedMultiplier = 1;
 
-        /** TODO
+        /** DONE
          * Impacts period of time when waiting for fish to bait*/
         float waitTimeReductionMultiplier = 1;
 
 
-        /** TODO
+        /** DONE
          * Chance for bait to lose all of its durability
          * */
         float baitFailChance = 0;
@@ -324,7 +319,7 @@ public record RodConfiguration(
         }
 
         void applyNoHookPenalty() {
-            this.baitFailChance = 0.3f;
+            this.baitFailChance = 0.5f;
         }
 
         void applyNoBaitPenalty() {
@@ -359,11 +354,11 @@ public record RodConfiguration(
         }
 
         public float fishRarity() {
-            return this.fishRarity / (this.fishRarity + 100);
+            return this.mapToPercent(this.fishRarity);
         }
 
         public float fishControl() {
-            return this.fishControl / (this.fishControl + 100);
+            return this.mapToPercent(this.fishControl);
         }
 
         public int weightMagnitude() {
@@ -395,13 +390,24 @@ public record RodConfiguration(
         }
 
         public float treasureBonus() {
-            return this.treasureBonus;
+            return this.mapToPercent(this.treasureBonus);
         }
 
         public float treasureRarityBonus() {
-            return this.treasureRarityBonus;
+            return this.mapToPercent(this.treasureRarityBonus);
         }
 
+        public float timeHookedMultiplier() {
+            return this.timeHookedMultiplier;
+        }
+
+        public float waitTimeReductionMultiplier() {
+            return this.waitTimeReductionMultiplier;
+        }
+
+        private float mapToPercent(float value) {
+            return value / (value + 100);
+        }
         @Override
         public String toString() {
             return ":" +

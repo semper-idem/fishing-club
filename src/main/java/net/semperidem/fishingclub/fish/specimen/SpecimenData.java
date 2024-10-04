@@ -309,7 +309,7 @@ public int experience(double xFisher) {
         );
     }
     public static final int MIN_LEVEL = 1;
-    private static final int MAX_LEVEL = 99;
+    public static final int MAX_LEVEL = 99;
 
     public static final int MIN_QUALITY = 1;
     public static final int MAX_QUALITY = 5;

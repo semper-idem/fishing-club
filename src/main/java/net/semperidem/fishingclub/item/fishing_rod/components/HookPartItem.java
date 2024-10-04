@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class HookPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
-    ItemStat biteFailChance = ItemStat.MULTIPLIER_T3;
+    ItemStat biteFailChance = ItemStat.BASE_T1;
     ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
     ItemStat treasureBonus = ItemStat.BASE_T1;
     ItemStat treasureRarityBonus = ItemStat.BASE_T1;

@@ -533,19 +533,23 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             bobberPartItem.onFishBiteEffect();
         }
         if (Math.random() < configuration.attributes().baitFailChance()) {
-            return;
+            this.configuration = this.configuration.unEquip(RodConfiguration.PartType.BAIT);
         }
 
-        this.hookCountdown = 45;//(int) (( (25 - (caughtFish.level / 4f + this.random.nextInt(1))) + MIN_HOOK_TICKS) * Math.max(1, FishingRodPartController.getStat(fishingRod, FishingRodStatType.BITE_WINDOW_MULTIPLIER)));
-        this.lastHookCountdown = hookCountdown;
 
         Optional<SpecimenData> caughtFish = FishUtil.fishOnHook(this);
 
+        this.hookCountdown = 50;
         float biteStrength = 1;
+
         if (caughtFish.isPresent()) {
             this.caughtFish = caughtFish.get();
             biteStrength = (float) Math.pow(this.caughtFish.quality(), 2);
+            this.hookCountdown = (int) ((10 + (SpecimenData.MAX_LEVEL - this.caughtFish.level()) * 30) * configuration.attributes().timeHookedMultiplier());
+            this.configuration.damage(1, this.playerOwner, this.fishingRod);
         }
+
+        this.lastHookCountdown = hookCountdown;
         this.getVelocity().add(0, -0.03 * biteStrength, 0);
         this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 2f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         double m = this.getY() + 0.5;
@@ -553,7 +557,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
         serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int) (1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
 
-        this.configuration.damage(1, this.playerOwner, this.fishingRod);
     }
 
     private void tickFishTrail(ServerWorld serverWorld) {
@@ -627,7 +630,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         catchRate += lureLevel * 0.1f;
 
         catchRate *= MathHelper.clamp((MAX_THROW_RANGE - this.distanceTraveled) / (MAX_THROW_RANGE / MAX_THROW_CATCH_RATE_REDUCTION), MAX_THROW_CATCH_RATE_REDUCTION, 1);
-        int expectedWait = (int) (BASE_WAIT * (1f / catchRate));
+        int expectedWait = (int) (BASE_WAIT * (1f / catchRate * this.configuration.attributes().waitTimeReductionMultiplier()));
         this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian()));
         this.lastWaitCountdown = this.waitCountdown;
     }

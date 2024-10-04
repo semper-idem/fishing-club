@@ -128,7 +128,7 @@ public class Rewards {
 
     public static int getGrade(FishingCard fisher, RodConfiguration rodConfiguration){
         float avgGrade = (float) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 3));
-        avgGrade += rodConfiguration.attributes().treasureRarityBonus() * 0.01f;
+        avgGrade *= (1 + rodConfiguration.attributes().treasureRarityBonus());
         return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
     }
 

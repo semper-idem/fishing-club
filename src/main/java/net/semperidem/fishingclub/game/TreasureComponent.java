@@ -21,11 +21,11 @@ public class TreasureComponent {
     public TreasureComponent(FishingGameController parent) {
         float treasureChance = TREASURE_MIN_CHANCE;
 
-        treasureChance *= (1 + parent.rodConfiguration.attributes().treasureBonus() * 0.02f);
+        treasureChance *= (1 + parent.rodConfiguration.attributes().treasureBonus());
         treasureChance *= (1 + parent.fishingCard.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
 
         this.parent = parent;
-        this.isActive = true;//Math.random() < treasureChance;
+        this.isActive = Math.random() < treasureChance;
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
         this.position = (float) Math.random();
     }
