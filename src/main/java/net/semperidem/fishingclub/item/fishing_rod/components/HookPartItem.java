@@ -107,6 +107,7 @@ public class HookPartItem extends PartItem {
         attributes.fishRarity += this.fishRarity.value;
         attributes.treasureBonus += this.treasureBonus.value;
         attributes.treasureRarityBonus += this.treasureRarityBonus.value;
+        attributes.autoHookChance = this.autoHookChance.value;
         super.apply(attributes);
     }
 

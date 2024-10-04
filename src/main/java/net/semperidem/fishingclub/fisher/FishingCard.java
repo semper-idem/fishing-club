@@ -256,7 +256,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return this.progressionManager.tradeSecretLevel(tradeSecret);
     }
 
-    public int tradeSecretValue(TradeSecret tradeSecret) {
+    public float tradeSecretValue(TradeSecret tradeSecret) {
         return this.progressionManager.tradeSecretValue(tradeSecret);
     }
 

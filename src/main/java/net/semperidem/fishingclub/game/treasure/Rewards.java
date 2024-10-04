@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.game.treasure;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.registry.FCItems;
 
@@ -13,6 +14,7 @@ import java.util.Random;
 public class Rewards {
     private static final ArrayList<TreasureReward> ALL_REWARDS = new ArrayList<>();
     private static final Random random = new Random(42);
+    private static final float TREASURE_MIN_CHANCE = 0.05f;
 
     static {
         //TIER COST QUALITY ITEM RARITY
@@ -155,5 +157,12 @@ public class Rewards {
         });
         result.sort(Comparator.comparingInt(o -> o.tier));
         return result;
+    }
+
+    public static boolean draw(RodConfiguration rodConfiguration, FishingCard fishingCard) {
+        float treasureChance = TREASURE_MIN_CHANCE;
+        treasureChance *= (1 + rodConfiguration.attributes().treasureBonus());
+        treasureChance *= (1 + fishingCard.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
+        return Math.random() < treasureChance;
     }
 }

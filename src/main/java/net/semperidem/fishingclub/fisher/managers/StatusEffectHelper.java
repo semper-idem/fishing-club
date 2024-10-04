@@ -64,7 +64,7 @@ public class StatusEffectHelper {
         if (!this.trackedFor.knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
             return;
         }
-        final int maxAmplifier = this.trackedFor.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
+        final int maxAmplifier = (int) this.trackedFor.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
         this.trackedFor.holder().getEntityWorld()
                 .getOtherEntities(this.trackedFor.holder(), new Box(this.trackedFor.holder().getBlockPos()).expand(4))
                 .stream()

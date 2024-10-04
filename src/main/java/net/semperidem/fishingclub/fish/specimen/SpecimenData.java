@@ -83,8 +83,7 @@ public record SpecimenData(
     public static SpecimenData init(Species<?> species) {
 
         var isAlbino = Math.random() < 0.01f;
-        return init(new IHookEntity() {
-        }, species, isAlbino ? -1 : 0);
+        return init(new IHookEntity() {}, species, isAlbino ? -1 : 0);
     }
 
     public static SpecimenData init(Species<TropicalFishEntity> species, int subspecies) {

@@ -36,6 +36,7 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
+import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.*;
@@ -52,7 +53,7 @@ import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private static final int BASE_WAIT = 600;
     private static final int MIN_HOOK_TICKS = 10;
-    private static final int REACTION_REWARD = 20;
+    private static final int REACTION_REWARD = 16;
     private static final float RAIN_CATCH_RATE_BUFF = 0.125f;
     private static final int MAX_THROW_RANGE = 128;
     private static final float MAX_THROW_CATCH_RATE_REDUCTION = 0.5f;
@@ -631,7 +632,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
         catchRate *= MathHelper.clamp((MAX_THROW_RANGE - this.distanceTraveled) / (MAX_THROW_RANGE / MAX_THROW_CATCH_RATE_REDUCTION), MAX_THROW_CATCH_RATE_REDUCTION, 1);
         int expectedWait = (int) (BASE_WAIT * (1f / catchRate * this.configuration.attributes().waitTimeReductionMultiplier()));
-        this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian()));
+        this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian())) * (this.configuration.attributes().isAutoReel() ? 4 : 1);
         this.lastWaitCountdown = this.waitCountdown;
     }
 
@@ -728,18 +729,31 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
 
     private void reelFish() {
-//        int reactionBonus = calculateReactionBonus();
-//        this.caughtFish.experience += reactionBonus;
-//        if (reactionBonus > 0) {
-//            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " to fish exp (if caught)"));
-//        }
+        int reactionBonus = getReactionBonus();
+        if (reactionBonus > 0) {
+            this.fishingCard.grantExperience(reactionBonus);
+            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " bonus exp"));
+        }
         if (this.caughtFish == null) {
             this.reelJunk();
             this.discard();
             return;
         }
+        if (this.configuration.attributes().isAutoReel()) {
+            this.handleAutoReel();
+        }
         this.playerOwner.openHandledScreen(new FishingGameScreenHandlerFactory(this.caughtFish, this.configuration));
         this.discard();
+    }
+
+    private void handleAutoReel() {
+        if (!(this.playerOwner instanceof ServerPlayerEntity serverPlayer)) {
+            return;
+        }
+        FishUtil.fishCaught(serverPlayer, this.caughtFish);
+        if (Rewards.draw(this.configuration, this.fishingCard) && Math.random() > 0.5) {
+            FishUtil.giveReward(serverPlayer, Rewards.roll(this.fishingCard, this.configuration).getContent());
+        }
     }
 
     private void reelJunk() {
@@ -763,10 +777,14 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.discard();
     }
 
-    private int calculateReactionBonus() {
+    private int getReactionBonus() {
+        int secretLevel = this.fishingCard.tradeSecretLevel(TradeSecrets.FISHER_ZEAL);
+        if (secretLevel == 0) {
+            return 0;
+        }
         int reaction = this.lastHookCountdown - this.hookCountdown;
         if (reaction < REACTION_REWARD) {
-            return Math.max(5, REACTION_REWARD - reaction);
+            return (int) MathHelper.clamp((REACTION_REWARD - reaction) * TradeSecrets.FISHER_ZEAL.value(secretLevel), 3, 999);
         }
         return 0;
     }

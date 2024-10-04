@@ -93,8 +93,8 @@ public class TradeSecret {
         return condition.test(card.holder());
     }
 
-    public int value(int level) {
-        return this.levelAffects == LevelChanges.VALUE ? (int) this.levelValues[level - 1] : 1;
+    public float value(int level) {
+        return this.levelAffects == LevelChanges.VALUE ? this.levelValues[level - 1] : 1;
     }
 
     public long duration(int level) {

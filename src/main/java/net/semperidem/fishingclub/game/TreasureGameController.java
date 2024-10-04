@@ -11,14 +11,10 @@ import net.semperidem.fishingclub.registry.FCKeybindings;
 import java.util.ArrayList;
 
 public class TreasureGameController {
-    private static final float TREASURE_MAX_SPOT_SIZE = 0.225f;
-    private static final float TREASURE_GRADE_TO_SPOT_SIZE_RATIO = 0.025f;
-
     private final Reward treasureReward;
 
     private int treasureHookedTicks;
     private float progress;
-    private int ticks;
     private boolean isDone = false;
     private final FishingGameController parent;
     private boolean canReel = true;
@@ -56,7 +52,6 @@ public class TreasureGameController {
             treasureHookedTicks = 60;
             return;
         }
-        ticks++;
         treasureHookedTicks--;
         if (this.isDone) {
             return;

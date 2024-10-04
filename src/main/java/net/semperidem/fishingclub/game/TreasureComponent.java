@@ -1,12 +1,11 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
+import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class TreasureComponent {
 
-    private static final float TREASURE_MIN_CHANCE = 0.05f;
     private static final float TREASURE_MIN_TRIGGER_POINT = 0.5f;
     private static final float TREASURE_MAX_TRIGGER_POINT = 0.25f;
 
@@ -19,13 +18,8 @@ public class TreasureComponent {
     private final FishingGameController parent;
 
     public TreasureComponent(FishingGameController parent) {
-        float treasureChance = TREASURE_MIN_CHANCE;
-
-        treasureChance *= (1 + parent.rodConfiguration.attributes().treasureBonus());
-        treasureChance *= (1 + parent.fishingCard.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
-
         this.parent = parent;
-        this.isActive = Math.random() < treasureChance;
+        this.isActive = Rewards.draw(parent.rodConfiguration, parent.fishingCard);
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);
         this.position = (float) Math.random();
     }
