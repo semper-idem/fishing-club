@@ -7,12 +7,14 @@ import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 public class HealthComponent {
     private float health;
     private final FishingGameController parent;
+    private float damageReduction = 0;
     private final float strainTriggerDistance;
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
         this.health = MathHelper.clamp(parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT), 1, 4);
         this.strainTriggerDistance = this.parent.rodConfiguration.attributes().bobberWidth() * BobberComponent.BASE_LENGTH;
+        this.damageReduction = this.parent.rodConfiguration.attributes().fishControl();
     }
 
     public void updateClient(FishingGameTickS2CPayload payload) {
@@ -34,7 +36,7 @@ public class HealthComponent {
     }
 
     public void damage() {
-        this.health -= this.parent.hookedFish.damage();
+        this.health -= this.parent.hookedFish.damage() * (1 - this.damageReduction);
     }
 
     public float getHealth() {

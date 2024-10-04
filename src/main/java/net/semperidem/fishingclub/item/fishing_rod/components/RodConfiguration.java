@@ -242,7 +242,7 @@ public record RodConfiguration(
          * */
         int maxOperatingTemperature = 2;
 
-        /** TODO
+        /** DONE
          * Increases average fish quality
          * */
         float fishQuality = 0;
@@ -253,7 +253,7 @@ public record RodConfiguration(
          * */
         float fishRarity = 0;
 
-        /** TODO
+        /** DONE
          * Decrease damage fish deals to player
          * Slows fish base speed
          * Increase fish stamina drain
@@ -360,6 +360,10 @@ public record RodConfiguration(
 
         public float fishRarity() {
             return this.fishRarity / (this.fishRarity + 100);
+        }
+
+        public float fishControl() {
+            return this.fishControl / (this.fishControl + 100);
         }
 
         public int weightMagnitude() {

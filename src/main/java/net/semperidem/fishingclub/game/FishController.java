@@ -21,6 +21,7 @@ public class FishController {
     private final FishingGameController parent;
     private final float minStamina;
     private final float maxStamina;
+    private final float staminaDrain;
     private final float baseSpeed;
 
     private float stamina;
@@ -43,11 +44,12 @@ public class FishController {
         stamina = STAMINA_BASE + species.staminaLevel() * STAMINA_PER_LEVEL;
         minStamina = stamina * 0.5f;
         maxStamina = stamina;
+        this.staminaDrain = (1 + 3 * this.parent.rodConfiguration.attributes().fishControl());
 
         nextPositionX = 0.5f;
         positionX = nextPositionX;
         positionY = 0;
-        baseSpeed = parent.hookedFish.level() * 0.05f;
+        baseSpeed = parent.hookedFish.level() * 0.05f * (1 - this.parent.rodConfiguration.attributes().fishControl());
 
         patternInstance = new MovementPatternInstance(species.movement(), parent.hookedFish.level());
         lastSegmentIndex = 0;
@@ -129,7 +131,7 @@ public class FishController {
 
     private void tickStamina() {
         if (stamina > minStamina) {
-            stamina--;
+            this.stamina -= this.staminaDrain;
         }
         calculateSpeed();
     }
