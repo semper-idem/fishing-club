@@ -182,6 +182,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         return progressionManager.nextLevelXP();
     }
 
+
     public void grantExperience(double gainedXP){
         progressionManager.grantExperience(gainedXP);
     }
@@ -192,6 +193,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public int getExp() {
         return progressionManager.getExp();
+    }
+
+    public float getExpProgress() {
+        return this.progressionManager.getExpProgress();
     }
 
     public PlayerEntity unsafeHolder() {
@@ -320,7 +325,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
     @Override
     public String toString() {
-        return "";
+        return "level: " + this.getLevel() +"   exp: " + this.getExp() + "/" + this.nextLevelXP();
     }
 
     @Override

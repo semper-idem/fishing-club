@@ -9,6 +9,7 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
@@ -47,7 +48,10 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     private int currentTreasureX;
     private int baseTreasureY;
 
+    private int originX, originY;
+
     private int treasureStartTick = -1;
+
 
     public FishingGameScreen(FishingGameScreenHandler handler, PlayerInventory playerInventory, Text text) {
         super(handler, playerInventory, text);
@@ -60,6 +64,10 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
 
     @Override
     protected void handledScreenTick() {
+        if (this.handler.controller.getProgress() >= 1) {
+            this.x = (int) (this.originX + (Math.random() * 2) - 1);
+            this.y = (int) (this.originY + (Math.random() * 2) - 1);
+        }
         ClientPlayNetworking.send(
                 new FishingGameInputKeyboardPayload(
                         InputUtil.isKeyPressed(
@@ -103,18 +111,9 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
 
         this.x = (int) (this.client.getWindow().getScaledWidth() * 0.5f) - 91;//half of back
         this.y = this.client.getWindow().getScaledHeight() - 51;//back
+        this.originX = this.x;
+        this.originY = this.y;
 
-        this.baseFishX = this.x - 6;
-        this.baseFishY = this.y + 38;
-
-        this.baseBobberX = this.x + 2;
-        this.baseBobberY = this.baseFishY;
-
-        this.baseProgressX = this.x + 3;
-        this.baseProgressY = this.y + 3;
-
-        this.baseTreasureX = this.x - 3;
-        this.baseTreasureY = this.baseFishY + 3;
     }
 
     @Override
@@ -153,25 +152,25 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     }
 
     public void renderFront(DrawContext context) {
-        context.drawTexture(ATLAS, this.x, this.baseFishY, 0, 50, 182, 12, 182, 120);
+        context.drawTexture(ATLAS, this.x, this.y + 38, 0, 50, 182, 12, 182, 120);
     }
 
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context, mouseX, mouseY, delta);
-        context.enableScissor(this.x + 2, this.baseFishY - 20, this.x + 182, this.baseFishY + 9);
+        context.enableScissor(this.x + 2, this.y + 38 - 20, this.x + 182, this.y + 38 + 9);
 
         double bobberSize = this.controller.getBobberSize() * 178;
         //left
         int bobberOffset = (int) (bobberSize * 0.5D);
-        int bobberCenter = (int) (this.baseBobberX + 178 * controller.getBobberPos() + 1);
-        context.fill(bobberCenter - bobberOffset, this.baseFishY, bobberCenter + bobberOffset, this.baseFishY + 14, 0x77d9caca);
+        int bobberCenter = (int) (this.x + 2 + 178 * controller.getBobberPos() + 1);
+        context.fill(bobberCenter - bobberOffset, this.y + 38, bobberCenter + bobberOffset, this.y + 38 + 14, 0x77d9caca);
         //Fish
         context.drawTexture(
                 ATLAS,
-                (int) (this.baseFishX + 176 * controller.getFishPosX()),
-                (int) (this.baseFishY - 20 * controller.getFishPosY()),
+                (int) (this.x - 6 + 176 * controller.getFishPosX()),
+                (int) (this.y + 38 - 20 * controller.getFishPosY()),
                 70,
                 70,
                 16,
@@ -184,8 +183,8 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         float progress = this.controller.getProgress();
         context.drawTexture(
                 ATLAS,
-                this.baseProgressX,
-                this.baseProgressY,
+                this.x + 3,
+                this.y + 3,
                 0,
                 62,
                 (int) (176 * progress),
@@ -201,7 +200,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         if(!treasureActive) {
             String progressString = (int) (progress * 100) + "%";
             int progressStringWidth = (int) (this.client.textRenderer.getWidth(progressString) * 0.5f);
-            context.drawText(this.client.textRenderer, progressString, this.baseProgressX + 87 - progressStringWidth, this.baseProgressY, progress > 0.5f ? 0xDDDDDD : 0x888888, true);
+            context.drawText(this.client.textRenderer, progressString, this.x + 3 + 87 - progressStringWidth, this.y + 3, progress > 0.5f ? 0xDDDDDD : 0x888888, true);
 
             int level = this.controller.getLevel();
             int levelWidth = this.client.textRenderer.getWidth(String.valueOf(level));
@@ -217,13 +216,13 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
 
             String expectedFish = "[?]";
             context.drawText(this.client.textRenderer, expectedFish, this.x + 94, this.y + 20, 0xffeace, true);
-            this.currentTreasureX = this.baseTreasureX + (int) (this.controller.getTreasureStartPosition() * 174);
+            this.currentTreasureX = this.x - 3 + (int) (this.controller.getTreasureStartPosition() * 174);
         }
         if (treasureAvailable && !treasureActive) {
             if (this.treasureStartTick < 0) {
                 this.treasureStartTick = (int) this.tick + 10;
             }
-            context.enableScissor(this.x + 3, this.baseTreasureY - 20, this.x + 177, this.baseTreasureY + 9);
+            context.enableScissor(this.x + 3, this.y + 41 - 20, this.x + 177, this.y + 41 + 9);
             //Treasure
             int timeSinceStart = (int) ((this.tick - this.treasureStartTick) * 0.5f);
             int popupY = timeSinceStart > 6 ? (int) (6 + (timeSinceStart * 0.2) % 2) : timeSinceStart;
@@ -231,7 +230,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
                 context.drawTexture(
                         ATLAS,
                         currentTreasureX + 3,
-                        this.baseTreasureY - popupY,
+                        this.y + 41 - popupY,
                         33,
                         90,
                         6,
@@ -243,7 +242,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
             context.drawTexture(
                     ATLAS,
                     currentTreasureX,
-                    this.baseTreasureY,
+                    this.y + 41,
                     33,
                     96,
                     11,
@@ -254,8 +253,8 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
             context.disableScissor();
             float pickupProgress = this.controller.getTreasureStartProgress();
             if (pickupProgress > 0) {
-                context.fill(currentTreasureX - 1, this.baseTreasureY, currentTreasureX + 12, this.baseTreasureY - 3, 0xFF270038);
-                context.fill(currentTreasureX, this.baseTreasureY - 1, (int) (currentTreasureX + 11 * pickupProgress), this.baseTreasureY - 2, 0xFFA400EB);
+                context.fill(currentTreasureX - 1, this.y + 41, currentTreasureX + 12, this.y + 41 - 3, 0xFF270038);
+                context.fill(currentTreasureX, this.y + 41 - 1, (int) (currentTreasureX + 11 * pickupProgress), this.y + 41 - 2, 0xFFA400EB);
 
             }
         }
@@ -268,7 +267,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
        context.drawTexture(
                 ATLAS,
                 bobberCenter - bobberOffset,
-                this.baseBobberY,
+                this.y + 38,
                 46 + bobberU,
                 70 + bobberV,
                 3,
@@ -280,7 +279,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.drawTexture(
                 ATLAS,
                 bobberCenter + bobberOffset - 3,
-                this.baseBobberY,
+                this.y + 38,
                 55 + bobberU,
                 70 + bobberV,
                 3,
@@ -296,12 +295,12 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.fill(this.x + 1, this.y + 1, this.x + 179, this.y + 49, 0xAA000000);
 
 
-        context.enableScissor(this.baseFishX + 3, this.baseFishY, this.baseFishX + 174, this.baseFishY + 9);
+        context.enableScissor(this.x - 6 + 3, this.y + 38, this.x - 6 + 174, this.y + 38 + 9);
         //Treasure (again)
         context.drawTexture(
                 ATLAS,
                 currentTreasureX,
-                this.baseTreasureY,
+                this.y + 41,
                 33,
                 96,
                 11,
@@ -315,7 +314,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.drawTexture(
                 ATLAS,
                 currentTreasureX - 3,
-                this.baseTreasureY - 50,
+                this.y + 41 - 50,
                 0,
                 70,
                 17,
@@ -328,7 +327,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.drawTexture(
                 ATLAS,
                 currentTreasureX + 4,
-                (int) (this.baseTreasureY - 35 + 26 * (1 - treasureProgress)),
+                (int) (this.y + 41 - 35 + 26 * (1 - treasureProgress)),
                 17,
                 (float) (70 + 26 * (1 - treasureProgress)),
                 3,
@@ -341,7 +340,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.drawTexture(
                 ATLAS,
                 currentTreasureX - 7,
-                this.baseTreasureY - 11,
+                this.y + 41 - 11,
                 20,
                 70 + buttonU,
                 26,
@@ -352,7 +351,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         boolean isDone = this.controller.isTreasureDone();
         if (!isDone) {
             int timeLeftWidth = (int) (this.client.textRenderer.getWidth(this.controller.getTreasureTimeLeft()) * 0.5f);
-            context.drawText(this.client.textRenderer, this.controller.getTreasureTimeLeft(), currentTreasureX - timeLeftWidth + 6, this.baseTreasureY - 45, 0xFFFFFF, true);
+            context.drawText(this.client.textRenderer, this.controller.getTreasureTimeLeft(), currentTreasureX - timeLeftWidth + 6, this.y + 41 - 45, 0xFFFFFF, true);
             return;
         }
         int treasureResultU = this.controller.getTreasureProgress() >= 1 ? 0 : 8;
@@ -360,7 +359,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
         context.drawTexture(
                 ATLAS,
                 currentTreasureX - 1,
-                (int) (this.baseTreasureY - 46 + (this.tick * 0.2f % 2)),
+                (int) (this.y + 41 - 46 + (this.tick * 0.2f % 2)),
                 20,
                 90 + treasureResultU,
                 13,

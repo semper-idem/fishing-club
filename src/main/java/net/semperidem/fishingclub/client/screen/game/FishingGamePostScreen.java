@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.client.screen.game;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -9,24 +10,43 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.managers.ProgressionManager;
+import net.semperidem.fishingclub.fisher.managers.StatusEffectHelper;
 import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
 import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
+
+import java.util.ArrayList;
 
 public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHandler> implements ScreenHandlerProvider<FishingGamePostScreenHandler> {
     private static final Identifier BOOK_TEXTURE = Identifier.of("textures/gui/book.png");
     private final Perspective previousPerspective;
+    private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/experience_bar_background");
+    private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/experience_bar_progress");
 
+    int textStartX;
+    int textEndX;
+    int textY;
+    int animationTick = 20;
+    static int EXP_ANIMATION_LENGTH = 40;
+    int expAnimationTick = EXP_ANIMATION_LENGTH;
+    int expX;
+    int expY;
+    private static final int LINE_COLOR = 0xFF000000;
+    private static final int OUTLINE_COLOR = 0xFFFFFFFF;
+    private ArrayList<Text> labelList = new ArrayList<>();
+    private ArrayList<Text> infoList = new ArrayList<>();
+    private FishingCard fishingCard;
+    int initialLevel;
+    int initialExp;
+    int fishExp;
     public FishingGamePostScreen(FishingGamePostScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.previousPerspective = MinecraftClient.getInstance().options.getPerspective();
         MinecraftClient.getInstance().options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-    }
-
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(BOOK_TEXTURE, 0, 0, 20, 1, 146, 180, 256, 256);
-        context.drawText(this.client.textRenderer, String.valueOf(this.handler.stage.get()), 20, 20, 0xFF000000, false);
         /**
          * Name
          * Weight
@@ -35,11 +55,158 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
          * Exp to player(with animation)
          * Date and Who caught with Exp
          * */
+
+        this.labelList.add(Text.of("Name:"));
+        this.labelList.add(Text.of("Weight:"));
+        this.labelList.add(Text.of("Length:"));
+        this.labelList.add(Text.of("Quality:"));
+        this.labelList.add(Text.of("Exp:"));
+        this.labelList.add(Text.of("Caught by:"));
+        this.labelList.add(Text.of("Caught at:"));
+        this.infoList.add(Text.of(handler.fish().label()));
+        this.infoList.add(Text.of(String.format("%.2f", handler.fish().weight()) + " kg"));
+        this.infoList.add(Text.of(String.format("%.2f", handler.fish().length()) + " m"));
+        this.infoList.add(Text.of(
+                "§" + FishUtil.getGradeColor(handler.fish().quality()) +
+                FishUtil.getQualityString(handler.fish().quality()
+                )));
+        this.fishExp = handler.fish().experience(StatusEffectHelper.getExpMultiplier(MinecraftClient.getInstance().player));
+        this.infoList.add(Text.of(String.valueOf(fishExp)));
+        this.infoList.add(Text.of(handler.fish().caughtBy()));
+        this.infoList.add(Text.of(FishUtil.getCaughtAtString(handler.fish().caughtAt())));
+
+        this.fishingCard = this.handler.fishingCard();
+        int currentExp = this.fishingCard.getExp();
+        this.initialLevel = currentExp < fishExp ? this.fishingCard.getLevel() - 1 : this.fishingCard.getLevel();
+        this.initialExp = currentExp < fishExp ? ProgressionManager.levelExp(this.initialLevel) + (this.fishingCard.getExp() - fishExp) : this.fishingCard.getExp() - fishExp;
+    }
+
+    private int getExpForTick() {
+        int currentExp = (int) (this.initialExp + this.fishExp * ((EXP_ANIMATION_LENGTH - this.expAnimationTick) * 1f / EXP_ANIMATION_LENGTH));
+        int currentLevelUpExp = ProgressionManager.levelExp(this.initialLevel);
+        if (currentExp > currentLevelUpExp) {
+            return currentExp - currentLevelUpExp;
+        }
+        return currentExp;
+    }
+
+    private int getLevelForTick() {
+        int currentExp = this.initialExp + this.fishExp * ((EXP_ANIMATION_LENGTH - this.expAnimationTick) / EXP_ANIMATION_LENGTH);
+        int currentLevelUpExp = ProgressionManager.levelExp(this.initialLevel);
+        if (currentExp > currentLevelUpExp) {
+            return this.fishingCard.getLevel();
+        }
+        return this.initialLevel;
+
+    }
+
+    @Override
+    protected void handledScreenTick() {
+        if (this.handler.stage.get() < FishingGamePostScreenHandler.LAST_STAGE) {
+            return;
+        }
+        this.tickTextAnimation();
+        this.tickExpAnimation();
+    }
+
+    private void tickExpAnimation() {
+        if (this.animationTick > 0) {
+            return;
+        }
+        if (this.expAnimationTick == 0) {
+            return;
+        }
+        this.expAnimationTick--;
+    }
+
+    private void tickTextAnimation() {
+        if (this.animationTick == 0) {
+            return;
+        }
+        this.animationTick--;
+
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.x = (int) (this.client.getWindow().getScaledWidth() * 0.5 - 300);
+        this.y = (int) (this.client.getWindow().getScaledHeight() * 0.5 - 100);
+        this.textStartX = this.x + 20;
+        this.textEndX = this.textStartX + 160;
+        this.textY = this.y + 20;
+        this.expX = this.x + 12;
+        this.expY = this.y + 166;
+    }
+
+    private void renderLine(DrawContext context, Text left, Text right, int index, boolean isNew) {
+        renderThickLine(context, left, index, this.textStartX);
+        int textRightX = this.textEndX - this.client.textRenderer.getWidth(right);
+        if (isNew && this.animationTick > 0 && !left.getString().contains("Quality")) {
+            renderThickLine(context, right, index, textRightX);
+        } else {
+            context.drawText(this.client.textRenderer, right, textRightX, this.textY + index * 20, LINE_COLOR, false);
+        }
+    }
+
+    private void renderThickLine(DrawContext context, Text text, int index, int textX) {
+        context.drawText(this.client.textRenderer, text, textX + 1, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX - 1, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX - 1, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX + 1, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX + 1, this.textY + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX - 1, this.textY + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text, textX, this.textY + index * 20, OUTLINE_COLOR, false);
+    }
+
+    private void renderLevel(DrawContext context, String level){
+        int levelWidth = (int) (this.client.textRenderer.getWidth(level) * 0.5f);
+        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth - 1, this.expY - 5, 0, false);
+        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth + 1, this.expY - 5, 0, false);
+        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY - 1 - 5, 0, false);
+        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY + 1 - 5, 0, false);
+        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY - 5, 8453920, false);
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.drawTexture(BOOK_TEXTURE, this.x, this.y, 20, 1, 146, 180, 256, 256);
+        context.drawTexture(BOOK_TEXTURE, this.x + 100, this.y, 60, 1, 186, 180, 256, 256);
+        context.drawText(this.client.textRenderer, String.valueOf(this.handler.stage.get()), 20, 20, 0xFF000000, false);
+        int lastIndex = this.handler.stage.get() == FishingGamePostScreenHandler.LAST_STAGE ? this.infoList.size() : this.handler.stage.get();
+        boolean isTextInprogress = this.animationTick > 0;
+        for(int i = 0; i < lastIndex; i++) {
+            this.renderLine(context, this.labelList.get(i), this.infoList.get(i), i, i + 1 >= this.handler.stage.get());
+        }
+
+        if (isTextInprogress) {
+            return;
+        }
+        int k = (int)((float) getExpForTick() / ProgressionManager.levelExp(this.getLevelForTick()) * 183.0F);
+        int newExp = (int) (this.fishingCard.getExpProgress() * 183F);
+        RenderSystem.enableBlend();
+        context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, 182, 5);
+        if (k > 0) {
+            RenderSystem.setShaderColor(1, 0.5f, 0, 1);
+            context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, newExp, 5);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, k, 5);
+        }
+        String level = String.valueOf(this.getLevelForTick());
+        this.renderLevel(context, level);
+        RenderSystem.disableBlend();
     }
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 
+    }
+
+    @Override
+    public void close() {
+        super.close();
     }
 
     @Override
@@ -54,9 +221,13 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
         if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
             ClientPlayNetworking.send(new FishingGameInputKeyboardPayload(false));
             this.client.options.setPerspective(this.previousPerspective);
-            return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+       return true;
+    }
 }

@@ -13,6 +13,7 @@ import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreen
 public class FishingGameScreenHandler extends ScreenHandler {
     public final FishingGameController controller;
 
+
     public FishingGameScreenHandler(int syncId, PlayerInventory playerInventory, FishingGameStartS2CPayload payload) {
         super(FCScreenHandlers.FISHING_GAME_SCREEN, syncId);
         this.controller = new FishingGameController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());

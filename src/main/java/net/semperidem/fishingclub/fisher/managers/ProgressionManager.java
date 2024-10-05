@@ -63,6 +63,10 @@ public class ProgressionManager extends DataManager {
         return exp;
     }
 
+    public float getExpProgress() {
+        return this.exp * 1f / this.nextLevelXP();
+    }
+
     public void learnTradeSecret(String tradeSecretName) {
         if (!hasAdmirationPoints()) {
             return;
@@ -134,7 +138,14 @@ public class ProgressionManager extends DataManager {
     }
 
     public int nextLevelXP() {
-        return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
+        return levelExp(this.level);
+    }
+
+    public static int levelExp(int level) {
+        if (level <= 0) {
+            return 0;
+        }
+            return (int) Math.floor(BASE_EXP * Math.pow(level, EXP_EXPONENT));
     }
 
     public void grantExperience(double gainedXP) {

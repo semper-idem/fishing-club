@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.game.treasure.Reward;
@@ -72,8 +73,12 @@ public class TreasureGameController {
     }
 
     public ArrayList<ItemStack> getRewards(){
-        return isWon() ? treasureReward.getContent() : new ArrayList<>();
+        ArrayList<ItemStack> rewards = new ArrayList<>();
+        rewards.add(Items.ANDESITE.getDefaultStack());
+//        return isWon() ? treasureReward.getContent() : new ArrayList<>();
+        return rewards;
     }
+
 
     public float getProgress() {
         return this.progress;

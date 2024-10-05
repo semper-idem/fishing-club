@@ -21,6 +21,9 @@ public class FishingGameController {
     private int fishCaughtSlot = -1;
     private boolean isReeling = false;
 
+    private int ticksBeforeClose = 30;
+    private boolean isWon = false;
+
     public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
         this.hookedFish = hookedFish;
         this.player = playerEntity;
@@ -69,6 +72,10 @@ public class FishingGameController {
     }
 
     private void tickLogic() {
+        if (this.isWon) {
+           this.tickWon();
+           return;
+        }
         if (this.treasureGameController.isActive()) {
             this.treasureGameController.tick();
             return;
@@ -144,13 +151,16 @@ public class FishingGameController {
         return treasureGameController.isActive();
     }
 
-    public void winGame() {
-        if (!(this.player instanceof ServerPlayerEntity serverPlayer)) {
+    public void tickWon() {
+        if (this.ticksBeforeClose > 0) {
+            this.ticksBeforeClose--;
             return;
         }
-        FishUtil.fishCaught(serverPlayer, this.hookedFish);
-        FishUtil.giveReward(serverPlayer, this.treasureGameController.getRewards());
-        player.openHandledScreen(new FishingGamePostScreenHandlerFactory(this.hookedFish));
+        this.player.openHandledScreen(new FishingGamePostScreenHandlerFactory(this.hookedFish, this.treasureGameController.getRewards()));
+    }
+
+    public void winGame() {
+        this.isWon = true;
     }
 
     public void loseGame() {

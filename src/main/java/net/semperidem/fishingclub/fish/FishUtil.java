@@ -53,7 +53,7 @@ public class FishUtil {
     }
 
 
-private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fishStack) {
+private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack) {
         for(int i = 0; i < 9; i++) {
             ItemStack stackInHotbar = player.getInventory().getStack(i);
             if (!(stackInHotbar.getItem() instanceof FishingNetItem fishingNetItem)) {
@@ -66,19 +66,21 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         return FishingCard.of(player).getFishingNet(fishStack);
     }
 
-    public static void fishCaught(ServerPlayerEntity player, SpecimenData fish){
+    public static ItemStack fishCaught(PlayerEntity player, SpecimenData fish){
         FishingCard fishingCard = FishingCard.of(player);
         fishingCard.fishCaught(fish);
         List<ItemStack> fishCaughtStacks = getStackFromFish(fish, fishingCard);
+        ItemStack fishStack = fishCaughtStacks.getFirst().copy();
         for(ItemStack fishCaughtStack : fishCaughtStacks) {
             ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
             CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
             if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishCaughtStack, player)) {
-                return;
+                continue;
             }
             giveItemStack(player, fishCaughtStack);
         }
-   }
+        return fishStack;
+    }
 
     public static void fishCaughtAt(ServerPlayerEntity player, SpecimenData fish, BlockPos caughtAt) {
         FishingCard fishingCard = FishingCard.of(player);
@@ -93,7 +95,7 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         }
     }
 
-    private static void giveItemStack(ServerPlayerEntity player, ItemStack itemStack){
+    private static void giveItemStack(PlayerEntity player, ItemStack itemStack){
         if (player.getInventory().getEmptySlot() == -1) {
             player.dropItem(itemStack, false);
         } else {
@@ -160,16 +162,16 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
 
 
     private static Text getValueText(int value){
-        return Text.of("§3Value: §6" + value + "$");
+        return Text.of("Value: §6" + value + "$");
     }
 
     private static Text getQualityText(int grade){
-        return Text.of("§3Grade:§" + getGradeColor(grade)+ " " + getQualityString(grade));
+        return Text.of("Quality:§" + getGradeColor(grade)+ " " + getQualityString(grade));
     }
 
-    private static String getQualityString(int grade) {
+    public static String getQualityString(int grade) {
         return switch(grade) {
-            case MIN_QUALITY -> "Defect";
+            case MIN_QUALITY -> "Defective";
             case 2 -> "Poor";
             case 3 -> "Standard";
             case 4 -> "Good";
@@ -178,21 +180,21 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         };
     }
 
-    private static Text getWeightText(float weight, int grade){
-        return Text.of("§3Weight:§" + getGradeColor(grade)+ " " + String.format("%.2f", weight) + "kg");
+    public static Text getWeightText(float weight, int grade){
+        return Text.of("Weight:§" + getGradeColor(grade)+ " " + String.format("%.2f", weight) + "kg");
     }
 
-    private static Text getLengthText(float length, int grade){
-        return Text.of("§3Length:§" + getGradeColor(grade)+ " " + String.format("%.2f", length) + "cm");
+    public static Text getLengthText(float length, int grade){
+        return Text.of("Length:§" + getGradeColor(grade)+ " " + String.format("%.2f", length) + "m");
     }
 
-    private static String getGradeColor(int grade){
+    public static String getGradeColor(int grade){
         return switch (grade) {
             case MIN_QUALITY -> "8";
             case 2 -> "7";
             case 3 -> "f";
-            case 4 -> "e";
-            case MAX_QUALITY -> "6";
+            case 4 -> "e§l";
+            case MAX_QUALITY -> "6§l";
             default -> "k";
         };
     }
@@ -218,19 +220,24 @@ private static ItemStack getFishingNet(ServerPlayerEntity player, ItemStack fish
         }
     }
 
-    private static Text getCaughtBy(String caughtBy){
-        return Text.of("§3Caught by: §f"+ caughtBy);
+    public static Text getCaughtBy(String caughtBy){
+        return Text.of("Caught by: §f"+ caughtBy);
     }
 
 
-    private static Text getCaughtAt(long caughtAtEpoch) {
-        String caughtAt = DateTimeFormatter
-          .ofPattern("HH:mm, dd.MM.yyyy")
-          .format(LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(caughtAtEpoch),
-            ZoneOffset.systemDefault()
-          ));
-        return Text.of("§3Caught at: §f" + caughtAt);
+
+
+    public static String getCaughtAtString(long caughtAtEpoch) {
+        return DateTimeFormatter
+                .ofPattern("HH:mm, dd.MM.yyyy")
+                .format(LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(caughtAtEpoch),
+                        ZoneOffset.systemDefault()
+                ));
+    }
+
+    public static Text getCaughtAt(long caughtAtEpoch) {
+        return Text.of("Caught at: §f" + getCaughtAtString(caughtAtEpoch));
     }
 
     private static void setLore(ItemStack stack, List<Text> lore) {

@@ -319,18 +319,7 @@ public int experience(double xFisher) {
     public static final int MAX_EXP = 99999;
 
 
-    public static final SpecimenData DEFAULT =
-            new SpecimenData(net.semperidem.fishingclub.fish.Species.Library.DEFAULT.name(),
-                    net.semperidem.fishingclub.fish.Species.Library.DEFAULT.name(),
-                    MIN_LEVEL, MIN_QUALITY,
-                    0,
-                    0,
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
-                    "x",
-                    System.currentTimeMillis(),
-                    false, 0
-            );
+    public static final SpecimenData DEFAULT = SpecimenData.init(Species.Library.DEFAULT);
     public static Codec<SpecimenData> CODEC =
             RecordCodecBuilder.create(
                     instance ->

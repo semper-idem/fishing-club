@@ -40,9 +40,13 @@ public class StatusEffectHelper {
     }
 
     public float getExpMultiplier() {
+        return  getExpMultiplier(this.trackedFor.holder());
+    }
+
+    public static float getExpMultiplier(PlayerEntity player) {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = this.trackedFor.holder().getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = player.getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
             multiplier += IncreaseFishingExpStatusEffect.BONUS_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;

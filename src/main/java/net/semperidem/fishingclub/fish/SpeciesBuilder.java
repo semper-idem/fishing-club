@@ -32,7 +32,7 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
         this.species = new Species<>();
 
         this.species.name = speciesName.toLowerCase().replace(" ", "_");
-        this.species.label = speciesName;
+        this.species.label = speciesName.substring(0, 1).toUpperCase() + speciesName.substring(1);
 
         this.species.id = Species.Library.SPECIES_BY_NAME.size();
 
