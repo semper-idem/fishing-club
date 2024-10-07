@@ -64,9 +64,9 @@ public class FishingGamePostScreenHandler extends ScreenHandler {
                 this.mainSlot = slot;
             }
         }
-        for(int i = 0; i < this.slots.size(); i++) {
-            if (slots.get(i).getStack().getComponents().equals(fishStack.getComponents())) {
-                fishSlot = slots.get(i);
+        for (Slot slot : this.slots) {
+            if (slot.getStack().getComponents().equals(fishStack.getComponents())) {
+                fishSlot = slot;
             }
         }
         if (mainSlot != null && fishSlot != null) {
