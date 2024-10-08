@@ -9,6 +9,10 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Utils {
@@ -46,4 +50,12 @@ public class Utils {
     }
 
 
+    public static String epochToFormatted(long epoch) {
+        return DateTimeFormatter
+                .ofPattern("HH:mm, dd.MM.yyyy")
+                .format(LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(epoch),
+                        ZoneOffset.systemDefault()
+                ));
+    }
 }

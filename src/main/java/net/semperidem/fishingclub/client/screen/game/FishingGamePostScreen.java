@@ -12,7 +12,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.FishUtil;
+import net.semperidem.fishingclub.fish.specimen.SpecimenDescription;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.managers.ProgressionManager;
 import net.semperidem.fishingclub.fisher.managers.StatusEffectHelper;
@@ -20,9 +22,10 @@ import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayloa
 import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHandler> implements ScreenHandlerProvider<FishingGamePostScreenHandler> {
-    private static final Identifier BOOK_TEXTURE = Identifier.of("textures/gui/book.png");
+    private static final Identifier BOOK_TEXTURE = FishingClub.identifier("textures/gui/page.png");
     private final Perspective previousPerspective;
     private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/experience_bar_background");
     private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/experience_bar_progress");
@@ -37,8 +40,7 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
     int expY;
     private static final int LINE_COLOR = 0xFF000000;
     private static final int OUTLINE_COLOR = 0xFFFFFFFF;
-    private ArrayList<Text> labelList = new ArrayList<>();
-    private ArrayList<Text> infoList = new ArrayList<>();
+    private List<SpecimenDescription.Line> specimenDescription;
     private FishingCard fishingCard;
     int initialLevel;
     int initialExp;
@@ -56,25 +58,7 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
          * Date and Who caught with Exp
          * */
 
-        this.labelList.add(Text.of("Name:"));
-        this.labelList.add(Text.of("Weight:"));
-        this.labelList.add(Text.of("Length:"));
-        this.labelList.add(Text.of("Quality:"));
-        this.labelList.add(Text.of("Exp:"));
-        this.labelList.add(Text.of("Caught by:"));
-        this.labelList.add(Text.of("Caught at:"));
-        this.infoList.add(Text.of(handler.fish().label()));
-        this.infoList.add(Text.of(String.format("%.2f", handler.fish().weight()) + " kg"));
-        this.infoList.add(Text.of(String.format("%.2f", handler.fish().length()) + " m"));
-        this.infoList.add(Text.of(
-                "§" + FishUtil.getGradeColor(handler.fish().quality()) +
-                FishUtil.getQualityString(handler.fish().quality()
-                )));
-        this.fishExp = handler.fish().experience(StatusEffectHelper.getExpMultiplier(MinecraftClient.getInstance().player));
-        this.infoList.add(Text.of(String.valueOf(fishExp)));
-        this.infoList.add(Text.of(handler.fish().caughtBy()));
-        this.infoList.add(Text.of(FishUtil.getCaughtAtString(handler.fish().caughtAt())));
-
+        this.specimenDescription = SpecimenDescription.of(this.handler.fish()).get();
         this.fishingCard = this.handler.fishingCard();
         int currentExp = this.fishingCard.getExp();
         this.initialLevel = currentExp < fishExp ? this.fishingCard.getLevel() - 1 : this.fishingCard.getLevel();
@@ -142,32 +126,34 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
     private void renderLine(DrawContext context, Text left, Text right, int index, boolean isNew) {
         renderThickLine(context, left, index, this.textStartX);
         int textRightX = this.textEndX - this.client.textRenderer.getWidth(right);
-        if (isNew && this.animationTick > 0 && !left.getString().contains("Quality")) {
-            renderThickLine(context, right, index, textRightX);
-        } else {
-            context.drawText(this.client.textRenderer, right, textRightX, this.textY + index * 20, LINE_COLOR, false);
-        }
+        //if (isNew && this.animationTick > 0 && !left.getString().contains("Quality")) {
+          //  renderThickLine(context, right, index, textRightX);
+//        } else
+//        {
+        renderThickLine(context, right, index, textRightX);
+            //context.drawText(this.client.textRenderer, right, textRightX, this.textY + index * 20, LINE_COLOR, false);
+//        }
     }
 
     private void renderThickLine(DrawContext context, Text text, int index, int textX) {
-        context.drawText(this.client.textRenderer, text, textX + 1, this.textY + 1 + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX - 1, this.textY - 1 + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX - 1, this.textY + 1 + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX + 1, this.textY - 1 + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX + 1, this.textY + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX - 1, this.textY + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX, this.textY + 1 + index * 20, LINE_COLOR, false);
-        context.drawText(this.client.textRenderer, text, textX, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX + 1, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX - 1, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX - 1, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX + 1, this.textY - 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX + 1, this.textY + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX - 1, this.textY + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX, this.textY + 1 + index * 20, LINE_COLOR, false);
+        context.drawText(this.client.textRenderer, text.copyContentOnly(), textX, this.textY - 1 + index * 20, LINE_COLOR, false);
         context.drawText(this.client.textRenderer, text, textX, this.textY + index * 20, OUTLINE_COLOR, false);
     }
 
-    private void renderLevel(DrawContext context, String level){
+    private void renderLevel(DrawContext context, String level, int levelX, int levelY){
         int levelWidth = (int) (this.client.textRenderer.getWidth(level) * 0.5f);
-        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth - 1, this.expY - 5, 0, false);
-        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth + 1, this.expY - 5, 0, false);
-        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY - 1 - 5, 0, false);
-        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY + 1 - 5, 0, false);
-        context.drawText(this.client.textRenderer, level, this.expX + 91 - levelWidth, this.expY - 5, 8453920, false);
+        context.drawText(this.client.textRenderer, level, levelX - levelWidth - 1, levelY, 0, false);
+        context.drawText(this.client.textRenderer, level, levelX - levelWidth + 1, levelY, 0, false);
+        context.drawText(this.client.textRenderer, level, levelX - levelWidth, levelY - 1, 0, false);
+        context.drawText(this.client.textRenderer, level, levelX - levelWidth, levelY - 1, 0, false);
+        context.drawText(this.client.textRenderer, level, levelX - levelWidth, levelY, 8453920, false);
     }
 
     @Override
@@ -175,10 +161,10 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
         context.drawTexture(BOOK_TEXTURE, this.x, this.y, 20, 1, 146, 180, 256, 256);
         context.drawTexture(BOOK_TEXTURE, this.x + 100, this.y, 60, 1, 186, 180, 256, 256);
         context.drawText(this.client.textRenderer, String.valueOf(this.handler.stage.get()), 20, 20, 0xFF000000, false);
-        int lastIndex = this.handler.stage.get() == FishingGamePostScreenHandler.LAST_STAGE ? this.infoList.size() : this.handler.stage.get();
+        int lastIndex = this.handler.stage.get() == FishingGamePostScreenHandler.LAST_STAGE ? this.specimenDescription.size() : this.handler.stage.get();
         boolean isTextInprogress = this.animationTick > 0;
         for(int i = 0; i < lastIndex; i++) {
-            this.renderLine(context, this.labelList.get(i), this.infoList.get(i), i, i + 1 >= this.handler.stage.get());
+            this.renderLine(context, this.specimenDescription.get(i).getLeft(), this.specimenDescription.get(i).getRight(), i, i + 1 >= this.handler.stage.get());
         }
 
         if (isTextInprogress) {
@@ -195,7 +181,8 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
             context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, k, 5);
         }
         String level = String.valueOf(this.getLevelForTick());
-        this.renderLevel(context, level);
+        this.renderLevel(context, level, this.expX + 91, this.expY - 5);
+        this.renderLevel(context, "+" + this.handler.fish().experience(1), this.expX + 175, this.expY - 8);
         RenderSystem.disableBlend();
     }
 

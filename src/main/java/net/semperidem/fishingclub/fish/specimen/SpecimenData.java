@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -277,7 +278,7 @@ public int experience(double xFisher) {
         }
         fishItemStack.set(DataComponentTypes.ITEM_NAME, label);
         if (this.isAlive) {
-            FishUtil.setLore(fishItemStack, this);
+            fishItemStack.set(DataComponentTypes.LORE, new LoreComponent(SpecimenDescription.of(this).asTooltip()));
         }
         return fishItemStack;
     }
@@ -311,7 +312,7 @@ public int experience(double xFisher) {
     public static final int MAX_LEVEL = 99;
 
     public static final int MIN_QUALITY = 1;
-    public static final int MAX_QUALITY = 5;
+    public static final int MAX_QUALITY = 6;
 
     public static final int BASE_VALUE = 5;
 
