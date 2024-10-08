@@ -52,7 +52,6 @@ import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private static final int BASE_WAIT = 600;
-    private static final int MIN_HOOK_TICKS = 10;
     private static final int REACTION_REWARD = 16;
     private static final float RAIN_CATCH_RATE_BUFF = 0.125f;
     private static final int MAX_THROW_RANGE = 128;
@@ -255,8 +254,6 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
-        if (this.hookPartItem != null && entityHitResult.getEntity() != this && this.hookPartItem.getDamage() > 0) {
-        }
         this.updateHookEntity(entityHitResult.getEntity());
         if (this.hookedEntity == this || this.hookedEntity == null) {
             return;
@@ -469,7 +466,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.burningSeconds++;
             this.playerOwner.setFireTicks(100);
             if (burningSeconds > 10) {
-                for(RodConfiguration.PartType partType : RodConfiguration.PartType.values()) {
+                for (RodConfiguration.PartType partType : RodConfiguration.PartType.values()) {
                     if (this.isBurning(this.configuration.maxTemperatureOfPart(partType))) {
                         this.configuration.unEquip(partType);
                     }
@@ -522,7 +519,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickFish(ServerWorld serverWorld) {
-        this.fishTravelCountdown -= 1;
+        this.fishTravelCountdown -= (int) (this.caughtFish.level() * 0.05f + 1);
         if (this.fishTravelCountdown > 0) {
             this.tickFishTrail(serverWorld);
         }
@@ -584,10 +581,13 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void tickWait(ServerWorld serverWorld) {
         this.waitCountdown -= 1;
         this.splashWater(serverWorld);
-        if (this.waitCountdown <= 0) {
+        if (this.waitCountdown > 0) {
+            return;
+        }
+        int fishingSchoolLevel = this.fishingCard.tradeSecretLevel(TradeSecrets.FISHING_SCHOOL);
+        if (fishingSchoolLevel > 0) {
             this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
-            //TODO Initialize with value with skill
-            this.fishTravelCountdown = 1;
+            this.fishTravelCountdown = (int) (20 + fishingSchoolLevel * 20 * (Math.random() * 2 - 1));
         }
     }
 
