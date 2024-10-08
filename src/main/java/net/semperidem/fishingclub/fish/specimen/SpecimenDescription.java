@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fish.specimen;
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
@@ -17,9 +18,11 @@ import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
 public class SpecimenDescription {
     private final SpecimenData data;
     private final List<Line> description;
-    private final List<Text> asTooltip;
+    private final List<OrderedText> asTooltip;
+    private final TextRenderer textRenderer;
 
-    private SpecimenDescription(SpecimenData data) {
+    private SpecimenDescription(TextRenderer textRenderer, SpecimenData data) {
+        this.textRenderer = textRenderer;
         this.data = data;
         this.description = new ArrayList<>();
         this.description.add(this.getName());
@@ -32,8 +35,8 @@ public class SpecimenDescription {
         this.asTooltip = List.copyOf(this.description).stream().map(Line::joined).toList();
     }
 
-    public static SpecimenDescription of(SpecimenData data) {
-        return new SpecimenDescription(data);
+    public static SpecimenDescription of(TextRenderer textRenderer, SpecimenData data) {
+        return new SpecimenDescription(textRenderer, data);
     }
 
     private Line getName() {
@@ -45,6 +48,7 @@ public class SpecimenDescription {
             grade++;
         }
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Name:")),
                 MutableText.of(PlainTextContent.of(this.data.label())).setStyle(forGrade(grade))
         );
@@ -54,6 +58,7 @@ public class SpecimenDescription {
         Species<?> species = this.data.species();
         int grade = (int) MathHelper.clamp(Math.ceil(Math.log10(species.rarity())) + 1, 1, 6);
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Species:")),
                 MutableText.of(PlainTextContent.of(species.label())).setStyle(forGrade(grade))
         );
@@ -61,6 +66,7 @@ public class SpecimenDescription {
 
     private Line getWeight() {
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Weight:")),
                 MutableText.of(PlainTextContent.of(String.format("%.2f", this.data.weight()))).setStyle(forGrade(percentileGrade(this.data.weightPercentile())))
         );
@@ -68,13 +74,14 @@ public class SpecimenDescription {
 
     private Line getLength() {
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Length:")),
                 MutableText.of(PlainTextContent.of(String.format("%.2f", this.data.length()))).setStyle(forGrade(percentileGrade(this.data.lengthPercentile())))
         );
     }
 
     private Line getQuality() {
-        String qualityString = switch(this.data.quality()) {
+        String qualityString = switch (this.data.quality()) {
             case MIN_QUALITY -> "Defective";
             case 2 -> "Poor";
             case 3 -> "Standard";
@@ -84,6 +91,7 @@ public class SpecimenDescription {
             default -> "Unidentifiable";
         };
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Quality:")),
                 MutableText.of(PlainTextContent.of(qualityString)).setStyle(forGrade(this.data.quality()))
         );
@@ -91,6 +99,7 @@ public class SpecimenDescription {
 
     private Line getCaughtBy() {
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Caught by:")),
                 MutableText.of(PlainTextContent.of(this.data.caughtBy())).setStyle(STANDARD)
         );
@@ -98,6 +107,7 @@ public class SpecimenDescription {
 
     private Line getCaughtAt() {
         return new Line(
+                this.textRenderer,
                 MutableText.of(PlainTextContent.of("Caught at:")),
                 MutableText.of(PlainTextContent.of(Utils.epochToFormatted(this.data.caughtAt()))).setStyle(STANDARD)
         );
@@ -107,7 +117,7 @@ public class SpecimenDescription {
         return this.description;
     }
 
-    public List<Text> asTooltip() {
+    public List<OrderedText> asTooltip() {
         return this.asTooltip;
     }
 
@@ -149,9 +159,12 @@ public class SpecimenDescription {
     private static final Style EXCELLENT = Style.EMPTY.withColor(Formatting.DARK_AQUA);
     private static final Style PERFECT = Style.EMPTY.withColor(Formatting.GOLD).withBold(true);
 
-    public static class Line extends Pair<MutableText, MutableText> {
-        public Line(MutableText left, MutableText right) {
-            super(left, right);
+    public static class Line extends Pair<OrderedText, OrderedText> {
+        OrderedText joined;
+
+        public Line(TextRenderer textRenderer, MutableText left, MutableText right) {
+            super(textRenderer.wrapLines(left, 100).getFirst(), textRenderer.wrapLines(right, 100).getFirst());
+            this.joined = textRenderer.wrapLines(left.copy().append(" ").append(right), 200).getFirst();
         }
 
         /**
@@ -159,8 +172,8 @@ public class SpecimenDescription {
          * but we should have custom tooltip renderer
          * so each left is aligned left and each right is aligned right
          * */
-        public Text joined() {
-            return this.getLeft().copy().append(" ").append(this.getRight());
+        public OrderedText joined() {
+            return this.joined;
         }
     }
 }

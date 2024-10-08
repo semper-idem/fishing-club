@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.network.payload.TitleClaimPayload;
+import net.semperidem.fishingclub.util.TextUtil;
 
 import java.util.Optional;
 
@@ -127,7 +128,7 @@ public class MemberMiscScreen extends MemberSubScreen {
         drawTextCenteredAt(textRenderer, context, resetText, resetX, resetY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(textRenderer, context, resetCostText, resetCostX, resetCostY, BEIGE_TEXT_COLOR);
         drawTextCenteredAt(textRenderer, context, minClaimText, minimumClaimX, minimumClaimY, BEIGE_TEXT_COLOR);
-        drawOutlinedTextCenteredAt(textRenderer, context, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+        TextUtil.drawTextCenteredAt(textRenderer, context, capeHolderText, capeHolderX, capeHolderY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
         drawTextCenteredAt(textRenderer, context, fishingKingText, kingTitleX, kingTitleY, BEIGE_TEXT_COLOR);
 
         super.render(context, mouseX, mouseY, delta);

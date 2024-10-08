@@ -16,10 +16,12 @@ import java.util.List;
 public class FishingGamePostScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGamePostS2CPayload> {
     SpecimenData fish;
     List<ItemStack> rewards;
+    int exp;
 
-    public FishingGamePostScreenHandlerFactory(SpecimenData fish, List<ItemStack> rewards) {
+    public FishingGamePostScreenHandlerFactory(SpecimenData fish, List<ItemStack> rewards, int exp) {
         this.fish = fish;
         this.rewards = rewards;
+        this.exp = exp;
     }
 
     @Override
@@ -29,11 +31,11 @@ public class FishingGamePostScreenHandlerFactory implements ExtendedScreenHandle
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    return new FishingGamePostScreenHandler(syncId, inv, new FishingGamePostS2CPayload(this.fish, this.rewards));
+    return new FishingGamePostScreenHandler(syncId, inv, new FishingGamePostS2CPayload(this.fish, this.rewards, this.exp));
     }
 
     @Override
     public FishingGamePostS2CPayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new FishingGamePostS2CPayload(this.fish, this.rewards);
+        return new FishingGamePostS2CPayload(this.fish, this.rewards, this.exp);
     }
 }

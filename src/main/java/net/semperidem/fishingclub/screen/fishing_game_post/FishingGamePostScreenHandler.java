@@ -35,6 +35,7 @@ public class FishingGamePostScreenHandler extends ScreenHandler {
     private Slot fishSlot;
     private SpecimenData fish;
     private FishingCard fishingCard;
+    private int exp;
 
     public FishingGamePostScreenHandler(int syncId, PlayerInventory playerInventory, FishingGamePostS2CPayload payload) {
         super(FCScreenHandlers.FISHING_GAME_POST_SCREEN, syncId);
@@ -49,6 +50,7 @@ public class FishingGamePostScreenHandler extends ScreenHandler {
             this.previousSlow = new StatusEffectInstance(slowness);
         }
         this.fishStack = FishUtil.fishCaught(this.inventory.player, fish);
+        this.exp = payload.exp();
         int j;
         int k;
         for(j = 0; j < 3; ++j) {
@@ -85,6 +87,10 @@ public class FishingGamePostScreenHandler extends ScreenHandler {
                 case 5: LevelUpEffect.RARE_EFFECT.executeFor(serverPlayer);
             }
         }
+    }
+
+    public int exp() {
+        return this.exp;
     }
 
     public FishingCard fishingCard() {

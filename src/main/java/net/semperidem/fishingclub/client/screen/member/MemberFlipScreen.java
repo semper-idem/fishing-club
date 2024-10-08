@@ -116,7 +116,7 @@ public class MemberFlipScreen extends MemberSubScreen {
             context.drawTextWithShadow(textRenderer, Text.of(parts[0]), historyXLeft, historyEntryY, BEIGE_TEXT_COLOR);
             context.drawTextWithShadow(textRenderer, Text.of(parts[1]), historyXMiddle, historyEntryY, BEIGE_TEXT_COLOR);
             context.drawTextWithShadow(textRenderer, Text.of(parts[2]), historyXMiddle2, historyEntryY, BEIGE_TEXT_COLOR);
-            TextUtil.drawOutlinedTextRightAlignedTo(textRenderer, context, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
+            TextUtil.drawTextRightAlignedTo(textRenderer, context, Text.of(parts[3]), historyXRight, historyEntryY, CREDIT_COLOR, CREDIT_OUTLINE_COLOR);
             historyEntryY -= TEXT_HEIGHT;
 
         }

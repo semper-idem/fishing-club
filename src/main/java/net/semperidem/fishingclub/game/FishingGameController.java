@@ -6,6 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.managers.StatusEffectHelper;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandlerFactory;
@@ -156,7 +157,12 @@ public class FishingGameController {
             this.ticksBeforeClose--;
             return;
         }
-        this.player.openHandledScreen(new FishingGamePostScreenHandlerFactory(this.hookedFish, this.treasureGameController.getRewards()));
+        this.player.openHandledScreen(new FishingGamePostScreenHandlerFactory(
+                this.hookedFish,
+                this.treasureGameController.getRewards(),
+                this.hookedFish.experience(StatusEffectHelper.getExpMultiplier(player)
+                )
+        ));
     }
 
     public void winGame() {

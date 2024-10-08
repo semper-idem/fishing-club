@@ -277,9 +277,6 @@ public int experience(double xFisher) {
 
         }
         fishItemStack.set(DataComponentTypes.ITEM_NAME, label);
-        if (this.isAlive) {
-            fishItemStack.set(DataComponentTypes.LORE, new LoreComponent(SpecimenDescription.of(this).asTooltip()));
-        }
         return fishItemStack;
     }
 

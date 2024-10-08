@@ -12,8 +12,9 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
+import net.semperidem.fishingclub.util.TextUtil;
 
-import static net.semperidem.fishingclub.util.TextUtil.drawOutlinedTextRightAlignedTo;
+import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 
 public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
@@ -146,7 +147,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         currentView.render(context, mouseX, mouseY, delta);
-        drawOutlinedTextRightAlignedTo(textRenderer, context, creditValue, creditX, creditY, CREDIT_COLOR , CREDIT_OUTLINE_COLOR);//separate text and value
+        TextUtil.drawTextRightAlignedTo(textRenderer, context, creditValue, creditX, creditY, CREDIT_COLOR , CREDIT_OUTLINE_COLOR);//separate text and value
         drawTextRightAlignedTo(textRenderer, context, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
     }
 

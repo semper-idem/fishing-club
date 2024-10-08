@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.util;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 public class TextUtil {
@@ -21,7 +22,7 @@ public class TextUtil {
         context.drawText(textRenderer, text, textX, y, color, true);
     }
 
-    public static void drawOutlinedTextCenteredAt(TextRenderer textRenderer, DrawContext context, Text text, int x, int y, int color, int outline) {
+    public static void drawTextCenteredAt(TextRenderer textRenderer, DrawContext context, Text text, int x, int y, int color, int outline) {
         int textWidth = textRenderer.getWidth(text);
         int textX = x - textWidth / 2;
         drawTextOutline(textRenderer, context, text, textX, y, outline);
@@ -33,7 +34,7 @@ public class TextUtil {
         context.drawText(textRenderer, text, textX, y, color, false);
     }
 
-    public static void drawOutlinedTextRightAlignedTo(TextRenderer textRenderer, DrawContext context, Text text, int x, int y, int color, int outline) {
+    public static void drawTextRightAlignedTo(TextRenderer textRenderer, DrawContext context, Text text, int x, int y, int color, int outline) {
         int textWidth = textRenderer.getWidth(text);
         int textX = x - textWidth;
         drawTextOutline(textRenderer, context, text, textX, y, outline);
@@ -53,4 +54,11 @@ public class TextUtil {
 
     }
 
+    public static void drawTextOutline(TextRenderer textRenderer, DrawContext context, OrderedText text, int x, int y, int color, int outline){
+        textRenderer.drawWithOutline(text, x, y, color, outline, context.getMatrices().peek().getPositionMatrix(), context.getVertexConsumers(), 15728880);
+    }
+
+    public static OrderedText toOrderedText(TextRenderer textRenderer, Text text) {
+        return textRenderer.wrapLines(text, 1000).getFirst();
+    }
 }

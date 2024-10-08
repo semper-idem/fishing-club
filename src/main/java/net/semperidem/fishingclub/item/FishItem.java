@@ -5,6 +5,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -17,10 +18,18 @@ import net.semperidem.fishingclub.registry.FCComponents;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class FishItem extends Item {
     public FishItem(Settings settings) {
         super(settings);
+    }
+
+
+    @Override
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        //todo moved from lore component
+        return super.getTooltipData(stack);
     }
 
     @Override
