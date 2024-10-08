@@ -741,6 +741,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         if (this.configuration.attributes().isAutoReel()) {
             this.handleAutoReel();
+            return;
         }
         this.playerOwner.openHandledScreen(new FishingGameScreenHandlerFactory(this.caughtFish, this.configuration));
         this.discard();
