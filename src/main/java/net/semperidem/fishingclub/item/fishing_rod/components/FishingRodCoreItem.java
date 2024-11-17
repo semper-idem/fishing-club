@@ -48,7 +48,7 @@ public class FishingRodCoreItem extends FishingRodItem {
             return TypedActionResult.success(user.getStackInHand(hand));
         }
         if (debug) {
-            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.DEFAULT, user.getMainHandStack().get(FCComponents.ROD_CONFIGURATION)));
+            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(FCComponents.ROD_CONFIGURATION)));
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

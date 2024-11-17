@@ -136,7 +136,7 @@ public abstract class HeldItemRendererMixin {
         if (renderMode != ModelTransformationMode.THIRD_PERSON_LEFT_HAND && renderMode != ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
             return;
         }
-
+        matrices.scale(lengthScale, weightScale, weightScale);
         matrices.translate(-0.15, 0, 0);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(60));
     }

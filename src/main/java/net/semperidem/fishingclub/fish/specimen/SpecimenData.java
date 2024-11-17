@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,7 +18,6 @@ import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
@@ -119,21 +117,31 @@ public record SpecimenData(
 
     public static SpecimenData init(IHookEntity caughtWith, Species<? extends WaterCreatureEntity> species, int subspecies) {
 
-        var caughtByCard = caughtWith.getFishingCard();
-        var caughtUsing = caughtWith.getCaughtUsing();
-        var caughtBy = caughtByCard.unsafeHolder();
+        FishingCard caughtByCard = caughtWith.getFishingCard();
+        RodConfiguration caughtUsing = caughtWith.getCaughtUsing();
+        PlayerEntity caughtBy = caughtByCard.unsafeHolder();
 
-        var level = calculateLevel(species, caughtByCard.getLevel());
-        var quality = calculateQuality(caughtWith, caughtByCard, caughtUsing);
+        int level = calculateLevel(species, caughtByCard.getLevel());
+        int quality = calculateQuality(caughtWith, caughtByCard, caughtUsing);
         return init(species, level, quality, caughtBy, subspecies, !(caughtWith instanceof FishingExplosionEntity));
     }
 
     private static SpecimenData init(Species<? extends  WaterCreatureEntity> species, int level, int quality, PlayerEntity caughtBy, int subspecies, boolean isDead) {
 
-        var weight = calculateWeight(species, level);
-        var length = calculateLength(species, level);
+        float weight = calculateWeight(species, level);
+        float length = calculateLength(species, level);
 
-        var label = (species.weird(weight, length) ? "Weird " : "") + (subspecies == -1 ? "Albino " : "") + species.label();
+        String label = (subspecies == -1 ? "Albino " : "") + species.label();
+        if (Math.random() < GIANT_CHANCE) {
+            double giantBase = MathHelper.clamp(Math.abs(Species.RANDOM.nextGaussian()) + 1.5, 1.5, 4);
+            double giantScale = MathHelper.clamp(Math.abs(Species.RANDOM.nextGaussian()) + 1.5, 1.5, 4);
+            double xGiant = Math.pow(giantBase, giantScale);
+            weight = (float) (species.maxWeight() * xGiant);
+            length = (float) (species.maxLength() * xGiant);
+            label = "Gigantic " + label;
+        }
+
+
         if (subspecies > 0) {
             label = Text.translatable(TropicalFishEntity.getToolTipForVariant(subspecies)).getString();
         }
@@ -174,10 +182,10 @@ public record SpecimenData(
     }
 
     private static int calculateQuality(IHookEntity caughtWith, FishingCard fisher, RodConfiguration rod) {
-        var fisherMean = MathHelper.clamp(fisher.getLevel() * 0.005, 0, 0.5);
-        var rodMean = rod.attributes().fishQuality() * 0.05;
-        var circumstanceMean = caughtWith.getCircumstanceQuality();
-        var mean = fisherMean + rodMean + circumstanceMean;
+        double fisherMean = MathHelper.clamp(fisher.getLevel() * 0.005, 0, 0.5);
+        double rodMean = rod.attributes().fishQuality() * 0.05;
+        double circumstanceMean = caughtWith.getCircumstanceQuality();
+        double mean = fisherMean + rodMean + circumstanceMean;
 
         return (int) MathHelper.clamp(
                 MathUtil.normal(MIN_LEVEL, 4, MIN_LEVEL + mean),//non-boosting min quality buff impl
@@ -188,20 +196,20 @@ public record SpecimenData(
 
 public int experience(double xFisher) {
 
-        var xRarity = (50 / (this.species().rarity() + 9));//expected values from 1 to 200
-        var xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;
-        var xWeird = this.weird() ? 3 : 1;
-        var xAlbino = this.subspecies == -1 ? 1.5 : 1;
-        var xLevel = Math.pow(this.level, 1.3);
+        double xRarity = (50 / (this.species().rarity() + 9));//expected values from 1 to 200
+        double xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;
+        double xGiant = this.isGiant() ? 3 : 1;
+        double xAlbino = this.subspecies == -1 ? 1.5 : 1;
+        double xLevel = Math.pow(this.level, 1.3);
 
         return (int) MathHelper.clamp(
-                BASE_EXP + xFisher * xLevel * xRarity * xQuality * xWeird * xAlbino,
+                BASE_EXP + xFisher * xLevel * xRarity * xQuality * xGiant  * xAlbino,
                 BASE_EXP, MAX_EXP
         );
     }
 
-    public boolean weird() {
-        return this.species().weird(
+    public boolean isGiant() {
+        return this.species().isGiant(
                 this.weight,
                 this.length
         );
@@ -221,7 +229,7 @@ public int experience(double xFisher) {
     }
 
     public float weightScale() {
-        return this.species().weightScale(this.length);
+        return this.species().weightScale(this.weight);
     }
 
     public boolean isAlbino() {
@@ -232,14 +240,13 @@ public int experience(double xFisher) {
     }
 
     public int value() {
-        var xRarity = 1 + this.species.rarity() * 0.01;
-        var xQuality = this.quality <= 2 ? (0.5 + this.quality / 4D) : Math.pow(2, (this.quality - 2));
-        var xWeight = 1 + weight * 0.005;
-        var xWeird = this.weird() ? 1.5 : 1;
-        var xAlbino = this.isAlbino() ? 3 : 1;
+        double xRarity = 1 + this.species.rarity() * 0.01;
+        double xQuality = this.quality <= 2 ? (0.5 + this.quality / 4D) : Math.pow(2, (this.quality - 2));
+        double xWeight = 1 + weight * 0.005;
+        double xAlbino = this.isAlbino() ? 3 : 1;
 
         return (int) MathHelper.clamp(
-                BASE_VALUE * xRarity * xQuality * xWeight * xWeird * xAlbino
+                BASE_VALUE * xRarity * xQuality * xWeight * xAlbino
                 , 1, 99999);
     }
 
@@ -315,6 +322,8 @@ public int experience(double xFisher) {
 
     public static final int BASE_EXP = 3;
     public static final int MAX_EXP = 99999;
+
+    private static final double GIANT_CHANCE = 0.01;
 
 
     public static final SpecimenData DEFAULT = SpecimenData.init(Species.Library.DEFAULT);

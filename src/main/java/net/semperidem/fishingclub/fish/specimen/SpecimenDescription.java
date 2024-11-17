@@ -9,7 +9,6 @@ import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.util.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MAX_QUALITY;
@@ -44,7 +43,7 @@ public class SpecimenDescription {
         if (this.data.isAlbino()) {
             grade++;
         }
-        if (this.data.weird()) {
+        if (this.data.isGiant()) {
             grade++;
         }
         return new Line(

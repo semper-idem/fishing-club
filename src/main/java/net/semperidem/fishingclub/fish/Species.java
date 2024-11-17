@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Species<T extends WaterCreatureEntity> {
+    public static Random RANDOM = Random.create();
 
     int id;
 
@@ -101,6 +102,10 @@ public class Species<T extends WaterCreatureEntity> {
         return minLength;
     }
 
+    public float maxLength() {
+        return this.minLength + this.lengthRange;
+    }
+
     public float lengthInRange(float mean) {
        return (float) MathUtil.normal(minLength, weightRange, mean);
     }
@@ -115,6 +120,10 @@ public class Species<T extends WaterCreatureEntity> {
 
     public float weight() {
         return this.minWeight;
+    }
+
+    public float maxWeight() {
+        return this.minWeight + this.weightRange;
     }
 
     public float weightScale(float weight) {
@@ -133,8 +142,8 @@ public class Species<T extends WaterCreatureEntity> {
         return 1 - HALF_SCALE_RANGE  + scalePercentile * SCALE_RANGE;
     }
 
-    public boolean weird(float weight, float length) {
-        return Math.abs(this.weightScale(weight) - this.lengthScale(length)) > SCALE_RANGE * WEIRD_RANGE;
+    public boolean isGiant(float weight, float length) {
+        return this.weightScale(weight) > 1 || this.lengthScale(length) > 1;
     }
 
     public Item item() {
@@ -203,7 +212,6 @@ public class Species<T extends WaterCreatureEntity> {
         }
         return this.temperature.contains(biomeTemperature(biomeEntry));
     }
-    public static final double WEIRD_RANGE = 0.7D;
     static final float SCALE_RANGE = 0.6f;
     static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;
 
