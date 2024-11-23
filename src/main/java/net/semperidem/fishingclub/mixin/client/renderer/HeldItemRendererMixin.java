@@ -137,8 +137,10 @@ public abstract class HeldItemRendererMixin {
             return;
         }
         matrices.scale(lengthScale, weightScale, weightScale);
-        matrices.translate(-0.15, 0, 0);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(60));
+        float pitch = entity.getPitch();
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(60 + Math.abs(pitch / 3)));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(5 + pitch / 2.5f));
+        matrices.translate(0f, 0f, -0.1f - 0.3 * Math.abs(pitch / 90));
     }
     @Inject(method = "getHandRenderType", at = @At("HEAD"),
             cancellable = true
