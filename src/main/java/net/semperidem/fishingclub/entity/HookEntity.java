@@ -18,6 +18,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
@@ -92,6 +93,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private HookPartItem hookPartItem;
     private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
 
+    private int magicReelLevel = 0;
+    private int magicHookLevel = 0;
+    private int lureLevel = 0;
+    private int luckOfTheSeaLevel = 0;
+
     private SpecimenData caughtFish;
 
     public HookEntity(net.minecraft.entity.EntityType<? extends HookEntity> entityEntityType, World world) {
@@ -135,8 +141,17 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.maxEntityMagnitude = this.configuration.attributes().weightMagnitude();
         this.lineLength = this.fishingRod.getOrDefault(FCComponents.LINE_LENGTH, this.configuration.attributes().maxLineLength());
         this.calculateResistance();
+        this.setupEnchantments();
         this.setCastAngle();
         this.updateHookEntity(this);
+    }
+
+    private void setupEnchantments() {
+        Registry<Enchantment> enchantmentRegistry = playerOwner.getRegistryManager().get(RegistryKeys.ENCHANTMENT);
+        enchantmentRegistry.getEntry(Enchantments.LURE).ifPresent(enchantmentReference -> lureLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
+        enchantmentRegistry.getEntry(Enchantments.LUCK_OF_THE_SEA).ifPresent(enchantmentReference -> luckOfTheSeaLevel= this.fishingRod.getEnchantments().getLevel(enchantmentReference));
+        enchantmentRegistry.getEntry(FCEnchantments.MAGIC_REEL).ifPresent(enchantmentReference -> magicReelLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
+        enchantmentRegistry.getEntry(FCEnchantments.MAGIC_HOOK).ifPresent(enchantmentReference -> magicHookLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
     }
 
     private void calculateResistance() {
@@ -485,23 +500,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         return this.hookedEntity == this && this.isInFluid && !this.getWorld().isClient && this.getVelocity().horizontalLength() < 0.05f;
     }
 
-    private boolean tickAutoHookedFish() {
-
-        if (this.hookPartItem == null) {
-            return false;
-        }
-
-        if (this.hookPartItem.getAutoHookChance() < Math.random()) {
-            return false;
-        }
-
-
-        this.reelFish();
-        return true;
-    }
-
     private void tickHookedFish() {
-
         --this.hookCountdown;
 
         if (this.hookCountdown > 0) {
@@ -511,7 +510,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.waitCountdown = 0;
         this.fishTravelCountdown = 0;
 
-        if (tickAutoHookedFish()) {
+        if (this.magicHookLevel > 0 || (this.hookPartItem != null && this.hookPartItem.isSticky())) {
+            this.reelFish();
             return;
         }
         this.caughtFish = null;
@@ -622,17 +622,13 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             catchRate += sei.getAmplifier() * 0.1f;
         }
 
-        DynamicRegistryManager dynamicRegistryManager = playerOwner.getRegistryManager();
-        Optional<RegistryEntry.Reference<Enchantment>> maybeLure = dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LURE);
-        int lureLevel = 0;
-        if (maybeLure.isPresent()) {
-            lureLevel = this.fishingRod.getEnchantments().getLevel(maybeLure.get());
-        }
         catchRate += lureLevel * 0.1f;
-
         catchRate *= MathHelper.clamp((MAX_THROW_RANGE - this.distanceTraveled) / (MAX_THROW_RANGE / MAX_THROW_CATCH_RATE_REDUCTION), MAX_THROW_CATCH_RATE_REDUCTION, 1);
         int expectedWait = (int) (BASE_WAIT * (1f / catchRate * this.configuration.attributes().waitTimeReductionMultiplier()));
-        this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian())) * (this.configuration.attributes().isAutoReel() ? 4 : 1);
+        if (magicReelLevel > 0) {
+            expectedWait = (int) Math.ceil(expectedWait * (4 - (magicReelLevel * 0.6f)));
+        }
+        this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian()));
         this.lastWaitCountdown = this.waitCountdown;
     }
 
@@ -739,7 +735,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.discard();
             return;
         }
-        if (this.configuration.attributes().isAutoReel()) {
+        if (this.magicReelLevel > 0) {
             this.handleAutoReel();
             return;
         }
@@ -751,7 +747,11 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (!(this.playerOwner instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }
+        if (Math.random() > this.magicReelLevel * 0.1 + 0.7) {
+            return;
+        }
         FishUtil.fishCaught(serverPlayer, this.caughtFish);
+
         if (Rewards.draw(this.configuration, this.fishingCard) && Math.random() > 0.5) {
             FishUtil.giveReward(serverPlayer, Rewards.roll(this.fishingCard, this.configuration).getContent());
         }

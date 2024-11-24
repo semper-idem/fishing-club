@@ -66,7 +66,7 @@ public class BobberPartItem extends PartItem {
         super.apply(attributes);
     }
 
-    public void     onFishBiteEffect() {
+    public void onFishBiteEffect() {
         if (this.fishBiteEffect == null) {
             return;
         }

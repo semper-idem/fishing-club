@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 public class HookPartItem extends PartItem {
     ItemStat fishControl = ItemStat.BASE_T1;
     ItemStat biteFailChance = ItemStat.BASE_T1;
-    ItemStat autoHookChance = ItemStat.MULTIPLIER_T0;
     ItemStat treasureBonus = ItemStat.BASE_T1;
     ItemStat treasureRarityBonus = ItemStat.BASE_T1;
     ItemStat fishRarity = ItemStat.BASE_T1;
@@ -107,7 +106,6 @@ public class HookPartItem extends PartItem {
         attributes.fishRarity += this.fishRarity.value;
         attributes.treasureBonus += this.treasureBonus.value;
         attributes.treasureRarityBonus += this.treasureRarityBonus.value;
-        attributes.autoHookChance = this.autoHookChance.value;
         super.apply(attributes);
     }
 
@@ -117,15 +115,6 @@ public class HookPartItem extends PartItem {
 
     public float getBiteFailChance() {
         return this.biteFailChance.value;
-    }
-
-    public float getAutoHookChance() {
-        return this.autoHookChance.value;
-    }
-
-    public HookPartItem autoHookChance(ItemStat autoHookChance) {
-        this.autoHookChance = autoHookChance;
-        return this;
     }
 
     public boolean isSharp() {
@@ -186,9 +175,6 @@ public class HookPartItem extends PartItem {
             if (onHit == ON_HIT_WITHER) {
                 tooltip.add(Text.of("§0Wither I"));
             }
-        }
-        if (this.autoHookChance.value > 0) {
-            tooltip.add(Text.of("§7Auto-hook [" + (int)(this.autoHookChance.value * 100) + "%]"));
         }
         super.appendTooltip(stack, context, tooltip, type);
     }

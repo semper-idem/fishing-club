@@ -108,37 +108,31 @@ public class FCItems {
     public static HookPartItem HOOK_COPPER_POISON;
     public static HookPartItem HOOK_COPPER_SHARP;
     public static HookPartItem HOOK_COPPER_SERRATED;
-    public static HookPartItem HOOK_COPPER_AUTO;
     public static HookPartItem HOOK_COPPER_STICKY;
     public static HookPartItem HOOK_IRON;
     public static HookPartItem HOOK_IRON_POISON;
     public static HookPartItem HOOK_IRON_SHARP;
     public static HookPartItem HOOK_IRON_SERRATED;
-    public static HookPartItem HOOK_IRON_AUTO;
     public static HookPartItem HOOK_IRON_STICKY;
     public static HookPartItem HOOK_GOLD;
     public static HookPartItem HOOK_GOLD_POISON;
     public static HookPartItem HOOK_GOLD_SHARP;
     public static HookPartItem HOOK_GOLD_SERRATED;
-    public static HookPartItem HOOK_GOLD_AUTO;
     public static HookPartItem HOOK_GOLD_STICKY;
     public static HookPartItem HOOK_PRISMARINE;
     public static HookPartItem HOOK_PRISMARINE_POISON;
     public static HookPartItem HOOK_PRISMARINE_SHARP;
     public static HookPartItem HOOK_PRISMARINE_SERRATED;
-    public static HookPartItem HOOK_PRISMARINE_AUTO;
     public static HookPartItem HOOK_PRISMARINE_STICKY;
     public static HookPartItem HOOK_NAUTILUS;
     public static HookPartItem HOOK_NAUTILUS_POISON;
     public static HookPartItem HOOK_NAUTILUS_SHARP;
     public static HookPartItem HOOK_NAUTILUS_SERRATED;
-    public static HookPartItem HOOK_NAUTILUS_AUTO;
     public static HookPartItem HOOK_NAUTILUS_STICKY;
     public static HookPartItem HOOK_NETHERITE;
     public static HookPartItem HOOK_NETHERITE_POISON;
     public static HookPartItem HOOK_NETHERITE_SHARP;
     public static HookPartItem HOOK_NETHERITE_SERRATED;
-    public static HookPartItem HOOK_NETHERITE_AUTO;
     public static HookPartItem HOOK_NETHERITE_STICKY;
     public static BaitPartItem BAIT_PLANT;
     public static BaitPartItem BAIT_ROTTEN_FLESH;
@@ -651,13 +645,6 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T6)
                 .reelDamage(4)
         );
-        HOOK_COPPER_AUTO = registerItem("hook_copper_auto", new HookPartItem(new Item.Settings().rarity(COMMON))
-                .weightClass(3)
-                .minOperatingTemperature(-1)
-                .fishRarity(ItemStat.BASE_T3)
-                .fishControl(ItemStat.BASE_T1)
-                .autoHookChance(ItemStat.MULTIPLIER_T1)
-        );
         HOOK_COPPER_STICKY = registerItem("hook_copper_sticky", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(3)
                 .minOperatingTemperature(-1)
@@ -700,14 +687,6 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T6)
                 .reelDamage(4)
         );
-        HOOK_IRON_AUTO = registerItem("hook_iron_auto", new HookPartItem(new Item.Settings().rarity(COMMON))
-                .weightClass(4)
-                .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
-                .fishRarity(ItemStat.BASE_T1)
-                .fishControl(ItemStat.BASE_T3)
-                .autoHookChance(ItemStat.MULTIPLIER_T1)
-        );
         HOOK_IRON_STICKY = registerItem("hook_iron_sticky", new HookPartItem(new Item.Settings().rarity(COMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
@@ -744,13 +723,6 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T2)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .reelDamage(5)
-        );
-        HOOK_GOLD_AUTO = registerItem("hook_gold_auto", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
-                .weightClass(3)
-                .fishRarity(ItemStat.BASE_T3)
-                .fishControl(ItemStat.BASE_T2)
-                .fishQuality(1)
-                .autoHookChance(ItemStat.MULTIPLIER_T2)
         );
         HOOK_GOLD_STICKY = registerItem("hook_gold_sticky", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(3)
@@ -793,21 +765,12 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T5)
                 .reelDamage(5)
         );
-        HOOK_PRISMARINE_AUTO = registerItem("hook_prismarine_auto", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
-                .weightClass(4)
-                .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
-                .fishRarity(ItemStat.BASE_T2)
-                .fishControl(ItemStat.BASE_T3)
-                .autoHookChance(ItemStat.MULTIPLIER_T2)
-        );
         HOOK_PRISMARINE_STICKY = registerItem("hook_prismarine_sticky", new HookPartItem(new Item.Settings().rarity(UNCOMMON))
                 .weightClass(4)
                 .minOperatingTemperature(-1)
                 .maxOperatingTemperature(1)
                 .fishRarity(ItemStat.BASE_T2)
                 .fishControl(ItemStat.BASE_T3)
-                .autoHookChance(ItemStat.MULTIPLIER_T2)
                 .sticky(true)
         );
         HOOK_NAUTILUS = registerItem("hook_nautilus", new HookPartItem(new Item.Settings().rarity(RARE))
@@ -847,15 +810,6 @@ public class FCItems {
                 .fishControl(ItemStat.BASE_T3)
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T10)
                 .reelDamage(7)
-        );
-        HOOK_NAUTILUS_AUTO = registerItem("hook_nautilus_auto", new HookPartItem(new Item.Settings().rarity(EPIC))
-                .weightClass(5)
-                .minOperatingTemperature(-1)
-                .maxOperatingTemperature(1)
-                .fishRarity(ItemStat.BASE_T5)
-                .fishControl(ItemStat.BASE_T3)
-                .fishQuality(2)
-                .autoHookChance(ItemStat.MULTIPLIER_T3)
         );
         HOOK_NAUTILUS_STICKY = registerItem("hook_nautilus_sticky", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(5)
@@ -902,21 +856,12 @@ public class FCItems {
                 .timeHookedMultiplier(ItemStat.MULTIPLIER_T10)
                 .reelDamage(10)
         );
-        HOOK_NETHERITE_AUTO = registerItem("hook_netherite_auto", new HookPartItem(new Item.Settings().rarity(EPIC))
-                .weightClass(6)
-                .minOperatingTemperature(-2)
-                .maxOperatingTemperature(2)
-                .fishRarity(ItemStat.BASE_T3)
-                .fishControl(ItemStat.BASE_T5)
-                .autoHookChance(ItemStat.MULTIPLIER_T3)
-        );
         HOOK_NETHERITE_STICKY = registerItem("hook_netherite_sticky", new HookPartItem(new Item.Settings().rarity(EPIC))
                 .weightClass(6)
                 .minOperatingTemperature(-2)
                 .maxOperatingTemperature(2)
                 .fishRarity(ItemStat.BASE_T3)
                 .fishControl(ItemStat.BASE_T5)
-                .autoHookChance(ItemStat.MULTIPLIER_T3)
                 .sticky(true)
         );
     }

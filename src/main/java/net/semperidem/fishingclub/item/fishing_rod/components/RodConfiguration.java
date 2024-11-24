@@ -285,17 +285,6 @@ public record RodConfiguration(
          * */
         float baitFailChance = 0;
 
-
-        /** TODO
-         * Chance for fish to hook itself instead of leaving when time runs out
-         * */
-        float autoHookChance = 0;
-
-        /** TODO
-         * When true increases base waiting x2 (or more) but skips minigame
-         * */
-        boolean autoReel = false;
-
         AttributeComposite() {
         }
 
@@ -414,14 +403,6 @@ public record RodConfiguration(
 
         public float waitTimeReductionMultiplier() {
             return this.waitTimeReductionMultiplier;
-        }
-
-        public boolean isAutoReel() {
-            return this.autoReel;
-        }
-
-        public float autoHookChance() {
-            return this.autoHookChance;
         }
 
         private float mapToPercent(float value) {
