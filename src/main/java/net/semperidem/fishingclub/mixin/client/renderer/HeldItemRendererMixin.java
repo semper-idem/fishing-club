@@ -8,16 +8,21 @@ import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.FishItem;
+import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.registry.FCComponents;
 import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,8 +54,11 @@ public abstract class HeldItemRendererMixin {
     @Shadow protected abstract void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm);
 
     @Inject(cancellable = true, method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 6, shift = At.Shift.AFTER))
-    private void onRenderFirstPersonFishingRod(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (!(FishUtil.isFish(item))) {
+    private void onRenderFirstPersonUsingFishingRod(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        if (!item.isIn(FCTags.ROD_CORE)) {
+            return;
+        }
+        if (!player.isUsingItem()) {
             return;
         }
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) MathHelper.clamp((Math.sqrt(player.getItemUseTime() + tickDelta)* 4f), 0, 50)));
@@ -81,6 +89,19 @@ public abstract class HeldItemRendererMixin {
     }
 
     @Inject(
+            method = "renderFirstPersonItem",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"
+            )
+    )
+    private void onRenderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        if (item.isIn(FCTags.ROD_CORE)) {
+            this.onRenderFishingRod(player,tickDelta, matrices);
+        }
+    }
+
+    @Inject(
       cancellable = true,
       method = "renderFirstPersonItem",
       at = @At(
@@ -90,7 +111,7 @@ public abstract class HeldItemRendererMixin {
         shift = At.Shift.BEFORE
       )
     )
-    private void onRenderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+    private void onRenderFirstPersonFish(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (!FishUtil.isFish(item) || player.isUsingItem()) {
             return;
         }
@@ -121,18 +142,29 @@ public abstract class HeldItemRendererMixin {
         matrices.pop();
     }
 
+    @Unique
+    private void onRenderFishingRod(LivingEntity entity, float tickDelta, MatrixStack matrices) {
+        if (!(entity instanceof PlayerEntity player)) {
+            return;
+        }
+        int useTime = player.getItemUseTime();
+        boolean isReeling = false;
 
-
-    @Inject(method = "renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/world/World;III)V"
-            ))
-    protected void onRenderItem(LivingEntity entity, ItemStack stack, ModelTransformationMode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (!(FishUtil.isFish(stack))) {
+        if (client.currentScreen instanceof FishingGameScreen fishingGameScreen) {
+            isReeling = fishingGameScreen.controller.isReeling();
+            useTime = fishingGameScreen.getReelTick();
+        }
+        if (useTime == 0) {
             return;
         }
 
+        double swingProgress = Math.pow(useTime + (isReeling ? tickDelta : -tickDelta), 1.3);
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float) MathHelper.clamp((swingProgress * 4), 0, 40)));
+        matrices.translate(0, MathHelper.clamp((swingProgress / 20f), 0, 0.4),0);
+    }
+
+    @Unique
+    private void onRenderFish(LivingEntity entity, ModelTransformationMode renderMode, MatrixStack matrices) {
         if (renderMode != ModelTransformationMode.THIRD_PERSON_LEFT_HAND && renderMode != ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
             return;
         }
@@ -141,6 +173,21 @@ public abstract class HeldItemRendererMixin {
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(60 + Math.abs(pitch / 3)));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(5 + pitch / 2.5f));
         matrices.translate(0f, 0f, -0.1f - 0.3 * Math.abs(pitch / 90));
+    }
+
+
+
+    @Inject(method = "renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/world/World;III)V"
+            ))
+    protected void onRenderItem(LivingEntity entity, ItemStack stack, ModelTransformationMode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+
+        if ((FishUtil.isFish(stack))) {
+            this.onRenderFish(entity,renderMode, matrices);
+        }
+
     }
     @Inject(method = "getHandRenderType", at = @At("HEAD"),
             cancellable = true

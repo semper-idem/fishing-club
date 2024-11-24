@@ -31,16 +31,16 @@ public class ProgressComponent {
 
     public void tick() {
         boolean bobberHasFish = parent.bobberComponent.hasFish(parent.fishController);
-        this.progress = 1;
-        this.parent.winGame();
+//        this.progress = 1;
+//        this.parent.winGame();
         if (this.progress == 1) {
             return;
         }
-//        if (bobberHasFish && parent.isReeling()) {
-//            grantProgress();
-//            return;
-//        }
-//        revokeProgress();
+        if (bobberHasFish && parent.isReeling()) {
+            grantProgress();
+            return;
+        }
+        revokeProgress();
     }
 
     private void grantProgress(){

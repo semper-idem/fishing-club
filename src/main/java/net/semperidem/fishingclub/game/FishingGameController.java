@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.game;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -87,6 +88,7 @@ public class FishingGameController {
        this.treasureComponent.tick();
        this.healthComponent.tick();
     }
+
 
     public boolean isReeling() {
         return isReeling;

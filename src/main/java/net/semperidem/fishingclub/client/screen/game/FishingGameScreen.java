@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.BobberComponent;
 import net.semperidem.fishingclub.game.FishingGameController;
@@ -32,6 +33,7 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
     private final PlayerEntity clientPlayer;
 
     private long tick = 0;
+    private int reelTick = 0;
 
     private static final float MIN_MOVE = 0.03f;
 
@@ -76,9 +78,16 @@ public class FishingGameScreen extends HandledScreen<FishingGameScreenHandler> i
                         )
                 )
         );
+
+        this.reelTick = MathHelper.clamp(this.reelTick + (controller.isReeling() ? 1 : -1), 0, 8);
+
         tick++;
     }
 
+
+    public int getReelTick() {
+        return this.reelTick;
+    }
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
         if (this.client == null) {
