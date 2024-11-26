@@ -6,15 +6,18 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
+import net.semperidem.fishingclub.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class HistoryManager extends DataManager {
@@ -29,9 +32,19 @@ public class HistoryManager extends DataManager {
     private boolean gaveDerekFish = false;
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
     private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
+    private final HashSet<Integer> heardMessageIndexSet = new HashSet<>();
 
     public HistoryManager(FishingCard trackedFor) {
         super(trackedFor);
+    }
+
+    public void hearMessage() {
+        HashSet<Integer> unheardMessageSet = new HashSet<>(ResourceUtil.MESSAGE_IN_BOTTLE.keySet());
+        unheardMessageSet.removeAll(heardMessageIndexSet);
+        ArrayList<Integer> unheardMessageList = new ArrayList<>(unheardMessageSet);
+        int unheardMessageIndex = unheardMessageList.get(trackedFor.getRandom().nextInt(unheardMessageList.size()));
+        trackedFor.holder().sendMessage(Text.of(ResourceUtil.MESSAGE_IN_BOTTLE.get(unheardMessageIndex)));
+        heardMessageIndexSet.add(unheardMessageIndex);
     }
 
     public void meetDerek(FishermanEntity.SummonType summonType) {

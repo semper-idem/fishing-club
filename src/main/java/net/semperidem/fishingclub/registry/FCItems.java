@@ -43,6 +43,8 @@ public class FCItems {
     public static Item DRIED_NUTRITIOUS_KELP;
     public static Item DRIED_NUTRITIOUS_KELP_BLOCK;
     public static Item DUCKWEED;
+    public static Item MESSAGE_IN_BOTTLE_ITEM;
+
 
     public static final RegistryKey<net.minecraft.item.ItemGroup> ITEM_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), FishingClub.identifier("fishingclub"));
 
@@ -193,6 +195,8 @@ public class FCItems {
         DRIED_NUTRITIOUS_KELP = registerItem("dried_nutritious_kelp", new Item(new Item.Settings().food(DRIED_NUTRITIOUS_KELP_FOOD)));
         DRIED_NUTRITIOUS_KELP_BLOCK = registerItem("dried_nutritious_kelp_block", new BlockItem(FCBlocks.DRIED_NUTRITIOUS_KELP_BLOCK, new Item.Settings()));
         DUCKWEED = registerItem("duckweed", new DuckweedItem(FCBlocks.DUCKWEED_BLOCK, new Item.Settings()));
+        MESSAGE_IN_BOTTLE_ITEM = registerItem("message_in_bottle", new MessageInBottleItem(new Item.Settings().rarity(UNCOMMON)));
+
 
         registerCompostableItem(0.1f, DUCKWEED);
 

@@ -10,6 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.random.CheckedRandom;
+import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
@@ -37,6 +39,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     private final SummonRequestManager summonRequestManager;
     private final HistoryManager historyManager;
     private final LinkingManager linkingManager;
+    private CheckedRandom random;
 
     private final StatusEffectHelper statusEffectHelper;//todo its prob util class, verify
 
@@ -56,6 +59,11 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public FishingCard(PlayerEntity playerEntity) {
         this();
         this.holder = playerEntity;
+        this.random = new CheckedRandom(holder.getUuid().getLeastSignificantBits());
+    }
+
+    public Random getRandom() {
+        return this.random;
     }
 
     public boolean isClient() {
@@ -332,5 +340,10 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(FISHING_CARD, FishingCard::new, RespawnCopyStrategy.ALWAYS_COPY);
 
+    }
+
+    //Message in bottle
+    public void hearMessage() {
+        this.historyManager.hearMessage();
     }
 }
