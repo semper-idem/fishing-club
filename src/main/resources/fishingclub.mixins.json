@@ -6,6 +6,7 @@
   "mixins": [
     "common.BlockItemMixin",
     "common.BoatEntityMixin",
+    "common.BrewingRecipeRegistryMixin",
     "common.BucketItemMixin",
     "common.ChunkGeneratingMixin",
     "common.FishingBobberEntityAccessor",
@@ -20,6 +21,7 @@
     "common.LivingEntityMixin",
     "common.LootTablesAccessor",
     "common.PlayerEntityMixin",
+    "common.PowderSnowBlockMixin",
     "common.ServerPlayerInteractionManagerMixin",
     "common.ServerWorldMixin",
     "common.TropicalFishAccessor",

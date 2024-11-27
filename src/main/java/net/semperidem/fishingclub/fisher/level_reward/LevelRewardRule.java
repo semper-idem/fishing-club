@@ -60,13 +60,14 @@ public class LevelRewardRule {
         addRule(create(0,MAX_LEVEL).withRewards(creditReward(new Amount(0, 10, 1))));
 
         //ITEMS
+        addRule(create(0, MAX_LEVEL, 5).withRewards(itemReward(FCItems.MESSAGE_IN_BOTTLE_ITEM.getDefaultStack())));
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
-        addRule(create(5, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack(), 1)));
-        addRule(create(50, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack(), 1)));
+        addRule(create(5, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack())));
+        addRule(create(50, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack())));
 
-        //Trophy //TODO ADD TROPHY, CHANGE PER PRESTIGE
-        addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND), 1)));
+        //Trophy //TODO ADD TROPHY,
+        addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND))));
 
         //Lootbox
         addRule(create(0, MAX_LEVEL, 5).withRewards(illegalGoodsReward()));

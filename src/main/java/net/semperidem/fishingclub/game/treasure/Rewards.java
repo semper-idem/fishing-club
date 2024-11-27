@@ -118,8 +118,8 @@ public class Rewards {
     }
 
 
-    public static Reward roll(FishingCard fisher, RodConfiguration rodConfiguration){
-        int grade = getGrade(fisher, rodConfiguration);
+    public static Reward roll(FishingCard fisher, RodConfiguration rodConfiguration, int luckOfTheSeaLevel){
+        int grade = getGrade(fisher, rodConfiguration, luckOfTheSeaLevel);
         return new Reward(roll(fisher, getCost(fisher), grade), grade);
     }
 
@@ -128,9 +128,10 @@ public class Rewards {
         return (int) (60 + (60 + avgCost * Math.abs(random.nextGaussian() / 2)));
     }
 
-    public static int getGrade(FishingCard fisher, RodConfiguration rodConfiguration){
+    public static int getGrade(FishingCard fisher, RodConfiguration rodConfiguration, int luckOfTheSeaLevel){
         float avgGrade = (float) Math.max(1, Math.min(7, Math.sqrt(fisher.getLevel()) / 3));
         avgGrade *= (1 + rodConfiguration.attributes().treasureRarityBonus());
+        avgGrade += (float) (Math.random() * luckOfTheSeaLevel);
         return (int)  Math.max(1, Math.min(7, (avgGrade * Math.abs(random.nextGaussian()) / 1.5)));
     }
 

@@ -1,12 +1,16 @@
 package net.semperidem.fishingclub.registry;
 
+import net.fabricmc.fabric.mixin.content.registry.BrewingRecipeRegistryBuilderMixin;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.status_effects.*;
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -19,6 +23,11 @@ public class FCStatusEffects {
     public static RegistryEntry<StatusEffect> BOBBER_BUFF;
     public static RegistryEntry<StatusEffect> MOISTURIZED;
 
+
+    public static RegistryEntry<Potion> FISHING_JUICE;
+    public static RegistryEntry<Potion> LONG_FISHING_JUICE;
+    public static RegistryEntry<Potion> STRONG_FISHING_JUICE;
+
     public static void register(){
         QUALITY_BUFF = registerStatusEffect(identifier("quality_buff"), new IncreaseFishQualityStatusEffect());
         FREQUENCY_BUFF = registerStatusEffect(identifier("frequency_buff"), new IncreaseCatchFrequencyStatusEffect());
@@ -28,6 +37,11 @@ public class FCStatusEffects {
         MOISTURIZED = registerStatusEffect(identifier("moisturized"), new MoisturizedStatusEffect()
             .addAttributeModifier(EntityAttributes.GENERIC_LUCK, Identifier.ofVanilla("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
         );
+
+        FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 14400, 1)));
+        LONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("long_fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 28800, 1)));
+        STRONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("strong_fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 14400, 3)));
+
     }
 
     private static RegistryEntry<StatusEffect> registerStatusEffect(Identifier identifier, StatusEffect statusEffect ) {

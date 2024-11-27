@@ -17,10 +17,8 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -48,6 +46,7 @@ import net.semperidem.fishingclub.util.VelocityUtil;
 import java.util.Collections;
 import java.util.Optional;
 
+import static net.semperidem.fishingclub.registry.FCEnchantments.*;
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 
@@ -97,6 +96,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private int magicHookLevel = 0;
     private int lureLevel = 0;
     private int luckOfTheSeaLevel = 0;
+    private int fireProtectionLevel = 0;
+    private int frostProtectionLevel = 0;
 
     private SpecimenData caughtFish;
 
@@ -147,11 +148,12 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void setupEnchantments() {
-        Registry<Enchantment> enchantmentRegistry = playerOwner.getRegistryManager().get(RegistryKeys.ENCHANTMENT);
-        enchantmentRegistry.getEntry(Enchantments.LURE).ifPresent(enchantmentReference -> lureLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
-        enchantmentRegistry.getEntry(Enchantments.LUCK_OF_THE_SEA).ifPresent(enchantmentReference -> luckOfTheSeaLevel= this.fishingRod.getEnchantments().getLevel(enchantmentReference));
-        enchantmentRegistry.getEntry(FCEnchantments.MAGIC_REEL).ifPresent(enchantmentReference -> magicReelLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
-        enchantmentRegistry.getEntry(FCEnchantments.MAGIC_HOOK).ifPresent(enchantmentReference -> magicHookLevel = this.fishingRod.getEnchantments().getLevel(enchantmentReference));
+        this.lureLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, Enchantments.LURE);
+        this.magicReelLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, MAGIC_REEL);
+        this.magicHookLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, MAGIC_HOOK);
+        this.luckOfTheSeaLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, Enchantments.LUCK_OF_THE_SEA);
+        this.fireProtectionLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, Enchantments.FIRE_PROTECTION);
+        this.frostProtectionLevel = getEnchantmentLevel(this.playerOwner, this.fishingRod, FROST_PROTECTION);
     }
 
     private void calculateResistance() {
@@ -450,7 +452,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isFreezing() {
-        return isFreezing(this.core.minOperatingTemperature());
+        return isFreezing(this.configuration.attributes().minOperatingTemperature() + ((this.frostProtectionLevel + 1) / 2));
     }
 
     private boolean isBurning(int temperature) {
@@ -458,12 +460,12 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private boolean isBurning() {
-        return isBurning(this.configuration.attributes().maxOperatingTemperature());
+        return isBurning(this.configuration.attributes().maxOperatingTemperature() + ((this.fireProtectionLevel + 1) / 2));
     }
 
     private void tickTemperature() {
         this.temperature = FishUtil.getTemperature(this.getWorld(), this.getBlockPos());
-        if (this.isFreezing()) {
+        if (this.isFreezing() && Math.random() > 0.1 * this.frostProtectionLevel) {
             if (this.frozenTicks > 1000) {
                 this.playerOwner.inPowderSnow = true;
                 this.playerOwner.setFrozenTicks(this.playerOwner.getFrozenTicks() + 3);
@@ -477,7 +479,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
         }
         this.temperatureTicks = 0;
-        if (this.isBurning()) {
+        if (this.isBurning() && Math.random() > 0.2 * this.fireProtectionLevel) {
             this.burningSeconds++;
             this.playerOwner.setFireTicks(100);
             if (burningSeconds > 10) {
@@ -752,8 +754,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         FishUtil.fishCaught(serverPlayer, this.caughtFish);
 
-        if (Rewards.draw(this.configuration, this.fishingCard) && Math.random() > 0.5) {
-            FishUtil.giveReward(serverPlayer, Rewards.roll(this.fishingCard, this.configuration).getContent());
+        if (Rewards.draw(this.configuration, this.fishingCard) && Math.random() < 0.25 * (1 + luckOfTheSeaLevel)) {
+            FishUtil.giveReward(serverPlayer, Rewards.roll(this.fishingCard, this.configuration, luckOfTheSeaLevel).getContent());
         }
     }
 
