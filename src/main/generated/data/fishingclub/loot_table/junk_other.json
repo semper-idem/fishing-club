@@ -141,6 +141,11 @@
           "type": "minecraft:item",
           "name": "minecraft:potion",
           "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "fishingclub:message_in_bottle",
+          "weight": 1
         }
       ],
       "rolls": 1.0

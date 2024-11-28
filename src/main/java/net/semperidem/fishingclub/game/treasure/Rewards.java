@@ -46,6 +46,7 @@ public class Rewards {
         ALL_REWARDS.add(new TreasureReward(1,60,4, Items.INK_SAC, 2));
 
         ALL_REWARDS.add(new TreasureReward(1,30,4, FCItems.FISH_COIN_BUNDLE, 10));
+        ALL_REWARDS.add(new TreasureReward(1,30,4, FCItems.MESSAGE_IN_BOTTLE_ITEM, 1));
 
 
 
