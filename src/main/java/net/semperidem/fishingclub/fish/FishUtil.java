@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.fish;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,6 +17,7 @@ import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.FishingNetItem;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.FCEnchantments;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCTags;
 import net.semperidem.fishingclub.world.ChunkQuality;
@@ -153,8 +155,9 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
             }
             luck *= (float) MathHelper.clamp((playerEntity.getBlockY() + 128) / 192f, 0, 1.5);
         }
-
-        if (Math.random() < 0.05 / luck) {
+        PlayerEntity holder = iHookEntity.getFishingCard().holder();
+        int curseOfClutterLevel = FCEnchantments.getEnchantmentLevel(holder, holder.getEquippedStack(EquipmentSlot.MAINHAND), FCEnchantments.CURSE_OF_CLUTTER);
+        if (Math.random() < 0.05 * (1 + curseOfClutterLevel * 3)  / luck) {
            return Optional.empty();
         }
         return SpecimenData.init(iHookEntity);

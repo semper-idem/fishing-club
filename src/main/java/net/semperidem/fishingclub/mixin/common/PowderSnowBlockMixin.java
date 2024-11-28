@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.mixin.common;
 
 
 import net.minecraft.block.PowderSnowBlock;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -22,9 +23,12 @@ public class PowderSnowBlockMixin {
            return;
        }
        ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
-       livingEntity.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(FCEnchantments.FROST_PROTECTION).ifPresent(frostEnchantment -> {
-           cir.setReturnValue(feetStack.getEnchantments().getLevel(frostEnchantment) > 0);
-       });
+       if (FCEnchantments.getEnchantmentLevel(livingEntity, feetStack, FCEnchantments.FROST_PROTECTION) > 0) {
+           cir.setReturnValue(true);
+       }
+       if (FCEnchantments.getEnchantmentLevel(livingEntity, feetStack, Enchantments.FROST_WALKER) > 0) {
+           cir.setReturnValue(true);
+       }
     }
 
 }

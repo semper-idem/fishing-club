@@ -39,6 +39,7 @@ public class FCRegistry {
         DialogController.initialize();
         FCFeatures.register();
         FCLootTables.register();
+        FCEnchantments.register();
     }
 
     //Server-side only
