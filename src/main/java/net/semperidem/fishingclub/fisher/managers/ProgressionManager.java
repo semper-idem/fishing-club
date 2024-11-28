@@ -2,14 +2,20 @@ package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.*;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
+import net.semperidem.fishingclub.util.RecipeLocker;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -161,6 +167,13 @@ public class ProgressionManager extends DataManager {
             this.exp -= nextLevelXP;
             this.level++;
             LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
+            HashSet<Item> unlockedBaits = RecipeLocker.unlockedAt(this.level);
+            if (!unlockedBaits.isEmpty() && this.trackedFor.holder() instanceof ServerPlayerEntity serverPlayerEntity) {
+                unlockedBaits.forEach(unlockedBait -> {
+                    DefaultedList<Ingredient> ingredients = RecipeLocker.ingredients(serverPlayerEntity, unlockedBait);
+                    serverPlayerEntity.sendMessage(Text.of(ingredients.toString()));//will prob return list of memory addresses TODO VALIDATE AND FIX
+                });
+            }
             nextLevelXP = nextLevelXP();
         }
         this.sharePassiveExp(gainedXP);

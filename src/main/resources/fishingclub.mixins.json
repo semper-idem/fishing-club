@@ -9,6 +9,7 @@
     "common.BrewingRecipeRegistryMixin",
     "common.BucketItemMixin",
     "common.ChunkGeneratingMixin",
+    "common.CraftingResultInventoryMixin",
     "common.FishingBobberEntityAccessor",
     "common.FishingBobberEntityMixin",
     "common.FluidBlockMixin",
