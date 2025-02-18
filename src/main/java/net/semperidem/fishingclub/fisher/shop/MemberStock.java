@@ -13,6 +13,7 @@ public class MemberStock {
     public final static ArrayList<StockEntry> LUMBERJACK_STOCK = new ArrayList<>();
     static {
         FISHER_STOCK.add(new StockEntry(0, Items.KELP, 10, 10, 8, 5));
+        FISHER_STOCK.add(new StockEntry(0, Items.EMERALD, 100));
         FISHER_STOCK.add(new StockEntry(0, Items.BARREL, 250, 4, 1, 100));
         STOCK.put(FISHER_STOCK_KEY, FISHER_STOCK);
 

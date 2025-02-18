@@ -62,6 +62,7 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
         return this;
     }
 
+
     public SpeciesBuilder <T> lengthMinAndRange(float minLength, float lengthRange) {
         this.species.minLength = minLength;
         this.species.lengthRange = lengthRange;
@@ -87,6 +88,18 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
 
     public SpeciesBuilder <T> temperature(Range<Float> temperature) {
         this.species.temperature = temperature;
+        return this;
+    }
+
+
+
+    public SpeciesBuilder <T> depth(Range<Float> depth) {
+        this.species.depth = depth;
+        return this;
+    }
+
+    public SpeciesBuilder <T> altitude(Range<Float> altitude) {
+        this.species.altitude = altitude;
         return this;
     }
 

@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -50,10 +51,12 @@ public class Species<T extends WaterCreatureEntity> {
     float minWeight;
     float weightRange;
     //-2 for end, -1 for freezing, 0 for other,1 for desert 2 for nether
-    Range<Float> temperature = Range.all();
+    Range<Float> temperature = Range.closed(-2f, 2f);
     //0 for river, 1 for other, 2 for ocean
-    Range<Float> saltiness = Range.all();
+    Range<Float> saltiness = Range.closed(-2f, 2f);
 
+    Range<Float> depth = Range.closed(0f, 256f);
+    Range<Float> altitude = Range.closed(-128f, 374f);
 
     /**
      * Positive decimal point number
@@ -203,14 +206,26 @@ public class Species<T extends WaterCreatureEntity> {
     }
 
     public boolean canHook(HookEntity hookEntity) {
-        if (hookEntity.getCaughtUsing().attributes().maxFishWeight() < this.minWeight) {
+        RodConfiguration.AttributeComposite attributes = hookEntity.getCaughtUsing().attributes();
+        if (attributes.maxFishWeight() < this.minWeight) {
             return false;
         }
         RegistryEntry<Biome> biomeEntry = hookEntity.getWorld().getBiome(hookEntity.getBlockPos());
         if (!this.saltiness.contains(biomeSaltiness(biomeEntry))){
             return false;
         }
-        return this.temperature.contains(biomeTemperature(biomeEntry));
+        if (!this.temperature.contains(biomeTemperature(biomeEntry))) {
+            return false;
+        }
+        if (!this.altitude.contains((float) hookEntity.getY())) {
+            return false;
+        }
+        PlayerEntity fisher = hookEntity.getPlayerOwner();
+        if (fisher == null) {
+            return true;
+        }
+        float castDepth = attributes.maxLineLength() - (float) fisher.getEyePos().relativize(hookEntity.getPos()).length();
+        return this.depth.contains(castDepth);
     }
     static final float SCALE_RANGE = 0.6f;
     static final float HALF_SCALE_RANGE = SCALE_RANGE * 0.5f;

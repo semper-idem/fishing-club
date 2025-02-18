@@ -82,7 +82,7 @@ public record SpecimenData(
     public static SpecimenData init(Species<?> species) {
 
         var isAlbino = Math.random() < 0.01f;
-        return init(new IHookEntity() {}, species, isAlbino ? -1 : 0);
+        return init(new IHookEntity() {}, species, isAlbino ? 1 : 0);
     }
 
     public static SpecimenData init(Species<TropicalFishEntity> species, int subspecies) {
@@ -199,7 +199,7 @@ public int experience(double xFisher) {
         double xRarity = (50 / (this.species().rarity() + 9));//expected values from 1 to 200
         double xQuality = this.quality > 3 ? Math.pow(2, this.quality - 3) : 1;
         double xGiant = this.isGiant() ? 3 : 1;
-        double xAlbino = this.subspecies == -1 ? 1.5 : 1;
+        double xAlbino = this.subspecies > 0 ? 1.5 : 1;
         double xLevel = Math.pow(this.level, 1.3);
 
         return (int) MathHelper.clamp(
@@ -236,7 +236,7 @@ public int experience(double xFisher) {
         return isAlbino(this);
     }
     public static boolean isAlbino(SpecimenData specimenData) {
-        return specimenData.subspecies == -1;
+        return specimenData.subspecies == 1;
     }
 
     public int value() {
