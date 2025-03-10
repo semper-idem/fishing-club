@@ -52,10 +52,26 @@ public class Species<T extends WaterCreatureEntity> {
     float weightRange;
     //-2 for end, -1 for freezing, 0 for other,1 for desert 2 for nether
     Range<Float> temperature = Range.closed(-2f, 2f);
-    //0 for river, 1 for other, 2 for ocean
-    Range<Float> saltiness = Range.closed(-2f, 2f);
 
+    //0 for river, 1 for ocean
+    /**
+     * From Continentalness
+     *  -1.2~-1.05 = 0 Mooshroom Biome
+     *  -1.05~-0.19 = 1 to 0.5 Oceans
+     *  -0.19~0.3 = 0.5 to 0.1 Coast and Near Inlands
+     *  0.3+ = 0.1 to 0
+    * */
+    Range<Float> saltiness = Range.closed(0f, 1f);
+
+
+    /**
+     * Distance from water surface
+     * */
     Range<Float> depth = Range.closed(0f, 256f);
+
+    /**
+     * Basically Y cord
+     * */
     Range<Float> altitude = Range.closed(-128f, 374f);
 
     /**

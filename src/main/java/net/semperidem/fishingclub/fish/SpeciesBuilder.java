@@ -91,8 +91,6 @@ public class SpeciesBuilder<T extends WaterCreatureEntity> {
         return this;
     }
 
-
-
     public SpeciesBuilder <T> depth(Range<Float> depth) {
         this.species.depth = depth;
         return this;
