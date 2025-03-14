@@ -13,25 +13,25 @@ import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 
 public class SpecimenComponent extends AbstractSpecimenComponent implements AutoSyncedComponent, EntityComponentInitializer{
-    private WaterCreatureEntity parent;
+    private WaterCreatureEntity owner;
 
     public static SpecimenComponent of(WaterCreatureEntity fishEntity) {
         return SPECIMEN.get(fishEntity);
     }
 
     public SpecimenComponent(WaterCreatureEntity entity) {
-        this.parent = entity;
+        this.owner = entity;
     }
 
     @Override
     public void set(SpecimenData data) {
         super.set(data);
 
-        if (parent == null) {
+        if (owner == null) {
             return;
         }
 
-        SPECIMEN.sync(parent);
+        SPECIMEN.sync(owner);
     }
 
     private static final ComponentKey<SpecimenComponent> SPECIMEN = ComponentRegistry.getOrCreate(FishingClub.identifier("specimen_component"), SpecimenComponent.class);
@@ -43,13 +43,13 @@ public class SpecimenComponent extends AbstractSpecimenComponent implements Auto
     }
 
     private void initIfValid() {
-        if (parent == null) {
+        if (owner == null) {
             return;
         }
         if (data != null) {
             return;
         }
-        if (parent instanceof TropicalFishEntity tropicalFishEntity) {
+        if (owner instanceof TropicalFishEntity tropicalFishEntity) {
             NbtCompound nbt = new NbtCompound();
             tropicalFishEntity.writeCustomDataToNbt(nbt);
             int variantId = nbt.getInt("Variant");
@@ -61,7 +61,7 @@ public class SpecimenComponent extends AbstractSpecimenComponent implements Auto
             this.set(SpecimenData.init(Species.Library.TROPICAL_FISH, TropicalFishEntity.COMMON_VARIANTS.indexOf(variant)));
             return;
         }
-        this.set(SpecimenData.init(Species.Library.fromName(parent.getType().getUntranslatedName())));
+        this.set(SpecimenData.init(Species.Library.fromName(owner.getType().getUntranslatedName())));
     }
 
 

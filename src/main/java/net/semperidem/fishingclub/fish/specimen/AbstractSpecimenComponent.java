@@ -14,6 +14,10 @@ public abstract class AbstractSpecimenComponent implements AutoSyncedComponent {
 		return this.data;
 	}
 
+	public SpecimenData getOrDefault() {
+		return this.data == null ? SpecimenData.DEFAULT : this.data;
+	}
+
 	public void set(SpecimenData data) {
 		this.data = data;
 	}

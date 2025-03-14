@@ -11,53 +11,42 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 
 
-public abstract class AbstractFishEntityRenderer<M extends WaterCreatureEntity, T extends EntityModel<M>> extends MobEntityRenderer<M, T> {
+public abstract class AbstractFishEntityRenderer<M extends AbstractFishEntity, T extends EntityModel<M>> extends MobEntityRenderer<M, T> {
+	private Identifier texture;
+	private Identifier alternativeTexture;
 
-	public AbstractFishEntityRenderer(EntityRendererFactory.Context context, T entityModel, float f) {
-		super(context, entityModel, f);
+	public AbstractFishEntityRenderer(EntityRendererFactory.Context context, T entityModel, float shadowRadius) {
+		super(context, entityModel, shadowRadius);
 	}
 
-	public void renderWithSpecimenData(
-			SpecimenData specimenData,
-			M livingEntity,
-			float entityYaw,
-			float partialTicks,
-			MatrixStack matrixStack,
-			VertexConsumerProvider vertexConsumerProvider,
-			int light
-	) {
-
-		matrixStack.push();
-		float weightRating = specimenData.weightScale();
-		matrixStack.scale(weightRating, weightRating, specimenData.lengthScale());
-		super.render(livingEntity, entityYaw, partialTicks, matrixStack, vertexConsumerProvider, light);
-		matrixStack.pop();
-
+	public void setTextures(Species<?> species) {
+		this.texture = species.texture(false);
+		this.alternativeTexture = species.texture(true);
 	}
+
 	@Override
 	public void render(
-			M livingEntity,
+			M waterCreatureEntity,
 			float entityYaw,
 			float partialTicks,
 			MatrixStack matrixStack,
 			VertexConsumerProvider vertexConsumerProvider,
 			int light
 	) {
-
-		SpecimenData specimenData = SpecimenComponent.of(livingEntity).get();
-		if (specimenData != null) {
-			this.renderWithSpecimenData(specimenData, livingEntity, entityYaw, partialTicks, matrixStack, vertexConsumerProvider, light);
-			return;
-		}
-		super.render(livingEntity, entityYaw, partialTicks, matrixStack, vertexConsumerProvider, light);
+		matrixStack.push();
+		scaleBySpecimenData(matrixStack, waterCreatureEntity);
+		super.render(waterCreatureEntity, entityYaw, partialTicks, matrixStack, vertexConsumerProvider, light);
+		matrixStack.pop();
 	}
 
+	public static void scaleBySpecimenData(MatrixStack matrixStack, WaterCreatureEntity waterCreatureEntity){
+		SpecimenData specimenData = SpecimenComponent.of(waterCreatureEntity).getOrDefault();
+		float weightScale = specimenData.weightScale();
+		float lengthScale = specimenData.lengthScale();
+		matrixStack.scale(weightScale, weightScale, lengthScale);
+	}
 
-	public abstract Identifier getTexture();
-	public abstract Identifier getAlternateTexture();
 	public Identifier getTexture(M entity) {
-		SpecimenData data = SpecimenComponent.of(entity).get();
-		return data == null ? getTexture() : SpecimenData.isAlbino(data) ? getAlternateTexture() : getTexture();
-
+		return SpecimenComponent.of(entity).getOrDefault().isAlbino() ? this.alternativeTexture : this.texture;//todo find out if this is expensive
 	}
 }

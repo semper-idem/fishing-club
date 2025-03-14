@@ -3,12 +3,10 @@ package net.semperidem.fishingclub.mixin.common;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("unused")
 @Mixin(WaterCreatureEntity.class)
 public class WaterCreatureEntityMixin extends PathAwareEntity {
 
@@ -33,6 +32,7 @@ public class WaterCreatureEntityMixin extends PathAwareEntity {
         super(entityType, world);
     }
 
+    @SuppressWarnings("All")
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (player.getWorld().isClient) {
@@ -46,8 +46,7 @@ public class WaterCreatureEntityMixin extends PathAwareEntity {
         if (fishComponent == null) {
             return ActionResult.PASS;
         }
-        ItemStack fishStack = FishUtil.getStackFromFish(fishComponent.get());
-        if (fishingNetItem.insertStack(stackInHand, fishStack, player)) {
+        if (fishingNetItem.insertStack(stackInHand, FishUtil.getStackFromFish(fishComponent.get()), player)) {
             this.discard();
         }
         return ActionResult.SUCCESS;
@@ -58,14 +57,21 @@ public class WaterCreatureEntityMixin extends PathAwareEntity {
             at = @At("RETURN"),
             cancellable = true
     )
-    private static void fishing_club$canSpawn(EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random, CallbackInfoReturnable<Boolean> cir) {
-        String name = type.getUntranslatedName();
-        if (name.equals("dolphin")) {
+    private static void fishing_club$canSpawn(
+            EntityType<? extends WaterCreatureEntity> type,
+            WorldAccess world,
+            SpawnReason reason,
+            BlockPos pos,
+            Random random,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
+        if (type == EntityType.DOLPHIN) {
             return;
         }
-        boolean canSpawn = ChunkQuality.isAboveMinimumQuality(Species.Library.fromName(name), world, pos);
-        if (!canSpawn) {
-            cir.setReturnValue(false);
+
+        if (ChunkQuality.isAboveMinimumQuality(Species.Library.fromName(type.getUntranslatedName()), world, pos)) {
+            return;
         }
+        cir.setReturnValue(false);
     }
 }
