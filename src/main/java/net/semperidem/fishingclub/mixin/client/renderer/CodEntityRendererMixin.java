@@ -40,20 +40,14 @@ public class CodEntityRendererMixin extends MobEntityRenderer<CodEntity, CodEnti
         return SpecimenComponent.of(entity).getOrDefault().isAlbino() ? this.alternativeTexture : this.texture;
     }
 
-    @Inject(method = "render(Lnet/minecraft/entity/passive/CodEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/MobEntityRenderer;render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"
-            )
-    )
-    private void fishing_club$render(
+    @Override
+    public void render(
             CodEntity codEntity,
             float entityYaw,
             float partialTicks,
             MatrixStack matrixStack,
             VertexConsumerProvider vertexConsumerProvider,
-            int light,
-            CallbackInfo ci
+            int light
     ) {
         scaleBySpecimenData(matrixStack, codEntity);
     }

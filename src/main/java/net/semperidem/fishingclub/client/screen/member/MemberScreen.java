@@ -9,12 +9,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.screen.PlayerFaceComponent;
 import net.semperidem.fishingclub.client.screen.Texture;
-import net.semperidem.fishingclub.client.screen.dialog.PlayerFaceComponent;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.TextUtil;
 
-import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 import static net.semperidem.fishingclub.util.TextUtil.drawTextRightAlignedTo;
 
 public class MemberScreen extends HandledScreen<MemberScreenHandler> implements ScreenHandlerProvider<MemberScreenHandler> {
@@ -24,7 +23,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     private final MemberSubScreen buyView;
     private final MemberSubScreen sellView;
     private final MemberSubScreen miscView;
-    private final MemberSubScreen boxesView;
     private final MemberSubScreen flipView;
     private final MemberSubScreen fireworksView;
     public static final int CREDIT_COLOR = 0xffcf51;
@@ -47,12 +45,11 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         super(memberScreenHandler, playerInventory, title);
         this.client = MinecraftClient.getInstance();
         this.textRenderer = client.textRenderer;
-        this.buyView = new MemberBuyScreen(this, Text.literal("Trade - Buy"));
-        this.sellView = new MemberSellScreen(this, Text.literal("Trade - Sell"));
-        this.miscView = new MemberMiscScreen(this, Text.literal("Services"));
-        this.boxesView = new MemberIllegalScreen(this, Text.literal("Contraband"));
-        this.flipView = new MemberFlipScreen(this, Text.literal("Coin Toss"));
-        this.fireworksView = new MemberFireworkScreen(this, Text.literal("Fireworks"));
+        this.buyView = new MemberBuyScreen(this, Text.literal("🛒"));
+        this.sellView = new MemberSellScreen(this, Text.literal("🐟"));
+        this.miscView = new MemberMiscScreen(this, Text.literal("📖"));
+        this.flipView = new MemberFlipScreen(this, Text.literal("🎲"));
+        this.fireworksView = new MemberFireworkScreen(this, Text.literal("🧨"));
         this.currentView = buyView;
     }
 
@@ -83,8 +80,8 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
                 subScreen
         );
         if (getScreenHandler().getCard().getLevel() < subScreen.unlockLevel()) {
-            tabButtonWidget.active = false;
-            tabButtonWidget.setMessage(Text.literal("Unlocks at " + (subScreen.unlockLevel() < 10 ? " " : "") + subScreen.unlockLevel()));
+            //tabButtonWidget.active = false;
+            //tabButtonWidget.setMessage(Text.literal("🔒"));
         }
         addDrawableChild(
                 tabButtonWidget
@@ -96,7 +93,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     protected void init() {
         super.init();
         this.x = (int) ((width - TEXTURE.renderWidth) * 0.5f);
-        this.y = height - TEXTURE.renderHeight;
+        this.y = (int) ((height - TEXTURE.renderHeight) * 0.5f);
 
         titleX = x + TILE_SIZE * 12;
         titleY = y + TILE_SIZE * 2 - 1;
@@ -112,7 +109,6 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         addTabButton(buyView);
         addTabButton(sellView);
         addTabButton(miscView);
-        addTabButton(boxesView);
         addTabButton(flipView);
         addTabButton(fireworksView);
         currentView.init();
@@ -151,20 +147,29 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
         drawTextRightAlignedTo(textRenderer, context, creditText, creditX - textRenderer.getWidth(creditValue), creditY, BEIGE_TEXT_COLOR);//separate text and value
     }
 
-    @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        TEXTURE.render(context, x , y);
-        if (currentView == null) {
-            return;
-        }
-        context.drawTextWithShadow(textRenderer,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
 
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        drawBackground(context, delta, mouseX, mouseY);
     }
 
     @Override
     public void drawForeground(DrawContext context, int mouseX, int mouseY) {
     }
 
+    @Override//Has to be defined to satisfy extended class
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        TEXTURE.render(context, x , y);
+        if (currentView == null) {
+            return;
+        }
+            context.drawTextWithShadow(textRenderer,  currentView.getTitle(), titleX , titleY, BEIGE_TEXT_COLOR);
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
 
     public void drawContainerBox(DrawContext context, int x, int y, int x0, int y0, boolean outline) {
         if (outline) {

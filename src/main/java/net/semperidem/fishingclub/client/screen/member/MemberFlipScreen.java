@@ -101,7 +101,6 @@ public class MemberFlipScreen extends MemberSubScreen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         parent.drawContainerBox(context, buttonBoxX0, buttonBoxY0, buttonBoxX1, buttonBoxY1, true);
         parent.drawContainerBox(context, historyXLeft - 2, historyMaxY + 1, historyXRight + 3, historyY + 10, true);
-        context.drawTextWithShadow(textRenderer,  Text.of("Coin Toss"), titleX , titleY, BEIGE_TEXT_COLOR);
         int historyEntryY = historyY;
         ArrayList<String> tossHistory = parent.getScreenHandler().getCoinFlipHistory();
         for(int i = tossHistory.size() - 1; i >= 0; i--) {

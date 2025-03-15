@@ -11,9 +11,7 @@ import net.semperidem.fishingclub.client.screen.game.FishingGamePostScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.network.payload.*;
-import net.semperidem.fishingclub.client.screen.dialog.DialogScreen;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
-import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
@@ -23,7 +21,6 @@ public class FCScreenHandlers {
     public static ExtendedScreenHandlerType<FishingCardScreenHandler, FishingCardPayload> FISHING_CARD_SCREEN;
     public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGameStartS2CPayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<FishingGamePostScreenHandler, FishingGamePostS2CPayload> FISHING_GAME_POST_SCREEN;
-    public static ExtendedScreenHandlerType<DialogScreenHandler, DialogPayload> DIALOG_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
     public static ExtendedScreenHandlerType<ConfigurationScreenHandler, ConfigurationPayload> CONFIGURATION_SCREEN;
 
@@ -49,13 +46,6 @@ public class FCScreenHandlers {
                         new ExtendedScreenHandlerType<>(
                                 FishingGamePostScreenHandler::new, FishingGamePostS2CPayload.CODEC));
 
-
-        DIALOG_SCREEN =
-                Registry.register(
-                        Registries.SCREEN_HANDLER,
-                        FishingClub.identifier("dialog_screen_handler"),
-                        new ExtendedScreenHandlerType<>(
-                                DialogScreenHandler::new, DialogPayload.CODEC));
         MEMBER_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
@@ -74,7 +64,6 @@ public class FCScreenHandlers {
         HandledScreens.register(FISHING_GAME_SCREEN, FishingGameScreen::new);
         HandledScreens.register(FISHING_GAME_POST_SCREEN, FishingGamePostScreen::new);
         HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
-        HandledScreens.register(DIALOG_SCREEN, DialogScreen::new);
         HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
         HandledScreens.register(CONFIGURATION_SCREEN, ConfigurationScreen::new);
     }

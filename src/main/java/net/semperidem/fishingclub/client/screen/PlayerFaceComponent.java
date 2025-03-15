@@ -1,9 +1,8 @@
-package net.semperidem.fishingclub.client.screen.dialog;
+package net.semperidem.fishingclub.client.screen;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.client.screen.Texture;
 
 public class PlayerFaceComponent implements Drawable {
     private static final int faceTextureSize = 32;

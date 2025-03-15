@@ -28,8 +28,6 @@ public class HistoryManager extends DataManager {
     private long lastCatchTime = 0;
     private long firstCatchOfTheDay = 0;
     private ItemStack lastUsedBait = ItemStack.EMPTY;
-    private final ArrayList<String> derekMet = new ArrayList<>();
-    private boolean gaveDerekFish = false;
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
     private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
     private final HashSet<Integer> heardMessageIndexSet = new HashSet<>();
@@ -47,14 +45,8 @@ public class HistoryManager extends DataManager {
         heardMessageIndexSet.add(unheardMessageIndex);
     }
 
-    public void meetDerek(FishermanEntity.SummonType summonType) {
-        derekMet.add(summonType.name());
-        sync();
-    }
-
-    public void giveDerekFish(){
-        this.gaveDerekFish = true;
-        sync();
+    public boolean isMember() {
+        return !this.heardMessageIndexSet.isEmpty();
     }
 
     public HashMap<String, SpeciesStatistics> getFishAtlas() {
@@ -76,14 +68,6 @@ public class HistoryManager extends DataManager {
 
     public ArrayList<ItemStack> getUnclaimedRewards() {
         return unclaimedRewards;
-    }
-
-    public boolean metDerek(FishermanEntity.SummonType summonType) {
-        return derekMet.contains(summonType.name());
-    }
-
-    public boolean gaveDerekFish() {
-        return gaveDerekFish;
     }
 
     private void recordFishCaught(SpecimenData fish) {
@@ -166,9 +150,6 @@ public class HistoryManager extends DataManager {
         if (historyTag.contains(LAST_USED_BAIT_TAG)) {
             lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompound(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
         }
-        derekMet.clear();
-        derekMet.addAll(List.of(historyTag.getString(DEREK_MET_TAG).split(";")));
-        gaveDerekFish = historyTag.getBoolean(WELCOMED_DEREK_TAG);
         NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
         unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt(wrapperLookup, rewardTag).orElse(ItemStack.EMPTY)));
         NbtList fishAtlasTag = historyTag.getList(FISH_ATLAS_TAG, NbtElement.COMPOUND_TYPE);
@@ -189,8 +170,6 @@ public class HistoryManager extends DataManager {
         if (!lastUsedBait.isEmpty()) {
             historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.encode(wrapperLookup));
         }
-        historyTag.putString(DEREK_MET_TAG, String.join(";", derekMet));
-        historyTag.putBoolean(WELCOMED_DEREK_TAG, gaveDerekFish);
         NbtList unclaimedRewardsTag = new NbtList();
         unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.encode(wrapperLookup)));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);

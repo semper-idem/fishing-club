@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.entity;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -10,15 +11,16 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.pathing.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -32,32 +34,23 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 import net.semperidem.fishingclub.world.FishingServerWorld;
-import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.registry.FCEntityTypes;
-import net.semperidem.fishingclub.screen.dialog.DialogController;
-import net.semperidem.fishingclub.screen.dialog.DialogNode;
-import net.semperidem.fishingclub.screen.dialog.DialogScreenHandler;
-import net.semperidem.fishingclub.screen.dialog.DialogScreenHandlerFactory;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.EffectUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 
 
 public class FishermanEntity extends PassiveEntity {
+    private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(FishermanEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final double TWO_PI = Math.PI * 2;
     private static final double QUARTER_PI = Math.PI * 0.25f;
     private static final double SIXTEENTH_PI = Math.PI * 0.06125f;
 	private float paddlePhases;
     private PlayerEntity customer;
-    private SummonType summonType = SummonType.SPELL;
-    private ItemStack spawnedFrom = ItemStack.EMPTY;
-    private final ArrayList<UUID> talkedTo = new ArrayList<>();
-    private UUID summonerUUID;
     private final static int DESPAWN_TIME = 6000;
     private int despawnTimer;
     private int outOfWaterTicks;
@@ -70,9 +63,25 @@ public class FishermanEntity extends PassiveEntity {
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
         this.despawnTimer = DESPAWN_TIME;
     }
-    public FishermanEntity(World world, ItemStack spawnedFrom, UUID summonerUUID) {
+    public FishermanEntity(World world) {
         this(FCEntityTypes.DEREK_ENTITY, world);
-        setSummonDetails(spawnedFrom, summonerUUID);
+    }
+
+    public int getHeadRollingTimeLeft() {
+        return (Integer)this.dataTracker.get(HEAD_ROLLING_TIME_LEFT);
+    }
+
+    public void setHeadRollingTimeLeft(int ticks) {
+        this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, ticks);
+    }
+
+    public int getExperience() {
+        return 0;
+    }
+
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(HEAD_ROLLING_TIME_LEFT, 0);
     }
 
     @Override
@@ -115,18 +124,6 @@ public class FishermanEntity extends PassiveEntity {
         return !(other instanceof BoatEntity);
     }
 
-    private void setSummonDetails(ItemStack spawnedFrom, UUID summonerUUID) {
-        if (summonerUUID == null) {
-            return;
-        }
-        this.summonerUUID = summonerUUID;
-
-        if (spawnedFrom.isEmpty()) {
-            this.summonType = SummonType.SPELL;
-            return;
-        }
-        this.summonType = SummonType.FISH;
-    }
 
     protected void initGoals() {
 //        this.goalSelector.add(1, new EscapeDangerGoal(this, 1));
@@ -158,25 +155,11 @@ public class FishermanEntity extends PassiveEntity {
         return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
     }
 
-    public void acceptTrade() {
-        if (this.getWorld().isClient()) {
-            return;
-        }
-        FishingCard.of(this.getWorld().getPlayerByUuid(summonerUUID)).giveDerekFish();
-    }
-
-    public void dismiss() {
-        if (this.getWorld().isClient()) {
-            return;
-        }
-        this.despawnTimer = 0;
-    }
-
     @Override
     public void tickMovement() {
         if (customer != null) {
             if (!this.getWorld().isClient) {
-                if (!(customer.currentScreenHandler instanceof DialogScreenHandler) && !(customer.currentScreenHandler instanceof MemberScreenHandler)) {
+                if (!(customer.currentScreenHandler instanceof MemberScreenHandler)) {
                     customer = null;
                 }
             }
@@ -326,64 +309,27 @@ public class FishermanEntity extends PassiveEntity {
         return null;
     }
 
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putString("summonType", summonType.name());
-        if (this.summonerUUID != null) {
-            nbt.putUuid("summonerUUID", summonerUUID);
-        }
-        NbtList talkedToUUIDNbt = new NbtList();
-        for(UUID interactedWith : talkedTo) {
-            talkedToUUIDNbt.add(NbtHelper.fromUuid(interactedWith));
-        }
-        nbt.put("talkedTo", talkedToUUIDNbt);
-    }
 
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("summonType")) {
-            this.summonType = SummonType.valueOf(nbt.getString("summonType"));
-        }
-
-        if (nbt.contains("summonerUUID")) {
-            this.summonerUUID = nbt.getUuid("summonerUUID");
-        }
-        if (!nbt.contains("talkedTo")) {
-            return;
-        }
-        nbt.getList("talkedTo", NbtElement.INT_ARRAY_TYPE).forEach(
-                talkedToUUID -> talkedTo.add(NbtHelper.toUuid(talkedToUUID))
-        );
         if (this.getWorld() instanceof FishingServerWorld serverWorld){
             serverWorld.setDerek(this);
         }
     }
 
-
-
-    public HashSet<DialogNode.DialogKey> getKeys(PlayerEntity playerEntity){
-        HashSet<DialogNode.DialogKey> fisherKeys = new HashSet<>();
-        if (playerEntity.getUuid() == summonerUUID) {
-            fisherKeys.add(DialogNode.DialogKey.SUMMONER);
-        }
-        if (!talkedTo.contains(playerEntity.getUuid()) && this.age > 1200) {
-            fisherKeys.add(DialogNode.DialogKey.FIRST);
+    private void sayNo() {
+        this.setHeadRollingTimeLeft(40);
+        if (!this.getWorld().isClient()) {
+            this.playSound(SoundEvents.ENTITY_VILLAGER_NO);
         }
 
-        fisherKeys.add(DialogNode.DialogKey.valueOf(summonType.name()));
-        return fisherKeys;
     }
 
-    public SummonType getSummonType() {
-        return summonType;
-    }
 
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!this.getWorld().isClient && customer == null) {
-            HashSet<DialogNode.DialogKey> keySet = DialogController.getKeys(playerEntity, this);
-            talkedTo.add(playerEntity.getUuid());
-            playerEntity.openHandledScreen(new DialogScreenHandlerFactory(keySet));
+            playerEntity.openHandledScreen(new MemberScreenHandlerFactory());
             setCustomer(playerEntity);
         }
         return ActionResult.CONSUME;
@@ -393,6 +339,8 @@ public class FishermanEntity extends PassiveEntity {
         this.customer = customer;
     }
 
+
+    //todo make unsummonable(teleportable if talked to someone <60s ago)
     public static void summonDerek(Vec3d pos, ServerWorld serverWorld, ItemStack itemStack, UUID uuid) {
         if (!(serverWorld instanceof  FishingServerWorld derekWorld)) {
             return;

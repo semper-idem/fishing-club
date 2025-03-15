@@ -18,8 +18,6 @@ public class FCNetworking {
         PayloadTypeRegistry.playC2S().register(TitleClaimPayload.ID, TitleClaimPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SellFishPayload.ID, SellFishPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingCardPayload.ID, FishingCardPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(DialogResponsePayload.ID, DialogResponsePayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(DialogPayload.ID, DialogPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(CheckoutPayload.ID, CheckoutPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SpellCastPayload.ID, SpellCastPayload.CODEC);
@@ -46,8 +44,6 @@ public class FCNetworking {
         ServerPlayNetworking.registerGlobalReceiver(CoinFlipPayload.ID, CoinFlipPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(TitleClaimPayload.ID, TitleClaimPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SellFishPayload.ID, SellFishPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(DialogResponsePayload.ID, DialogResponsePayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(DialogPayload.ID, DialogPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(CheckoutPayload.ID, CheckoutPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SpellCastPayload.ID, SpellCastPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload::consumePayload);

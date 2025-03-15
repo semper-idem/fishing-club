@@ -5,7 +5,16 @@ import net.minecraft.item.Items;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MemberStock {
+public class MemberStock {//todo data to json
+
+    /*
+    * Categories:
+    *  Fishing Tools
+    *  Ocean Floor (Ocean Ruins > Monument)
+    *  Shipwreck (Front > Back > Main)
+    *  Treasures (Portal > Burried)
+    *  Smuggled
+    * */
     public final static String FISHER_STOCK_KEY = "FISHER";
     public final static String LUMBERJACK_STOCK_KEY = "LUMBERJACK";
     public final static HashMap<String, ArrayList<StockEntry>> STOCK = new HashMap<>();

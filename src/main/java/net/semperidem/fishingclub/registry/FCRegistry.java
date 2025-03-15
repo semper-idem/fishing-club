@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.screen.dialog.DialogController;
 
 import java.util.HashMap;
 
@@ -36,7 +35,6 @@ public class FCRegistry {
         FCStatusEffects.register();
         LevelRewardRule.initDefaultRewards();
         TradeSecrets.register();
-        DialogController.initialize();
         FCFeatures.register();
         FCLootTables.register();
         FCEnchantments.register();

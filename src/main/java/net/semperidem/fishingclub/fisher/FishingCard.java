@@ -19,7 +19,6 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
-import net.semperidem.fishingclub.screen.dialog.DialogNode;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -116,10 +115,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
         AutoSyncedComponent.super.applySyncPacket(buf);
     }
 
-    public void giveDerekFish() {
-        this.addCredit(1000);
-        historyManager.giveDerekFish();
-    }
     public void addUnclaimedReward(ItemStack rewardStack) {
         historyManager.addUnclaimedReward(rewardStack);
     }
@@ -131,11 +126,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     public ArrayList<ItemStack> getUnclaimedRewards() {
         return historyManager.getUnclaimedRewards();
     }
-
-    public void meetDerek(FishermanEntity.SummonType summonType) {
-        historyManager.meetDerek(summonType);
-    }
-
 
     public void resetCooldown(){
        // progressionManager.resetCooldown();
@@ -225,14 +215,6 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
 
     public void acceptSummonRequest(){
         summonRequestManager.execute();//todo put cooldown on summon
-    }
-
-    public HashSet<DialogNode.DialogKey> getKeys() {
-        HashSet<DialogNode.DialogKey> keys = new HashSet<>();
-        if (this.historyManager.gaveDerekFish()) {
-            keys.add(DialogNode.DialogKey.CARD);
-        }
-        return keys;
     }
 
     public boolean isFishingFromBoat(){
@@ -329,7 +311,7 @@ public final class FishingCard extends FishingCardInventory implements EntityCom
     }
 
     public boolean isMember() {
-        return this.historyManager.gaveDerekFish();
+        return this.historyManager.isMember();
     }
     @Override
     public String toString() {

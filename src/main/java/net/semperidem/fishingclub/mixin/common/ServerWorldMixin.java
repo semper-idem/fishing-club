@@ -87,7 +87,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
     @Override
     public FishermanEntity getDerek(ItemStack summonedUsing, UUID summonedBy) {
         if (derek == null || derek.isRemoved()) {
-            derek = new FishermanEntity(this, summonedUsing, summonedBy);
+            derek = new FishermanEntity(this);
         }
         return derek;
     }
