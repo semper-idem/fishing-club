@@ -6,10 +6,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.semperidem.fishingclub.entity.renderer.CustomBoatEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.FishDisplayEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.FishermanEntityRenderer;
-import net.semperidem.fishingclub.entity.renderer.HookEntityRenderer;
+import net.semperidem.fishingclub.entity.renderer.*;
 import net.semperidem.fishingclub.fish.Species;
 
 public class FCRegistryClient {

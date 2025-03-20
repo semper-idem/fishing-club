@@ -43,15 +43,17 @@ public class FCEntityTypes {
 					.build());
 
 		BOAT_ENTITY =
-			Registry.register(
-				Registries.ENTITY_TYPE,
-				FishingClub.identifier("custom_boat_entity"),
-				EntityType.Builder.create(CustomBoatEntity::new, SpawnGroup.MISC)
-					.dimensions(1.375F, 0.5f)
-					.disableSaving()
-					.trackingTickInterval(20)
-					.maxTrackingRange(4)
-					.build());
+				Registry.register(
+						Registries.ENTITY_TYPE,
+						FishingClub.identifier("custom_boat_entity"),
+						EntityType.Builder.create(CustomBoatEntity::new, SpawnGroup.MISC)
+								.dimensions(1.375F, 0.5f)
+								.disableSaving()
+								.trackingTickInterval(20)
+								.maxTrackingRange(4)
+								.build());
+
+
 		FabricDefaultAttributeRegistry.register(DEREK_ENTITY, FishermanEntity.createMobAttributes());
 
 

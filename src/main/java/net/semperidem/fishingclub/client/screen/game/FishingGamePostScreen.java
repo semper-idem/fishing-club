@@ -9,11 +9,14 @@ import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDescription;
 import net.semperidem.fishingclub.fisher.FishingCard;
@@ -31,7 +34,7 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
     private final Perspective previousPerspective;
     private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = Identifier.ofVanilla("hud/experience_bar_background");
     private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = Identifier.ofVanilla("hud/experience_bar_progress");
-
+    public static Text PRESENTING_CAMERA = Text.of("fishing_club$presenting_camera");
     int textStartX;
     int textEndX;
     int textY;
@@ -51,12 +54,67 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
     public FishingGamePostScreen(FishingGamePostScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.previousPerspective = MinecraftClient.getInstance().options.getPerspective();
+        this.client = MinecraftClient.getInstance();
         MinecraftClient.getInstance().options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+        double angle = Math.toRadians(this.client.player.getYaw());
+        double angle90 = Math.toRadians(this.client.player.getYaw() + 90);
+        double xOffset = Math.sin(angle) - (Math.sin(angle90) * 2);
+        double zOffset = - Math.cos(angle) + (Math.cos(angle90) * 2);
+        ArmorStandEntity cameraEntity = new ArmorStandEntity(
+                this.client.player.getEntityWorld(),
+                this.client.player.getX() + xOffset,
+                this.client.player.getY(),
+                this.client.player.getZ() + zOffset
+        );
+        cameraEntity.setCustomName(PRESENTING_CAMERA);
+        //cameraEntity.setYaw(this.client.player.getYaw() - 180);
+        //cameraEntity.setPitch(this.client.player.getPitch() - 180);
+        cameraEntity.setHeadYaw(this.client.player.getHeadYaw());
+        //this.client.player.setHeadYaw(headYaw);
+
+        this.client.player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, cameraEntity.getPos());
+        this.client.player.setYaw(this.client.player.getYaw() - 90);
+        this.client.player.setBodyYaw(this.client.player.getYaw());
+        this.client.player.setPitch(-10);
+        cameraEntity.setInvisible(true);
+        cameraEntity.setNoGravity(true);
+//        Vec3d lookVec =
+//        this.client.player.getEyePos().add(this.client.player.getCameraPosVec(0));
+//        cameraEntity.
+//        float yaw = this.client.player.getYaw();
+//        double distance = 4.0; // Distance behind player
+//        double height = 1.5;   // Height above player
+//
+//        // Convert angle to radians
+//        double radians = Math.toRadians(yaw);
+//
+//        // Calculate offset
+//        double offsetX = -Math.sin(radians) * distance;
+//        double offsetZ = -Math.cos(radians) * distance;
+//
+//        // Set camera entity position
+//        cameraEntity.setPos(
+//                this.client.player.getX() + offsetX,
+//                this.client.player.getY() + height,
+//                this.client.player.getZ() + offsetZ
+//        );
+
+
+        // Add to world client-side only
+        this.client.world.addEntity(cameraEntity);
+        //cameraEntity.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, this.client.player.getEyePos());
+        this.client.setCameraEntity(cameraEntity);
         this.fishingCard = this.handler.fishingCard();
         int currentExp = this.fishingCard.getExp();
         this.fishExp = this.handler.exp();
         this.initialLevel = currentExp < fishExp ? this.fishingCard.getLevel() - 1 : this.fishingCard.getLevel();
         this.initialExp = currentExp < fishExp ? ProgressionManager.levelExp(this.initialLevel) + (this.fishingCard.getExp() - fishExp) : this.fishingCard.getExp() - fishExp;
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        this.client.setCameraEntity(this.client.player);
     }
 
     @Override
@@ -94,9 +152,22 @@ public class FishingGamePostScreen extends HandledScreen<FishingGamePostScreenHa
 
     @Override
     protected void handledScreenTick() {
+        double angle = Math.toRadians(this.client.player.getYaw());
+        double angle90 = Math.toRadians(this.client.player.getYaw() + 90);
+        int stage = this.handler.stage.get();
+        double zoom = (stage * -1f) / FishingGamePostScreenHandler.LAST_STAGE;
+        double xOffset = ((- Math.sin(angle) * zoom) - (Math.sin(angle90) * 2));
+        double zOffset = ((Math.cos(angle) * zoom) + (Math.cos(angle90) * 2));
+        this.client.cameraEntity.setPos(
+                this.client.player.getX() + xOffset,
+                this.client.player.getY(),
+                this.client.player.getZ() + zOffset
+        );
+
         if (this.handler.stage.get() < FishingGamePostScreenHandler.LAST_STAGE) {
             return;
         }
+
         this.tickTextAnimation();
         this.tickExpAnimation();
     }

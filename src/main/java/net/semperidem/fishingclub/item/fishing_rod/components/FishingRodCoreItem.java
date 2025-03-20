@@ -20,9 +20,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
 
 import java.util.List;
@@ -47,8 +49,8 @@ public class FishingRodCoreItem extends FishingRodItem {
         }
         if (debug && user.isSneaking()) {
 
-            user.openHandledScreen(new MemberScreenHandlerFactory());
-            //user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(FCComponents.ROD_CONFIGURATION)));
+            //user.openHandledScreen(new MemberScreenHandlerFactory());
+            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(FCComponents.ROD_CONFIGURATION)));
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

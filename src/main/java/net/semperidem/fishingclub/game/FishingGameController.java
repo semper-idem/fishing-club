@@ -74,19 +74,20 @@ public class FishingGameController {
     }
 
     private void tickLogic() {
-        if (this.isWon) {
-           this.tickWon();
-           return;
-        }
-        if (this.treasureGameController.isActive()) {
-            this.treasureGameController.tick();
-            return;
-        }
-       this.fishController.tick();
-       this.bobberComponent.tick();
-       this.progressComponent.tick();
-       this.treasureComponent.tick();
-       this.healthComponent.tick();
+        this.tickWon();
+//        if (this.isWon) {
+//           this.tickWon();
+//           return;
+//        }
+//        if (this.treasureGameController.isActive()) {
+//            this.treasureGameController.tick();
+//            return;
+//        }
+//       this.fishController.tick();
+//       this.bobberComponent.tick();
+//       this.progressComponent.tick();
+//       this.treasureComponent.tick();
+//       this.healthComponent.tick();
     }
 
 

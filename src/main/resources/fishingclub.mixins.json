@@ -31,6 +31,7 @@
   ],
   "client": [
     "client.MouseMixin",
+    "client.CameraMixin",
     "client.PlayerListEntryMixin",
     "client.SoundManagerMixin",
     "client.model.BipedEntityModelMixin",
