@@ -90,7 +90,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private FishingRodCoreItem core;
     private RodConfiguration configuration;
     private HookPartItem hookPartItem;
-    private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null
+    private Entity hookedEntity;//For some reason hookedEntity from FishingBobberEntity likes to set itself to null //todo find out why
 
     private int magicReelLevel = 0;
     private int magicHookLevel = 0;
@@ -432,16 +432,16 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.playerOwner.sendMessage(Text.of("Distance: " + String.format("%.2f", this.ownerVector.length())), true);
         ServerWorld serverWorld = (ServerWorld) this.getWorld();
         this.tickTemperature();
-        if (this.hookCountdown > 0) {
-            this.tickHookedFish();
+        if (this.waitCountdown > 0) {
+            this.tickWait(serverWorld);
             return;
         }
         if (this.fishTravelCountdown > 0) {
             this.tickFish(serverWorld);
             return;
         }
-        if (this.waitCountdown > 0) {
-            this.tickWait(serverWorld);
+        if (this.hookCountdown > 0) {
+            this.tickHookedFish();
             return;
         }
         this.setWaitCountdown();
@@ -503,21 +503,16 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     private void tickHookedFish() {
-        --this.hookCountdown;
-
-        if (this.hookCountdown > 0) {
+        if (--this.hookCountdown > 0) {
             return;
         }
 
-        this.waitCountdown = 0;
-        this.fishTravelCountdown = 0;
-
+        //Has AutoHook
         if (this.magicHookLevel > 0 || (this.hookPartItem != null && this.hookPartItem.isSticky())) {
             this.reelFish();
             return;
         }
         this.caughtFish = null;
-
     }
 
     private void tickFish(ServerWorld serverWorld) {
@@ -583,18 +578,10 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void tickWait(ServerWorld serverWorld) {
         this.waitCountdown -= 1;
         this.splashWater(serverWorld);
-        if (this.waitCountdown > 0) {
-            return;
-        }
-        int fishingSchoolLevel = this.fishingCard.tradeSecretLevel(TradeSecrets.FISHING_SCHOOL);
-        if (fishingSchoolLevel > 0) {
-            this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
-            this.fishTravelCountdown = (int) (20 + fishingSchoolLevel * 20 * (Math.random() * 2 - 1));
-        }
     }
 
     private void splashWater(ServerWorld serverWorld) {
-        if (this.random.nextFloat() < 0.05f) {
+        if (this.random.nextFloat() < 0.02f) {
             float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float) Math.PI / 180);
             float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
             double d = this.getX() + (double) (MathHelper.sin(g) * h) * 0.1;
@@ -632,6 +619,14 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
         this.waitCountdown = (int) (expectedWait * Math.abs(this.random.nextGaussian()));
         this.lastWaitCountdown = this.waitCountdown;
+
+        if (this.fishingCard.tradeSecretLevel(TradeSecrets.FISHER_SENSE) > 0) {
+            this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
+            //Make sure fishTravel is equal or shorter then waitCountdown
+            this.fishTravelCountdown = Math.min(this.waitCountdown, (int) (20 + this.fishingCard.tradeSecretValue(TradeSecrets.FISHER_SENSE) * 20 * (Math.random() * 2 - 1)));
+            //Subtract fishTravelCountdown so we don't pre-long player waiting
+            this.waitCountdown = Math.max(20, this.waitCountdown - this.fishTravelCountdown);
+        }
     }
 
     private boolean isOwnerValid(PlayerEntity playerEntity) {

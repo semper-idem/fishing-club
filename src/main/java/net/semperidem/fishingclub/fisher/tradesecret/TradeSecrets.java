@@ -41,6 +41,7 @@ public class TradeSecrets {
     public static TradeSecret FISHERMAN_SUMMON;
     public static TradeSecret MAGIC_ROD_SUMMON;
     public static TradeSecret FISHER_ZEAL;
+    public static TradeSecret FISHER_SENSE;
 
     public static void register() {
         BOBBER_THROW_CHARGE = TradeSecret.builder()
@@ -239,6 +240,13 @@ public class TradeSecrets {
                 .name("fisher_zeal")
                 .levelValues(1, 2, 3, 4, 5)
                 .costPerLevel(1, 2, 3, 3, 3)
+                .build();
+
+        FISHER_SENSE = TradeSecret.builder()
+                .name("fisher_sense")
+                .levelValues(1,2,8)
+                .costPerLevel(3,2,1)
+                .require(FISHER_ZEAL)
                 .build();
     }
 
