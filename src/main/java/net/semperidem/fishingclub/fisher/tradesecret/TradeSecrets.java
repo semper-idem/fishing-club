@@ -139,9 +139,9 @@ public class TradeSecrets {
 
         INSTANT_FISH_CREDIT = TradeSecret.builder()
                 .name("instant_fish_credit")
-                .levelValues(0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1)
+                .levelValues(0.5f, 0.625f, 0.75f, 0.875f, 1f)
                 .require(FISH_WHISPERER)
-                .costPerLevel(1, 2, 3, 4, 5, 6)
+                .costPerLevel(1, 2, 3, 4, 5)
                 .build();
 
         BOMB_FISHING = TradeSecret.builder()

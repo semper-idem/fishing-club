@@ -9,7 +9,7 @@ public class UnlockableBoundSlot extends UnlockableSlot{
 
     public UnlockableBoundSlot(
             Inventory inventory, int index, int x, int y,
-            FishingCardScreenHandler parent,
+            OldFishingCardScreenHandler parent,
             boolean isUnlocked,
             Item boundItem
     ){

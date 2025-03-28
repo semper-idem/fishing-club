@@ -6,7 +6,8 @@ import net.minecraft.util.Identifier;
 
 public class PlayerFaceComponent implements Drawable {
     private static final int faceTextureSize = 32;
-    private static final int hatSkinTextureOffsetX = 160, faceSkinTextureOffsetX = 32, hatSkinTextureOffsetY = 32, faceSkinTextureOffsetY = 32;
+    private static final int hatSkinTextureOffsetX = 160,
+            faceSkinTextureOffsetX = 32, hatSkinTextureOffsetY = 32, faceSkinTextureOffsetY = 32;
     int x, y;
     private Identifier playerIcon;;
 

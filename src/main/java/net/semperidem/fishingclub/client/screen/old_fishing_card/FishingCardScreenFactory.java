@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.client.screen.old_fishing_card;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,7 +8,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
-import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.OldFishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<FishingCardPayload> {
@@ -20,7 +20,7 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<Fi
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FishingCardScreenHandler(syncId, inv, FishingCard.of(inv.player));
+        return new OldFishingCardScreenHandler(syncId, inv, FishingCard.of(inv.player));
     }
 
     @Override

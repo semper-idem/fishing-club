@@ -6,19 +6,19 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.configuration.ConfigurationScreen;
-import net.semperidem.fishingclub.client.screen.fishing_card.FishingCardScreen;
+import net.semperidem.fishingclub.client.screen.old_fishing_card.OldFishingCardScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingGamePostScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.network.payload.*;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
-import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.OldFishingCardScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
 public class FCScreenHandlers {
-    public static ExtendedScreenHandlerType<FishingCardScreenHandler, FishingCardPayload> FISHING_CARD_SCREEN;
+    public static ExtendedScreenHandlerType<OldFishingCardScreenHandler, FishingCardPayload> FISHING_CARD_SCREEN;
     public static ExtendedScreenHandlerType<FishingGameScreenHandler, FishingGameStartS2CPayload> FISHING_GAME_SCREEN;
     public static ExtendedScreenHandlerType<FishingGamePostScreenHandler, FishingGamePostS2CPayload> FISHING_GAME_POST_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
@@ -30,7 +30,7 @@ public class FCScreenHandlers {
                         Registries.SCREEN_HANDLER,
                         FishingClub.identifier("fishing_card_screen_handler"),
                         new ExtendedScreenHandlerType<>(
-                                FishingCardScreenHandler::new, FishingCardPayload.CODEC));
+                                OldFishingCardScreenHandler::new, FishingCardPayload.CODEC));
 
         FISHING_GAME_SCREEN =
                 Registry.register(
@@ -63,7 +63,7 @@ public class FCScreenHandlers {
     public static void registerClient() {
         HandledScreens.register(FISHING_GAME_SCREEN, FishingGameScreen::new);
         HandledScreens.register(FISHING_GAME_POST_SCREEN, FishingGamePostScreen::new);
-        HandledScreens.register(FISHING_CARD_SCREEN, FishingCardScreen::new);
+        HandledScreens.register(FISHING_CARD_SCREEN, OldFishingCardScreen::new);
         HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
         HandledScreens.register(CONFIGURATION_SCREEN, ConfigurationScreen::new);
     }

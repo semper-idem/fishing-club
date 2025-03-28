@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.client.screen.old_fishing_card;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
@@ -21,7 +21,7 @@ public class PerkButtonWidget extends ButtonWidget {
     public boolean isSelected;
     TradeSecret tradeSecret;
     FishingCard fishingCard;
-    public PerkButtonWidget(int x, int y, FishingCard fishingCard, TradeSecret tradeSecret, FishingCardScreen parent) {
+    public PerkButtonWidget(int x, int y, FishingCard fishingCard, TradeSecret tradeSecret, OldFishingCardScreen parent) {
         super(x, y, ICON_SIZE, ICON_SIZE, Text.empty(), button -> parent.setPerk((PerkButtonWidget) button, tradeSecret), Supplier::get);
         this.fishingCard = fishingCard;
         this.tradeSecret = tradeSecret;

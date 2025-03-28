@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.fishing_card;
+package net.semperidem.fishingclub.client.screen.old_fishing_card;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -17,12 +17,11 @@ import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
-import net.semperidem.fishingclub.screen.fishing_card.FishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_card.OldFishingCardScreenHandler;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> implements ScreenHandlerProvider<FishingCardScreenHandler>, Cacheable {
+public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHandler> implements ScreenHandlerProvider<OldFishingCardScreenHandler>, Cacheable {
 
     private static final int BACKGROUND_TEXTURE_WIDTH = 400;
     private static final int BACKGROUND_TEXTURE_HEIGHT = 280;
@@ -70,8 +69,8 @@ public class FishingCardScreen extends HandledScreen<FishingCardScreenHandler> i
     private int perksX;
     private int perksY;
 
-    public FishingCardScreen(FishingCardScreenHandler fishingCardScreenHandler, PlayerInventory playerInventory, Text title) {
-        super(fishingCardScreenHandler, playerInventory, Text.literal("Fishing Card"));
+    public OldFishingCardScreen(OldFishingCardScreenHandler oldFishingCardScreenHandler, PlayerInventory playerInventory, Text title) {
+        super(oldFishingCardScreenHandler, playerInventory, Text.literal("Fishing Card"));
         updateCache();
     }
 

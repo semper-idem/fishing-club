@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fisher.FishingCard;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.FishingCardPayload;
@@ -16,7 +15,7 @@ import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
 import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.registry.FCScreenHandlers;
 
-public class FishingCardScreenHandler extends ScreenHandler {
+public class OldFishingCardScreenHandler extends ScreenHandler {
     private final static int SLOT_COUNT = 5;
     private final static int SLOTS_PER_ROW = 9;
     private final static int SLOT_SIZE = 18;
@@ -29,11 +28,11 @@ public class FishingCardScreenHandler extends ScreenHandler {
 
 
 
-    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCardPayload fishingCardPayload) {//todo move from cca to vanila component
+    public OldFishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCardPayload fishingCardPayload) {//todo move from cca to vanila component
         this(syncId, playerInventory, FishingCard.of(playerInventory.player));
     }
 
-    public FishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
+    public OldFishingCardScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
         super(FCScreenHandlers.FISHING_CARD_SCREEN, syncId);
         this.playerInventory = playerInventory;
         this.fishingCard = fishingCard;
