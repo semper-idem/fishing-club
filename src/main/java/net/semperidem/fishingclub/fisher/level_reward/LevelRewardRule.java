@@ -1,9 +1,8 @@
 package net.semperidem.fishingclub.fisher.level_reward;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.semperidem.fishingclub.fisher.level_reward.LevelReward.Amount;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,14 +59,14 @@ public class LevelRewardRule {
         addRule(create(0,MAX_LEVEL).withRewards(creditReward(new Amount(0, 10, 1))));
 
         //ITEMS
-        addRule(create(0, MAX_LEVEL, 5).withRewards(itemReward(FCItems.MESSAGE_IN_BOTTLE_ITEM.getDefaultStack())));
+        addRule(create(0, MAX_LEVEL, 5).withRewards(itemReward(Items.MESSAGE_IN_BOTTLE_ITEM.getDefaultStack())));
 
         //Fishing Rods //TODO ADD PARTS TO SUIT LEVEL
-        addRule(create(5, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack())));
-        addRule(create(50, 0, 0).withRewards(itemReward(FCItems.CORE_COPPER.getDefaultStack())));
+        addRule(create(5, 0, 0).withRewards(itemReward(Items.CORE_COPPER.getDefaultStack())));
+        addRule(create(50, 0, 0).withRewards(itemReward(Items.CORE_COPPER.getDefaultStack())));
 
         //Trophy //TODO ADD TROPHY,
-        addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(Items.DIAMOND))));
+        addRule(create(100, 0, 0).withRewards(itemReward(new ItemStack(net.minecraft.item.Items.DIAMOND))));
 
         //Lootbox
         addRule(create(0, MAX_LEVEL, 5).withRewards(illegalGoodsReward()));

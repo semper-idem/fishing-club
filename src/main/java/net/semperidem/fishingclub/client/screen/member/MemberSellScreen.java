@@ -10,7 +10,7 @@ import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.network.payload.SellFishPayload;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -173,7 +173,7 @@ public class MemberSellScreen extends MemberSubScreen{
         public int getTotalAvailable() {
             int total = 0;
             for(GridEntry entry : entries) {
-                    total += entry.itemStack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
             }
             return total;
         }
@@ -182,7 +182,7 @@ public class MemberSellScreen extends MemberSubScreen{
             int total = 0;
             for(GridEntry entry : entries) {
                 if (entry.isSelected) {
-                    total += entry.itemStack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
                 }
             }
             return total;

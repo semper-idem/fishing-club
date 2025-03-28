@@ -6,13 +6,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Items;
+import net.semperidem.fishingclub.registry.Tags;
 
 import java.util.Random;
 
@@ -36,8 +35,8 @@ public class TreasureReward {
 
     ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isIn(FCTags.ROD_CORE)) {
-            return FCItems.CORE_COPPER.getDefaultStack();
+        if (rewardStack.isIn(Tags.ROD_CORE)) {
+            return Items.CORE_COPPER.getDefaultStack();
         }
 
         if (rewardStack.isEnchantable()) {
@@ -55,7 +54,7 @@ public class TreasureReward {
             return rewardStack;
         }
 
-        if (item == FCItems.FISH_COIN_BUNDLE) {
+        if (item == Items.FISH_COIN_BUNDLE) {
            return FishCoinBundleItem.ofValue((int) (quality * (1 + MathHelper.clamp(0, 4, Math.abs(random.nextGaussian())))));
         }
         if (quality != 1) {

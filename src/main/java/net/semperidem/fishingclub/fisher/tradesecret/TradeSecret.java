@@ -13,8 +13,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.fisher.Card;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.util.Utils;
 import org.jetbrains.annotations.Nullable;
 
@@ -89,7 +89,7 @@ public class TradeSecret {
         return new Instance(this, level);
     }
 
-    public boolean isActive(FishingCard card) {
+    public boolean isActive(Card card) {
         return this.condition == null || condition.test(card.holder());
     }
 
@@ -176,7 +176,7 @@ public class TradeSecret {
             }
             ItemStack heldItem = player.getMainHandStack();
 
-            if (heldItem.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).quality() < 4) {
+            if (heldItem.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).quality() < 4) {
                 player.sendMessage(Text.of("Sacrifice must be made, high quality fish is required"));
                 return false;
             }

@@ -4,17 +4,16 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import net.semperidem.fishingclub.network.payload.SummonAcceptPayload;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Items;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -34,7 +33,7 @@ public class Commands {
 
     public static void registerUnlockSecrets() {
         rootCommand.then(literal("unlock_secrets").executes(context -> {
-            FishingCard.of(context.getSource().getPlayer()).unlockAllSecret();
+            Card.of(context.getSource().getPlayer()).unlockAllSecret();
             return 0;
         }));
     }
@@ -43,7 +42,7 @@ public class Commands {
         rootCommand.then(literal("link").then(argument("player", word())).executes(context -> {
             if (context.getSource().getPlayer() instanceof ServerPlayerEntity serverPlayerEntity) {
                 ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(getString(context, "player"));
-                FishingCard.of(serverPlayerEntity).linkTarget(target);
+                Card.of(serverPlayerEntity).linkTarget(target);
             }
             return 0;
         }));
@@ -51,9 +50,9 @@ public class Commands {
 
     public static void registerLevelUp(){
         rootCommand.then(literal("level_up").executes(context -> {
-            FishingCard fishingCard = FishingCard.of(context.getSource().getPlayer());
-            int xpForLevel = fishingCard.nextLevelXP() - fishingCard.getExp();
-            fishingCard.grantExperience(xpForLevel);
+            Card card = Card.of(context.getSource().getPlayer());
+            int xpForLevel = card.nextLevelXP() - card.getExp();
+            card.grantExperience(xpForLevel);
             return 0;
         }));
     }
@@ -67,7 +66,7 @@ public class Commands {
     }
     public static void registerGiveStarterRod(){
         rootCommand.then(literal("starter_rod").executes(context -> {
-            context.getSource().getPlayer().giveItemStack(FCItems.CORE_BAMBOO.getDefaultStack());
+            context.getSource().getPlayer().giveItemStack(Items.CORE_BAMBOO.getDefaultStack());
             return 0;
         }));
     }
@@ -79,15 +78,15 @@ public class Commands {
 
     public static void registerInfo(){
         rootCommand.then(literal("info").executes(context -> {
-            context.getSource().sendMessage(Text.literal(FishingCard.of(context.getSource().getPlayer()).toString()));
+            context.getSource().sendMessage(Text.literal(Card.of(context.getSource().getPlayer()).toString()));
             return 0;
         }));
     }
 
     public static void registerGoldFish() {
         rootCommand.then(literal("gold_fish").executes(context -> {
-            ItemStack goldFish = FCItems.GOLD_FISH.getDefaultStack();
-            goldFish.set(FCComponents.CAUGHT_BY, context.getSource().getPlayer().getUuid());
+            ItemStack goldFish = Items.GOLD_FISH.getDefaultStack();
+            goldFish.set(Components.CAUGHT_BY, context.getSource().getPlayer().getUuid());
             context.getSource().getPlayer().giveItemStack(goldFish);
             return 0;
         }));
@@ -95,7 +94,7 @@ public class Commands {
 
     public static void registerResetSpellCooldown(){
         rootCommand.then(literal("reset_cooldown").executes(context -> {
-            FishingCard.of(context.getSource().getPlayer()).resetCooldown();
+            Card.of(context.getSource().getPlayer()).resetCooldown();
             return 0;
         }));
     }
@@ -104,7 +103,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.of(target).addSkillPoints(amount);
+            Card.of(target).addSkillPoints(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to " + targetName + " skill points"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -116,7 +115,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.of(target).addCredit(amount);
+            Card.of(target).addCredit(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -128,7 +127,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            FishingCard.of(target).setCredit(amount);
+            Card.of(target).setCredit(amount);
             context.getSource().sendMessage(Text.literal("Set available credit of " + targetName + " to " + amount));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -156,7 +155,7 @@ public class Commands {
                         .then(argument("amount", integer()).executes(context -> addSkillPoints(context, context.getSource().getName())))
                 ).then(literal("level")
                         .then(argument("amount", integer()).executes(context -> {
-                            FishingCard.of(context.getSource().getPlayer()).setLevel(getInteger(context, "amount"));
+                            Card.of(context.getSource().getPlayer()).setLevel(getInteger(context, "amount"));
                             return 0;
                         }))
                 )

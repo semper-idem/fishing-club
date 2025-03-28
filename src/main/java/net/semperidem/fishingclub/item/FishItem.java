@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.item;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,14 +8,12 @@ import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.client.screen.hud.TradeSecretCastScreen;
+import net.semperidem.fishingclub.client.screen.hud.CastScreen;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,11 +34,11 @@ public class FishItem extends Item {
         if (!user.isSneaking()) {
             return super.use(world, user, hand);
         }
-        boolean canCast = user.getMainHandStack().getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).quality() >= 4;
+        boolean canCast = user.getMainHandStack().getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).quality() >= 4;
         if (!canCast) {
             return super.use(world, user, hand);
         }
-        List<TradeSecret.Instance> usableTradeSecrets = FishingCard.of(user)
+        List<TradeSecret.Instance> usableTradeSecrets = Card.of(user)
                 .tradeSecrets()
                 .stream()
                 .filter(tradeSecret -> tradeSecret.root().hasActive())
@@ -51,7 +48,7 @@ public class FishItem extends Item {
             return super.use(world, user, hand);
         }
         if (world.isClient) {
-            MinecraftClient.getInstance().setScreen(new TradeSecretCastScreen(usableTradeSecrets));
+            MinecraftClient.getInstance().setScreen(new CastScreen(usableTradeSecrets));
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }

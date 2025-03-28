@@ -2,7 +2,7 @@ package net.semperidem.fishingclub;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
-import net.semperidem.fishingclub.registry.FCRegistry;
+import net.semperidem.fishingclub.registry.Registry;
 import net.semperidem.fishingclub.util.Commands;
 import net.semperidem.fishingclub.util.ResourceUtil;
 
@@ -12,7 +12,7 @@ public class FishingClub implements ModInitializer {
     @Override
     public void onInitialize() {
         Commands.register();
-        FCRegistry.register();
+        Registry.register();
         ResourceUtil.loadMessageInBottle();
     }
 

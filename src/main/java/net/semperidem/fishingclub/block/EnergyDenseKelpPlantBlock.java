@@ -11,7 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 public class EnergyDenseKelpPlantBlock extends AbstractPlantBlock implements FluidFillable {
@@ -29,7 +29,7 @@ public class EnergyDenseKelpPlantBlock extends AbstractPlantBlock implements Flu
 
 	@Override
 	protected EnergyDenseKelpBlock getStem() {
-		return FCBlocks.ENERGY_DENSE_KELP;
+		return Blocks.ENERGY_DENSE_KELP;
 	}
 
 	@Override

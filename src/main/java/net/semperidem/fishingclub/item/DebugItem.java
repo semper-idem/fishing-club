@@ -7,7 +7,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.FCItems;
 
 public class DebugItem extends Item {
     private static int mode = 0;

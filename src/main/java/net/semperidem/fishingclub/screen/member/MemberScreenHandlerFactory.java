@@ -6,7 +6,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.network.payload.MemberPayload;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ public class MemberScreenHandlerFactory implements ExtendedScreenHandlerFactory<
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new MemberScreenHandler(syncId, inv, FishingCard.of(player));
+        return new MemberScreenHandler(syncId, inv, Card.of(player));
     }
 
     @Override

@@ -5,13 +5,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.*;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.level_reward.LevelRewardRule;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
@@ -36,7 +35,7 @@ public class ProgressionManager extends DataManager {
 
     private final HashMap<String, TradeSecret.Instance> knownTradeSecrets = new HashMap<>();
 
-    public ProgressionManager(FishingCard trackedFor) {
+    public ProgressionManager(Card trackedFor) {
         super(trackedFor);
     }
 
@@ -187,7 +186,7 @@ public class ProgressionManager extends DataManager {
                 .getOtherEntities(null, new Box(this.trackedFor.holder().getBlockPos()).expand(4))
                 .stream()
                 .filter(entity -> entity instanceof ServerPlayerEntity)
-                .map(entity -> FishingCard.of((PlayerEntity) entity))
+                .map(entity -> Card.of((PlayerEntity) entity))
                 .filter(card -> card.knowsTradeSecret(TradeSecrets.WATCH_AND_LEARN))
                 .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN) * gainedXP));
     }

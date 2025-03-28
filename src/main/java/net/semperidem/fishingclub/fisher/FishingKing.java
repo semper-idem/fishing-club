@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.registry.StatusEffects;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -127,14 +127,14 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
         if (claimedBy.getUuid().equals(this.uuid)) {
             return;
         }
-        FishingCard fishingCard = FishingCard.of(claimedBy);
-        int availableCredit = fishingCard.getCredit();
+        Card card = Card.of(claimedBy);
+        int availableCredit = card.getCredit();
         if (availableCredit < this.price || amount < this.price) {
             return;
         }
 
 
-        fishingCard.addCredit(-amount);
+        card.addCredit(-amount);
         int currentReign = (int) (this.getCurrentReign() / 1200);
         this.scoreboard.getOrCreateScore(ScoreHolder.fromName(this.name), this.objective).incrementScore(currentReign);//1 for each minute
         this.price = (int)(amount * PRICE_MULTIPLIER);
@@ -170,10 +170,10 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .forEach(otherPlayer -> {
-                    applyStatusEffect(otherPlayer, FCStatusEffects.EXP_BUFF);
-                    applyStatusEffect(otherPlayer, FCStatusEffects.QUALITY_BUFF);
-                    applyStatusEffect(otherPlayer, FCStatusEffects.BOBBER_BUFF);
-                    applyStatusEffect(otherPlayer, FCStatusEffects.FREQUENCY_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.EXP_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.QUALITY_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.BOBBER_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.FREQUENCY_BUFF);
                 });
     }
 

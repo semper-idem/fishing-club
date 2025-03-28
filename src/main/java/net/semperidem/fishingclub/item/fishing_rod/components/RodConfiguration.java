@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
 import java.util.Optional;
@@ -75,7 +75,7 @@ public record RodConfiguration(
     public static PacketCodec<RegistryByteBuf, RodConfiguration> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
     public static RodConfiguration of(ItemStack fishingRod) {
-        return fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
+        return fishingRod.getOrDefault(Components.ROD_CONFIGURATION, EMPTY);
     }
 
     public RodConfiguration unEquip(PartType partType) {
@@ -124,17 +124,17 @@ public record RodConfiguration(
     }
 
     public static void dropContent(PlayerEntity holder, ItemStack core) {
-        RodConfiguration configuration = core.get(FCComponents.ROD_CONFIGURATION);
+        RodConfiguration configuration = core.get(Components.ROD_CONFIGURATION);
         if (configuration == null) {
             return;
         }
         configuration.inventory(holder).dropContent();
-        core.set(FCComponents.ROD_CONFIGURATION, EMPTY);
+        core.set(Components.ROD_CONFIGURATION, EMPTY);
     }
 
     public static void destroyPart(ItemStack core, PartType partType) {
-        RodConfiguration configuration = core.getOrDefault(FCComponents.ROD_CONFIGURATION, EMPTY);
-        core.set(FCComponents.ROD_CONFIGURATION, configuration.unEquip(partType));
+        RodConfiguration configuration = core.getOrDefault(Components.ROD_CONFIGURATION, EMPTY);
+        core.set(Components.ROD_CONFIGURATION, configuration.unEquip(partType));
     }
 
     public RodInventory inventory(PlayerEntity playerEntity) {
@@ -166,7 +166,7 @@ public record RodConfiguration(
         }
         ItemStack baitStack = this.bait.get();
         baitStack.damage(amount, player, EquipmentSlot.MAINHAND);
-        fishingRod.set(FCComponents.ROD_CONFIGURATION, this.equipBait(baitStack));
+        fishingRod.set(Components.ROD_CONFIGURATION, this.equipBait(baitStack));
     }
 
     private ItemStack rodPart(PartType partType) {

@@ -19,7 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 import org.apache.commons.lang3.math.Fraction;
 
 import java.util.List;
@@ -125,7 +125,7 @@ public class FishingNetItem extends BundleItem {
     }
 
     public void setContent(ItemStack stack, FishingNetContentComponent bundleContentsComponent) {
-        stack.set(FCComponents.FISHING_NET_CONTENT, bundleContentsComponent);
+        stack.set(Components.FISHING_NET_CONTENT, bundleContentsComponent);
     }
 
     @Override

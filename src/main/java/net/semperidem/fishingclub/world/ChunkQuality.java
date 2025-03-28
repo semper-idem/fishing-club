@@ -1,20 +1,18 @@
 package net.semperidem.fishingclub.world;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.ladysnake.cca.api.v3.chunk.ChunkComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.chunk.ChunkComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -206,28 +204,28 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 
 	public enum FloraInfluence {
 		KELP(0.1,
-			Blocks.KELP_PLANT,
-			FCBlocks.NUTRITIOUS_KELP_PLANT,
-			FCBlocks.ENERGY_DENSE_KELP_PLANT
+			net.minecraft.block.Blocks.KELP_PLANT,
+			Blocks.NUTRITIOUS_KELP_PLANT,
+			Blocks.ENERGY_DENSE_KELP_PLANT
 		),
 		SEA_GRASS(
 			0.1,
-			Blocks.SEAGRASS,
-			Blocks.TALL_SEAGRASS
+			net.minecraft.block.Blocks.SEAGRASS,
+			net.minecraft.block.Blocks.TALL_SEAGRASS
 		),
 
 		PICKLES(
 			0.2,
-			Blocks.SEAGRASS,
-			Blocks.TALL_SEAGRASS
+			net.minecraft.block.Blocks.SEAGRASS,
+			net.minecraft.block.Blocks.TALL_SEAGRASS
 		),
 
 		CORAL(
 			0.2,
-			Blocks.BRAIN_CORAL,
-			Blocks.TUBE_CORAL,
-			Blocks.FIRE_CORAL,
-			Blocks.BUBBLE_CORAL
+			net.minecraft.block.Blocks.BRAIN_CORAL,
+			net.minecraft.block.Blocks.TUBE_CORAL,
+			net.minecraft.block.Blocks.FIRE_CORAL,
+			net.minecraft.block.Blocks.BUBBLE_CORAL
 			);
 
 		final HashSet<Block> blocks = new HashSet<>();

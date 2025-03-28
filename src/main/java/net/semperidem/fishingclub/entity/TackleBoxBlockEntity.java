@@ -16,7 +16,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.IntStream;
@@ -27,7 +27,7 @@ public class TackleBoxBlockEntity extends LootableContainerBlockEntity implement
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(INVENTORY_SIZE, ItemStack.EMPTY);
 
     public TackleBoxBlockEntity(BlockPos pos, BlockState state) {
-        super(FCBlocks.TACKLE_BOX, pos, state);
+        super(Blocks.TACKLE_BOX, pos, state);
 
     }
 

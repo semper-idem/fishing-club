@@ -12,7 +12,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-import net.semperidem.fishingclub.registry.FCItems;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 

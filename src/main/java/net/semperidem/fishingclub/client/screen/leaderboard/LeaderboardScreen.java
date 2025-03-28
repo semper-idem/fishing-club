@@ -9,7 +9,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.leaderboard.Leaderboard;
-import net.semperidem.fishingclub.network.payload.FishingCardPayload;
+import net.semperidem.fishingclub.network.payload.CardPayload;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -82,7 +82,7 @@ public class LeaderboardScreen  extends Screen {
 
         //currentLeaderboard = handler.getCurrentLeaderboard();
         exitButton = new MemberButton(exitButtonX,exitButtonY,16,16, Text.empty(), button -> {
-            ClientPlayNetworking.send(new FishingCardPayload());
+            ClientPlayNetworking.send(new CardPayload());
         });
         exitButton.setTexture(MemberButton.BUTTON_EXIT_TEXTURE);
         //nextButton = new MemberButton(nextButtonX,nextButtonY,24,20,Text.literal(">>"), button -> currentLeaderboard = handler.getNextLeaderboard());

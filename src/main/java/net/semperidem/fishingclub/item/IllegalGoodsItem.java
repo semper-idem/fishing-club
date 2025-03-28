@@ -5,7 +5,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -17,10 +16,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCEnchantments;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Enchantments;
+import net.semperidem.fishingclub.registry.Items;
+import net.semperidem.fishingclub.registry.Tags;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,71 +33,71 @@ public class IllegalGoodsItem extends Item {
         1,
         new ArrayList<>(
             List.of(
-                Items.LEATHER_CHESTPLATE,
-                Items.LEATHER_BOOTS,
-                Items.LEATHER_HELMET,
-                Items.LEATHER_LEGGINGS,
-                Items.STONE_PICKAXE,
-                Items.STONE_SWORD,
-                Items.STONE_SHOVEL,
-                Items.STONE_AXE,
-                Items.STONE_HOE)));
+                net.minecraft.item.Items.LEATHER_CHESTPLATE,
+                net.minecraft.item.Items.LEATHER_BOOTS,
+                net.minecraft.item.Items.LEATHER_HELMET,
+                net.minecraft.item.Items.LEATHER_LEGGINGS,
+                net.minecraft.item.Items.STONE_PICKAXE,
+                net.minecraft.item.Items.STONE_SWORD,
+                net.minecraft.item.Items.STONE_SHOVEL,
+                net.minecraft.item.Items.STONE_AXE,
+                net.minecraft.item.Items.STONE_HOE)));
 
     TIER_TO_LOOT.put(
         2,
         new ArrayList<>(
             List.of(
-                Items.GOLDEN_CHESTPLATE,
-                Items.GOLDEN_BOOTS,
-                Items.GOLDEN_HELMET,
-                Items.GOLDEN_LEGGINGS,
-                Items.GOLDEN_PICKAXE,
-                Items.GOLDEN_SWORD,
-                Items.GOLDEN_SHOVEL,
-                Items.GOLDEN_AXE,
-                Items.GOLDEN_HOE)));
+                net.minecraft.item.Items.GOLDEN_CHESTPLATE,
+                net.minecraft.item.Items.GOLDEN_BOOTS,
+                net.minecraft.item.Items.GOLDEN_HELMET,
+                net.minecraft.item.Items.GOLDEN_LEGGINGS,
+                net.minecraft.item.Items.GOLDEN_PICKAXE,
+                net.minecraft.item.Items.GOLDEN_SWORD,
+                net.minecraft.item.Items.GOLDEN_SHOVEL,
+                net.minecraft.item.Items.GOLDEN_AXE,
+                net.minecraft.item.Items.GOLDEN_HOE)));
 
     TIER_TO_LOOT.put(
         3,
         new ArrayList<>(
             List.of(
-                Items.CHAINMAIL_CHESTPLATE,
-                Items.CHAINMAIL_BOOTS,
-                Items.CHAINMAIL_HELMET,
-                Items.CHAINMAIL_LEGGINGS,
-                Items.BOW,
-                Items.CROSSBOW,
-                Items.SHIELD,
-                Items.FISHING_ROD // silly
+                net.minecraft.item.Items.CHAINMAIL_CHESTPLATE,
+                net.minecraft.item.Items.CHAINMAIL_BOOTS,
+                net.minecraft.item.Items.CHAINMAIL_HELMET,
+                net.minecraft.item.Items.CHAINMAIL_LEGGINGS,
+                net.minecraft.item.Items.BOW,
+                net.minecraft.item.Items.CROSSBOW,
+                net.minecraft.item.Items.SHIELD,
+                net.minecraft.item.Items.FISHING_ROD // silly
                 )));
 
     TIER_TO_LOOT.put(
         4,
         new ArrayList<>(
             List.of(
-                Items.IRON_CHESTPLATE,
-                Items.IRON_BOOTS,
-                Items.IRON_HELMET,
-                Items.IRON_LEGGINGS,
-                Items.IRON_PICKAXE,
-                Items.IRON_SWORD,
-                Items.IRON_SHOVEL,
-                Items.IRON_AXE,
-                Items.IRON_HOE)));
+                net.minecraft.item.Items.IRON_CHESTPLATE,
+                net.minecraft.item.Items.IRON_BOOTS,
+                net.minecraft.item.Items.IRON_HELMET,
+                net.minecraft.item.Items.IRON_LEGGINGS,
+                net.minecraft.item.Items.IRON_PICKAXE,
+                net.minecraft.item.Items.IRON_SWORD,
+                net.minecraft.item.Items.IRON_SHOVEL,
+                net.minecraft.item.Items.IRON_AXE,
+                net.minecraft.item.Items.IRON_HOE)));
 
     TIER_TO_LOOT.put(
         5,
         new ArrayList<>(
             List.of(
-                Items.DIAMOND_CHESTPLATE,
-                Items.DIAMOND_BOOTS,
-                Items.DIAMOND_HELMET,
-                Items.DIAMOND_LEGGINGS,
-                Items.DIAMOND_PICKAXE,
-                Items.DIAMOND_SWORD,
-                Items.DIAMOND_SHOVEL,
-                Items.DIAMOND_AXE,
-                Items.DIAMOND_HOE)));
+                net.minecraft.item.Items.DIAMOND_CHESTPLATE,
+                net.minecraft.item.Items.DIAMOND_BOOTS,
+                net.minecraft.item.Items.DIAMOND_HELMET,
+                net.minecraft.item.Items.DIAMOND_LEGGINGS,
+                net.minecraft.item.Items.DIAMOND_PICKAXE,
+                net.minecraft.item.Items.DIAMOND_SWORD,
+                net.minecraft.item.Items.DIAMOND_SHOVEL,
+                net.minecraft.item.Items.DIAMOND_AXE,
+                net.minecraft.item.Items.DIAMOND_HOE)));
   }
 
   public IllegalGoodsItem(Settings settings) {
@@ -110,8 +109,8 @@ public class IllegalGoodsItem extends Item {
   }
 
   public static ItemStack getStackWithTier(int tier) {
-    ItemStack defaultStack = new ItemStack(FCItems.ILLEGAL_GOODS);
-    defaultStack.set(FCComponents.TIER, tier);
+    ItemStack defaultStack = new ItemStack(Items.ILLEGAL_GOODS);
+    defaultStack.set(Components.TIER, tier);
     return defaultStack;
   }
 
@@ -122,7 +121,7 @@ public class IllegalGoodsItem extends Item {
       user.swingHand(hand);
       return TypedActionResult.consume(itemStack);
     }
-    int tier = itemStack.getOrDefault(FCComponents.TIER, 1);
+    int tier = itemStack.getOrDefault(Components.TIER, 1);
 
     if (!user.getAbilities().creativeMode) {
       itemStack.decrement(1);
@@ -194,12 +193,12 @@ public class IllegalGoodsItem extends Item {
     EnchantmentHelper.apply(
         cursedLootStack,
         components ->
-            components.remove(enchantment -> enchantment.isIn(FCTags.ENCHANTMENT_REPAIR_TAG)));
+            components.remove(enchantment -> enchantment.isIn(Tags.ENCHANTMENT_REPAIR_TAG)));
 
     world
         .getRegistryManager()
         .get(RegistryKeys.ENCHANTMENT)
-        .getEntry(FCEnchantments.CURSE_OF_MORTALITY.getValue())
+        .getEntry(Enchantments.CURSE_OF_MORTALITY.getValue())
         .ifPresent(curseOfMortality -> cursedLootStack.addEnchantment(curseOfMortality, 1));
     return cursedLootStack;
   }

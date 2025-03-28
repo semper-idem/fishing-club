@@ -5,10 +5,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.network.payload.CoinFlipPayload;
 import net.semperidem.fishingclub.network.payload.MemberPayload;
-import net.semperidem.fishingclub.registry.FCScreenHandlers;
+import net.semperidem.fishingclub.registry.ScreenHandlers;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,23 +18,23 @@ public class MemberScreenHandler extends ScreenHandler {
     final static int SLOT_COUNT =  ROW_COUNT *  9;
 
     private PlayerEntity player;
-    FishingCard fishingCard;
+    Card card;
     private final ArrayList<String> coinFlipHistory = new ArrayList<>();
     private String lastCoinFlipSide = "";
 
     String capeHolder = "";
     int minCapePrice = 0;
 
-    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, FishingCard fishingCard) {
-        super(FCScreenHandlers.MEMBER_SCREEN, syncId);
+    public MemberScreenHandler(int syncId, PlayerInventory playerInventory, Card card) {
+        super(ScreenHandlers.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fishingCard = fishingCard;
+        this.card = card;
     }
 
     public MemberScreenHandler(int syncId, PlayerInventory playerInventory, MemberPayload payload) {
-        super(FCScreenHandlers.MEMBER_SCREEN, syncId);
+        super(ScreenHandlers.MEMBER_SCREEN, syncId);
         this.player = playerInventory.player;
-        this.fishingCard = FishingCard.of(player);
+        this.card = Card.of(player);
     }
 
     public int getMoonPhaseDiscount() {
@@ -61,8 +61,8 @@ public class MemberScreenHandler extends ScreenHandler {
     }
 
 
-    public FishingCard getCard() {
-        return fishingCard;
+    public Card getCard() {
+        return card;
     }
 
 

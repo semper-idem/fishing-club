@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -27,8 +27,8 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     public final Leaderboard<SpecimenData> worstWeight;
     public final Leaderboard<SpecimenData> bestLength;
     public final Leaderboard<SpecimenData> worstLength;
-    public final Leaderboard<FishingCard> highestCredit;
-    public final Leaderboard<FishingCard> highestLevel;
+    public final Leaderboard<Card> highestCredit;
+    public final Leaderboard<Card> highestLevel;
 
     public LeaderboardTracker(Scoreboard scoreboard, MinecraftServer server) {
         this();
@@ -72,8 +72,8 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
         worstLength.consume(caughtBy, fish);
     }
 
-    public void record(PlayerEntity caughtBy, FishingCard fishingCard, Leaderboard<FishingCard> leaderboard) {
-        leaderboard.consume(caughtBy, fishingCard);
+    public void record(PlayerEntity caughtBy, Card card, Leaderboard<Card> leaderboard) {
+        leaderboard.consume(caughtBy, card);
     }
 
     public ArrayList<Leaderboard<?>> getLeaderboards() {

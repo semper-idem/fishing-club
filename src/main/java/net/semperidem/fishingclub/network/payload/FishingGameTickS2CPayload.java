@@ -10,7 +10,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
+import net.semperidem.fishingclub.client.screen.game.FishingScreen;
 
 public record FishingGameTickS2CPayload(
         float bobberPositionX,
@@ -49,8 +49,8 @@ public record FishingGameTickS2CPayload(
         return ID;
     }
     public static void consumePayload(FishingGameTickS2CPayload payload, ClientPlayNetworking.Context context) {
-            if (MinecraftClient.getInstance().currentScreen instanceof FishingGameScreen fishingGameScreen) {
-                fishingGameScreen.update(payload);
+            if (MinecraftClient.getInstance().currentScreen instanceof FishingScreen fishingScreen) {
+                fishingScreen.update(payload);
             }
     }
 }

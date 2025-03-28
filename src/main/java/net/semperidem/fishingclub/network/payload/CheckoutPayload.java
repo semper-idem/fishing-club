@@ -1,16 +1,15 @@
 package net.semperidem.fishingclub.network.payload;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.shop.OrderItem;
 import net.semperidem.fishingclub.fisher.shop.StockEntry;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.Items;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
                 continue;
             }
             double itemPrice = 0;
-            if (item.content().get().isOf(Items.FIREWORK_ROCKET) || item.content().get().isOf(FCItems.ILLEGAL_GOODS)) {
+            if (item.content().get().isOf(net.minecraft.item.Items.FIREWORK_ROCKET) || item.content().get().isOf(Items.ILLEGAL_GOODS)) {
                 itemPrice = item.price().orElse(100);
             } else {
                 itemPrice = StockEntry.getPriceFor(item.content().get(), item.quantity());
@@ -42,7 +41,7 @@ public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
             }
             total += (int) itemPrice;
         }
-        FishingCard card = FishingCard.of(context.player());
+        Card card = Card.of(context.player());
         if (card.getCredit() < total) {
             return;
         }

@@ -21,9 +21,9 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.world.FishingServerWorld;
+import net.semperidem.fishingclub.world.DerekServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,7 +35,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
-public abstract class ServerWorldMixin extends World implements FishingServerWorld{
+public abstract class ServerWorldMixin extends World implements DerekServerWorld {
     @Unique
     private FishermanEntity derek;
 
@@ -67,7 +67,7 @@ public abstract class ServerWorldMixin extends World implements FishingServerWor
             return;
         }
 
-        if (!FishingCard.of(causingEntity).knowsTradeSecret(TradeSecrets.BOMB_FISHING)) {
+        if (!Card.of(causingEntity).knowsTradeSecret(TradeSecrets.BOMB_FISHING)) {
             return;
         }
 

@@ -20,7 +20,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.registry.StatusEffects;
 
 import java.util.function.BiFunction;
 
@@ -112,7 +112,7 @@ public class DuckweedBlock extends FlowerbedBlock {
 		if (!(entity instanceof PlayerEntity playerEntity)) {
 			return;
 		}
-		playerEntity.addStatusEffect(new StatusEffectInstance(FCStatusEffects.MOISTURIZED, 600 * flowerCount));
+		playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.MOISTURIZED, 600 * flowerCount));
 	}
 
 	public static boolean growsInBiome(BiomeSelectionContext context) {

@@ -9,8 +9,8 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.fisher.Card;
+import net.semperidem.fishingclub.registry.Components;
 
 public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
     public static final CustomPayload.Id<SellFishPayload> ID = new CustomPayload.Id<>(FishingClub.identifier("c2s_sell_fish"));
@@ -30,10 +30,10 @@ public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
 
         int totalValue = 0;
         for(ItemStack fishStack : payload.fish()) {
-            totalValue += fishStack.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT).value();
+            totalValue += fishStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
             fishStack.setCount(0);
         }
-        FishingCard fishingCard = FishingCard.of(context.player());
-        fishingCard.addCredit(totalValue);
+        Card card = Card.of(context.player());
+        card.addCredit(totalValue);
     }
 }

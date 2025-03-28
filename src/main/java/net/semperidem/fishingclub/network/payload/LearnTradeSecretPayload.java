@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -18,6 +18,6 @@ public record LearnTradeSecretPayload(String tradeSecretName) implements CustomP
         return ID;
     }
     public static void consumePayload(LearnTradeSecretPayload payload, ServerPlayNetworking.Context context) {
-        FishingCard.of(context.player()).learnTradeSecret(payload.tradeSecretName);
+        Card.of(context.player()).learnTradeSecret(payload.tradeSecretName);
     }
 }

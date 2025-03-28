@@ -1,12 +1,11 @@
 package net.semperidem.fishingclub.game;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.MovementPatternInstance;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.registry.StatusEffects;
 import net.semperidem.fishingclub.status_effects.DecreaseFishSpeedStatusEffect;
 
 import static net.semperidem.fishingclub.util.MathUtil.quadraticBezier;
@@ -139,7 +138,7 @@ public class FishController {
     public void calculateSpeed() {
         float staminaPercent = getStaminaPercentage();
         speed = baseSpeed + 0.5f * staminaPercent;
-        StatusEffectInstance sei = this.parent.player.getStatusEffect(FCStatusEffects.SLOW_FISH_BUFF);
+        StatusEffectInstance sei = this.parent.player.getStatusEffect(StatusEffects.SLOW_FISH_BUFF);
         if (sei != null) {
             speed *= 1 - ((sei.getAmplifier() + 1) * DecreaseFishSpeedStatusEffect.SLOW_AMOUNT);
         }

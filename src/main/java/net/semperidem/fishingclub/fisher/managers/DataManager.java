@@ -1,12 +1,12 @@
 package net.semperidem.fishingclub.fisher.managers;
 
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
-import static net.semperidem.fishingclub.fisher.FishingCard.FISHING_CARD;
+import static net.semperidem.fishingclub.fisher.Card.CARD;
 
 public abstract class DataManager implements NbtData{
-    FishingCard trackedFor;
-    public DataManager(FishingCard trackedFor) {
+    Card trackedFor;
+    public DataManager(Card trackedFor) {
         this.trackedFor = trackedFor;
     }
 
@@ -14,6 +14,6 @@ public abstract class DataManager implements NbtData{
         if (trackedFor.isClient()) {
             return;
         }
-        FISHING_CARD.sync(trackedFor.holder(), ((buf, recipient) -> trackedFor.writeSyncPacket(buf, recipient, this)));
+        CARD.sync(trackedFor.holder(), ((buf, recipient) -> trackedFor.writeSyncPacket(buf, recipient, this)));
     }
 }

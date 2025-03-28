@@ -6,7 +6,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 
 import java.awt.*;
@@ -20,10 +20,10 @@ public class PerkButtonWidget extends ButtonWidget {
 
     public boolean isSelected;
     TradeSecret tradeSecret;
-    FishingCard fishingCard;
-    public PerkButtonWidget(int x, int y, FishingCard fishingCard, TradeSecret tradeSecret, OldFishingCardScreen parent) {
+    Card card;
+    public PerkButtonWidget(int x, int y, Card card, TradeSecret tradeSecret, OldFishingCardScreen parent) {
         super(x, y, ICON_SIZE, ICON_SIZE, Text.empty(), button -> parent.setPerk((PerkButtonWidget) button, tradeSecret), Supplier::get);
-        this.fishingCard = fishingCard;
+        this.card = card;
         this.tradeSecret = tradeSecret;
         this.isSelected = false;
     }
@@ -49,9 +49,9 @@ public class PerkButtonWidget extends ButtonWidget {
     }
 
     private void renderBackground(DrawContext context){
-        if (!fishingCard.hasRequiredPerk(tradeSecret)) {
+        if (!card.hasRequiredPerk(tradeSecret)) {
             RenderSystem.setShaderColor(0.6f,0.6f,0.6f,0.6f);
-        } else if (fishingCard.knowsTradeSecret(tradeSecret)) {
+        } else if (card.knowsTradeSecret(tradeSecret)) {
             RenderSystem.setShaderColor(0.5f,1,0.5f,1);
         }
         context.drawTexture(SKILL_ICON, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
@@ -61,7 +61,7 @@ public class PerkButtonWidget extends ButtonWidget {
        // if (tradeSecret.getRequiredSecrets() == null) {
          //   return;
         //}
-        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, fishingCard.knowsTradeSecret(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
+        context.fill(getX(), getY() + 9, getX() - 6, getY() + 11, card.knowsTradeSecret(tradeSecret) ? Color.GREEN.getRGB() : Color.WHITE.getRGB());
     }
 
     private void renderIcon(DrawContext context){

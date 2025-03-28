@@ -8,17 +8,15 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
-import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.util.ResourceUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class HistoryManager extends DataManager {
     private static final long DAY_LENGTH = 24000;
@@ -32,7 +30,7 @@ public class HistoryManager extends DataManager {
     private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
     private final HashSet<Integer> heardMessageIndexSet = new HashSet<>();
 
-    public HistoryManager(FishingCard trackedFor) {
+    public HistoryManager(Card trackedFor) {
         super(trackedFor);
     }
 

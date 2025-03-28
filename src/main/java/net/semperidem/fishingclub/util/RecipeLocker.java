@@ -4,17 +4,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static net.semperidem.fishingclub.registry.FCItems.*;
+import static net.semperidem.fishingclub.registry.Items.*;
 
 public class RecipeLocker {
     private static final HashMap<Item, Integer> ITEM_TO_UNLOCK_LEVEL = new HashMap<>();
@@ -62,7 +60,7 @@ public class RecipeLocker {
         if (!ITEM_TO_UNLOCK_LEVEL.containsKey(item)) {
             return true;
         }
-        return FishingCard.of(player).getLevel() > ITEM_TO_UNLOCK_LEVEL.get(item);
+        return Card.of(player).getLevel() > ITEM_TO_UNLOCK_LEVEL.get(item);
     }
 
 

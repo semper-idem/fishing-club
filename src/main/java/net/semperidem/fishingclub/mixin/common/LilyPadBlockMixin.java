@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -112,7 +112,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 			return ItemActionResult.SUCCESS;
 		}
 
-		if (!world.getBlockState(pos.down()).isOf(Blocks.WATER)) {
+		if (!world.getBlockState(pos.down()).isOf(net.minecraft.block.Blocks.WATER)) {
 			return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
 		}
 
@@ -121,7 +121,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 		}
 
 		world.setBlockState(pos, blockItem.getBlock().getDefaultState());
-		world.setBlockState(pos.down(), FCBlocks.WATERLOGGED_LILY_PAD_BLOCK.getDefaultState().with(FLOWERING, state.get(FLOWERING)));
+		world.setBlockState(pos.down(), Blocks.WATERLOGGED_LILY_PAD_BLOCK.getDefaultState().with(FLOWERING, state.get(FLOWERING)));
 
 		return ItemActionResult.SUCCESS;
 	}

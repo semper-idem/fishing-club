@@ -1,16 +1,13 @@
 package net.semperidem.fishingclub.game;
 
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.game.treasure.Reward;
 import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
-import net.semperidem.fishingclub.registry.FCEnchantments;
-import net.semperidem.fishingclub.registry.FCKeybindings;
+import net.semperidem.fishingclub.registry.Enchantments;
 
 import java.util.ArrayList;
 
@@ -36,7 +33,7 @@ public class TreasureGameController {
 
     public TreasureGameController(FishingGameController parent) {
         this.parent = parent;
-        this.treasureReward = Rewards.roll(parent.fishingCard, parent.rodConfiguration, FCEnchantments.getEnchantmentLevel(parent.player, parent.player.getEquippedStack(EquipmentSlot.MAINHAND), Enchantments.LUCK_OF_THE_SEA));
+        this.treasureReward = Rewards.roll(parent.card, parent.rodConfiguration, Enchantments.getEnchantmentLevel(parent.player, parent.player.getEquippedStack(EquipmentSlot.MAINHAND), net.minecraft.enchantment.Enchantments.LUCK_OF_THE_SEA));
         this.decay = 0.005f + 0.002f * parent.hookedFish.quality();
     }
 

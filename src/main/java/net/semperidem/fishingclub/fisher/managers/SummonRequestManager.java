@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.fisher.managers;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ public class SummonRequestManager extends DataManager {
     public String targetUUID = "";
     public long requestTick = 0L;
 
-    public SummonRequestManager(FishingCard requestFor){
+    public SummonRequestManager(Card requestFor){
         super(requestFor);
     }
 

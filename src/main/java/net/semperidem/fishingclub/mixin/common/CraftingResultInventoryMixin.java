@@ -6,7 +6,7 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Tags;
 import net.semperidem.fishingclub.util.RecipeLocker;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ public class CraftingResultInventoryMixin implements RecipeUnlocker {
     @Override
     public boolean shouldCraftRecipe(World world, ServerPlayerEntity player, RecipeEntry<?> recipe) {
         ItemStack recipeResult = recipe.value().getResult(player.getRegistryManager());
-        if (!recipeResult.isIn(FCTags.BAIT)) {
+        if (!recipeResult.isIn(Tags.BAIT)) {
             return RecipeUnlocker.super.shouldCraftRecipe(world, player, recipe);
         }
         return RecipeLocker.canCraft(player, recipeResult.getItem());

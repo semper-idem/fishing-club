@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.entity;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -14,7 +13,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -35,8 +33,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
-import net.semperidem.fishingclub.world.FishingServerWorld;
-import net.semperidem.fishingclub.registry.FCEntityTypes;
+import net.semperidem.fishingclub.world.DerekServerWorld;
+import net.semperidem.fishingclub.registry.EntityTypes;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.EffectUtils;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +62,7 @@ public class FishermanEntity extends PassiveEntity {
         this.despawnTimer = DESPAWN_TIME;
     }
     public FishermanEntity(World world) {
-        this(FCEntityTypes.DEREK_ENTITY, world);
+        this(EntityTypes.DEREK_ENTITY, world);
     }
 
     public int getHeadRollingTimeLeft() {
@@ -103,7 +101,7 @@ public class FishermanEntity extends PassiveEntity {
         if (this.boat != null) {
             return;
         }
-        this.boat = new CustomBoatEntity(FCEntityTypes.BOAT_ENTITY, this.getWorld());
+        this.boat = new CustomBoatEntity(EntityTypes.BOAT_ENTITY, this.getWorld());
         this.getWorld().spawnEntity(boat);
         this.boat.startRiding(this, true);
     }
@@ -230,7 +228,7 @@ public class FishermanEntity extends PassiveEntity {
         tickBuoyancy();
 
         super.tick();
-        if (!(this.getWorld() instanceof FishingServerWorld fishingWorld)) {
+        if (!(this.getWorld() instanceof DerekServerWorld fishingWorld)) {
             return;
         }
 
@@ -312,7 +310,7 @@ public class FishermanEntity extends PassiveEntity {
 
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (this.getWorld() instanceof FishingServerWorld serverWorld){
+        if (this.getWorld() instanceof DerekServerWorld serverWorld){
             serverWorld.setDerek(this);
         }
     }
@@ -342,7 +340,7 @@ public class FishermanEntity extends PassiveEntity {
 
     //todo make unsummonable(teleportable if talked to someone <60s ago)
     public static void summonDerek(Vec3d pos, ServerWorld serverWorld, ItemStack itemStack, UUID uuid) {
-        if (!(serverWorld instanceof  FishingServerWorld derekWorld)) {
+        if (!(serverWorld instanceof  DerekServerWorld derekWorld)) {
             return;
         }
         FishermanEntity derek = derekWorld.getDerek(itemStack, uuid);

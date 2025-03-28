@@ -10,7 +10,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.KelpFeature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,13 +39,13 @@ public class KelpFeatureMixin {
 		RegistryEntry<Biome> biome = context.getWorld().getBiome(context.getOrigin());
 		biome.getKey().ifPresent(biomeKey -> {
 			if (biomeKey.toString().contains("warm") && this.rarity < 0.15f) {
-				kelp.set(FCBlocks.NUTRITIOUS_KELP.getDefaultState());
-				plant.set(FCBlocks.NUTRITIOUS_KELP_PLANT.getDefaultState());
+				kelp.set(Blocks.NUTRITIOUS_KELP.getDefaultState());
+				plant.set(Blocks.NUTRITIOUS_KELP_PLANT.getDefaultState());
 			}
 		});
 		if (biome.isIn(BiomeTags.IS_DEEP_OCEAN) && this.rarity < 0.05f) {
-			kelp.set(FCBlocks.ENERGY_DENSE_KELP.getDefaultState());
-			plant.set(FCBlocks.ENERGY_DENSE_KELP_PLANT.getDefaultState());
+			kelp.set(Blocks.ENERGY_DENSE_KELP.getDefaultState());
+			plant.set(Blocks.ENERGY_DENSE_KELP_PLANT.getDefaultState());
 		}
 	}
 }

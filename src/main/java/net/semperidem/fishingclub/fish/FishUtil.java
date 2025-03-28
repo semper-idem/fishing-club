@@ -1,46 +1,37 @@
 package net.semperidem.fishingclub.fish;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.FishingNetItem;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCEnchantments;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Enchantments;
+import net.semperidem.fishingclub.registry.Items;
+import net.semperidem.fishingclub.registry.Tags;
 import net.semperidem.fishingclub.world.ChunkQuality;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MAX_QUALITY;
-import static net.semperidem.fishingclub.fish.specimen.SpecimenData.MIN_QUALITY;
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
 
     public static ItemStack getStackFromFish(SpecimenData fish){
-        return getStackFromFish(fish, FishingCard.DEFAULT).getFirst();
+        return getStackFromFish(fish, Card.DEFAULT).getFirst();
     }
 
-    public static List<ItemStack> getStackFromFish(SpecimenData fish, FishingCard card){
+    public static List<ItemStack> getStackFromFish(SpecimenData fish, Card card){
         ArrayList<ItemStack> caughtFishStacks = new ArrayList<>();
         int count = getRewardMultiplier(card);
         ItemStack fishReward = fish.asItemStack();
@@ -65,18 +56,18 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
                 return stackInHotbar;
             }
         }
-        return FishingCard.of(player).getFishingNet(fishStack);
+        return Card.of(player).getFishingNet(fishStack);
     }
 
     public static ItemStack fishCaught(PlayerEntity player, SpecimenData fish){
-        FishingCard fishingCard = FishingCard.of(player);
-        fishingCard.fishCaught(fish);
-        List<ItemStack> fishCaughtStacks = getStackFromFish(fish, fishingCard);
+        Card card = Card.of(player);
+        card.fishCaught(fish);
+        List<ItemStack> fishCaughtStacks = getStackFromFish(fish, card);
         ItemStack fishStack = fishCaughtStacks.getFirst().copy();
         for(ItemStack fishCaughtStack : fishCaughtStacks) {
             ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
             CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
-            if (!fishingNetStack.isEmpty() && FCItems.FISHING_NET.insertStack(fishingNetStack, fishCaughtStack, player)) {
+            if (!fishingNetStack.isEmpty() && Items.FISHING_NET.insertStack(fishingNetStack, fishCaughtStack, player)) {
                 continue;
             }
             giveItemStack(player, fishCaughtStack);
@@ -85,8 +76,8 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     }
 
     public static void fishCaughtAt(ServerPlayerEntity player, SpecimenData fish, BlockPos caughtAt) {
-        FishingCard fishingCard = FishingCard.of(player);
-        fishingCard.fishCaught(fish);
+        Card card = Card.of(player);
+        card.fishCaught(fish);
         CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.EXPLOSION);
         throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
     }
@@ -117,24 +108,24 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         world.spawnEntity(itemEntity);
     }
 
-    private static int getRewardMultiplier(FishingCard fishingCard){
+    private static int getRewardMultiplier(Card card){
         int rewardMultiplier = 1;
-        if (fishingCard.unsafeHolder() == null) {
+        if (card.unsafeHolder() == null) {
             return 1;
         }
-        int luck = (int) fishingCard.holder().getLuck();
-        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+        int luck = (int) card.holder().getLuck();
+        if (card.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
             luck++;
         }
         while (Math.random() < 0.02f * luck) {
             rewardMultiplier++;
         }
 
-        if (Math.random() < fishingCard.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)) {
+        if (Math.random() < card.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)) {
             rewardMultiplier++;
         }
 
-        if (Math.random() < fishingCard.tradeSecretValue(TradeSecrets.FISH_QUANTITY)) {
+        if (Math.random() < card.tradeSecretValue(TradeSecrets.FISH_QUANTITY)) {
             rewardMultiplier++;
         }
 
@@ -143,7 +134,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
 
 
     public static boolean isFish(ItemStack itemStack) {
-        return itemStack.isIn(FCTags.FISH_ITEM_TAG) || itemStack.get(FCComponents.SPECIMEN) != null;
+        return itemStack.isIn(Tags.FISH_ITEM_TAG) || itemStack.get(Components.SPECIMEN) != null;
     }
 
     public static Optional<SpecimenData> fishOnHook(IHookEntity iHookEntity) {
@@ -156,7 +147,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
             luck *= (float) MathHelper.clamp((playerEntity.getBlockY() + 128) / 192f, 0, 1.5);
         }
         PlayerEntity holder = iHookEntity.getFishingCard().holder();
-        int curseOfClutterLevel = FCEnchantments.getEnchantmentLevel(holder, holder.getEquippedStack(EquipmentSlot.MAINHAND), FCEnchantments.CURSE_OF_CLUTTER);
+        int curseOfClutterLevel = Enchantments.getEnchantmentLevel(holder, holder.getEquippedStack(EquipmentSlot.MAINHAND), Enchantments.CURSE_OF_CLUTTER);
         if (Math.random() < 0.05 * (1 + curseOfClutterLevel * 3)  / luck) {
            return Optional.empty();
         }
@@ -171,7 +162,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     public static boolean hasFishingHat(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(FCItems.FISHER_HAT)) result[0] = true;
+            if (armorStack.isOf(Items.FISHER_HAT)) result[0] = true;
         });
         return result[0];
     }
@@ -179,7 +170,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     public static boolean hasFishingVest(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(FCItems.FISHER_VEST)) result[0] = true;
+            if (armorStack.isOf(Items.FISHER_VEST)) result[0] = true;
         });
         return result[0];
     }
@@ -187,7 +178,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     public static boolean hasProperFishingEquipment(PlayerEntity owner){
         final boolean[] result = {false};
         owner.getArmorItems().forEach(armorStack -> {
-            if (!(armorStack.isOf(FCItems.FISHER_VEST) || armorStack.isOf(FCItems.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
+            if (!(armorStack.isOf(Items.FISHER_VEST) || armorStack.isOf(Items.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
         });
         return !result[0];
     }

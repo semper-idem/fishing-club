@@ -2,20 +2,17 @@ package net.semperidem.fishingclub.mixin.common;
 
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCRegistry;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 
-@Mixin(Items.class)
+@Mixin(net.minecraft.item.Items.class)
 public class ItemsMixin {
 
     @Redirect(
@@ -25,11 +22,11 @@ public class ItemsMixin {
     )
     private static FishingRodItem fishing_club$fishingRod(Item.Settings settings) {
         //Need to register before Rod so we can use it
-        FCComponents.registerRodConfigurationEarly();
-        FCItems.registerLineEarly();
-        RodConfiguration defaultRod = RodConfiguration.EMPTY.equip(FCItems.LINE_SPIDER.getDefaultStack());
-        return new FishingRodCoreItem(settings.maxDamage(FCItems.VANILLA_ROD_DURABILITY)
-                .component(FCComponents.ROD_CONFIGURATION, defaultRod))
+        Components.registerRodConfigurationEarly();
+        Items.registerLineEarly();
+        RodConfiguration defaultRod = RodConfiguration.EMPTY.equip(Items.LINE_SPIDER.getDefaultStack());
+        return new FishingRodCoreItem(settings.maxDamage(Items.VANILLA_ROD_DURABILITY)
+                .component(Components.ROD_CONFIGURATION, defaultRod))
                 .weightClass(2);//need to register parts before
     }
 

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 public class MessageInBottleItem extends Item {
 
@@ -22,7 +22,7 @@ public class MessageInBottleItem extends Item {
         if (messageInBottleStack.getItem() != this) {
             return super.use(world, user, hand);
         }
-        FishingCard.of(user).hearMessage();
+        Card.of(user).hearMessage();
         messageInBottleStack.setCount(messageInBottleStack.getCount() - 1);
         return super.use(world, user, hand);
     }

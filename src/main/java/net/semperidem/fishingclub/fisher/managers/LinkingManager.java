@@ -12,7 +12,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.*;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
 
@@ -26,7 +26,7 @@ public class LinkingManager extends DataManager {
 
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
 
-    public LinkingManager(FishingCard trackedFor) {
+    public LinkingManager(Card trackedFor) {
         super(trackedFor);
     }
 
@@ -65,7 +65,7 @@ public class LinkingManager extends DataManager {
                     StatusEffectInstance weakerStatusEffectInstance = this.getWeakerEffect(sei);
                     linkedFisherPlayer.addStatusEffect(weakerStatusEffectInstance);
                     sharedWith.add(linkedFisher);
-                    FishingCard.of(linkedFisherPlayer).shareStatusEffect(this.getWeakerEffect(sei), source, sharedWith);
+                    Card.of(linkedFisherPlayer).shareStatusEffect(this.getWeakerEffect(sei), source, sharedWith);
                 });
     }
 
@@ -117,7 +117,7 @@ public class LinkingManager extends DataManager {
         if (linkedFisher == null) {
             return;
         }
-        FishingCard.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.holder());
+        Card.of(linkedFisher).setSummonRequest((ServerPlayerEntity) trackedFor.holder());
         messageRequestSummon(linkedFisher);
         sync();
     }

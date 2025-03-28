@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.entity.FishDisplayBlockEntity;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -146,7 +146,7 @@ public class FishDisplayBlock extends BlockWithEntity {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 
-        return validateTicker(type, FCBlocks.FISH_DISPLAY, FishDisplayBlockEntity::tick);
+        return validateTicker(type, Blocks.FISH_DISPLAY, FishDisplayBlockEntity::tick);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class FishDisplayBlock extends BlockWithEntity {
             return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         }
 
-        return Blocks.AIR.getDefaultState();
+        return net.minecraft.block.Blocks.AIR.getDefaultState();
     }
 
     @Override

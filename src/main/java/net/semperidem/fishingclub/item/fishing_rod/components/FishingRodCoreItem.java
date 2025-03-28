@@ -21,11 +21,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandlerFactory;
-import net.semperidem.fishingclub.screen.member.MemberScreenHandlerFactory;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandlerFactory;
 
 import java.util.List;
 
@@ -50,22 +49,22 @@ public class FishingRodCoreItem extends FishingRodItem {
         if (debug && user.isSneaking()) {
 
             //user.openHandledScreen(new MemberScreenHandlerFactory());
-            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(FCComponents.ROD_CONFIGURATION)));
+            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(Components.ROD_CONFIGURATION)));
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 
         ItemStack fishingRod = user.getStackInHand(hand);
         long time = world.getTime();
-        if (fishingRod.getOrDefault(FCComponents.EXPIRATION_TIME, time).intValue() < time) {
+        if (fishingRod.getOrDefault(Components.EXPIRATION_TIME, time).intValue() < time) {
             fishingRod.damage(fishingRod.getMaxDamage() + 1, user, EquipmentSlot.MAINHAND);
         }
-        boolean canCast = fishingRod.getOrDefault(FCComponents.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
+        boolean canCast = fishingRod.getOrDefault(Components.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast) {
             user.sendMessage(Text.of("Can't use without line"), true);
             return TypedActionResult.fail(fishingRod);
         }
 
-        if (FishingCard.of(user).isMember()) {
+        if (Card.of(user).isMember()) {
             return super.use(world, user, hand);
         }
 
@@ -77,7 +76,7 @@ public class FishingRodCoreItem extends FishingRodItem {
             return TypedActionResult.fail(fishingRod);
         }
 
-        if (FishingCard.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE)) {
+        if (Card.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE)) {
             user.setCurrentHand(hand); // Sets hand as "active"
             return TypedActionResult.consume(fishingRod);
         }
@@ -99,9 +98,9 @@ public class FishingRodCoreItem extends FishingRodItem {
 
     private void castHook(World world, PlayerEntity user, ItemStack fishingRod) {
         if (!world.isClient) {
-            boolean canPrecisionCast = FishingCard.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE, 2);
+            boolean canPrecisionCast = Card.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE, 2);
             float power = 1 + (1 - getChargePower(user.getItemUseTime())) * (canPrecisionCast && user.isSneaking() ? 1 : -1) * 0.15f;
-            fishingRod.set(FCComponents.CAST_POWER, power);
+            fishingRod.set(Components.CAST_POWER, power);
             fishingRod.damage(1, user, EquipmentSlot.MAINHAND);
             if (fishingRod.getDamage() >= fishingRod.getMaxDamage()) {
                 RodConfiguration.dropContent(user, fishingRod);
@@ -159,8 +158,8 @@ public class FishingRodCoreItem extends FishingRodItem {
     public int scrollLineBy(PlayerEntity user, ItemStack fishingRod, int amount) {
         RodConfiguration configuration = RodConfiguration.of(fishingRod);
         int maxLineLength = configuration.attributes().maxLineLength();
-        int length = MathHelper.clamp((fishingRod.getOrDefault(FCComponents.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
-        fishingRod.set(FCComponents.LINE_LENGTH, length);
+        int length = MathHelper.clamp((fishingRod.getOrDefault(Components.LINE_LENGTH, maxLineLength) + amount), 4, maxLineLength);
+        fishingRod.set(Components.LINE_LENGTH, length);
         user.sendMessage(Text.literal("Line length:" + length), true);
         return length;
     }

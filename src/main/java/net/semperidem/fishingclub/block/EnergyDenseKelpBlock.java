@@ -14,7 +14,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 public class EnergyDenseKelpBlock extends AbstractPlantStemBlock implements FluidFillable {
@@ -34,18 +34,18 @@ public class EnergyDenseKelpBlock extends AbstractPlantStemBlock implements Flui
 
 	@Override
 	protected boolean chooseStemState(BlockState state) {
-		return state.isOf(Blocks.WATER);
+		return state.isOf(net.minecraft.block.Blocks.WATER);
 	}
 
 	@Override
 	protected Block getPlant() {
-		return FCBlocks.ENERGY_DENSE_KELP_PLANT;
+		return Blocks.ENERGY_DENSE_KELP_PLANT;
 	}
 
 
 	@Override
 	protected boolean canAttachTo(BlockState state) {
-		return !state.isOf(Blocks.MAGMA_BLOCK) && !state.isOf(Blocks.KELP) && !state.isOf(FCBlocks.NUTRITIOUS_KELP);
+		return !state.isOf(net.minecraft.block.Blocks.MAGMA_BLOCK) && !state.isOf(net.minecraft.block.Blocks.KELP) && !state.isOf(Blocks.NUTRITIOUS_KELP);
 	}
 
 	@Override

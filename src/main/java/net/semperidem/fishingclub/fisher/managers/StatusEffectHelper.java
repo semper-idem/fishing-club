@@ -2,13 +2,12 @@ package net.semperidem.fishingclub.fisher.managers;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.registry.FCStatusEffects;
+import net.semperidem.fishingclub.registry.StatusEffects;
 import net.semperidem.fishingclub.status_effects.IncreaseFishingExpStatusEffect;
 
 public class StatusEffectHelper {
@@ -17,9 +16,9 @@ public class StatusEffectHelper {
     private static final int SPREAD_EFFECT_RANGE = 4;
     private static final int PROLONG_EFFECT_LENGTH = 200;
 
-    FishingCard trackedFor;
+    Card trackedFor;
 
-    public StatusEffectHelper(FishingCard trackedFor) {
+    public StatusEffectHelper(Card trackedFor) {
         this.trackedFor = trackedFor;
     }
 
@@ -28,7 +27,7 @@ public class StatusEffectHelper {
         if (this.trackedFor.holder() == null) {
             return minGrade;
         }
-        if (this.trackedFor.holder().hasStatusEffect(FCStatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
+        if (this.trackedFor.holder().hasStatusEffect(StatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
             minGrade++;
         }
         return minGrade;
@@ -46,7 +45,7 @@ public class StatusEffectHelper {
     public static float getExpMultiplier(PlayerEntity player) {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = player.getStatusEffect(FCStatusEffects.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = player.getStatusEffect(StatusEffects.EXP_BUFF)) != null) {
             multiplier += IncreaseFishingExpStatusEffect.BONUS_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
@@ -73,18 +72,18 @@ public class StatusEffectHelper {
                 .getOtherEntities(this.trackedFor.holder(), new Box(this.trackedFor.holder().getBlockPos()).expand(4))
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
-                .map(entity -> FishingCard.of((PlayerEntity)entity))
+                .map(entity -> Card.of((PlayerEntity)entity))
                 .forEach(card -> {
                     int nextAmplifier = 0;
                     int nextDuration = 600;
 
-                    StatusEffectInstance currentExpBuff = card.holder().getStatusEffect(FCStatusEffects.EXP_BUFF);
+                    StatusEffectInstance currentExpBuff = card.holder().getStatusEffect(StatusEffects.EXP_BUFF);
                     if (currentExpBuff != null && currentExpBuff.getAmplifier() >= maxAmplifier) {
                         nextAmplifier = Math.min(maxAmplifier, currentExpBuff.getAmplifier() + 1);
                         nextDuration += currentExpBuff.getDuration();
                     }
 
-                    card.holder().addStatusEffect(new StatusEffectInstance(FCStatusEffects.EXP_BUFF, nextAmplifier, Math.min(6000, nextDuration)));
+                    card.holder().addStatusEffect(new StatusEffectInstance(StatusEffects.EXP_BUFF, nextAmplifier, Math.min(6000, nextDuration)));
                 });
     }
 }

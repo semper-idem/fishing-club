@@ -3,19 +3,17 @@ package net.semperidem.fishingclub.game;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.managers.StatusEffectHelper;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
-import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandlerFactory;
+import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandlerFactory;
 
 public class FishingGameController {
 
     final PlayerEntity player;
-    final FishingCard fishingCard;
+    final Card card;
     final SpecimenData hookedFish;
     final RodConfiguration rodConfiguration;
 
@@ -29,7 +27,7 @@ public class FishingGameController {
     public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
         this.hookedFish = hookedFish;
         this.player = playerEntity;
-        this.fishingCard = FishingCard.of(playerEntity);
+        this.card = Card.of(playerEntity);
         this.rodConfiguration = rodConfiguration;
 
         progressComponent = new ProgressComponent(this);
@@ -160,7 +158,7 @@ public class FishingGameController {
             this.ticksBeforeClose--;
             return;
         }
-        this.player.openHandledScreen(new FishingGamePostScreenHandlerFactory(
+        this.player.openHandledScreen(new FishingPostScreenHandlerFactory(
                 this.hookedFish,
                 this.treasureGameController.getRewards(),
                 this.hookedFish.experience(StatusEffectHelper.getExpMultiplier(player)

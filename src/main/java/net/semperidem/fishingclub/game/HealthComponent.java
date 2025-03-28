@@ -12,7 +12,7 @@ public class HealthComponent {
 
     public HealthComponent(FishingGameController parent) {
         this.parent = parent;
-        this.health = MathHelper.clamp(parent.fishingCard.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT), 1, 4);
+        this.health = MathHelper.clamp(parent.card.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT), 1, 4);
         this.strainTriggerDistance = this.parent.rodConfiguration.attributes().bobberWidth() * BobberComponent.BASE_LENGTH;
         this.damageReduction = this.parent.rodConfiguration.attributes().fishControl();
     }

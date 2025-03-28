@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.semperidem.fishingclub.block.EnergyDenseKelpPlantBlock.SHAPE;
@@ -31,7 +31,7 @@ public class NutritiousKelpPlantBlock extends AbstractPlantBlock implements Flui
 
 	@Override
 	protected NutritiousKelpBlock getStem() {
-		return FCBlocks.NUTRITIOUS_KELP;
+		return Blocks.NUTRITIOUS_KELP;
 	}
 
 	@Override

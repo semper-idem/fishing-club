@@ -24,7 +24,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.block.FishDisplayBlock;
 import net.semperidem.fishingclub.entity.FishDisplayBlockEntity;
-import net.semperidem.fishingclub.registry.FCModels;
+import net.semperidem.fishingclub.registry.Models;
 
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         this.typeToModel = WoodType.stream()
           .collect(
             ImmutableMap.toImmutableMap(
-              signType -> signType, signType -> new FishDisplayEntityRenderer.SignModel(ctx.getLayerModelPart(FCModels.MODEL_FISH_DISPLAY_LAYER))
+              signType -> signType, signType -> new FishDisplayEntityRenderer.SignModel(ctx.getLayerModelPart(Models.MODEL_FISH_DISPLAY_LAYER))
             )
           );
         this.textRenderer = ctx.getTextRenderer();

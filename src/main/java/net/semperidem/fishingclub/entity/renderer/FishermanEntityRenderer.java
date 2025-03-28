@@ -21,7 +21,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.FishermanEntity;
 import net.semperidem.fishingclub.entity.renderer.model.FishermanEntityModel;
 import net.semperidem.fishingclub.mixin.client.model.BoatEntityModelAccessor;
-import net.semperidem.fishingclub.registry.FCModels;
+import net.semperidem.fishingclub.registry.Models;
 
 public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, FishermanEntityModel<FishermanEntity>> {
     private static final Identifier TEXTURE = FishingClub.identifier("textures/entity/fisherman.png");
@@ -30,7 +30,7 @@ public class FishermanEntityRenderer extends MobEntityRenderer<FishermanEntity, 
     private final CompositeEntityModel<BoatEntity> boatModel;
 
     public FishermanEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new FishermanEntityModel<>(context.getPart(FCModels.MODEL_FISHERMAN_LAYER)), 0.5F);
+        super(context, new FishermanEntityModel<>(context.getPart(Models.MODEL_FISHERMAN_LAYER)), 0.5F);
         this.boatModel =  new ChestBoatEntityModel(context.getPart(EntityModelLayers.createChestBoat(ChestBoatEntity.Type.MANGROVE)));
     }
 

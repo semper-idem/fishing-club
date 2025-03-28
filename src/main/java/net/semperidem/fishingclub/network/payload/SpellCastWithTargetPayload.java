@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Uuids;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 import java.util.UUID;
 
@@ -30,7 +30,7 @@ public record SpellCastWithTargetPayload(String spellName, UUID targetUUID) impl
 
     public static void consumePayload(SpellCastWithTargetPayload payload, ServerPlayNetworking.Context context) {
         try (MinecraftServer server = context.server()) {
-            FishingCard.of(context.player()).useTradeSecret(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
+            Card.of(context.player()).useTradeSecret(payload.spellName, server.getPlayerManager().getPlayer(payload.targetUUID));
         }
     }
 }

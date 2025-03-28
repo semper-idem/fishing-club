@@ -9,8 +9,8 @@ import net.minecraft.item.PlaceableOnWaterItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.semperidem.fishingclub.registry.FCBlocks;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.Blocks;
+import net.semperidem.fishingclub.registry.Items;
 
 public class DuckweedItem extends PlaceableOnWaterItem {
 
@@ -24,10 +24,10 @@ public class DuckweedItem extends PlaceableOnWaterItem {
 		BlockPos pos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(pos);
 		ItemStack itemStack = context.getStack();
-		if (!blockState.isOf(FCBlocks.DUCKWEED_BLOCK)) {
+		if (!blockState.isOf(Blocks.DUCKWEED_BLOCK)) {
 			return super.useOnBlock(context);
 		}
-		if (!itemStack.isOf(FCItems.DUCKWEED)) {
+		if (!itemStack.isOf(Items.DUCKWEED)) {
 			return super.useOnBlock(context);
 		}
 		int petalAmount = blockState.get(FlowerbedBlock.FLOWER_AMOUNT);

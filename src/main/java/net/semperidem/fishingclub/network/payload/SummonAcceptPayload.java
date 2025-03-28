@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -18,7 +18,7 @@ public record SummonAcceptPayload() implements CustomPayload{
         return ID;
     }
     public static void consumePayload(SummonAcceptPayload payload, ServerPlayNetworking.Context context) {
-        FishingCard.of(context.player()).acceptSummonRequest();
+        Card.of(context.player()).acceptSummonRequest();
     }
 
 }

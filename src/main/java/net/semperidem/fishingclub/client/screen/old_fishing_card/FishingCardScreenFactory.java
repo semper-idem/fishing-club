@@ -6,12 +6,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.fisher.FishingCard;
-import net.semperidem.fishingclub.network.payload.FishingCardPayload;
-import net.semperidem.fishingclub.screen.fishing_card.OldFishingCardScreenHandler;
+import net.semperidem.fishingclub.fisher.Card;
+import net.semperidem.fishingclub.network.payload.CardPayload;
+import net.semperidem.fishingclub.screen.card.OldFishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<FishingCardPayload> {
+public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<CardPayload> {
     @Override
     public Text getDisplayName() {
         return Text.literal("Fishing Club");
@@ -20,7 +20,7 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<Fi
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new OldFishingCardScreenHandler(syncId, inv, FishingCard.of(inv.player));
+        return new OldFishingCardScreenHandler(syncId, inv, Card.of(inv.player));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<Fi
     }
 
     @Override
-    public FishingCardPayload getScreenOpeningData(ServerPlayerEntity player) {
-    return new FishingCardPayload();
+    public CardPayload getScreenOpeningData(ServerPlayerEntity player) {
+    return new CardPayload();
     }
 }

@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.semperidem.fishingclub.entity.TackleBoxBlockEntity;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -98,11 +98,11 @@ public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvid
     @Override
     public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);
-        world.getBlockEntity(pos, FCBlocks.TACKLE_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack, world.getRegistryManager()));
+        world.getBlockEntity(pos, Blocks.TACKLE_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack, world.getRegistryManager()));
         return itemStack;
     }
     public static ItemStack getItemStack() {
-        return new ItemStack(FCBlocks.TACKLE_BOX_BLOCK);
+        return new ItemStack(Blocks.TACKLE_BOX_BLOCK);
     }
 
     @Override

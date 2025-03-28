@@ -14,15 +14,12 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.semperidem.fishingclub.client.screen.game.FishingGameScreen;
+import net.semperidem.fishingclub.client.screen.game.FishingScreen;
 import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.FishItem;
-import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCTags;
-import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Tags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -55,7 +52,7 @@ public abstract class HeldItemRendererMixin {
 
     @Inject(cancellable = true, method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipOffset(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/util/Arm;F)V", ordinal = 6, shift = At.Shift.AFTER))
     private void onRenderFirstPersonUsingFishingRod(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (!item.isIn(FCTags.ROD_CORE)) {
+        if (!item.isIn(Tags.ROD_CORE)) {
             return;
         }
         if (!player.isUsingItem()) {
@@ -78,7 +75,7 @@ public abstract class HeldItemRendererMixin {
             return;
         }
         this.heldItem = itemStack;
-        SpecimenData fishRecord = itemStack.get(FCComponents.SPECIMEN);
+        SpecimenData fishRecord = itemStack.get(Components.SPECIMEN);
         weightScale = 1;
         lengthScale = 1;
         if (fishRecord == null) {
@@ -96,7 +93,7 @@ public abstract class HeldItemRendererMixin {
             )
     )
     private void onRenderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (item.isIn(FCTags.ROD_CORE)) {
+        if (item.isIn(Tags.ROD_CORE)) {
             this.onRenderFishingRod(player,tickDelta, matrices);
         }
     }
@@ -150,9 +147,9 @@ public abstract class HeldItemRendererMixin {
         int useTime = player.getItemUseTime();
         boolean isReeling = false;
 
-        if (client.currentScreen instanceof FishingGameScreen fishingGameScreen) {
-            isReeling = fishingGameScreen.controller.isReeling();
-            useTime = fishingGameScreen.getReelTick();
+        if (client.currentScreen instanceof FishingScreen fishingScreen) {
+            isReeling = fishingScreen.controller.isReeling();
+            useTime = fishingScreen.getReelTick();
         }
         if (useTime == 0) {
             return;

@@ -4,8 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.util.math.Vec3d;
-import net.semperidem.fishingclub.registry.FCRegistry;
-import net.semperidem.fishingclub.registry.FCRegistryClient;
+import net.semperidem.fishingclub.registry.RegistryClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +26,6 @@ public class FishingClubClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-       FCRegistryClient.register();
+       RegistryClient.register();
     }
 }

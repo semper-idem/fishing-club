@@ -6,7 +6,7 @@ import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 import net.semperidem.fishingclub.status_effects.IncreaseBobberSizeStatusEffect;
 
 import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOBBER_SIZE_BOAT;
-import static net.semperidem.fishingclub.registry.FCStatusEffects.BOBBER_BUFF;
+import static net.semperidem.fishingclub.registry.StatusEffects.BOBBER_BUFF;
 
 public class BobberComponent {
     public static final float BASE_LENGTH = 0.0682f;
@@ -40,14 +40,14 @@ public class BobberComponent {
     private float calculateLength(){
         float lengthMultiplier = 1;
 
-        lengthMultiplier +=  this.parent.fishingCard.tradeSecretValue(BOBBER_SIZE_BOAT);
+        lengthMultiplier +=  this.parent.card.tradeSecretValue(BOBBER_SIZE_BOAT);
 
         StatusEffectInstance sei = this.parent.player.getStatusEffect(BOBBER_BUFF);
         if (sei != null){
             lengthMultiplier += IncreaseBobberSizeStatusEffect.SIZE_INCREMENT * (sei.getAmplifier() + 1);
         }
 
-        int levelDifference = this.parent.fishingCard.getLevel() - this.parent.hookedFish.level();
+        int levelDifference = this.parent.card.getLevel() - this.parent.hookedFish.level();
         float levelDifferenceMultiplier = (float) MathHelper.clamp(levelDifference > 0 ? 1 + levelDifference * 0.01 : 1 - levelDifference * 0.05, 0.5, 2);
         return BASE_LENGTH * levelDifferenceMultiplier * lengthMultiplier * this.parent.rodConfiguration.attributes().bobberWidth();
     }
@@ -66,7 +66,7 @@ public class BobberComponent {
     }
 
     private float getBaseResistance() {
-        float levelDifference = MathHelper.clamp(parent.fishingCard.getLevel() - parent.hookedFish.level(), -50, 50);
+        float levelDifference = MathHelper.clamp(parent.card.getLevel() - parent.hookedFish.level(), -50, 50);
        return (parent.hookedFish.level() + 50) * 0.04f * (0.0375f + levelDifference / 50f * 0.0125f);
     }
 

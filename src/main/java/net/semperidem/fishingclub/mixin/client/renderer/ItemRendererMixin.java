@@ -16,7 +16,7 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.mixin.common.TropicalFishAccessor;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,7 +36,7 @@ public abstract class ItemRendererMixin {
         }
         String itemName = stack.getItem().toString();
         String speciesName = itemName.substring(itemName.lastIndexOf(":") + 1);
-        SpecimenData data = stack.get(FCComponents.SPECIMEN);
+        SpecimenData data = stack.get(Components.SPECIMEN);
             return ((ItemRendererAccessor) this)
               .fishingclub$getModels()
               .getModelManager()
@@ -57,7 +57,7 @@ public abstract class ItemRendererMixin {
             return;
         }
         int variant = TropicalFishEntity.COMMON_VARIANTS.get(5).getId();
-        SpecimenData data = stack.get(FCComponents.SPECIMEN);
+        SpecimenData data = stack.get(Components.SPECIMEN);
         if (data != null) {
             variant = TropicalFishEntity.COMMON_VARIANTS.get(data.subspecies()).getId();
         }

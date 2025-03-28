@@ -1,23 +1,19 @@
 package net.semperidem.fishingclub.mixin.client.model;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Tags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(BipedEntityModel.class)
 public class BipedEntityModelMixin<T extends LivingEntity> {
@@ -64,7 +60,7 @@ public class BipedEntityModelMixin<T extends LivingEntity> {
         if (armPose != BipedEntityModel.ArmPose.THROW_SPEAR) {
             return;
         }
-        if (!entity.getActiveItem().isIn(FCTags.ROD_CORE))  {
+        if (!entity.getActiveItem().isIn(Tags.ROD_CORE))  {
             return;
         }
         float usedFor = MathHelper.clamp(entity.getItemUseTime() / 100f, 0, 1);

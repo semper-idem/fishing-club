@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
-import net.semperidem.fishingclub.registry.FCBlocks;
+import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import static net.semperidem.fishingclub.block.EnergyDenseKelpBlock.SHAPE;
@@ -34,18 +34,18 @@ public class NutritiousKelpBlock extends AbstractPlantStemBlock implements Fluid
 
 	@Override
 	protected boolean chooseStemState(BlockState state) {
-		return state.isOf(Blocks.WATER);
+		return state.isOf(net.minecraft.block.Blocks.WATER);
 	}
 
 	@Override
 	protected Block getPlant() {
-		return FCBlocks.NUTRITIOUS_KELP_PLANT;
+		return Blocks.NUTRITIOUS_KELP_PLANT;
 	}
 
 
 	@Override
 	protected boolean canAttachTo(BlockState state) {
-		return !state.isOf(Blocks.MAGMA_BLOCK) && !state.isOf(Blocks.KELP) && !state.isOf(FCBlocks.ENERGY_DENSE_KELP);
+		return !state.isOf(net.minecraft.block.Blocks.MAGMA_BLOCK) && !state.isOf(net.minecraft.block.Blocks.KELP) && !state.isOf(Blocks.ENERGY_DENSE_KELP);
 	}
 
 	@Override

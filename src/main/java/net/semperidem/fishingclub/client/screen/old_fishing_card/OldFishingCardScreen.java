@@ -17,7 +17,7 @@ import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
-import net.semperidem.fishingclub.screen.fishing_card.OldFishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.card.OldFishingCardScreenHandler;
 
 import java.util.ArrayList;
 
@@ -76,10 +76,10 @@ public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHand
 
     public void updateCache(){
         name = MinecraftClient.getInstance().player.getName().getString();
-        level = String.valueOf(handler.fishingCard.getLevel());
-        exp = handler.fishingCard.getExp() + "/" + handler.fishingCard.nextLevelXP();
-        credit = String.valueOf(handler.fishingCard.getCredit());
-        perkPoints = String.valueOf(handler.fishingCard.getPerkPoints());
+        level = String.valueOf(handler.card.getLevel());
+        exp = handler.card.getExp() + "/" + handler.card.nextLevelXP();
+        credit = String.valueOf(handler.card.getCredit());
+        perkPoints = String.valueOf(handler.card.getPerkPoints());
     }
 
     @Override
@@ -160,7 +160,7 @@ public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHand
 
     private ButtonWidget.PressAction unlockButtonAction(){
         return button -> {
-            handler.fishingCard.learnTradeSecret(selectedPerk.name());
+            handler.card.learnTradeSecret(selectedPerk.name());
             //this is prob not needed since we are using cardinal components TODO verify
             ClientPlayNetworking.send(new LearnTradeSecretPayload(selectedPerk.name()));
             unlockButton.visible = false;
@@ -176,7 +176,7 @@ public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHand
         }
         newSelectedPerkButton.isSelected = true;
         selectedPerkButton = newSelectedPerkButton;
-        unlockButton.visible = handler.fishingCard.canUnlockPerk(perk);
+        unlockButton.visible = handler.card.canUnlockPerk(perk);
     }
 
 
@@ -271,7 +271,7 @@ public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHand
             PerkButtonWidget perkButtonWidget = new PerkButtonWidget(
                     perksX + perkX,
                     perksY + perkY,
-                    handler.fishingCard,
+                    handler.card,
                     perkToAdd,
                     this
             );

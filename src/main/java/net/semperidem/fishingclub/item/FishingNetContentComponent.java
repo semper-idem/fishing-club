@@ -10,7 +10,7 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +41,7 @@ public record FishingNetContentComponent(
             stackCount = fishingNetItem.stackCount;
         }
 
-        FishingNetContentComponent component = fishingNet.getOrDefault(FCComponents.FISHING_NET_CONTENT, DEFAULT);
+        FishingNetContentComponent component = fishingNet.getOrDefault(Components.FISHING_NET_CONTENT, DEFAULT);
         return new FishingNetContentComponent(component.stacks, stackCount);
     }
 

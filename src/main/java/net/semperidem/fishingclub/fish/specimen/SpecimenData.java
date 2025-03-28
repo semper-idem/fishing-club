@@ -19,10 +19,10 @@ import net.semperidem.fishingclub.entity.FishingExplosionEntity;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.Species;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.registry.FCComponents;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import java.util.Objects;
@@ -91,11 +91,11 @@ public record SpecimenData(
     public static Optional<SpecimenData> init(IHookEntity caughtWith) {
 
         int luck = 0;
-        FishingCard fishingCard = caughtWith.getFishingCard();
-        if (fishingCard.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+        Card card = caughtWith.getFishingCard();
+        if (card.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
             luck++;
         }
-        if (fishingCard.holder() instanceof PlayerEntity holder) {
+        if (card.holder() instanceof PlayerEntity holder) {
             luck += (int) holder.getLuck();
         }
 
@@ -117,7 +117,7 @@ public record SpecimenData(
 
     public static SpecimenData init(IHookEntity caughtWith, Species<? extends WaterCreatureEntity> species, int subspecies) {
 
-        FishingCard caughtByCard = caughtWith.getFishingCard();
+        Card caughtByCard = caughtWith.getFishingCard();
         RodConfiguration caughtUsing = caughtWith.getCaughtUsing();
         PlayerEntity caughtBy = caughtByCard.unsafeHolder();
 
@@ -181,7 +181,7 @@ public record SpecimenData(
         );
     }
 
-    private static int calculateQuality(IHookEntity caughtWith, FishingCard fisher, RodConfiguration rod) {
+    private static int calculateQuality(IHookEntity caughtWith, Card fisher, RodConfiguration rod) {
         double fisherMean = MathHelper.clamp(fisher.getLevel() * 0.005, 0, 0.5);
         double rodMean = rod.attributes().fishQuality() * 0.05;
         double circumstanceMean = caughtWith.getCircumstanceQuality();
@@ -276,7 +276,7 @@ public int experience(double xFisher) {
 
     public ItemStack asItemStack() {
         ItemStack fishItemStack = species().item().getDefaultStack();
-        fishItemStack.set(FCComponents.SPECIMEN, this);
+        fishItemStack.set(Components.SPECIMEN, this);
         Text label = Text.of((!this.isAlive ? "Raw " : "") + this.label);
         if (this.species == Species.Library.TROPICAL_FISH) {
 

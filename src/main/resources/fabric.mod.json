@@ -22,7 +22,7 @@
       "net.semperidem.fishingclub.FishingClub"
     ],
     "cardinal-components": [
-      "net.semperidem.fishingclub.fisher.FishingCard",
+      "net.semperidem.fishingclub.fisher.Card",
       "net.semperidem.fishingclub.fish.specimen.SpecimenComponent",
       "net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent",
       "net.semperidem.fishingclub.fisher.FishingKing",

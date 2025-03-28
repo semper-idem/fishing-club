@@ -20,9 +20,9 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent;
 import net.semperidem.fishingclub.mixin.common.TropicalFishAccessor;
 import net.semperidem.fishingclub.network.payload.StopPlayingPayload;
-import net.semperidem.fishingclub.registry.FCBlocks;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCRegistry;
+import net.semperidem.fishingclub.registry.Blocks;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Registry;
 
 public class FishDisplayBlockEntity extends BlockEntity {
 
@@ -61,7 +61,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return false;
         }
 
-        SpecimenData fishRecord = stackInHand.getOrDefault(FCComponents.SPECIMEN, SpecimenData.DEFAULT);
+        SpecimenData fishRecord = stackInHand.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT);
         if (fishRecord.isEqual(SpecimenData.DEFAULT)) {
             return false;
         }
@@ -209,7 +209,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
         this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
         SpecimenComponent.of(this.fishEntity).set(fishRecord);
-        this.fishSong = FCRegistry.SPECIES_TO_TUNE.get(fishRecord.species().name());
+        this.fishSong = Registry.SPECIES_TO_TUNE.get(fishRecord.species().name());
     }
 
     private void tickPlaying() {
@@ -225,7 +225,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
 
     }
 
-    public FishDisplayBlockEntity(BlockPos pos, BlockState state) {super(FCBlocks.FISH_DISPLAY, pos, state);}
+    public FishDisplayBlockEntity(BlockPos pos, BlockState state) {super(Blocks.FISH_DISPLAY, pos, state);}
     @Override protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {super.readNbt(nbt, registryLookup);}
     @Override protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {super.writeNbt(nbt, registryLookup);}
     @Override public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {return this.createNbt(registryLookup);}

@@ -13,16 +13,14 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.FishermanEntity;
-import net.semperidem.fishingclub.fish.AbstractFishEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fish.FishUtil;
-import net.semperidem.fishingclub.registry.FCComponents;
-import net.semperidem.fishingclub.registry.FCItems;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Items;
 import net.semperidem.fishingclub.world.ChunkQuality;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,8 +49,8 @@ public abstract class ItemEntityMixin extends Entity{
     @Inject(method = "<init>(Lnet/minecraft/world/World;DDDLnet/minecraft/item/ItemStack;)V", at = @At("TAIL"))
     private void onInit(World world, double x, double y, double z, ItemStack stack, CallbackInfo ci) {
 
-        if (stack.isOf(FCItems.GOLD_FISH)) {
-            summonerUUID = stack.getOrDefault(FCComponents.CAUGHT_BY, UUID.randomUUID());
+        if (stack.isOf(Items.GOLD_FISH)) {
+            summonerUUID = stack.getOrDefault(Components.CAUGHT_BY, UUID.randomUUID());
             isSummonItem = true;
             return;
         }
@@ -61,7 +59,7 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        this.fish = stack.get(FCComponents.SPECIMEN);
+        this.fish = stack.get(Components.SPECIMEN);
 
         if (fish != null && fish.quality() >= 4) {
             summonerUUID = fish.caughtByUUID();

@@ -5,8 +5,8 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.screen.fishing_game.FishingGameScreenHandler;
-import net.semperidem.fishingclub.screen.fishing_game_post.FishingGamePostScreenHandler;
+import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -29,11 +29,11 @@ public record FishingGameInputKeyboardPayload(boolean isPressed) implements Cust
             return;
         }
 
-        if ((context.player().currentScreenHandler instanceof FishingGamePostScreenHandler screenHandler)) {
+        if ((context.player().currentScreenHandler instanceof FishingPostScreenHandler screenHandler)) {
            handlePost(screenHandler, payload);
         }
     }
-    private static void handlePost(FishingGamePostScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+    private static void handlePost(FishingPostScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
         screenHandler.nextStage(!payload.isPressed);
     }
 

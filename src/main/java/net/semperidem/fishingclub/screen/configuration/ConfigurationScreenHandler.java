@@ -2,20 +2,19 @@ package net.semperidem.fishingclub.screen.configuration;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCScreenHandlers;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Items;
+import net.semperidem.fishingclub.registry.ScreenHandlers;
+import net.semperidem.fishingclub.registry.Tags;
 
 import java.util.function.Consumer;
 
-import static net.semperidem.fishingclub.registry.FCComponents.*;
+import static net.semperidem.fishingclub.registry.Components.*;
 
 public class ConfigurationScreenHandler extends ScreenHandler {
     private final static int SLOTS_PER_ROW = 9;
@@ -27,7 +26,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
 
     public ConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, ConfigurationPayload payload) {
 
-        super(FCScreenHandlers.CONFIGURATION_SCREEN, syncId);
+        super(ScreenHandlers.CONFIGURATION_SCREEN, syncId);
 
         this.playerInventory = playerInventory;
         this.core = playerInventory.getMainHandStack();
@@ -40,11 +39,11 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private void addRodInventorySlots() {
 
         RodInventory rodInventory = this.configuration.inventory(this.playerInventory.player);
-        addPartSlot(rodInventory,41, 64, FCItems.REEL_WOOD);
-        addPartSlot(rodInventory,147, 84, FCItems.LINE_SPIDER);
-        addPartSlot(rodInventory,84, 115, FCItems.BOBBER_PLANT_SLIME);
-        addPartSlot(rodInventory,64, 115, FCItems.HOOK_IRON);
-        addPartSlot(rodInventory,44, 115, FCItems.BAIT_ROTTEN_FLESH);
+        addPartSlot(rodInventory,41, 64, Items.REEL_WOOD);
+        addPartSlot(rodInventory,147, 84, Items.LINE_SPIDER);
+        addPartSlot(rodInventory,84, 115, Items.BOBBER_PLANT_SLIME);
+        addPartSlot(rodInventory,64, 115, Items.HOOK_IRON);
+        addPartSlot(rodInventory,44, 115, Items.BAIT_ROTTEN_FLESH);
     }
 
     private void addPartSlot(RodInventory rodInventory, int x, int y, PartItem boundItem){
@@ -98,7 +97,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
 
-        return this.core.isIn(FCTags.ROD_CORE);
+        return this.core.isIn(Tags.ROD_CORE);
     }
 
     @Override

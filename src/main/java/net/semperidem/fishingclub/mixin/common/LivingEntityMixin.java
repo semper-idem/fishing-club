@@ -13,10 +13,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.entity.HookEntity;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.fishing_rod.components.FishingRodCoreItem;
-import net.semperidem.fishingclub.registry.FCItems;
-import net.semperidem.fishingclub.registry.FCTags;
+import net.semperidem.fishingclub.registry.Tags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 
 @Mixin(LivingEntity.class)
@@ -49,7 +47,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (!((LivingEntity)(Object)this instanceof PlayerEntity player)) {
             return;
         }
-        if (!activeStack.isIn(FCTags.ROD_CORE)) {
+        if (!activeStack.isIn(Tags.ROD_CORE)) {
             return;
         }
         int currentPower = FishingRodCoreItem.getChargePower(getItemUseTime());
@@ -101,9 +99,9 @@ public abstract class LivingEntityMixin extends Entity{
         if (!isPlayer() || getWorld().isClient) {
             return;
         }
-        FishingCard fishingCard = FishingCard.of((ServerPlayerEntity)(Object)this);
-        if (fishingCard != null) {
-            fishingCard.shareStatusEffect(effect, (LivingEntity)(Object)this, new HashSet<>());
+        Card card = Card.of((ServerPlayerEntity)(Object)this);
+        if (card != null) {
+            card.shareStatusEffect(effect, (LivingEntity)(Object)this, new HashSet<>());
         }
     }
 

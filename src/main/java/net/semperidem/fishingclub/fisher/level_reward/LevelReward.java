@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.fisher.level_reward;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.semperidem.fishingclub.fisher.FishingCard;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.IllegalGoodsItem;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,21 +47,21 @@ public class LevelReward {
         return rewardStack;
     }
 
-    public void grant(FishingCard fishingCard){
-        int fisherLevel = fishingCard.getLevel();
+    public void grant(Card card){
+        int fisherLevel = card.getLevel();
         int resultAmount = amount == null ? 1 : amount.get(fisherLevel);
         switch (rewardType) {
-            case ITEM -> fishingCard.addUnclaimedReward(grantItemReward(resultAmount));
-            case CREDIT -> fishingCard.addCredit(resultAmount);
-            case SKILL_POINT -> fishingCard.addSkillPoints(resultAmount);
-            case BOX -> fishingCard.addUnclaimedReward(grantBoxReward(fisherLevel));
-            case EFFECT -> executeEffect(fishingCard);
+            case ITEM -> card.addUnclaimedReward(grantItemReward(resultAmount));
+            case CREDIT -> card.addCredit(resultAmount);
+            case SKILL_POINT -> card.addSkillPoints(resultAmount);
+            case BOX -> card.addUnclaimedReward(grantBoxReward(fisherLevel));
+            case EFFECT -> executeEffect(card);
             default -> throw new IllegalStateException("Unexpected value: " + rewardType);
         }
     }
 
-    private void executeEffect(FishingCard fishingCard) {
-        if (fishingCard.holder() instanceof ServerPlayerEntity serverFisher) {
+    private void executeEffect(Card card) {
+        if (card.holder() instanceof ServerPlayerEntity serverFisher) {
             ServerWorld world = serverFisher.getServerWorld();
             double x = serverFisher.getX();
             double y = serverFisher.getY();
