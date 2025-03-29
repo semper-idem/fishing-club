@@ -17,8 +17,8 @@ import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 
 public class ScreenHandlers {
     public static ExtendedScreenHandlerType<CardScreenHandler, CardPayload> CARD;
-    public static ExtendedScreenHandlerType<FishingScreenHandler, FishingGameStartS2CPayload> FISHING_SCREEN;
-    public static ExtendedScreenHandlerType<FishingPostScreenHandler, FishingGamePostS2CPayload> FISHING_GAME_POST_SCREEN;
+    public static ExtendedScreenHandlerType<FishingScreenHandler, FishingStartS2CPayload> FISHING_SCREEN;
+    public static ExtendedScreenHandlerType<FishingPostScreenHandler, FishingPostPayload> FISHING_GAME_POST_SCREEN;
     public static ExtendedScreenHandlerType<MemberScreenHandler, MemberPayload> MEMBER_SCREEN;
     public static ExtendedScreenHandlerType<ConfigurationScreenHandler, ConfigurationPayload> CONFIGURATION_SCREEN;
 
@@ -35,14 +35,14 @@ public class ScreenHandlers {
                         Registries.SCREEN_HANDLER,
                         FishingClub.identifier("fishing_game_screen_handler"),
                         new ExtendedScreenHandlerType<>(
-                                FishingScreenHandler::new, FishingGameStartS2CPayload.CODEC));
+                                FishingScreenHandler::new, FishingStartS2CPayload.CODEC));
 
         FISHING_GAME_POST_SCREEN =
                 Registry.register(
                         Registries.SCREEN_HANDLER,
                         FishingClub.identifier("fishing_game_post_screen_handler"),
                         new ExtendedScreenHandlerType<>(
-                                FishingPostScreenHandler::new, FishingGamePostS2CPayload.CODEC));
+                                FishingPostScreenHandler::new, FishingPostPayload.CODEC));
 
         MEMBER_SCREEN =
                 Registry.register(

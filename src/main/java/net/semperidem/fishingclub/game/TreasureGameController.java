@@ -6,7 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.game.treasure.Reward;
 import net.semperidem.fishingclub.game.treasure.Rewards;
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 import net.semperidem.fishingclub.registry.Enchantments;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class TreasureGameController {
     private boolean canReel = true;
     private final float decay;
 
-    public void updateClient(FishingGameTickS2CPayload payload) {
+    public void updateClient(FishingUpdatePayload payload) {
         this.progress = payload.treasureProgress();
         this.treasureHookedTicks = payload.treasureTicksLeft();
         this.isDone = payload.isTreasureDone();

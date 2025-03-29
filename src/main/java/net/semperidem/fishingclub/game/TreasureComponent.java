@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.game;
 
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.game.treasure.Rewards;
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 
 public class TreasureComponent {
 
@@ -24,7 +24,7 @@ public class TreasureComponent {
         this.position = (float) Math.random();
     }
 
-    public void updateClient(FishingGameTickS2CPayload payload) {
+    public void updateClient(FishingUpdatePayload payload) {
         this.canPullTreasure = payload.canPullTreasure();
         this.progress = payload.treasureStartProgress();
         this.position = payload.treasureStartPosition();

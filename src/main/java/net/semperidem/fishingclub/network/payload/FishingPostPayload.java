@@ -7,23 +7,22 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
-public record FishingGamePostS2CPayload(SpecimenData fish, List<ItemStack> rewards, int exp) implements CustomPayload {
-    public static final CustomPayload.Id<FishingGameStartS2CPayload> ID =
-            new CustomPayload.Id<>(identifier("s2c_fishing_game_post"));
-    public static final PacketCodec<RegistryByteBuf, FishingGamePostS2CPayload> CODEC =
+public record FishingPostPayload(SpecimenData fish, List<ItemStack> rewards, int exp) implements CustomPayload {
+    public static final CustomPayload.Id<FishingStartS2CPayload> ID =
+            new CustomPayload.Id<>(identifier("s2c_fishing_post"));
+    public static final PacketCodec<RegistryByteBuf, FishingPostPayload> CODEC =
             PacketCodec.tuple(
                     SpecimenData.PACKET_CODEC,
-                    FishingGamePostS2CPayload::fish,
+                    FishingPostPayload::fish,
                     ItemStack.PACKET_CODEC.collect(PacketCodecs.toList()),
-                    FishingGamePostS2CPayload::rewards,
+                    FishingPostPayload::rewards,
                     PacketCodecs.INTEGER,
-                    FishingGamePostS2CPayload::exp,
-                    FishingGamePostS2CPayload::new);
+                    FishingPostPayload::exp,
+                    FishingPostPayload::new);
 
 
     @Override

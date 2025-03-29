@@ -9,12 +9,12 @@ import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
-public record FishingGameInputMousePayload(float reelForce) implements CustomPayload {
-    public static final CustomPayload.Id<FishingGameInputMousePayload> ID = new CustomPayload.Id<>(identifier("c2s_fishing_game_input_mouse"));
-    public static final PacketCodec<RegistryByteBuf, FishingGameInputMousePayload> CODEC = PacketCodec.tuple(
+public record FishingInputMousePayload(float reelForce) implements CustomPayload {
+    public static final CustomPayload.Id<FishingInputMousePayload> ID = new CustomPayload.Id<>(identifier("c2s_fishing_game_input_mouse"));
+    public static final PacketCodec<RegistryByteBuf, FishingInputMousePayload> CODEC = PacketCodec.tuple(
             PacketCodecs.FLOAT,
-            FishingGameInputMousePayload::reelForce,
-            FishingGameInputMousePayload::new
+            FishingInputMousePayload::reelForce,
+            FishingInputMousePayload::new
     );
 
     @Override
@@ -22,7 +22,7 @@ public record FishingGameInputMousePayload(float reelForce) implements CustomPay
         return ID;
     }
 
-    public static void consumePayload(FishingGameInputMousePayload payload, ServerPlayNetworking.Context context) {
+    public static void consumePayload(FishingInputMousePayload payload, ServerPlayNetworking.Context context) {
         if (!(context.player().currentScreenHandler instanceof FishingScreenHandler screenHandler)) {
             return;
         }

@@ -10,12 +10,12 @@ import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
-public record FishingGameInputKeyboardPayload(boolean isPressed) implements CustomPayload {
-    public static final Id<FishingGameInputKeyboardPayload> ID = new Id<>(identifier("c2s_fishing_game_input_keyboard"));
-    public static final PacketCodec<RegistryByteBuf, FishingGameInputKeyboardPayload> CODEC = PacketCodec.tuple(
+public record FishingInputKeyboardPayload(boolean isPressed) implements CustomPayload {
+    public static final Id<FishingInputKeyboardPayload> ID = new Id<>(identifier("c2s_fishing_input_keyboard"));
+    public static final PacketCodec<RegistryByteBuf, FishingInputKeyboardPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.BOOL,
-            FishingGameInputKeyboardPayload::isPressed,
-            FishingGameInputKeyboardPayload::new
+            FishingInputKeyboardPayload::isPressed,
+            FishingInputKeyboardPayload::new
     );
 
     @Override
@@ -23,7 +23,7 @@ public record FishingGameInputKeyboardPayload(boolean isPressed) implements Cust
         return ID;
     }
 
-    public static void consumePayload(FishingGameInputKeyboardPayload payload, ServerPlayNetworking.Context context) {
+    public static void consumePayload(FishingInputKeyboardPayload payload, ServerPlayNetworking.Context context) {
         if ((context.player().currentScreenHandler instanceof FishingScreenHandler screenHandler)) {
             handleGame(screenHandler, payload);
             return;
@@ -33,11 +33,11 @@ public record FishingGameInputKeyboardPayload(boolean isPressed) implements Cust
            handlePost(screenHandler, payload);
         }
     }
-    private static void handlePost(FishingPostScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+    private static void handlePost(FishingPostScreenHandler screenHandler, FishingInputKeyboardPayload payload) {
         screenHandler.nextStage(!payload.isPressed);
     }
 
-    private static void handleGame(FishingScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+    private static void handleGame(FishingScreenHandler screenHandler, FishingInputKeyboardPayload payload) {
         screenHandler.consumeReel(payload.isPressed);
     }
 }

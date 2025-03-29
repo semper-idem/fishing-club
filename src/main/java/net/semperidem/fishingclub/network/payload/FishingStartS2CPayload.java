@@ -8,18 +8,18 @@ import net.minecraft.network.packet.CustomPayload;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 
-public record FishingGameStartS2CPayload(
+public record FishingStartS2CPayload(
 	SpecimenData fishComponent, RodConfiguration configurationComponent)
     implements CustomPayload {
-  public static final CustomPayload.Id<FishingGameStartS2CPayload> ID =
-      new CustomPayload.Id<>(identifier("s2c_fishing_game_open"));
-  public static final PacketCodec<RegistryByteBuf, FishingGameStartS2CPayload> CODEC =
+  public static final CustomPayload.Id<FishingStartS2CPayload> ID =
+      new CustomPayload.Id<>(identifier("s2c_fishing_start"));
+  public static final PacketCodec<RegistryByteBuf, FishingStartS2CPayload> CODEC =
       PacketCodec.tuple(
           SpecimenData.PACKET_CODEC,
-          FishingGameStartS2CPayload::fishComponent,
+          FishingStartS2CPayload::fishComponent,
           RodConfiguration.PACKET_CODEC,
-          FishingGameStartS2CPayload::configurationComponent,
-          FishingGameStartS2CPayload::new);
+          FishingStartS2CPayload::configurationComponent,
+          FishingStartS2CPayload::new);
 
   @Override
   public CustomPayload.Id<? extends CustomPayload> getId() {

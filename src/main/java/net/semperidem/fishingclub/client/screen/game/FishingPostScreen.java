@@ -20,7 +20,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDescription;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.managers.ProgressionManager;
-import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
+import net.semperidem.fishingclub.network.payload.FishingInputKeyboardPayload;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
 
 import java.util.ArrayList;
@@ -247,11 +247,11 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
             if (this.handler.isLastStage()) {
                 this.client.options.setPerspective(this.previousPerspective);
             }
-            ClientPlayNetworking.send(new FishingGameInputKeyboardPayload(true));
+            ClientPlayNetworking.send(new FishingInputKeyboardPayload(true));
             return true;
         }
         if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
-            ClientPlayNetworking.send(new FishingGameInputKeyboardPayload(false));
+            ClientPlayNetworking.send(new FishingInputKeyboardPayload(false));
             this.client.options.setPerspective(this.previousPerspective);
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

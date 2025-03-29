@@ -13,7 +13,7 @@ import net.semperidem.fishingclub.fish.FishUtil;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
-import net.semperidem.fishingclub.network.payload.FishingGamePostS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingPostPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class FishingPostScreenHandler extends ScreenHandler {
     private Card card;
     private int exp;
 
-    public FishingPostScreenHandler(int syncId, PlayerInventory playerInventory, FishingGamePostS2CPayload payload) {
+    public FishingPostScreenHandler(int syncId, PlayerInventory playerInventory, FishingPostPayload payload) {
         super(ScreenHandlers.FISHING_GAME_POST_SCREEN, syncId);
         this.inventory = playerInventory;
         this.stage.set(1);

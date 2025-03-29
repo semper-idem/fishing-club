@@ -8,12 +8,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
-import net.semperidem.fishingclub.network.payload.FishingGamePostS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingPostPayload;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FishingPostScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGamePostS2CPayload> {
+public class FishingPostScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingPostPayload> {
     SpecimenData fish;
     List<ItemStack> rewards;
     int exp;
@@ -31,11 +31,11 @@ public class FishingPostScreenHandlerFactory implements ExtendedScreenHandlerFac
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    return new FishingPostScreenHandler(syncId, inv, new FishingGamePostS2CPayload(this.fish, this.rewards, this.exp));
+    return new FishingPostScreenHandler(syncId, inv, new FishingPostPayload(this.fish, this.rewards, this.exp));
     }
 
     @Override
-    public FishingGamePostS2CPayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new FishingGamePostS2CPayload(this.fish, this.rewards, this.exp);
+    public FishingPostPayload getScreenOpeningData(ServerPlayerEntity player) {
+        return new FishingPostPayload(this.fish, this.rewards, this.exp);
     }
 }

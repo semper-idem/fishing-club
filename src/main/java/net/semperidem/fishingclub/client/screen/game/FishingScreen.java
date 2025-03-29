@@ -14,9 +14,9 @@ import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.BobberComponent;
 import net.semperidem.fishingclub.game.FishingController;
-import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
-import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingInputKeyboardPayload;
+import net.semperidem.fishingclub.network.payload.FishingInputMousePayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 
 public class FishingScreen extends HandledScreen<FishingScreenHandler> implements ScreenHandlerProvider<FishingScreenHandler> {
@@ -69,7 +69,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
             this.y = (int) (this.originY + (Math.random() * 2) - 1);
         }
         ClientPlayNetworking.send(
-                new FishingGameInputKeyboardPayload(
+                new FishingInputKeyboardPayload(
                         InputUtil.isKeyPressed(
                                 MinecraftClient.getInstance().getWindow().getHandle(),
                                 InputUtil.GLFW_KEY_SPACE
@@ -101,11 +101,11 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
             return;
         }
         this.controller.reelForce = (float) (distanceFromCenterPercent - Math.copySign(deadZone, distanceFromCenterPercent)) * -0.02f * bobberSizeScale;
-        ClientPlayNetworking.send(new FishingGameInputMousePayload(this.handler.controller.reelForce));
+        ClientPlayNetworking.send(new FishingInputMousePayload(this.handler.controller.reelForce));
         this.updateCameraTarget();
     }
 
-    public void update(FishingGameTickS2CPayload fishingGameTickPayload) {
+    public void update(FishingUpdatePayload fishingGameTickPayload) {
         this.controller.updateClient(fishingGameTickPayload);
     }
 

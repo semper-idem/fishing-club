@@ -7,7 +7,7 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.managers.StatusEffectHelper;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandlerFactory;
 
 public class FishingController {
@@ -38,7 +38,7 @@ public class FishingController {
         treasureGameController = new TreasureGameController(this);
     }
 
-    public void updateClient(FishingGameTickS2CPayload payload) {
+    public void updateClient(FishingUpdatePayload payload) {
         bobberComponent.updateClient(payload);
         fishController.updateClient(payload);
         healthComponent.updateClient(payload);
@@ -55,7 +55,7 @@ public class FishingController {
     }
 
     private void sendUpdate() {
-        ServerPlayNetworking.send((ServerPlayerEntity)this.player, new FishingGameTickS2CPayload(
+        ServerPlayNetworking.send((ServerPlayerEntity)this.player, new FishingUpdatePayload(
                 bobberComponent.getPositionX(),
                 fishController.getPositionX(),
                 fishController.getPositionY(),

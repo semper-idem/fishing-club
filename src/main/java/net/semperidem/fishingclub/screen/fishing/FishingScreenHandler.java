@@ -5,14 +5,14 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.semperidem.fishingclub.game.FishingController;
-import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingStartS2CPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 
 public class FishingScreenHandler extends ScreenHandler {
     public final FishingController controller;
 
 
-    public FishingScreenHandler(int syncId, PlayerInventory playerInventory, FishingGameStartS2CPayload payload) {
+    public FishingScreenHandler(int syncId, PlayerInventory playerInventory, FishingStartS2CPayload payload) {
         super(ScreenHandlers.FISHING_SCREEN, syncId);
         this.controller = new FishingController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());
     }

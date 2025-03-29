@@ -2,7 +2,7 @@ package net.semperidem.fishingclub.game;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.math.MathHelper;
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 import net.semperidem.fishingclub.status_effects.IncreaseBobberSizeStatusEffect;
 
 import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOBBER_SIZE_BOAT;
@@ -32,7 +32,7 @@ public class BobberComponent {
     }
 
 
-    public void updateClient(FishingGameTickS2CPayload payload) {
+    public void updateClient(FishingUpdatePayload payload) {
         this.positionX = payload.bobberPositionX();
     }
 

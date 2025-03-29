@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.game;
 
-import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
+import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 
 public class ProgressComponent {
     private final FishingController parent;
@@ -21,7 +21,7 @@ public class ProgressComponent {
 
 
 
-    public void updateClient(FishingGameTickS2CPayload payload) {
+    public void updateClient(FishingUpdatePayload payload) {
         this.progress = payload.progress();
     }
 
