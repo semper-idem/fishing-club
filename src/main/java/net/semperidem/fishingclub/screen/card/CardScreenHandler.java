@@ -13,7 +13,7 @@ import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
-import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
+import net.semperidem.fishingclub.network.payload.CardSellFishPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 import net.semperidem.fishingclub.registry.Tags;
 
@@ -51,7 +51,7 @@ public class CardScreenHandler extends ScreenHandler {
         if (cannotSell()) {
             return;
         }
-        ClientPlayNetworking.send(new SellFishDirectPayload(this.sellSlot.getStack()));
+        ClientPlayNetworking.send(new CardSellFishPayload());
     }
 
     public boolean cannotSell() {
@@ -62,7 +62,7 @@ public class CardScreenHandler extends ScreenHandler {
         this.addSlot(new TagSlot(Tags.ROD_CORE, Tab.STATS, card, 0, 148, 19));
         this.addSlot(new TagSlot(Tags.CONTAINER, Tab.STATS, card, 1, 148, 38));
         this.addSlot(new TagSlot(ItemTags.BOATS, Tab.STATS, card, 2, 148, 57));
-        this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 3, 127, 57));
+        this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 3, 129, 19));
     }
 
 

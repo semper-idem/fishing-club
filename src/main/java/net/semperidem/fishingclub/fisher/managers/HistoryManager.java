@@ -14,6 +14,8 @@ import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.util.ResourceUtil;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +24,7 @@ public class HistoryManager extends DataManager {
     private static final long DAY_LENGTH = 24000;
     private static final float DAYS_SINCE_LAST_FISH_PERIOD = 4;
 
+    private String issuedDate;
     private final ArrayList<Chunk> usedChunks = new ArrayList<>();
     private long lastCatchTime = 0;
     private long firstCatchOfTheDay = 0;
@@ -137,9 +140,16 @@ public class HistoryManager extends DataManager {
         return trackedFor.holder().getWorld().getTime();
     }
 
+    public String getIssuedDate(){
+        return this.issuedDate;
+    }
+
     @Override
     public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         NbtCompound historyTag = nbtCompound.getCompound(TAG);
+        String issuedDate = historyTag.getString(ISSUED_DATE);
+        this.issuedDate = !issuedDate.isEmpty() ? issuedDate : LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
         NbtList usedChunksTag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
         usedChunks.clear();
         usedChunksTag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
@@ -223,8 +233,7 @@ public class HistoryManager extends DataManager {
     private static final String LAST_USED_BAIT_TAG = "last_used_bait";
     private static final String X_TAG = "x";
     private static final String Z_TAG = "z";
-    private static final String DEREK_MET_TAG = "derek_met";
-    private static final String WELCOMED_DEREK_TAG = "welcomed_derek";
+    private static final String ISSUED_DATE = "issued_date";
     private static final String FISH_ATLAS_TAG = "fish_atlas_tag";
 
 }

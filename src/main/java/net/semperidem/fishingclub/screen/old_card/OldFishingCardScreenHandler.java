@@ -10,7 +10,7 @@ import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.CardPayload;
-import net.semperidem.fishingclub.network.payload.SellFishDirectPayload;
+import net.semperidem.fishingclub.network.payload.CardSellFishPayload;
 import net.semperidem.fishingclub.registry.Items;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 
@@ -49,8 +49,7 @@ public class OldFishingCardScreenHandler extends ScreenHandler {
 
 
     public void instantSell(){
-        ClientPlayNetworking.send(new SellFishDirectPayload(instantSellSlot.getStack()));
-        //instantSellSlot.getStack().setCount(0);
+        ClientPlayNetworking.send(new CardSellFishPayload());
     }
 
     private void addInstantSellSlot(){

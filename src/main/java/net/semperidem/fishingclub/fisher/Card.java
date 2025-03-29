@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.FishingClub;
@@ -19,7 +20,9 @@ import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import org.jetbrains.annotations.Nullable;
+import org.ladysnake.cca.api.v3.component.ComponentContainer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentProvider;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
@@ -68,10 +71,14 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return holder.getWorld().isClient();
     }
 
+
+    public void sell() {
+        super.sell();
+        CARD.syncWith((ServerPlayerEntity) this.holder, this.holder.asComponentProvider());
+    }
     @Override
     public void setSharedBait(ItemStack baitToShare) {
         super.setSharedBait(baitToShare);
-        CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
     }
 
     @Override
@@ -112,6 +119,10 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     @Override
     public void applySyncPacket(RegistryByteBuf buf) {
         AutoSyncedComponent.super.applySyncPacket(buf);
+    }
+
+    public String getIssuedDate() {
+        return this.historyManager.getIssuedDate();
     }
 
     public void addUnclaimedReward(ItemStack rewardStack) {
@@ -327,4 +338,5 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     public void hearMessage() {
         this.historyManager.hearMessage();
     }
+
 }

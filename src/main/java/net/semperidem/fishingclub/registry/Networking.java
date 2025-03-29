@@ -21,7 +21,7 @@ public class Networking {
         PayloadTypeRegistry.playC2S().register(CheckoutPayload.ID, CheckoutPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SpellCastPayload.ID, SpellCastPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(SellFishDirectPayload.ID, SellFishDirectPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(CardSellFishPayload.ID, CardSellFishPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SummonAcceptPayload.ID, SummonAcceptPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingInputMousePayload.ID, FishingInputMousePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingInputKeyboardPayload.ID, FishingInputKeyboardPayload.CODEC);
@@ -47,7 +47,7 @@ public class Networking {
         ServerPlayNetworking.registerGlobalReceiver(CheckoutPayload.ID, CheckoutPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SpellCastPayload.ID, SpellCastPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SpellCastWithTargetPayload.ID, SpellCastWithTargetPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(SellFishDirectPayload.ID, SellFishDirectPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(CardSellFishPayload.ID, CardSellFishPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(SummonAcceptPayload.ID, SummonAcceptPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(FishingInputMousePayload.ID, FishingInputMousePayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(FishingInputKeyboardPayload.ID, FishingInputKeyboardPayload::consumePayload);

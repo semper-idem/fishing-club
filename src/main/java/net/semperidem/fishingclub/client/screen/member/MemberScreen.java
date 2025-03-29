@@ -9,7 +9,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.PlayerFaceComponent;
+import net.semperidem.fishingclub.client.screen.PlayerFaceIcon;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.TextUtil;
@@ -63,11 +63,11 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
 
     private void addPlayerFaceComponent() {
-        addDrawable(new PlayerFaceComponent(
-                client.player.getSkinTextures().texture(),
-                x + TILE_SIZE,
-                y + TEXTURE.renderHeight - TILE_SIZE * 9
-        ));
+//        addDrawable(new PlayerFaceIcon(
+//                client.player.getSkinTextures().texture(),
+//                x + TILE_SIZE,
+//                y + TEXTURE.renderHeight - TILE_SIZE * 9
+//        ));
     }
 
 

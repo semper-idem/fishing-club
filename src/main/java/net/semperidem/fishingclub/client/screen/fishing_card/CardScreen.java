@@ -6,11 +6,15 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.client.screen.PlayerFaceIcon;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.screen.card.CardScreenHandler;
 
@@ -18,6 +22,8 @@ import java.util.ArrayList;
 
 @Environment(EnvType.CLIENT)
 public class CardScreen extends HandledScreen<CardScreenHandler> implements ScreenHandlerProvider<CardScreenHandler> {
+
+    private static final Identifier SCALES_TEXTURE = FishingClub.identifier("textures/gui/golden_scales.png");
     private static final Identifier TEXTURES = FishingClub.identifier("textures/gui/card.png");
     private static final int SCREEN_WIDTH = 176;
     private static final int SCREEN_HEIGHT = 166;
@@ -30,11 +36,14 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
     private final AtlasTab atlasTab = new AtlasTab();
     private final LeaderboardTab leaderboardTab = new LeaderboardTab();
 
+    private final Identifier playerTexture;
+
 
 
     public CardScreen(CardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.currentTab = statsTab;
+        this.playerTexture = ((ClientPlayerEntity)inventory.player).getSkinTextures().texture();
     }
     @Override
     protected void init() {
@@ -113,6 +122,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
     }
 
     class StatsTab extends Tab{
+        Text level;
+        Text issuedDate;
+        float xpProgress;
+        Text playerName;
 
         StatsTab() {
             super(CardScreenHandler.Tab.STATS);
@@ -120,18 +133,63 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
         @Override
         void initTab() {
+            Card card = getScreenHandler().card;
+            level = Text.of(String.valueOf(card.getLevel()));
+            xpProgress = card.getExpProgress();
+            playerName = card.holder().getName();
+            issuedDate = Text.of(card.getIssuedDate());
             addDrawableChild(
                     new SellButtonWidget(
-                            x + 116,
-                            y + 60,
+                            x + 118,
+                            y + 22,
                             9,
                             11
                     )
             );
+            addDrawable(new PlayerFaceIcon(playerTexture, x + 11,y + 11, 0.5f));
         }
 
+
+        int textColor = 0x555555;
+        int scalesColor = 0xdfb220;
+
+
+        private void drawText(DrawContext context, Text text, int x, int y, int color) {
+            drawText(context, text, x, y, color, 1);
+        }
+        private void drawText(DrawContext context, Text text, int x, int y, int color, float scale) {
+            context.getMatrices().push();
+            context.getMatrices().scale(scale, scale, scale);
+            context.drawText(textRenderer, text, (int) (x / scale), (int) (y / scale), color, false);
+            context.getMatrices().pop();
+        }
         @Override
         void render(DrawContext context, int mouseX, int mouseY) {
+            draw(context, x + 32, y + 9, 178, 0, (int) (135 * xpProgress), 5);
+            drawText(context, playerName, x + 33, y + 18, textColor, 0.75f);
+
+            drawText(context, Text.of("Master"), x + 33, y + 25, 0x8c1991, 0.5f);
+
+            drawText(context, Text.of("Issued:"), x + 11, y + 64, textColor, 0.5f);
+            drawText(context, issuedDate, x + 11, y + 69, textColor, 0.75f);
+
+            drawText(context, level, x + 96, y + 9, 0);
+            drawText(context, level, x + 98, y + 9, 0);
+            drawText(context, level, x + 97, y + 10, 0);
+            drawText(context, level, x + 97, y + 8, 0);
+            drawText(context, level, x + 97, y + 9, 8453921);
+
+
+            int credit = getScreenHandler().card.getCredit();
+            Text creditText = Text.of(String.valueOf(credit));
+            int creditOffset = textRenderer.getWidth(creditText);
+            int stage = MathHelper.clamp(String.valueOf(credit).length() * 2 - 1, 0, 8);
+            context.drawTexture(SCALES_TEXTURE, x + 140 - creditOffset - 20,y + 60,0, stage * 16, 16,16, 16, 256);
+            drawText(context, Text.of(String.valueOf(getScreenHandler().card.getCredit())), x + 140 - creditOffset, y + 66, scalesColor, 1f);
+            //Name
+            //Title
+            //Xp
+            //Credit
 
         }
 
@@ -218,6 +276,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
                     WIDTH,
                     HEIGHT
             );
+            if (!(tab instanceof StatsTab)) {
+                return;
+            }
+            PlayerFaceIcon.render(context, playerTexture, this.getX() + ((currentTab == tab) ? 6 : 7), this.getY() + 6, 0.25f);
         }
     }
 

@@ -30,7 +30,7 @@ public class CardInventory implements Inventory{
         this.credit = credit;
     }
 
-    public void sell() {
+    void sell() {
         for(int i = 0; i < SLOT_COUNT; i++) {
             ItemStack inventoryStack = inventory.get(i);
             if (!inventoryStack.isIn(Tags.FISH_ITEM)) {

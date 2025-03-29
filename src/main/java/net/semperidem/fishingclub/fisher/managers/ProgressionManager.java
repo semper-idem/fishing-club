@@ -186,6 +186,7 @@ public class ProgressionManager extends DataManager {
                 .getOtherEntities(null, new Box(this.trackedFor.holder().getBlockPos()).expand(4))
                 .stream()
                 .filter(entity -> entity instanceof ServerPlayerEntity)
+                .filter(entity -> entity != trackedFor.holder())
                 .map(entity -> Card.of((PlayerEntity) entity))
                 .filter(card -> card.knowsTradeSecret(TradeSecrets.WATCH_AND_LEARN))
                 .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN) * gainedXP));
@@ -238,7 +239,6 @@ public class ProgressionManager extends DataManager {
         return this.knownTradeSecrets.get(tradeSecretName).level() >= level;
     }
 
-
     @Override
     public void readNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (!fishingCardNbt.contains(TAG)) {
@@ -287,4 +287,5 @@ public class ProgressionManager extends DataManager {
     private static final String RESET_COUNT = "reset_count";
     private static final String TRADE_SECRETS_TAG = "perks";
     private static final String SPELLS_TAG = "spells";
+
 }
