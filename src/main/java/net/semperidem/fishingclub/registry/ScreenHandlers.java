@@ -6,10 +6,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.client.screen.configuration.ConfigurationScreen;
+import net.semperidem.fishingclub.client.screen.fishing_card.CardScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingPostScreen;
 import net.semperidem.fishingclub.client.screen.game.FishingScreen;
 import net.semperidem.fishingclub.client.screen.member.MemberScreen;
 import net.semperidem.fishingclub.network.payload.*;
+import net.semperidem.fishingclub.screen.card.CardScreenHandler;
 import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
 import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
@@ -28,7 +30,7 @@ public class ScreenHandlers {
                         Registries.SCREEN_HANDLER,
                         FishingClub.identifier("fishing_card_screen_handler"),
                         new ExtendedScreenHandlerType<>(
-                                CardScreenHandler::new, CardPayload.CODEC));
+                                (syncId, inventory, data) -> new CardScreenHandler(syncId, inventory), CardPayload.CODEC));
 
         FISHING_SCREEN =
                 Registry.register(
@@ -61,7 +63,7 @@ public class ScreenHandlers {
     public static void registerClient() {
         HandledScreens.register(FISHING_SCREEN, FishingScreen::new);
         HandledScreens.register(FISHING_GAME_POST_SCREEN, FishingPostScreen::new);
-        HandledScreens.register(CARD, FishingCardScreen::new);
+        HandledScreens.register(CARD, CardScreen::new);
         HandledScreens.register(MEMBER_SCREEN, MemberScreen::new);
         HandledScreens.register(CONFIGURATION_SCREEN, ConfigurationScreen::new);
     }

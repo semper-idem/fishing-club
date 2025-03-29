@@ -37,7 +37,7 @@
   },
   "custom": {
     "cardinal-components": [
-      "fishingclub:fishing_card",
+      "fishingclub:card",
       "fishingclub:specimen_component",
       "fishingclub:specimen_display_component",
       "fishingclub:fishing_king",

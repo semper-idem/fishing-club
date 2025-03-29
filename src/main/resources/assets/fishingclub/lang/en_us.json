@@ -7,5 +7,6 @@
   "effect.fishingclub.one_time_quality_buff": "One-time Fish Quality+",
   "effect.fishingclub.shared_bait_buff": "Shared Bait",
   "block.fishingclub.tackle_box": "Tackle Box",
-  "item.fishingclub.butterfish": "Raw Butterfish"
+  "item.fishingclub.butterfish": "Raw Butterfish",
+  "screen.fishingclub.card": "Fishing Club"
 }

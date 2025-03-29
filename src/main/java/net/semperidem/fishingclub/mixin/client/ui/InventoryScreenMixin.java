@@ -27,8 +27,8 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
     @Shadow public abstract RecipeBookWidget getRecipeBookWidget();
 
     private static final ButtonTextures BUTTON_TEXTURES = new ButtonTextures(
-            FishingClub.identifier("fishing_card/button"),
-            FishingClub.identifier("fishing_card/button_highlighted")
+            FishingClub.identifier("card/button"),
+            FishingClub.identifier("card/button_highlighted")
     );
 
     @Unique
@@ -56,7 +56,6 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
                 ClientPlayNetworking.send(new ConfigurationPayload());
                 return;
             }
-            ClientPlayNetworking.
             ClientPlayNetworking.send(new CardPayload());
         });
         this.addDrawableChild(this.fishingCardButton);

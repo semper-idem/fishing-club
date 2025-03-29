@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class CardScreenFactory implements ExtendedScreenHandlerFactory<CardPayload> {
     @Override
     public Text getDisplayName() {
-        return Text.literal("Fishing Card");
+        return Text.translatable("screen.fishingclub.card");
     }
 
     @Nullable
@@ -23,6 +23,7 @@ public class CardScreenFactory implements ExtendedScreenHandlerFactory<CardPaylo
     }
 
     @Override
+    //If true, puts mouse in the center
     public boolean shouldCloseCurrentScreen() {
         return false;
     }

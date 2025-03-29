@@ -11,9 +11,11 @@ public class CardScreenHandler extends ScreenHandler {
     private final Card card;
 
 
-    protected CardScreenHandler(int syncId, PlayerInventory inventory) {
+    public CardScreenHandler(int syncId, PlayerInventory inventory) {
         super(ScreenHandlers.CARD, syncId);
         this.card = Card.of(inventory.player);
+        //addPlayerInventory
+        //addCardInventory
     }
 
     @Override

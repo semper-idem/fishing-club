@@ -6,7 +6,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.util.Identifier;
 
 public class Texture {
-    Identifier identifier;
+    private final Identifier identifier;
     public final int textureWidth;
     public final int textureHeight;
     public final int renderWidth;
