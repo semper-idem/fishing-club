@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
@@ -24,7 +24,7 @@ public record FishingGameInputKeyboardPayload(boolean isPressed) implements Cust
     }
 
     public static void consumePayload(FishingGameInputKeyboardPayload payload, ServerPlayNetworking.Context context) {
-        if ((context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) {
+        if ((context.player().currentScreenHandler instanceof FishingScreenHandler screenHandler)) {
             handleGame(screenHandler, payload);
             return;
         }
@@ -37,7 +37,7 @@ public record FishingGameInputKeyboardPayload(boolean isPressed) implements Cust
         screenHandler.nextStage(!payload.isPressed);
     }
 
-    private static void handleGame(FishingGameScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
+    private static void handleGame(FishingScreenHandler screenHandler, FishingGameInputKeyboardPayload payload) {
         screenHandler.consumeReel(payload.isPressed);
     }
 }

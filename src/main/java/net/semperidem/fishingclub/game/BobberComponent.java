@@ -20,9 +20,9 @@ public class BobberComponent {
 
     private float positionX;
 
-    private final FishingGameController parent;
+    private final FishingController parent;
 
-    public BobberComponent(FishingGameController parent) {
+    public BobberComponent(FishingController parent) {
         this.parent = parent;
         this.length = calculateLength();
         this.positionX = 0.5f;

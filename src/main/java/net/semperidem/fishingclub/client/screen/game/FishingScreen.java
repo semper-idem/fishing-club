@@ -13,14 +13,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.game.BobberComponent;
-import net.semperidem.fishingclub.game.FishingGameController;
+import net.semperidem.fishingclub.game.FishingController;
 import net.semperidem.fishingclub.network.payload.FishingGameInputKeyboardPayload;
 import net.semperidem.fishingclub.network.payload.FishingGameInputMousePayload;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
-import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 
-public class FishingScreen extends HandledScreen<FishingGameScreenHandler> implements ScreenHandlerProvider<FishingGameScreenHandler> {
-    public final FishingGameController controller;
+public class FishingScreen extends HandledScreen<FishingScreenHandler> implements ScreenHandlerProvider<FishingScreenHandler> {
+    public final FishingController controller;
     private static final Identifier ATLAS = FishingClub.identifier("textures/gui/fishing_game.png");
 
     private final float startingPitch;
@@ -53,7 +53,7 @@ public class FishingScreen extends HandledScreen<FishingGameScreenHandler> imple
     private int treasureStartTick = -1;
 
 
-    public FishingScreen(FishingGameScreenHandler handler, PlayerInventory playerInventory, Text text) {
+    public FishingScreen(FishingScreenHandler handler, PlayerInventory playerInventory, Text text) {
         super(handler, playerInventory, text);
         this.controller = this.handler.controller;
         this.clientPlayer = playerInventory.player;

@@ -17,7 +17,7 @@ public class TreasureGameController {
     private int treasureHookedTicks;
     private float progress;
     private boolean isDone = false;
-    private final FishingGameController parent;
+    private final FishingController parent;
     private boolean canReel = true;
     private final float decay;
 
@@ -31,7 +31,7 @@ public class TreasureGameController {
         return this.progress == 1;
     }
 
-    public TreasureGameController(FishingGameController parent) {
+    public TreasureGameController(FishingController parent) {
         this.parent = parent;
         this.treasureReward = Rewards.roll(parent.card, parent.rodConfiguration, Enchantments.getEnchantmentLevel(parent.player, parent.player.getEquippedStack(EquipmentSlot.MAINHAND), net.minecraft.enchantment.Enchantments.LUCK_OF_THE_SEA));
         this.decay = 0.005f + 0.002f * parent.hookedFish.quality();

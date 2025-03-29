@@ -11,11 +11,11 @@ import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGameStartS2CPayload> {
+public class FishingScreenHandlerFactory implements ExtendedScreenHandlerFactory<FishingGameStartS2CPayload> {
     private final SpecimenData fish;
     private final RodConfiguration rodConfiguration;
 
-    public FishingGameScreenHandlerFactory(SpecimenData fish, RodConfiguration rodConfiguration) {
+    public FishingScreenHandlerFactory(SpecimenData fish, RodConfiguration rodConfiguration) {
         this.fish = fish;
         this.rodConfiguration = rodConfiguration;
     }
@@ -27,7 +27,7 @@ public class FishingGameScreenHandlerFactory implements ExtendedScreenHandlerFac
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-    return new FishingGameScreenHandler(syncId, inv, new FishingGameStartS2CPayload(this.fish, this.rodConfiguration));
+    return new FishingScreenHandler(syncId, inv, new FishingGameStartS2CPayload(this.fish, this.rodConfiguration));
     }
 
     @Override

@@ -17,7 +17,7 @@ import net.semperidem.fishingclub.client.screen.member.MemberButton;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.LearnTradeSecretPayload;
-import net.semperidem.fishingclub.screen.card.OldFishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.old_card.OldFishingCardScreenHandler;
 
 import java.util.ArrayList;
 

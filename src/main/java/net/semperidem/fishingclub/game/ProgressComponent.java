@@ -3,7 +3,7 @@ package net.semperidem.fishingclub.game;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class ProgressComponent {
-    private final FishingGameController parent;
+    private final FishingController parent;
 
     private static final float BASE_GAIN = 0.0075f;
     private static final float BASE_LOSS = 0.005f;
@@ -13,7 +13,7 @@ public class ProgressComponent {
 
     private float progress;
 
-    public ProgressComponent(FishingGameController parent) {
+    public ProgressComponent(FishingController parent) {
         this.parent = parent;
         gain = BASE_GAIN * (1 + getProgressMultiplierBonus());
         loss = BASE_LOSS + (parent.hookedFish.damage() * 0.01f);

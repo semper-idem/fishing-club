@@ -36,7 +36,7 @@ import net.semperidem.fishingclub.game.treasure.Rewards;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 import net.semperidem.fishingclub.mixin.common.FishingBobberEntityAccessor;
 import net.semperidem.fishingclub.registry.*;
-import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandlerFactory;
+import net.semperidem.fishingclub.screen.fishing.FishingScreenHandlerFactory;
 import net.semperidem.fishingclub.util.Utils;
 import net.semperidem.fishingclub.util.VelocityUtil;
 
@@ -733,7 +733,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             this.handleAutoReel();
             return;
         }
-        this.playerOwner.openHandledScreen(new FishingGameScreenHandlerFactory(this.caughtFish, this.configuration));
+        this.playerOwner.openHandledScreen(new FishingScreenHandlerFactory(this.caughtFish, this.configuration));
         this.discard();
     }
 

@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.client.screen.old_fishing_card.FishingCardScreenFactory;
+import net.semperidem.fishingclub.screen.card.CardScreenFactory;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -17,6 +17,6 @@ public record CardPayload() implements CustomPayload {
         return ID;
     }
     public static void consumePayload(CardPayload payload, ServerPlayNetworking.Context context) {
-        context.player().openHandledScreen(new FishingCardScreenFactory());
+        context.player().openHandledScreen(new CardScreenFactory());
     }
 }

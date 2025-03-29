@@ -15,9 +15,9 @@ public class TreasureComponent {
     private float position;
     private float treasureTriggerPoint;
 
-    private final FishingGameController parent;
+    private final FishingController parent;
 
-    public TreasureComponent(FishingGameController parent) {
+    public TreasureComponent(FishingController parent) {
         this.parent = parent;
         this.isActive = Rewards.draw(parent.rodConfiguration, parent.card);
         this.treasureTriggerPoint = (float) (Math.random() * TREASURE_MAX_TRIGGER_POINT + TREASURE_MIN_TRIGGER_POINT);

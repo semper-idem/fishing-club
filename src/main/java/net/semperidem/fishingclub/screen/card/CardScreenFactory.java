@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.client.screen.old_fishing_card;
+package net.semperidem.fishingclub.screen.card;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,19 +8,18 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.network.payload.CardPayload;
-import net.semperidem.fishingclub.screen.card.OldFishingCardScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingCardScreenFactory implements ExtendedScreenHandlerFactory<CardPayload> {
+public class CardScreenFactory implements ExtendedScreenHandlerFactory<CardPayload> {
     @Override
     public Text getDisplayName() {
-        return Text.literal("Fishing Club");
+        return Text.literal("Fishing Card");
     }
 
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new OldFishingCardScreenHandler(syncId, inv, Card.of(inv.player));
+        return new CardScreenHandler(syncId, inv);
     }
 
     @Override

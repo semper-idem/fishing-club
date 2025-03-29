@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
-import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandler;
+import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 
 import static net.semperidem.fishingclub.FishingClub.identifier;
 
@@ -23,7 +23,7 @@ public record FishingGameInputMousePayload(float reelForce) implements CustomPay
     }
 
     public static void consumePayload(FishingGameInputMousePayload payload, ServerPlayNetworking.Context context) {
-        if (!(context.player().currentScreenHandler instanceof FishingGameScreenHandler screenHandler)) {
+        if (!(context.player().currentScreenHandler instanceof FishingScreenHandler screenHandler)) {
             return;
         }
         screenHandler.consumeBobberMove(payload.reelForce);

@@ -24,7 +24,7 @@ import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.Components;
-import net.semperidem.fishingclub.screen.fishing.FishingGameScreenHandlerFactory;
+import net.semperidem.fishingclub.screen.fishing.FishingScreenHandlerFactory;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class FishingRodCoreItem extends FishingRodItem {
         if (debug && user.isSneaking()) {
 
             //user.openHandledScreen(new MemberScreenHandlerFactory());
-            user.openHandledScreen(new FishingGameScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(Components.ROD_CONFIGURATION)));
+            user.openHandledScreen(new FishingScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(Components.ROD_CONFIGURATION)));
             return TypedActionResult.success(user.getStackInHand(hand));
         }
 

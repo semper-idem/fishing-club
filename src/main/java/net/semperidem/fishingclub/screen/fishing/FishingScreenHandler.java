@@ -4,17 +4,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.semperidem.fishingclub.game.FishingGameController;
+import net.semperidem.fishingclub.game.FishingController;
 import net.semperidem.fishingclub.network.payload.FishingGameStartS2CPayload;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 
-public class FishingGameScreenHandler extends ScreenHandler {
-    public final FishingGameController controller;
+public class FishingScreenHandler extends ScreenHandler {
+    public final FishingController controller;
 
 
-    public FishingGameScreenHandler(int syncId, PlayerInventory playerInventory, FishingGameStartS2CPayload payload) {
-        super(ScreenHandlers.FISHING_GAME_SCREEN, syncId);
-        this.controller = new FishingGameController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());
+    public FishingScreenHandler(int syncId, PlayerInventory playerInventory, FishingGameStartS2CPayload payload) {
+        super(ScreenHandlers.FISHING_SCREEN, syncId);
+        this.controller = new FishingController(playerInventory.player, payload.fishComponent(), payload.configurationComponent());
     }
 
     public void consumeBobberMove(float reelForce) {

@@ -56,6 +56,7 @@ public abstract class InventoryScreenMixin extends AbstractInventoryScreen<Playe
                 ClientPlayNetworking.send(new ConfigurationPayload());
                 return;
             }
+            ClientPlayNetworking.
             ClientPlayNetworking.send(new CardPayload());
         });
         this.addDrawableChild(this.fishingCardButton);

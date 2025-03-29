@@ -17,7 +17,7 @@ public class FishController {
     private static final int STAMINA_PER_LEVEL = 250;
     private static final int STAMINA_BASE = 200;
 
-    private final FishingGameController parent;
+    private final FishingController parent;
     private final float minStamina;
     private final float maxStamina;
     private final float staminaDrain;
@@ -36,7 +36,7 @@ public class FishController {
     private int lastSegmentIndex;
     private MovementPatternInstance.Segment currentSegment;
 
-    public FishController(FishingGameController parent){
+    public FishController(FishingController parent){
         this.parent = parent;
 
         Species<?> species = parent.hookedFish.species();

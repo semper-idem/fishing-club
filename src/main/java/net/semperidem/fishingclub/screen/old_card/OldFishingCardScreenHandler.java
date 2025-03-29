@@ -1,4 +1,4 @@
-package net.semperidem.fishingclub.screen.card;
+package net.semperidem.fishingclub.screen.old_card;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +32,7 @@ public class OldFishingCardScreenHandler extends ScreenHandler {
     }
 
     public OldFishingCardScreenHandler(int syncId, PlayerInventory playerInventory, Card card) {
-        super(ScreenHandlers.FISHING_CARD_SCREEN, syncId);
+        super(ScreenHandlers.CARD, syncId);
         this.playerInventory = playerInventory;
         this.card = card;
         addFisherInventory();

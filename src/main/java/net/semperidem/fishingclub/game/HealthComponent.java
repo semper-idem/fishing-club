@@ -6,11 +6,11 @@ import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 
 public class HealthComponent {
     private float health;
-    private final FishingGameController parent;
+    private final FishingController parent;
     private float damageReduction = 0;
     private final float strainTriggerDistance;
 
-    public HealthComponent(FishingGameController parent) {
+    public HealthComponent(FishingController parent) {
         this.parent = parent;
         this.health = MathHelper.clamp(parent.card.tradeSecretValue(TradeSecrets.LINE_HEALTH_BOAT), 1, 4);
         this.strainTriggerDistance = this.parent.rodConfiguration.attributes().bobberWidth() * BobberComponent.BASE_LENGTH;

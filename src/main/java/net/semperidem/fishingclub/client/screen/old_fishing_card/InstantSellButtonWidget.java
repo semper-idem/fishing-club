@@ -4,7 +4,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.client.screen.CacheAwareButtonWidget;
 import net.semperidem.fishingclub.client.screen.Cacheable;
-import net.semperidem.fishingclub.screen.card.OldFishingCardScreenHandler;
+import net.semperidem.fishingclub.screen.old_card.OldFishingCardScreenHandler;
 
 public class InstantSellButtonWidget extends CacheAwareButtonWidget {
     private static final String title = "Sell";

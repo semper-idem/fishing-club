@@ -10,7 +10,7 @@ import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.semperidem.fishingclub.network.payload.FishingGameTickS2CPayload;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandlerFactory;
 
-public class FishingGameController {
+public class FishingController {
 
     final PlayerEntity player;
     final Card card;
@@ -24,7 +24,7 @@ public class FishingGameController {
     private int ticksBeforeClose = 30;
     private boolean isWon = false;
 
-    public FishingGameController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
+    public FishingController(PlayerEntity playerEntity, SpecimenData hookedFish, RodConfiguration rodConfiguration) {
         this.hookedFish = hookedFish;
         this.player = playerEntity;
         this.card = Card.of(playerEntity);
