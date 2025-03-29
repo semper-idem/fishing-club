@@ -3,14 +3,18 @@ package net.semperidem.fishingclub.fisher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
+import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.FishingNetItem;
+import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Tags;
 
 public class CardInventory implements Inventory{
-    public static final int SLOT_COUNT = 5;
+    public static final int SLOT_COUNT = 4;
     DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
     ItemStack sharedBait = ItemStack.EMPTY;
     int credit = 0;
@@ -24,6 +28,18 @@ public class CardInventory implements Inventory{
 
     public void setCredit(int credit) {
         this.credit = credit;
+    }
+
+    public void sell() {
+        for(int i = 0; i < SLOT_COUNT; i++) {
+            ItemStack inventoryStack = inventory.get(i);
+            if (!inventoryStack.isIn(Tags.FISH_ITEM)) {
+                continue;
+            }
+            credit += (inventoryStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value() * inventoryStack.getCount());
+            inventoryStack.setCount(0);
+            return;
+        }
     }
 
     public ItemStack getSharedBait(){

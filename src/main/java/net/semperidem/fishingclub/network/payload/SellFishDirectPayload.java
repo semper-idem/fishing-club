@@ -22,13 +22,6 @@ public record SellFishDirectPayload(ItemStack fish) implements CustomPayload {
     }
 
     public static void consumePayload(SellFishDirectPayload payload, ServerPlayNetworking.Context context) {
-        if (payload.fish().isEmpty()) {
-            return;
-        }
-
-        int value = payload.fish.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
-        payload.fish.setCount(0);
-        Card card = Card.of(context.player());
-        card.addCredit(value);
+        Card.of(context.player()).sell();
     }
 }

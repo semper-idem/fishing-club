@@ -134,7 +134,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
 
 
     public static boolean isFish(ItemStack itemStack) {
-        return itemStack.isIn(Tags.FISH_ITEM_TAG) || itemStack.get(Components.SPECIMEN) != null;
+        return itemStack.isIn(Tags.FISH_ITEM) || itemStack.get(Components.SPECIMEN) != null;
     }
 
     public static Optional<SpecimenData> fishOnHook(IHookEntity iHookEntity) {

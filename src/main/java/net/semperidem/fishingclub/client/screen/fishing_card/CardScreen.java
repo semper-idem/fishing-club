@@ -11,6 +11,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.screen.card.CardScreenHandler;
 
 import java.util.ArrayList;
@@ -24,21 +25,22 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
     private Tab currentTab;
     private final ArrayList<Tab> tabs = new ArrayList<>();
-    private final StatsTab statsTab = new StatsTab(0);
-    private final StatsTab secretsTab = new StatsTab(1);
-    private final StatsTab atlasTab = new StatsTab(2);
-    private final StatsTab leaderboardTab = new StatsTab(3);
+    private final StatsTab statsTab = new StatsTab();
+    private final SecretTab secretsTab = new SecretTab();
+    private final AtlasTab atlasTab = new AtlasTab();
+    private final LeaderboardTab leaderboardTab = new LeaderboardTab();
 
 
 
     public CardScreen(CardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.currentTab = this.statsTab;
+        this.currentTab = statsTab;
     }
     @Override
     protected void init() {
         super.init();
-        this.tabs.forEach(Tab::init);
+        this.currentTab.activate();
+        this.tabs.forEach(tab -> addDrawableChild(new TabButton(tab)));
     }
 
 
@@ -52,42 +54,130 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
                 x,
                 y,
                 0,
-                this.currentTab.order * TAB_TEXTURE_HEIGHT,
+                this.currentTab.type.ordinal() * TAB_TEXTURE_HEIGHT,
                 SCREEN_WIDTH,
                 SCREEN_HEIGHT
         );
-        this.currentTab.drawBackground(context);
+        this.currentTab.render(context, mouseX, mouseY);
+    }
+
+    class SecretTab extends Tab {
+
+        SecretTab() {
+            super(CardScreenHandler.Tab.SECRET);
+        }
+
+        @Override
+        void initTab() {
+
+        }
+
+        @Override
+        void render(DrawContext context, int mouseX, int mouseY) {
+
+        }
+    }
+    class AtlasTab extends Tab {
+
+        AtlasTab() {
+            super(CardScreenHandler.Tab.ATLAS);
+        }
+
+        @Override
+        void initTab() {
+
+        }
+
+        @Override
+        void render(DrawContext context, int mouseX, int mouseY) {
+
+        }
+    }
+
+
+    class LeaderboardTab extends Tab {
+
+        LeaderboardTab() {
+            super(CardScreenHandler.Tab.LEADERBOARD);
+        }
+
+        @Override
+        void initTab() {
+
+        }
+
+        @Override
+        void render(DrawContext context, int mouseX, int mouseY) {
+
+        }
     }
 
     class StatsTab extends Tab{
 
-        StatsTab(int order) {
-            super(order);
+        StatsTab() {
+            super(CardScreenHandler.Tab.STATS);
         }
 
         @Override
-        void drawBackground(DrawContext context) {
+        void initTab() {
+            addDrawableChild(
+                    new SellButtonWidget(
+                            x + 116,
+                            y + 60,
+                            9,
+                            11
+                    )
+            );
+        }
 
+        @Override
+        void render(DrawContext context, int mouseX, int mouseY) {
+
+        }
+
+        class SellButtonWidget extends ButtonWidget{
+            int level;
+            protected SellButtonWidget(int x, int y, int width, int height) {
+                super(x, y, width, height, ScreenTexts.EMPTY, button -> {
+                    handler.sellFish();
+                }, DEFAULT_NARRATION_SUPPLIER);
+                this.level = getScreenHandler().card.tradeSecretLevel(TradeSecrets.INSTANT_FISH_CREDIT);
+            }
+
+            @Override
+            protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+                if (this.level == 0) {
+                    return;
+                }
+                draw(context,
+                        this.getX(),
+                        this.getY(),
+                        180 + (getScreenHandler().cannotSell() ? 0 : isHovered() ? 1 : 2) * 10,
+                        7 + ((getScreenHandler().cannotSell() || isHovered()) ? 0 : (this.level - 1) * 12),
+                        width,
+                        height
+                        );
+            }
         }
     }
 
     abstract class Tab {
-        private final int order;
+        CardScreenHandler.Tab type;
 
-        Tab(int order) {
-            this.order = order;
+        Tab(CardScreenHandler.Tab type) {
+            this.type = type;
             tabs.add(this);
         }
 
-        void init() {
-            addDrawableChild(new TabButton(this));
-            if (currentTab != this) {
-                return;
-            }
-            System.out.println("Other widgets etc.");
+        void activate() {
+            currentTab = this;
+            getScreenHandler().setCurrentTab(type);
+            initTab();
         }
 
-        abstract void drawBackground(DrawContext context);
+        abstract void initTab();
+
+        abstract void render(DrawContext context, int mouseX, int mouseY);
     }
 
     private void draw(DrawContext context, int x, int y, int u, int v, int width, int height) {
@@ -102,9 +192,18 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
         private final Tab tab;
 
         protected TabButton(Tab tab) {
-            super(x + SCREEN_WIDTH - 3, y + tab.order * HEIGHT, WIDTH, HEIGHT, ScreenTexts.EMPTY, button -> {
-                currentTab = tab;
-            }, DEFAULT_NARRATION_SUPPLIER);
+            super(
+                    x + SCREEN_WIDTH - 3,
+                    y + tab.type.ordinal() * HEIGHT,
+                    WIDTH,
+                    HEIGHT,
+                    ScreenTexts.EMPTY,
+                    button -> {
+                        currentTab = tab;
+                        clearAndInit();
+                    },
+                    DEFAULT_NARRATION_SUPPLIER
+            );
             this.tab = tab;
         }
 
@@ -115,7 +214,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
                     this.getX(),
                     this.getY(),
                     BASE_U + 22 * (currentTab == tab ? 0 : isHovered() ? 1 : 2),//Width + 2 from texture spacing
-                    BASE_V + tab.order * HEIGHT,
+                    BASE_V + tab.type.ordinal() * HEIGHT,
                     WIDTH,
                     HEIGHT
             );
