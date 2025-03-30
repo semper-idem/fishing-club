@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.FishingClub;
@@ -20,9 +19,7 @@ import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
 import org.jetbrains.annotations.Nullable;
-import org.ladysnake.cca.api.v3.component.ComponentContainer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentProvider;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
@@ -71,10 +68,20 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return holder.getWorld().isClient();
     }
 
+    private void syncHolder() {
+        CARD.sync(this.holder,
+                (buf, recipient) -> {
+                    NbtCompound tag = new NbtCompound();
+                    writeNbt(tag, buf.getRegistryManager());
+                    buf.writeNbt(tag);
+                },
+                player -> holder == player
+        );
+    }
 
     public void sell() {
         super.sell();
-        CARD.syncWith((ServerPlayerEntity) this.holder, this.holder.asComponentProvider());
+        syncHolder();
     }
     @Override
     public void setSharedBait(ItemStack baitToShare) {
@@ -294,26 +301,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     public void unlockAllSecret() {
         this.progressionManager.unlockAllSecrets();
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        ItemStack result = super.removeStack(slot);
-        CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
-        return result;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
-        ItemStack result = super.removeStack(slot, amount);
-        CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
-        return result;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        super.setStack(slot, stack);
-        CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
     }
 
     public void requestSummon(){
