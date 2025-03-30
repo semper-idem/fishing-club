@@ -51,6 +51,6 @@
     "armor",
     "mainhand"
   ],
-  "supported_items": "#fishingclub:enchantable/armor_and_fishing",
+  "supported_items": "#minecraft:enchantable/armor",
   "weight": 5
 }
