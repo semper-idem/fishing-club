@@ -24,8 +24,8 @@ public class Enchantments {
     public static int getEnchantmentLevel(LivingEntity livingEntity, ItemStack itemStack, RegistryKey<Enchantment> enchantmentRegistryKey) {
         return livingEntity
                 .getRegistryManager()
-                .get(RegistryKeys.ENCHANTMENT)
-                .getEntry(enchantmentRegistryKey)
+                .getOrThrow(RegistryKeys.ENCHANTMENT)
+                .getEntry(enchantmentRegistryKey.getValue())
                 .map(enchantmentReference -> itemStack
                                 .getEnchantments()
                                 .getLevel(enchantmentReference)

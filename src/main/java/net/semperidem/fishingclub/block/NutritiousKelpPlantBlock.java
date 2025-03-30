@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.AbstractPlantBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidFillable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -31,7 +32,7 @@ public class NutritiousKelpPlantBlock extends AbstractPlantBlock implements Flui
 
 	@Override
 	protected NutritiousKelpBlock getStem() {
-		return Blocks.NUTRITIOUS_KELP;
+		return (NutritiousKelpBlock) Blocks.NUTRITIOUS_KELP;
 	}
 
 	@Override
@@ -45,12 +46,12 @@ public class NutritiousKelpPlantBlock extends AbstractPlantBlock implements Flui
 	}
 
 	@Override
-	public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-		return false;
+	public boolean canFillWithFluid(@Nullable LivingEntity filler, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+		return true;
 	}
 
 	@Override
 	public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
-		return false;
+		return true;
 	}
 }

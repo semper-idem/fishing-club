@@ -73,7 +73,7 @@ public class TackleBoxBlockEntity extends LootableContainerBlockEntity implement
 
     public void readInventoryNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.readLootTable(nbt) && nbt.contains("Items", NbtElement.LIST_TYPE)) {
+        if (!this.readLootTable(nbt) && nbt.contains("Items")) {
             Inventories.readNbt(nbt, this.inventory, registries);
         }
     }

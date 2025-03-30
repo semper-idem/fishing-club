@@ -67,7 +67,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         for(ItemStack fishCaughtStack : fishCaughtStacks) {
             ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
             CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
-            if (!fishingNetStack.isEmpty() && Items.FISHING_NET.insertStack(fishingNetStack, fishCaughtStack, player)) {
+            if (!fishingNetStack.isEmpty() && ((FishingNetItem)Items.FISHING_NET).insertStack(fishingNetStack, fishCaughtStack, player)) {
                 continue;
             }
             giveItemStack(player, fishCaughtStack);
@@ -155,31 +155,20 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     }
 
     public static int getTemperature (World world, BlockPos pos) {
-        return world.getBiome(pos).value().doesNotSnow(pos) ? (world.getDimension().ultrawarm() ? 1 : 0) : -1;
+        return world.getBiome(pos).value().doesNotSnow(pos, world.getSeaLevel()) ? (world.getDimension().ultrawarm() ? 1 : 0) : -1;
     }
 
 
     public static boolean hasFishingHat(PlayerEntity owner){
-        final boolean[] result = {false};
-        owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(Items.FISHER_HAT)) result[0] = true;
-        });
-        return result[0];
+        return owner.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.FISHER_HAT);
     }
 
     public static boolean hasFishingVest(PlayerEntity owner){
         final boolean[] result = {false};
-        owner.getArmorItems().forEach(armorStack -> {
-            if (armorStack.isOf(Items.FISHER_VEST)) result[0] = true;
-        });
-        return result[0];
+        return owner.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.FISHER_VEST);
     }
 
     public static boolean hasProperFishingEquipment(PlayerEntity owner){
-        final boolean[] result = {false};
-        owner.getArmorItems().forEach(armorStack -> {
-            if (!(armorStack.isOf(Items.FISHER_VEST) || armorStack.isOf(Items.FISHER_HAT) || armorStack.isEmpty())) result[0] = true;
-        });
-        return !result[0];
+        return hasFishingHat(owner) && hasFishingVest(owner);
     }
 }

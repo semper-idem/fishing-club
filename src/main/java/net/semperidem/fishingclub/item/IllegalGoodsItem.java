@@ -12,8 +12,8 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.registry.Components;
@@ -24,6 +24,7 @@ import net.semperidem.fishingclub.registry.Tags;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class IllegalGoodsItem extends Item {
   private static final HashMap<Integer, ArrayList<Item>> TIER_TO_LOOT = new HashMap<>();
@@ -115,11 +116,11 @@ public class IllegalGoodsItem extends Item {
   }
 
   @Override
-  public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+  public ActionResult use(World world, PlayerEntity user, Hand hand) {
     ItemStack itemStack = user.getStackInHand(hand);
     if (world.isClient) {
       user.swingHand(hand);
-      return TypedActionResult.consume(itemStack);
+      return ActionResult.CONSUME;
     }
     int tier = itemStack.getOrDefault(Components.TIER, 1);
 
@@ -166,40 +167,43 @@ public class IllegalGoodsItem extends Item {
 
   private ItemStack enchantLoot(ItemStack lootStack, World world, PlayerEntity user, int tier) {
     DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
-    Registry<Enchantment> enchantmentRegistry =
-        dynamicRegistryManager.get(RegistryKeys.ENCHANTMENT);
-    ItemStack normalLootStack =
-        EnchantmentHelper.enchant(
-            user.getRandom(),
-            lootStack,
-            tier * 15,
-            dynamicRegistryManager,
-            enchantmentRegistry.getEntryList(EnchantmentTags.NON_TREASURE));
-    ItemStack treasureLootStack =
-        EnchantmentHelper.enchant(
-            user.getRandom(),
-            normalLootStack,
-            tier * 10,
-            dynamicRegistryManager,
-            enchantmentRegistry.getEntryList(EnchantmentTags.TREASURE));
-    ItemStack cursedLootStack =
-        EnchantmentHelper.enchant(
-            user.getRandom(),
-            treasureLootStack,
-            tier * 5,
-            dynamicRegistryManager,
-            enchantmentRegistry.getEntryList(EnchantmentTags.CURSE));
-
-    EnchantmentHelper.apply(
-        cursedLootStack,
-        components ->
-            components.remove(enchantment -> enchantment.isIn(Tags.ENCHANTMENT_REPAIR_TAG)));
-
-    world
-        .getRegistryManager()
-        .get(RegistryKeys.ENCHANTMENT)
-        .getEntry(Enchantments.CURSE_OF_MORTALITY.getValue())
-        .ifPresent(curseOfMortality -> cursedLootStack.addEnchantment(curseOfMortality, 1));
-    return cursedLootStack;
+    Optional<Registry<Enchantment>> enchantmentRegistry =
+        dynamicRegistryManager.getOptional(RegistryKeys.ENCHANTMENT);
+//
+//    ItemStack normalLootStack =
+//        EnchantmentHelper.enchant(
+//            user.getRandom(),
+//            lootStack,
+//            tier * 15,
+//            dynamicRegistryManager,
+//            enchantmentRegistry(EnchantmentTags.NON_TREASURE));
+//
+//    ItemStack treasureLootStack =
+//        EnchantmentHelper.enchant(
+//            user.getRandom(),
+//            normalLootStack,
+//            tier * 10,
+//            dynamicRegistryManager,
+//            enchantmentRegistry.getEntryList(EnchantmentTags.TREASURE));
+//
+//    ItemStack cursedLootStack =
+//        EnchantmentHelper.enchant(
+//            user.getRandom(),
+//            treasureLootStack,
+//            tier * 5,
+//            dynamicRegistryManager,
+//            enchantmentRegistry.getEntryList(EnchantmentTags.CURSE));
+//
+//    EnchantmentHelper.apply(
+//        cursedLootStack,
+//        components ->
+//            components.remove(enchantment -> enchantment.isIn(Tags.ENCHANTMENT_REPAIR_TAG)));
+//
+//    world
+//        .getRegistryManager()
+//        .getOptional(RegistryKeys.ENCHANTMENT).
+//        .getEntry(Enchantments.CURSE_OF_MORTALITY.getValue())
+//        .ifPresent(curseOfMortality -> cursedLootStack.addEnchantment(curseOfMortality, 1)));
+    return lootStack;
   }
 }

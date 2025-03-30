@@ -4,6 +4,7 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,7 +83,7 @@ public abstract class ItemEntityMixin extends Entity{
 
     @Unique private void validateAndTrash() {
         if (this.fallDistance > this.maxFallDistance) {
-            this.maxFallDistance = fallDistance;
+            this.maxFallDistance = (float) fallDistance;
         }
         if (!isOnGround()) {
             return;
@@ -164,7 +165,7 @@ public abstract class ItemEntityMixin extends Entity{
 //todo move to SpecimenData like asItemStack
         EntityType<?> entityType = this.fish.species().getEntityType();
 
-        WaterCreatureEntity fishEntity = (WaterCreatureEntity) entityType.create(serverWorld);
+        WaterCreatureEntity fishEntity = (WaterCreatureEntity) entityType.create(serverWorld, SpawnReason.BUCKET);
         if (fishEntity == null) {
             return;
         }
@@ -178,7 +179,7 @@ public abstract class ItemEntityMixin extends Entity{
         fishEntity.setPosition(Vec3d.of(this.getBlockPos()).add(0.5f,0.5f,0.5f));
         serverWorld.spawnEntity(fishEntity);
 //        fishEntity.setCustomName(Text.of(this.fish.label()));
-        fishEntity.damage(this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
+        fishEntity.damage((ServerWorld) getWorld(), this.getWorld().getDamageSources().playerAttack((PlayerEntity) thrower), 0.1f);
         CHUNK_QUALITY.get(serverWorld.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_RELEASE);
     }
 

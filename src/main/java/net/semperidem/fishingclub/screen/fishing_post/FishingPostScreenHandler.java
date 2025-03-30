@@ -57,7 +57,7 @@ public class FishingPostScreenHandler extends ScreenHandler {
                 this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 0, 0));
             }
         }
-        this.mainStack = this.inventory.getMainHandStack();
+        this.mainStack = this.inventory.getMainStacks().getFirst();
         for(j = 9; j >= 0; j--) {
             Slot slot = new Slot(playerInventory, j, 0,0);
             this.addSlot(slot);

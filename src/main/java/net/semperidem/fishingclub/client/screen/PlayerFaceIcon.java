@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client.screen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -41,15 +42,18 @@ public class PlayerFaceIcon implements Drawable {
     }
 
 
-    private static void drawTexture(DrawContext context, Identifier playerTexture, int x, int y, int u, int v, float scale) {
+    private static void drawTexture(DrawContext context, Identifier playerTexture, int x, int y, float u, float v, float scale) {
         context.drawTexture(
+                RenderLayer::getGuiTextured,
                 playerTexture,
                 (int) (x / scale),
                 (int) (y / scale),
                 u,
                 v,
                 faceTextureSize,
-                faceTextureSize
+                faceTextureSize,
+                256,
+                128
         );
     }
 }

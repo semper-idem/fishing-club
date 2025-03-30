@@ -14,9 +14,9 @@ import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.registry.Tags;
 
 public class CardInventory implements Inventory{
-    public static final int SLOT_COUNT = 4;
+    public static final int SLOT_COUNT = 5;
+    private static final int SHARED_BAIT_SLOT = 4;
     DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
-    ItemStack sharedBait = ItemStack.EMPTY;
     int credit = 0;
 
     private static final String CREDIT_TAG = "credit";
@@ -43,11 +43,11 @@ public class CardInventory implements Inventory{
     }
 
     public ItemStack getSharedBait(){
-        return sharedBait;
+        return this.inventory.get(SHARED_BAIT_SLOT);
     }
 
     public void setSharedBait(ItemStack baitToShare){
-        this.sharedBait = baitToShare;
+        this.inventory.set(SHARED_BAIT_SLOT, baitToShare);
     }
 
     public ItemStack getFishingNet(ItemStack fishStack) {
@@ -119,22 +119,14 @@ public class CardInventory implements Inventory{
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         Inventories.writeNbt(tag, inventory, wrapperLookup);
         tag.putInt(CREDIT_TAG, credit);
-        if (sharedBait.isEmpty()) {
-            return;
-        }
-        tag.put(BAIT_TAG, sharedBait.encode(wrapperLookup));
     }
 
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (tag.contains(CREDIT_TAG)) {
-            credit = tag.getInt(CREDIT_TAG);
+            credit = tag.getInt(CREDIT_TAG, 0);
         }
         if (tag.contains("Items")) {
             Inventories.readNbt(tag, inventory, wrapperLookup);
-        }
-        if (tag.contains(BAIT_TAG)) {
-            sharedBait = ItemStack.fromNbt(wrapperLookup, tag.get(BAIT_TAG)).orElse(ItemStack.EMPTY);
-
         }
     }
 }

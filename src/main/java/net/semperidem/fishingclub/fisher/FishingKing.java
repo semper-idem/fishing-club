@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.fisher;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ScoreHolder;
@@ -79,13 +80,13 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
     }
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        this.price = tag.getInt(PRICE_KEY);
-        this.timestamp = tag.getLong(TIMESTAMP_KEY);
-        if (tag.contains(IS_CLAIMED) && !tag.getBoolean(IS_CLAIMED)) {
+        this.price = tag.getInt(PRICE_KEY, 0);
+        this.timestamp = tag.getLong(TIMESTAMP_KEY, 0);
+        if (tag.contains(IS_CLAIMED) && !tag.getBoolean(IS_CLAIMED, false)) {
             return;
         }
-        this.uuid = tag.getUuid(UUID_KEY);
-        this.name = tag.getString(NAME_KEY);
+        this.uuid = UUID.fromString(tag.getString(UUID_KEY, String.valueOf(UUID.randomUUID())));
+        this.name = tag.getString(NAME_KEY, "");
     }
 
     @Override
@@ -97,7 +98,7 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
             return;
         }
         tag.putBoolean(IS_CLAIMED, true);
-        tag.putUuid(UUID_KEY, this.uuid);
+        tag.putString(UUID_KEY, String.valueOf(this.uuid));
         tag.putString(NAME_KEY, this.name);
     }
 

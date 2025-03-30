@@ -10,8 +10,8 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -24,6 +24,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import javax.swing.*;
 
 import static net.semperidem.fishingclub.block.WaterloggedLilyPadBlock.FLOWERING;
 
@@ -92,7 +94,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
 		if (stack.isOf(Items.BONE_MEAL) && !state.get(FLOWERING)) {
 			if (world instanceof ServerWorld serverWorld) {
@@ -101,7 +103,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 			if (!player.isCreative()) {
 				stack.decrement(1);
 			}
-			return ItemActionResult.SUCCESS;
+			return ActionResult.SUCCESS;
 		}
 
 		if (player.getMainHandStack().isEmpty() && state.get(FLOWERING)) {
@@ -109,7 +111,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 			lilyStack.setCount((int) (1 + Math.random() * 3));
 			player.giveItemStack(lilyStack);
 			world.setBlockState(pos, state.with(FLOWERING, false), 2);
-			return ItemActionResult.SUCCESS;
+			return ActionResult.SUCCESS;
 		}
 
 		if (!world.getBlockState(pos.down()).isOf(net.minecraft.block.Blocks.WATER)) {
@@ -123,7 +125,7 @@ public class LilyPadBlockMixin extends PlantBlock {
 		world.setBlockState(pos, blockItem.getBlock().getDefaultState());
 		world.setBlockState(pos.down(), Blocks.WATERLOGGED_LILY_PAD_BLOCK.getDefaultState().with(FLOWERING, state.get(FLOWERING)));
 
-		return ItemActionResult.SUCCESS;
+		return ActionResult.SUCCESS;
 	}
 
 }

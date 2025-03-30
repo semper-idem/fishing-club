@@ -35,12 +35,12 @@ public class RecipeLocker {
 
     public static DefaultedList<Ingredient> ingredients(ServerPlayerEntity player, Item item) {
         DefaultedList<Ingredient> result = DefaultedList.of();
-        player.getRegistryManager().get(RegistryKeys.RECIPE).getIndexedEntries().forEach(
+        player.getRegistryManager().getOrThrow(RegistryKeys.RECIPE).getIndexedEntries().forEach(
                 recipeEntry -> {
                     Recipe<?> recipe = recipeEntry.value();
-                    if (recipe.getResult(player.getRegistryManager()).isOf(item)) {//this can break if new table for bait crafting will be added
-                        result.addAll(recipe.getIngredients());
-                    }
+//                    if (recipe.getResult(player.getRegistryManager()).isOf(item)) {//this can break if new table for bait crafting will be added
+//                        result.addAll(recipe.getIngredients());
+//                    }
                 }
         );
         return result;

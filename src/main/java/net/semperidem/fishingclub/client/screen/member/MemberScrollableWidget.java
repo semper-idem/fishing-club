@@ -14,10 +14,10 @@ public class MemberScrollableWidget extends ScrollableWidget {
         super(x, y, width, height, Text.empty());
     }
 
-    @Override
-    protected int getContentsHeight() {
-        return 0;
-    }
+//    @Override
+//    protected int getContentsHeight() {
+//        return 0;
+//    }
 
     @Override
     protected boolean overflows() {
@@ -29,35 +29,40 @@ public class MemberScrollableWidget extends ScrollableWidget {
         return 0;
     }
 
-    @Override
-    protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+//    @Override
+////    protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
+////
+////    }
 
+    public int getContentsHeightWithPadding() {
+        return 0;//this.getContentsHeight();
     }
 
-    private int getContentsHeightWithPadding() {
-        return this.getContentsHeight();
-    }
-
-    private int getScrollbarThumbHeight() {
+    public int getScrollbarThumbHeight() {
         return MathHelper.clamp((int)((float)(this.height * this.height) / (float)this.getContentsHeightWithPadding()), 32, this.height);
     }
 
     @Override
-    protected int getMaxScrollY() {
-        return Math.max(0, getContentsHeight() - this.height);
+    public int getMaxScrollY() {
+        return 0;//Math.max(0, getContentsHeight() - this.height);
     }
 
+//    @Override
+//    protected void renderOverlay(DrawContext context) {
+//        int i = this.getScrollbarThumbHeight();
+//        int j = this.getX() + this.width;
+//        if (this.getMaxScrollY() <= 0) {
+//            return;
+//        }
+//        int k = Math.max(this.getY(), (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.getY());
+//        RenderSystem.enableBlend();
+//        context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);
+//        RenderSystem.disableBlend();
+//    }
+
     @Override
-    protected void renderOverlay(DrawContext context) {
-        int i = this.getScrollbarThumbHeight();
-        int j = this.getX() + this.width;
-        if (this.getMaxScrollY() <= 0) {
-            return;
-        }
-        int k = Math.max(this.getY(), (int)this.getScrollY() * (this.height - i) / this.getMaxScrollY() + this.getY());
-        RenderSystem.enableBlend();
-        context.drawGuiTexture(SCROLLER_TEXTURE, j, k, 8, i);
-        RenderSystem.disableBlend();
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+
     }
 
     @Override

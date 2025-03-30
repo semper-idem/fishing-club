@@ -184,7 +184,6 @@ public class FishingNetItem extends BundleItem {
         return Math.min(1 + MathHelper.multiplyFraction(fishingNetContent.getOccupancy(), 12), 13);
     }
 
-    @Override
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         FishingNetContentComponent fishingNetContent = getContent(stack);
         if (fishingNetContent != null) {

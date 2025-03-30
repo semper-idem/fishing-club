@@ -55,7 +55,7 @@ public class TextUtil {
     }
 
     public static void drawTextOutline(TextRenderer textRenderer, DrawContext context, OrderedText text, int x, int y, int color, int outline){
-        textRenderer.drawWithOutline(text, x, y, color, outline, context.getMatrices().peek().getPositionMatrix(), context.getVertexConsumers(), 15728880);
+        //textRenderer.drawWithOutline(text, x, y, color, outline, context.getMatrices().peek().getPositionMatrix(), context.getVertexConsumers(), 15728880);
     }
 
     public static OrderedText toOrderedText(TextRenderer textRenderer, Text text) {

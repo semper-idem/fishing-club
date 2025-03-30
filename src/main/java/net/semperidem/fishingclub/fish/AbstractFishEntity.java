@@ -7,6 +7,7 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -22,11 +23,10 @@ public abstract class AbstractFishEntity extends FishEntity {
     }
 
     @Override
-    protected void onRemoval(RemovalReason reason) {
-        CHUNK_QUALITY.get(this.getWorld().getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
-        super.onRemoval(reason);
+    protected void onRemoval(ServerWorld world, RemovalReason reason) {
+        CHUNK_QUALITY.get(world.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+        super.onRemoval(world, reason);
     }
-
 
     public static<T extends WaterCreatureEntity> boolean canSpawn(Species<T> species, EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         if (!ChunkQuality.isAboveMinimumQuality(species, world, pos)) {

@@ -52,7 +52,7 @@ public class SpecimenComponent extends AbstractSpecimenComponent implements Auto
         if (owner instanceof TropicalFishEntity tropicalFishEntity) {
             NbtCompound nbt = new NbtCompound();
             tropicalFishEntity.writeCustomDataToNbt(nbt);
-            int variantId = nbt.getInt("Variant");
+            int variantId = nbt.getInt("Variant", 0);
             TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(variantId);
             if (!TropicalFishEntity.COMMON_VARIANTS.contains(variant)) {
                 System.out.println("Found variant that doesn't match common variants");

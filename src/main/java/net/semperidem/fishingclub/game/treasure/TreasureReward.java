@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.game.treasure;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
@@ -45,12 +44,11 @@ public class TreasureReward {
             int enchantingLevel = (int) Math.max(5, Math.min(50, 8 / Math.pow(quality, 1.5)));
             //rewardStack = EnchantmentHelper.enchant(localRandom, rewardStack, enchantingLevel, false);
             rewardStack.setDamage((int) (item.getComponents().get(DataComponentTypes.DAMAGE) * (1f - percentageDurability)));
-            if (Math.random() < curseChance) {
-                if (item instanceof ArmorItem) {
-                    rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.BINDING_CURSE).get(), 1);
-                }
-                rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.VANISHING_CURSE).get(), 1);
-            }
+//            if (Math.random() < curseChance) {
+//                    rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.BINDING_CURSE).get(), 1);
+//                }
+//                rewardStack.addEnchantment(playerEntity.getWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.VANISHING_CURSE).get(), 1);
+//            }
             return rewardStack;
         }
 

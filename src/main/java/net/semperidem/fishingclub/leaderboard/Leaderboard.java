@@ -92,7 +92,7 @@ public class Leaderboard<T> {
     }
 
     public static void readNbt(NbtCompound tag, Leaderboard<?> leaderboard) {
-        tag.getList(leaderboard.name, NbtElement.COMPOUND_TYPE).forEach(entryTag -> {
+        tag.getListOrEmpty(leaderboard.name).forEach(entryTag -> {
             Entry e = new Entry((NbtCompound) entryTag);
             leaderboard.standings.add(e);
             leaderboard.unorderedStandings.put(e.key, e);
@@ -115,15 +115,15 @@ public class Leaderboard<T> {
         public final String context;
 
         private Entry(NbtCompound entryTag) {
-            this.key = entryTag.getUuid("key");
-            this.value = entryTag.getFloat("value");
-            this.playerName = entryTag.getString("playerName");
-            this.context = entryTag.getString("context");
+            this.key = UUID.fromString(String.valueOf(entryTag.getString("key")));
+            this.value = entryTag.getFloat("value", 0);
+            this.playerName = entryTag.getString("playerName", "");
+            this.context = entryTag.getString("context", "");
         }
 
         NbtCompound toNbt() {
             NbtCompound tag = new NbtCompound();
-            tag.putUuid("key", this.key);
+            tag.putString("key", this.key.toString());
             tag.putFloat("value", this.value);
             tag.putString("playerName", this.playerName);
             tag.putString("context", this.context);

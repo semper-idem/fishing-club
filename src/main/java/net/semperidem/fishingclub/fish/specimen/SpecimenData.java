@@ -2,7 +2,6 @@ package net.semperidem.fishingclub.fish.specimen;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
@@ -108,11 +107,6 @@ public record SpecimenData(
             return Species.Library.drawRandom(hookEntity);
         }
         return Species.Library.drawRandom(iHookEntity);
-    }
-
-
-    public ModelIdentifier getModelId() {
-        return this.isAlbino() ? species().albinoModelId() : species().modelId();
     }
 
     public static SpecimenData init(IHookEntity caughtWith, Species<? extends WaterCreatureEntity> species, int subspecies) {

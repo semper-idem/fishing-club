@@ -15,7 +15,9 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -41,13 +43,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+import static net.minecraft.entity.vehicle.AbstractBoatEntity.Location.*;
+
 
 public class FishermanEntity extends PassiveEntity {
-    private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(FishermanEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> LEFT_PADDLE_MOVING = DataTracker.registerData(FishermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> RIGHT_PADDLE_MOVING = DataTracker.registerData(FishermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final float NEXT_PADDLE_PHASE = (float) (Math.PI / 8);
     private static final double TWO_PI = Math.PI * 2;
     private static final double QUARTER_PI = Math.PI * 0.25f;
     private static final double SIXTEENTH_PI = Math.PI * 0.06125f;
-	private float paddlePhases;
+    private final float[] paddlePhases = new float[2];
     private PlayerEntity customer;
     private final static int DESPAWN_TIME = 6000;
     private int despawnTimer;
@@ -62,15 +68,7 @@ public class FishermanEntity extends PassiveEntity {
         this.despawnTimer = DESPAWN_TIME;
     }
     public FishermanEntity(World world) {
-        this(EntityTypes.DEREK_ENTITY, world);
-    }
-
-    public int getHeadRollingTimeLeft() {
-        return (Integer)this.dataTracker.get(HEAD_ROLLING_TIME_LEFT);
-    }
-
-    public void setHeadRollingTimeLeft(int ticks) {
-        this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, ticks);
+        this(EntityTypes.FISHERMAN, world);
     }
 
     public int getExperience() {
@@ -79,12 +77,8 @@ public class FishermanEntity extends PassiveEntity {
 
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(HEAD_ROLLING_TIME_LEFT, 0);
-    }
-
-    @Override
-    protected float turnHead(float bodyRotation, float headRotation) {
-        return super.turnHead(bodyRotation, headRotation);
+        builder.add(LEFT_PADDLE_MOVING, false);
+        builder.add(RIGHT_PADDLE_MOVING, false);
     }
 
     @Override
@@ -101,7 +95,7 @@ public class FishermanEntity extends PassiveEntity {
         if (this.boat != null) {
             return;
         }
-        this.boat = new CustomBoatEntity(EntityTypes.BOAT_ENTITY, this.getWorld());
+        this.boat = new CustomBoatEntity(EntityTypes.BOAT, this.getWorld());
         this.getWorld().spawnEntity(boat);
         this.boat.startRiding(this, true);
     }
@@ -140,8 +134,9 @@ public class FishermanEntity extends PassiveEntity {
         return state.isIn(FluidTags.WATER);
     }
 
-    private boolean isPaddleMoving() {
-        return this.limbAnimator.isLimbMoving();
+
+    public boolean isPaddleMoving(int paddle) {
+        return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getControllingPassenger() != null;
     }
 
     public int getOutOfWaterTicks() {
@@ -178,18 +173,27 @@ public class FishermanEntity extends PassiveEntity {
     }
 
     private void tickPaddles() {
-        if (!this.isPaddleMoving()) {
-            return;
+        for (int i = 0; i <= 1; i++) {
+            if (this.isPaddleMoving(i)) {
+                if (!this.isSilent()
+                        && this.paddlePhases[i] % (float) (Math.PI * 2) <= (float) (Math.PI / 4)
+                        && (this.paddlePhases[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
+                    SoundEvent soundEvent = this.getPaddleSound();
+                    if (soundEvent != null) {
+                        Vec3d vec3d = this.getRotationVec(1.0F);
+                        double d = i == 1 ? -vec3d.z : vec3d.z;
+                        double e = i == 1 ? vec3d.x : -vec3d.x;
+                        this.getWorld()
+                                .playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+                    }
+                }
+
+                this.paddlePhases[i] = this.paddlePhases[i] + (float) (Math.PI / 8);
+            } else {
+                this.paddlePhases[i] = 0.0F;
+            }
         }
-        this.paddlePhases += (float) SIXTEENTH_PI;
-        this.paddlePhases %= (float) TWO_PI;
-        if (isSilent()){
-            return;
-        }
-        if ((this.paddlePhases % TWO_PI) <= QUARTER_PI && ((this.paddlePhases + SIXTEENTH_PI) % TWO_PI) >= QUARTER_PI) {
-            SoundEvent soundEvent = this.getPaddleSoundEvent();
-            this.getWorld().playSoundFromEntity(null, this, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
-        }
+
     }
 
     private void tickBuoyancy() {
@@ -252,18 +256,17 @@ public class FishermanEntity extends PassiveEntity {
         return this.isInWater() ? Float.NEGATIVE_INFINITY : 0.0F;
     }
 
+    @Override
     protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
-        this.checkBlockCollision();
-        if (isInWater()) {
-            this.onLanding();
-        } else {
-            super.fall(heightDifference, onGround, state, landedPosition);
+        if (!this.hasVehicle()) {
+            if (onGround) {
+                this.onLanding();
+            } else if (!this.getWorld().getFluidState(this.getBlockPos().down()).isIn(FluidTags.WATER) && heightDifference < 0.0) {
+                this.fallDistance -= (float)heightDifference;
+            }
         }
     }
 
-    public float interpolatePaddlePhase(float tickDelta) {
-        return this.isPaddleMoving() ? (float) MathHelper.clampedLerp(this.paddlePhases - SIXTEENTH_PI, this.paddlePhases, tickDelta) : this.paddlePhases;
-    }
 
     private static class BoatNavigation extends MobNavigation {
         BoatNavigation(FishermanEntity entity, World world) {
@@ -315,15 +318,6 @@ public class FishermanEntity extends PassiveEntity {
         }
     }
 
-    private void sayNo() {
-        this.setHeadRollingTimeLeft(40);
-        if (!this.getWorld().isClient()) {
-            this.playSound(SoundEvents.ENTITY_VILLAGER_NO);
-        }
-
-    }
-
-
     @Override
     public ActionResult interactMob(PlayerEntity playerEntity, Hand hand) {
         if(!this.getWorld().isClient && customer == null) {
@@ -350,7 +344,24 @@ public class FishermanEntity extends PassiveEntity {
         EffectUtils.onDerekSummonEffect(serverWorld, derek);
     }
 
-    public enum SummonType {
+
+    @Nullable
+    protected SoundEvent getPaddleSound() {
+        return SoundEvents.ENTITY_BOAT_PADDLE_WATER;
+    }
+
+    public void setPaddlesMoving(boolean left, boolean right) {
+        this.dataTracker.set(LEFT_PADDLE_MOVING, left);
+        this.dataTracker.set(RIGHT_PADDLE_MOVING, right);
+    }
+
+    public float lerpPaddlePhase(int paddle, float tickProgress) {
+        return this.isPaddleMoving(paddle)
+                ? MathHelper.clampedLerp(this.paddlePhases[paddle] - (float) (Math.PI / 8), this.paddlePhases[paddle], tickProgress)
+                : 0.0F;
+    }
+
+        public enum SummonType {
         GOLDEN,
         FISH,
         SPELL

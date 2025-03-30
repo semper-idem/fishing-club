@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -199,8 +200,8 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(BOOK_TEXTURE, this.x, this.y, 0, 0, 126, 190, 256, 256);
-        context.drawTexture(BOOK_TEXTURE, this.x + 100, this.y, 40, 0, 166, 190, 256, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, BOOK_TEXTURE, this.x, this.y, 0, 0, 126, 190, 256, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, BOOK_TEXTURE, this.x + 100, this.y, 40, 0, 166, 190, 256, 256);
         if (this.client == null) {
             return;
         }
@@ -220,15 +221,13 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
 
     private void renderExpBar(DrawContext context) {
         int barLength = (int) (((float) getExpForTick() / ProgressionManager.levelExp(this.getLevelForTick())) * 183.0F);
-        RenderSystem.enableBlend();
-        context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, 182, 5);
+        context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_BACKGROUND_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, 182, 5);
         if (barLength > 0) {
             RenderSystem.setShaderColor(1, 0.5f, 0, 1);
-            context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, (int) (this.card.getExpProgress() * 183F), 5);
+            context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, (int) (this.card.getExpProgress() * 183F), 5);
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, barLength, 5);
+            context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, barLength, 5);
         }
-        RenderSystem.disableBlend();
     }
 
     private void renderExpInfo(DrawContext context) {

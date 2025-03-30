@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -168,7 +169,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         StopPlayingPayload stopPlayingPayload = new StopPlayingPayload(
-          this.fishSong.getId().toString(),
+          this.fishSong.id().toString(),
           this.fishEntity.getX(),
           this.fishEntity.getY(),
           this.fishEntity.getZ()
@@ -200,7 +201,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         this.fishStack = FishUtil.getStackFromFish(fishRecord);
-        this.fishEntity = fishRecord.species().getEntityType().create(this.world);
+        this.fishEntity = fishRecord.species().getEntityType().create(this.world, SpawnReason.BUCKET);
         if (this.fishEntity == null) {
             return;
         }

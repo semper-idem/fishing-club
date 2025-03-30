@@ -10,19 +10,22 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 import net.semperidem.fishingclub.entity.FishDisplayBlockEntity;
 import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +34,7 @@ import java.util.Map;
 
 public class FishDisplayBlock extends BlockWithEntity {
     private final WoodType type;
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalFacingBlock.FACING;
 
     public static final MapCodec<WallSignBlock> CODEC = RecordCodecBuilder.mapCodec(
       instance -> instance.group(
@@ -85,12 +88,12 @@ public class FishDisplayBlock extends BlockWithEntity {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
         if (world.getBlockEntity(pos) instanceof FishDisplayBlockEntity displayBlockEntity) {
             displayBlockEntity.drop();
         }
 
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override
@@ -136,12 +139,6 @@ public class FishDisplayBlock extends BlockWithEntity {
         return CODEC;
     }
 
-    @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
-    }
-
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
@@ -157,21 +154,21 @@ public class FishDisplayBlock extends BlockWithEntity {
 
     @Override
     protected BlockState getStateForNeighborUpdate(
-      BlockState state,
-      Direction direction,
-      BlockState neighborState,
-      WorldAccess world,
-      BlockPos pos,
-      BlockPos neighborPos
+            BlockState state,
+            WorldView world,
+            ScheduledTickView tickView,
+            BlockPos pos,
+            Direction direction,
+            BlockPos neighborPos,
+            BlockState neighborState,
+            Random random
     ) {
         if (direction.getOpposite() != state.get(FACING)) {
-
-            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+            return state;
         }
 
         if (state.canPlaceAt(world, pos)) {
-
-            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+            return state;
         }
 
         return net.minecraft.block.Blocks.AIR.getDefaultState();
@@ -191,7 +188,7 @@ public class FishDisplayBlock extends BlockWithEntity {
 
     public float getRotationDegrees(BlockState state) {
 
-        return state.get(FACING).asRotation();
+        return state.get(FACING).getRotationQuaternion().angle();
     }
 
     @Override

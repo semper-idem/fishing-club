@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -184,7 +185,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             Text creditText = Text.of(String.valueOf(credit));
             int creditOffset = textRenderer.getWidth(creditText);
             int stage = MathHelper.clamp(String.valueOf(credit).length() * 2 - 1, 0, 8);
-            context.drawTexture(SCALES_TEXTURE, x + 140 - creditOffset - 20,y + 60,0, stage * 16, 16,16, 16, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SCALES_TEXTURE, x + 140 - creditOffset - 20,y + 60,0, stage * 16, 16,16, 16, 256);
             drawText(context, Text.of(String.valueOf(getScreenHandler().card.getCredit())), x + 140 - creditOffset, y + 66, scalesColor, 1f);
             //Name
             //Title
@@ -239,7 +240,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
     }
 
     private void draw(DrawContext context, int x, int y, int u, int v, int width, int height) {
-        context.drawTexture(TEXTURES, x,y,u,v,width,height, 512, 1024);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURES, x,y,u,v,width,height, 512, 1024);
     }
 
     class TabButton extends ButtonWidget {

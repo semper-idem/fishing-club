@@ -34,17 +34,17 @@ public class PerkButtonWidget extends ButtonWidget {
         if (!visible) {
             return;
         }
-        RenderSystem.enableBlend();
+//        RenderSystem.enableBlend();
         renderBackground(context);
         renderLink(context);
         renderIcon(context);
         renderSelection(context);
-        RenderSystem.disableBlend();
+//        RenderSystem.disableBlend();
     }
 
     private void renderSelection(DrawContext context) {
         if (isSelected) {
-            context.drawTexture(SELECTED_SKILL_BORDER, getX() - 1, getY() - 1, 0, 0, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE);
+//            context.drawTexture(SELECTED_SKILL_BORDER, getX() - 1, getY() - 1, 0, 0, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE);
         }
     }
 
@@ -54,7 +54,7 @@ public class PerkButtonWidget extends ButtonWidget {
         } else if (card.knowsTradeSecret(tradeSecret)) {
             RenderSystem.setShaderColor(0.5f,1,0.5f,1);
         }
-        context.drawTexture(SKILL_ICON, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+//        context.drawTexture(SKILL_ICON, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
     }
 
     private void renderLink(DrawContext context){
@@ -70,6 +70,6 @@ public class PerkButtonWidget extends ButtonWidget {
             return;
         }
         RenderSystem.setShaderColor(1,1,1,1);
-        context.drawTexture(icon, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+//        context.drawTexture(icon, getX(), getY(), 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
     }
 }

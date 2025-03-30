@@ -13,7 +13,7 @@ import static net.semperidem.fishingclub.FishingClub.identifier;
 public record FishingInputKeyboardPayload(boolean isPressed) implements CustomPayload {
     public static final Id<FishingInputKeyboardPayload> ID = new Id<>(identifier("c2s_fishing_input_keyboard"));
     public static final PacketCodec<RegistryByteBuf, FishingInputKeyboardPayload> CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOL,
+            PacketCodecs.BOOLEAN,
             FishingInputKeyboardPayload::isPressed,
             FishingInputKeyboardPayload::new
     );

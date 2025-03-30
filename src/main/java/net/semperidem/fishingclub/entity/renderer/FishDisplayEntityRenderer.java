@@ -15,8 +15,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +22,7 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.block.FishDisplayBlock;
 import net.semperidem.fishingclub.entity.FishDisplayBlockEntity;
-import net.semperidem.fishingclub.registry.Models;
+import net.semperidem.fishingclub.registry.EntityModelLayers;
 
 import java.util.Map;
 
@@ -44,21 +42,13 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         this.typeToModel = WoodType.stream()
           .collect(
             ImmutableMap.toImmutableMap(
-              signType -> signType, signType -> new FishDisplayEntityRenderer.SignModel(ctx.getLayerModelPart(Models.MODEL_FISH_DISPLAY_LAYER))
+              signType -> signType, signType -> new FishDisplayEntityRenderer.SignModel(ctx.getLayerModelPart(EntityModelLayers.FISH_DISPLAY))
             )
           );
         this.textRenderer = ctx.getTextRenderer();
         this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
     }
 
-    public void render(FishDisplayBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-        BlockState blockState = signBlockEntity.getCachedState();
-        FishDisplayBlock abstractSignBlock = (FishDisplayBlock)blockState.getBlock();
-        WoodType woodType = FishDisplayBlock.getWoodType(abstractSignBlock);
-        FishDisplayEntityRenderer.SignModel signModel = this.typeToModel.get(woodType);
-        signModel.stick.visible = blockState.getBlock() instanceof SignBlock;
-        this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, signModel);
-    }
 
     public float getSignScale() {
         return 0.6666667F;
@@ -67,22 +57,17 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
     public float getTextScale() {
         return 0.6666667F;
     }
+    public void render(FishDisplayBlockEntity entity, float tickProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
+        BlockState state = entity.getCachedState();
+        FishDisplayBlock block = (FishDisplayBlock)state.getBlock();
+        WoodType woodType = FishDisplayBlock.getWoodType(block);
+        FishDisplayEntityRenderer.SignModel model = this.typeToModel.get(woodType);
+        model.stick.visible = state.getBlock() instanceof SignBlock;
 
-    void render(
-      FishDisplayBlockEntity signBlockEntity,
-      MatrixStack matrices,
-      VertexConsumerProvider vertexConsumers,
-      int light,
-      int overlay,
-      BlockState state,
-      FishDisplayBlock block,
-      WoodType woodType,
-      Model model
-    ) {
         matrices.push();
         this.setAngles(matrices, -block.getRotationDegrees(state), state);
         this.renderSign(matrices, vertexConsumers, light, overlay, woodType, model);
-        if (signBlockEntity.getWaterCreatureEntity() == null) {
+        if (entity.getWaterCreatureEntity() == null) {
             matrices.pop();
             return;
         }
@@ -91,7 +76,16 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         matrices.translate(0,0.3, 0.05);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float) (Math.PI / 2f)));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotation((float) (Math.PI / 2f)));
-        this.entityRenderDispatcher.render(signBlockEntity.getWaterCreatureEntity(), 0,0,0,0, signBlockEntity.getDuration()/3f, matrices, vertexConsumers, light);
+        this.entityRenderDispatcher.render(
+                entity.getWaterCreatureEntity(),
+                0,
+                0,
+                0,
+                0,
+                matrices,
+                vertexConsumers,
+                light
+        );
         matrices.pop();
         //this.renderText(entity.getPos(), entity.getFrontText(), matrices, vertexConsumers, light, entity.getTextLineHeight(), entity.getMaxTextWidth(), true);
         //this.renderText(entity.getPos(), entity.getBackText(), matrices, vertexConsumers, light, entity.getTextLineHeight(), entity.getMaxTextWidth(), false);
@@ -125,10 +119,6 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         return TexturedRenderLayers.getSignTextureId(signType);
     }
 
-    public static FishDisplayEntityRenderer.SignModel createSignModel(EntityModelLoader entityModelLoader, WoodType type) {
-        return new FishDisplayEntityRenderer.SignModel(entityModelLoader.getModelPart(EntityModelLayers.createSign(type)));
-    }
-
 
 
     public static TexturedModelData getTexturedModelData() {
@@ -139,20 +129,17 @@ public class FishDisplayEntityRenderer implements BlockEntityRenderer<FishDispla
         return TexturedModelData.of(modelData, 64, 32);
     }
 
+
     @Environment(EnvType.CLIENT)
     public static final class SignModel extends Model {
         public final ModelPart root;
         public final ModelPart stick;
 
         public SignModel(ModelPart root) {
-            super(RenderLayer::getEntityCutoutNoCull);
+            super(root, RenderLayer::getEntityCutoutNoCull);
             this.root = root;
             this.stick = root.getChild("stick");
         }
 
-        @Override
-        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-            this.root.render(matrices, vertices, light, overlay, color);
-        }
     }
 }

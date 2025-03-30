@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.mixin.common;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
 import net.minecraft.util.hit.BlockHitResult;
@@ -16,7 +17,7 @@ import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 @Mixin(BucketItem.class)
 public class BucketItemMixin {
 	@Inject(method = "placeFluid", at = @At("RETURN"))
-	private void onPlaceFluid(PlayerEntity player, World world, BlockPos pos, BlockHitResult hitResult, CallbackInfoReturnable<Boolean> cir) {
+	private void onPlaceFluid(LivingEntity user, World world, BlockPos pos, BlockHitResult hitResult, CallbackInfoReturnable<Boolean> cir) {
 		if (cir.getReturnValue()) {
 			return;
 		}

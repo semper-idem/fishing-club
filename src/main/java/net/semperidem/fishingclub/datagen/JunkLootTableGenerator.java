@@ -1,6 +1,6 @@
 package net.semperidem.fishingclub.datagen;
 
-import net.minecraft.data.server.loottable.LootTableGenerator;
+import net.minecraft.data.loottable.LootTableGenerator;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.entry.ItemEntry;

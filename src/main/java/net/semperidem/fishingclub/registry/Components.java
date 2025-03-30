@@ -45,7 +45,7 @@ public class Components {
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("expiration_time"),
                         ComponentType.<Integer>builder()
-                                .codec(Codecs.NONNEGATIVE_INT)
+                                .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .cache()
                                 .build());
@@ -55,7 +55,7 @@ public class Components {
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("line_length"),
                         ComponentType.<Integer>builder()
-                                .codec(Codecs.NONNEGATIVE_INT)
+                                .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .cache()
                                 .build());
@@ -74,7 +74,7 @@ public class Components {
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("tier"),
                         ComponentType.<Integer>builder()
-                                .codec(Codecs.NONNEGATIVE_INT)
+                                .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
         SPECIMEN =
@@ -100,7 +100,7 @@ public class Components {
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("coin"),
                         ComponentType.<Integer>builder()
-                                .codec(Codecs.NONNEGATIVE_INT)
+                                .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
         CAUGHT_BY =

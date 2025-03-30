@@ -42,7 +42,7 @@ public class HistoryManager extends DataManager {
         unheardMessageSet.removeAll(heardMessageIndexSet);
         ArrayList<Integer> unheardMessageList = new ArrayList<>(unheardMessageSet);
         int unheardMessageIndex = unheardMessageList.get(trackedFor.getRandom().nextInt(unheardMessageList.size()));
-        trackedFor.holder().sendMessage(Text.of(ResourceUtil.MESSAGE_IN_BOTTLE.get(unheardMessageIndex)));
+        trackedFor.holder().sendMessage(Text.of(ResourceUtil.MESSAGE_IN_BOTTLE.get(unheardMessageIndex)), true);
         heardMessageIndexSet.add(unheardMessageIndex);
     }
 
@@ -141,26 +141,24 @@ public class HistoryManager extends DataManager {
     }
 
     public String getIssuedDate(){
-        return this.issuedDate;
+        return issuedDate;
     }
 
     @Override
     public void readNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        NbtCompound historyTag = nbtCompound.getCompound(TAG);
-        String issuedDate = historyTag.getString(ISSUED_DATE);
-        this.issuedDate = !issuedDate.isEmpty() ? issuedDate : LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-        NbtList usedChunksTag = historyTag.getList(USED_CHUNKS_TAG, NbtElement.COMPOUND_TYPE);
+        NbtCompound historyTag = nbtCompound.getCompoundOrEmpty(TAG);
+        issuedDate = historyTag.getString(ISSUED_DATE, LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        NbtList usedChunksTag = historyTag.getListOrEmpty(USED_CHUNKS_TAG);
         usedChunks.clear();
         usedChunksTag.forEach(chunk -> usedChunks.add(new Chunk((NbtCompound) chunk)));
-        lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG);
-        firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG);
+        lastCatchTime = historyTag.getLong(LAST_CATCH_TIME_TAG, 0);
+        firstCatchOfTheDay = historyTag.getLong(FIRST_CATCH_OF_THE_DAY_TAG, 0);
         if (historyTag.contains(LAST_USED_BAIT_TAG)) {
-            lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompound(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
+            lastUsedBait = ItemStack.fromNbt(wrapperLookup, historyTag.getCompoundOrEmpty(LAST_USED_BAIT_TAG)).orElse(ItemStack.EMPTY);
         }
-        NbtList unclaimedRewardsTag = historyTag.getList(UNCLAIMED_REWARDS_TAG, NbtElement.COMPOUND_TYPE);
+        NbtList unclaimedRewardsTag = historyTag.getListOrEmpty(UNCLAIMED_REWARDS_TAG);
         unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt(wrapperLookup, rewardTag).orElse(ItemStack.EMPTY)));
-        NbtList fishAtlasTag = historyTag.getList(FISH_ATLAS_TAG, NbtElement.COMPOUND_TYPE);
+        NbtList fishAtlasTag = historyTag.getListOrEmpty(FISH_ATLAS_TAG);
         fishAtlasTag.forEach(speciesTag -> {
             SpeciesStatistics stat = new SpeciesStatistics((NbtCompound) speciesTag);
             fishAtlas.put(stat.getName(), stat);
@@ -176,10 +174,10 @@ public class HistoryManager extends DataManager {
         historyTag.putLong(LAST_CATCH_TIME_TAG, lastCatchTime);
         historyTag.putLong(FIRST_CATCH_OF_THE_DAY_TAG, firstCatchOfTheDay);
         if (!lastUsedBait.isEmpty()) {
-            historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.encode(wrapperLookup));
+            historyTag.put(LAST_USED_BAIT_TAG, lastUsedBait.toNbt(wrapperLookup));
         }
         NbtList unclaimedRewardsTag = new NbtList();
-        unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.encode(wrapperLookup)));
+        unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.toNbt(wrapperLookup)));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
         NbtList fishAtlasTag = new NbtList();
         fishAtlas.forEach((s, speciesStatistics) -> fishAtlasTag.add(speciesStatistics.toNbt()));
@@ -213,8 +211,8 @@ public class HistoryManager extends DataManager {
         }
 
         public void readNbt(NbtCompound nbtCompound) {
-            this.x = nbtCompound.getInt(X_TAG);
-            this.z = nbtCompound.getInt(Z_TAG);
+            this.x = nbtCompound.getInt(X_TAG,0);
+            this.z = nbtCompound.getInt(Z_TAG, 0);
         }
 
         public void writeNbt(NbtCompound nbtCompound) {

@@ -61,10 +61,9 @@ public abstract class LivingEntityMixin extends Entity{
 
 
     @Redirect(
-            method = "travel", at = @At(
+            method = "travelMidAir", at = @At(
                     value = "INVOKE",
-            target = "Lnet/minecraft/entity/LivingEntity;setVelocity(DDD)V",
-            ordinal = 3
+            target = "Lnet/minecraft/entity/LivingEntity;setVelocity(DDD)V"
     )
     )
     private void onTravel(

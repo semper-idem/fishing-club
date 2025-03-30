@@ -8,14 +8,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootWorldContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,6 +27,8 @@ import net.semperidem.fishingclub.registry.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static net.minecraft.block.ShulkerBoxBlock.getItemStack;
 
 public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final Identifier CONTENTS_DYNAMIC_DROP_ID = Identifier.ofVanilla("contents");
@@ -56,7 +60,6 @@ public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvid
         } else if (world.getBlockEntity(pos) instanceof TackleBoxBlockEntity shulkerBoxBlockEntity) {
                 player.openHandledScreen(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
-                PiglinBrain.onGuardedBlockInteracted(player, true);
 
             return ActionResult.CONSUME;
         } else {
@@ -69,7 +72,7 @@ public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvid
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof TackleBoxBlockEntity shulkerBoxBlockEntity) {
             if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
-                ItemStack itemStack = getItemStack();
+                ItemStack itemStack = new ItemStack(Blocks.TACKLE_BOX_BLOCK);
                 itemStack.applyComponentsFrom(blockEntity.createComponentMap());
                 ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, itemStack);
                 itemEntity.setToDefaultPickupDelay();
@@ -81,13 +84,14 @@ public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvid
 
         return super.onBreak(world, pos, state, player);
     }
+
     @Override
-    protected List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
-        BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
-        if (blockEntity instanceof TackleBoxBlockEntity shulkerBoxBlockEntity) {
+    protected List<ItemStack> getDroppedStacks(BlockState state, LootWorldContext.Builder builder) {
+        BlockEntity be = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
+        if (be instanceof TackleBoxBlockEntity tbbe) {
             builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
-                for (int i = 0; i < shulkerBoxBlockEntity.size(); i++) {
-                    lootConsumer.accept(shulkerBoxBlockEntity.getStack(i));
+                for (int i = 0; i < tbbe.size(); i++) {
+                    lootConsumer.accept(tbbe.getStack(i));
                 }
             });
         }
@@ -95,26 +99,17 @@ public class TackleBoxBlock extends BlockWithEntity implements BlockEntityProvid
         return super.getDroppedStacks(state, builder);
     }
 
-    @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        ItemStack itemStack = super.getPickStack(world, pos, state);
-        world.getBlockEntity(pos, Blocks.TACKLE_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack, world.getRegistryManager()));
-        return itemStack;
-    }
-    public static ItemStack getItemStack() {
-        return new ItemStack(Blocks.TACKLE_BOX_BLOCK);
-    }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof TackleBoxBlockEntity) {
-                world.updateComparators(pos, state.getBlock());
-            }
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        return super.getPickStack(world, pos, state, includeData);
+    }
 
-            super.onStateReplaced(state, world, pos, newState, moved);
-        }
+
+
+    @Override
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        ItemScatterer.onStateReplaced(state, world, pos);
     }
 
     @Nullable

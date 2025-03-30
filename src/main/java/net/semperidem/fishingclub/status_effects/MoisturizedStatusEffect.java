@@ -13,7 +13,6 @@ public class MoisturizedStatusEffect  extends StatusEffect {
 	}
 
 
-	@Override
 	public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
 		if (entity.getHealth() < entity.getMaxHealth()) {
 			entity.heal(1.0F);

@@ -43,12 +43,12 @@ public class MemberScreenHandler extends ScreenHandler {
 
     public ArrayList<ItemStack> getFishes() {
         ArrayList<ItemStack> fishes = new ArrayList<>();
-        for(ItemStack itemStack : player.getInventory().main) {
-            if (itemStack.isEmpty()) {
-                continue;
-            }
-            fishes.add(itemStack);
-        }
+//        for(ItemStack itemStack : player.getInventory().main) {
+//            if (itemStack.isEmpty()) {
+//                continue;
+//            }
+//            fishes.add(itemStack);
+//        }
         return fishes;
     }
 

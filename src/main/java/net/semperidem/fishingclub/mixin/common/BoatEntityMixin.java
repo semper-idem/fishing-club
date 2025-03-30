@@ -27,35 +27,35 @@ public abstract class BoatEntityMixin extends VehicleEntity {
 		super(entityType, world);
 	}
 
-	@WrapOperation(
-		method = "updatePaddles",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"
-		)
-	)
-	private Vec3d add(Vec3d instance, double x, double y, double z, Operation<Vec3d> original) {
-		return original.call(instance, x * (0.8 + angleBoost), y, z * (0.8 + angleBoost));
-	}
-
-	@Inject(
-		method = "clampPassengerYaw",
-		at = @At("HEAD"),
-		cancellable = true
-	)
-	protected void fishingclub$clampPassengerYaw(Entity passenger, CallbackInfo ci) {
-
-		passenger.setBodyYaw(this.getYaw());
-		float f = MathHelper.wrapDegrees(passenger.getYaw() - this.getYaw());
-		float g = MathHelper.clamp(f, -180.0F, 180.0F);
-		if (Math.abs(f) > 105) {
-			passenger.setBodyYaw(this.getYaw() + 180);
-		}
-		passenger.prevYaw += g - f;
-		passenger.setYaw((passenger.getYaw() + g - f) % 360);
-		passenger.setHeadYaw(passenger.getYaw() % 360);
-		this.angleBoost = Math.abs(f / 180f) * 0.4f;
-		ci.cancel();
-	}
+//	@WrapOperation(
+//		method = "updatePaddles",
+//		at = @At(
+//			value = "INVOKE",
+//			target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"
+//		)
+//	)
+//	private Vec3d add(Vec3d instance, double x, double y, double z, Operation<Vec3d> original) {
+//		return original.call(instance, x * (0.8 + angleBoost), y, z * (0.8 + angleBoost));
+//	}
+//
+//	@Inject(
+//		method = "clampPassengerYaw",
+//		at = @At("HEAD"),
+//		cancellable = true
+//	)
+//	protected void fishingclub$clampPassengerYaw(Entity passenger, CallbackInfo ci) {
+//
+//		passenger.setBodyYaw(this.getYaw());
+//		float f = MathHelper.wrapDegrees(passenger.getYaw() - this.getYaw());
+//		float g = MathHelper.clamp(f, -180.0F, 180.0F);
+//		if (Math.abs(f) > 105) {
+//			passenger.setBodyYaw(this.getYaw() + 180);
+//		}
+//		passenger.lastYaw += g - f;
+//		passenger.setYaw((passenger.getYaw() + g - f) % 360);
+//		passenger.setHeadYaw(passenger.getYaw() % 360);
+//		this.angleBoost = Math.abs(f / 180f) * 0.4f;
+//		ci.cancel();
+//	}
 
 }

@@ -3,11 +3,6 @@ package net.semperidem.fishingclub.fish;
 import com.google.common.collect.Range;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -26,10 +21,9 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntity;
-import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityModel;
-import net.semperidem.fishingclub.fish.species.butterfish.ButterfishEntityRenderer;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
+import net.semperidem.fishingclub.registry.EntityTypes;
 import net.semperidem.fishingclub.util.MathUtil;
 
 import net.minecraft.util.math.random.Random;
@@ -42,7 +36,7 @@ public class Species<T extends WaterCreatureEntity> {
     int id;
 
     String label;
-    String name;
+    String name;//lowercase with underscore instead of space
     MovementPattern movement;
     int level = SpecimenData.MIN_LEVEL;
     int staminaLevel = 1;
@@ -85,14 +79,6 @@ public class Species<T extends WaterCreatureEntity> {
     EntityType<T> entityType;
     Item item;
 
-    EntityRendererFactory<T> entityRendererSupplier;
-    EntityModelLayerRegistry.TexturedModelDataProvider texturedModelDataProvider;
-
-    Identifier entityId;
-    EntityModelLayer layerId;
-    ModelIdentifier modelId;
-    ModelIdentifier albinoModelId;
-
     public String name() {
         return this.name;
     }
@@ -103,10 +89,6 @@ public class Species<T extends WaterCreatureEntity> {
 
     public EntityType<T> getEntityType() {
         return this.entityType;
-    }
-
-    public EntityModelLayer getLayerId() {
-        return this.layerId;
     }
 
     public float rarity() {
@@ -189,38 +171,6 @@ public class Species<T extends WaterCreatureEntity> {
         return FishingClub.identifier("textures/entity/" + this.textureName(isAlbino) +".png");
     }
 
-    public ModelIdentifier albinoModelId() {
-        if (this.albinoModelId == null) {
-            this.albinoModelId =new ModelIdentifier(FishingClub.identifier(this.textureName(true) + "_item_3d"), "inventory");
-        }
-        return this.albinoModelId;
-    }
-
-    public ModelIdentifier modelId() {
-        if (this.modelId == null) {
-            this.modelId = new ModelIdentifier(FishingClub.identifier(this.textureName() + "_item_3d"), "inventory");
-        }
-        return this.modelId;
-    }
-
-    public void registerClient() {
-        if (entityRendererSupplier == null) {
-            return;
-        }
-
-        this.layerId =  new EntityModelLayer(FishingClub.identifier(this.textureName()), "main");
-
-        EntityRendererRegistry.register(
-                this.entityType,
-                this.entityRendererSupplier
-        );
-
-        EntityModelLayerRegistry.registerModelLayer(
-                this.layerId,
-                this.texturedModelDataProvider
-        );
-    }
-
     public boolean canHook(HookEntity hookEntity) {
         RodConfiguration.AttributeComposite attributes = hookEntity.getCaughtUsing().attributes();
         if (attributes.maxFishWeight() < this.minWeight) {
@@ -273,6 +223,7 @@ public class Species<T extends WaterCreatureEntity> {
         }
         return 0;
     }
+
     public static class Library {
         public static final Predicate<BiomeSelectionContext> COD_SPAWN = BiomeSelectors.spawnsOneOf(EntityType.COD);
         public static final Predicate<BiomeSelectionContext> NONE = context -> false;
@@ -313,14 +264,6 @@ public class Species<T extends WaterCreatureEntity> {
         public static Species<?> DEFAULT;
         static HashMap<String, Species<?>> SPECIES_BY_NAME = new HashMap<>();
         private static HashSet<Item> SELLABLE_ITEMS = new HashSet<>();
-
-        public static void registerClient() {
-            BUTTERFISH = SpeciesBuilder.create(BUTTERFISH)
-                    .texturedModel(ButterfishEntityModel::getTexturedModelData)
-                    .renderer(ButterfishEntityRenderer::new)
-                    .build();
-            SPECIES_BY_NAME.values().forEach(Species::registerClient);
-        }
 
         public static <T extends WaterCreatureEntity> Iterator<Species<?>> iterator() {
             return SPECIES_BY_NAME.values().iterator();
@@ -366,7 +309,17 @@ public class Species<T extends WaterCreatureEntity> {
             return SPECIES_BY_NAME.values();
         }
 
-        public static void register(){
+        public static void register() {
+           BUTTERFISH = SpeciesBuilder
+                   .create(BUTTERFISH)
+                   .entity(EntityTypes.BUTTERFISH)
+                   .item()
+                   .attributes(ButterfishEntity.createFishAttributes())
+                   .spawnBiome(COD_SPAWN, 15,1 ,1)
+                   .build();
+        }
+
+        public static void init(){
             TROPICAL_FISH = SpeciesBuilder
                     .<TropicalFishEntity>create("Tropical Fish")
                     .level(1)
@@ -374,8 +327,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .lengthMinAndRange(0, 1)
                     .weightMinAndRange(0, 1)
                     .staminaLevel(4)
-                    .vanillaEntity(EntityType.TROPICAL_FISH)
-                    .vanillaItem(Items.TROPICAL_FISH)
+                    .entity(EntityType.TROPICAL_FISH)
+                    .item(Items.TROPICAL_FISH)
                     .saltiness(Range.atLeast(2F))
                     .temperature(Range.closed(1F, 1F))
                     .build();
@@ -388,8 +341,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .lengthMinAndRange(0, 1)
                     .weightMinAndRange(0, 1)
                     .staminaLevel(4)
-                    .vanillaEntity(EntityType.PUFFERFISH)
-                    .vanillaItem(Items.PUFFERFISH)
+                    .entity(EntityType.PUFFERFISH)
+                    .item(Items.PUFFERFISH)
                     .saltiness(Range.atLeast(2F))
                     .temperature(Range.closed(1F, 1F))
                     .build();
@@ -401,10 +354,10 @@ public class Species<T extends WaterCreatureEntity> {
                     .lengthMinAndRange(0, 1)
                     .weightMinAndRange(0, 1)
                     .staminaLevel(4)
-                    .vanillaEntity(EntityType.SALMON)
+                    .entity(EntityType.SALMON)
                     .saltiness(Range.closed(0F, 2F))
                     .temperature(Range.closed(-1F, 0F))
-                    .vanillaItem(Items.SALMON)
+                    .item(Items.SALMON)
                     .build();
             COD  = SpeciesBuilder
                     .<CodEntity>create("Cod")
@@ -414,8 +367,8 @@ public class Species<T extends WaterCreatureEntity> {
                     .weightMinAndRange(0, 1)
                     .movement(MovementPatterns.EASY1)
                     .staminaLevel(0)
-                    .vanillaEntity(EntityType.COD)
-                    .vanillaItem(Items.COD)
+                    .entity(EntityType.COD)
+                    .item(Items.COD)
                     .saltiness(Range.closed(1F, 2F))
                     .temperature(Range.closed(-1F, 0F))
                     .build();
@@ -427,9 +380,6 @@ public class Species<T extends WaterCreatureEntity> {
                     .weightMinAndRange(29, 90)
                     .movement(MovementPatterns.MID4)
                     .staminaLevel(0)
-                    .entity(ButterfishEntity::new)
-                    .attributes(ButterfishEntity.createFishAttributes())
-                    .spawnBiome(COD_SPAWN, 15, 1, 2)
                     .saltiness(Range.closed(1F, 1F))
                     .temperature(Range.closed(0F, 0F))
                     .build();
@@ -440,7 +390,6 @@ public class Species<T extends WaterCreatureEntity> {
 
         public static <T extends WaterCreatureEntity> void add(Species<T> species) {
             SPECIES_BY_NAME.put(species.name, species);
-            SELLABLE_ITEMS.add(species.item);
         }
 
         public static Species<?> fromName(String name) {

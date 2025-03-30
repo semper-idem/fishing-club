@@ -6,11 +6,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class HarpoonEntityModel extends Model{
-    private final ModelPart root;
 
     public HarpoonEntityModel(ModelPart root) {
-        super(RenderLayer::getEntitySolid);
-        this.root = root;
+        super(root, RenderLayer::getEntitySolid);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -22,8 +20,4 @@ public class HarpoonEntityModel extends Model{
         return TexturedModelData.of(modelData, 32, 32);
     }
 
-    @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        this.root.render(matrices, vertices, light, overlay,color);
-    }
 }

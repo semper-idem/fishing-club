@@ -5,8 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.semperidem.fishingclub.client.screen.hud.CastScreen;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
@@ -30,7 +30,7 @@ public class FishItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (!user.isSneaking()) {
             return super.use(world, user, hand);
         }
@@ -50,6 +50,6 @@ public class FishItem extends Item {
         if (world.isClient) {
             MinecraftClient.getInstance().setScreen(new CastScreen(usableTradeSecrets));
         }
-        return TypedActionResult.success(user.getStackInHand(hand));
+        return ActionResult.SUCCESS;
     }
 }

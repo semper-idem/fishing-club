@@ -7,8 +7,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.state.FishingBobberEntityState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Colors;
@@ -18,7 +20,7 @@ import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.entity.HookEntity;
 import net.semperidem.fishingclub.registry.Tags;
 
-public class HookEntityRenderer extends EntityRenderer<HookEntity> {
+public class HookEntityRenderer extends EntityRenderer<HookEntity, FishingBobberEntityState> {
     public static final Identifier DEFAULT = FishingClub.identifier("textures/entity/bobber.png");
     private static final RenderLayer LAYER = RenderLayer.getEntityCutout(DEFAULT);
 
@@ -26,9 +28,7 @@ public class HookEntityRenderer extends EntityRenderer<HookEntity> {
         super(context);
     }
 
-    public void render(HookEntity hookEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        PlayerEntity playerEntity = hookEntity.getPlayerOwner();
-        if (playerEntity != null) {
+    public void render(FishingBobberEntityState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
             matrixStack.push();
             matrixStack.push();
             matrixStack.scale(0.5F, 0.5F, 0.5F);
@@ -40,57 +40,51 @@ public class HookEntityRenderer extends EntityRenderer<HookEntity> {
             vertex(vertexConsumer, entry, i, 1.0F, 1, 1, 0);
             vertex(vertexConsumer, entry, i, 0.0F, 1, 0, 0);
             matrixStack.pop();
-            float h = playerEntity.getHandSwingProgress(g);
-            float j = MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
-            Vec3d vec3d = this.getHandPos(playerEntity, j, g);
-            Vec3d vec3d2 = hookEntity.getLerpedPos(g).add(0.0, 0.25, 0.0);
-            float k = (float)(vec3d.x - vec3d2.x);
-            float l = (float)(vec3d.y - vec3d2.y);
-            float m = (float)(vec3d.z - vec3d2.z);
-            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
-            MatrixStack.Entry entry2 = matrixStack.peek();
-            int n = 16;
+		float f = (float)state.pos.x;
+		float g = (float)state.pos.y;
+		float h = (float)state.pos.z;
+		VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLineStrip());
+		MatrixStack.Entry entry2 = matrixStack.peek();
+		int j = 16;
 
-            for (int o = 0; o <= 16; o++) {
-                renderFishingLine(k, l, m, vertexConsumer2, entry2, percentage(o, 16), percentage(o + 1, 16));
-            }
+		for (int k = 0; k <= 16; k++) {
+			renderFishingLine(f, g, h, vertexConsumer2, entry2, percentage(k, 16), percentage(k + 1, 16));
+		}
 
-            matrixStack.pop();
-            super.render(hookEntity, f, g, matrixStack, vertexConsumerProvider, i);
-        }
+		matrixStack.pop();
+		super.render(state, matrixStack, vertexConsumerProvider, i);
+	  }
+
+    public static Arm getArmHoldingRod(PlayerEntity player) {
+        return player.getMainHandStack().isIn(Tags.ROD_CORE) ? player.getMainArm() : player.getMainArm().getOpposite();
     }
 
-    private Vec3d getHandPos(PlayerEntity player, float f, float tickDelta) {
-        int i = player.getMainArm() == Arm.RIGHT ? 1 : -1;
-        ItemStack itemStack = player.getMainHandStack();
-        if (!itemStack.isIn(Tags.ROD_CORE)) {
-            i = -i;
-        }
-
+    private Vec3d getHandPos(PlayerEntity player, float f, float tickProgress) {
+        int i = getArmHoldingRod(player) == Arm.RIGHT ? 1 : -1;
         if (this.dispatcher.gameOptions.getPerspective().isFirstPerson() && player == MinecraftClient.getInstance().player) {
-            double m = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
-            Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition((float)i * 0.525F, -0.1F).multiply(m).rotateY(f * 0.5F).rotateX(-f * 0.7F);
-            return player.getCameraPosVec(tickDelta).add(vec3d);
+            double m = 960.0 / this.dispatcher.gameOptions.getFov().getValue().intValue();
+            Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition(i * 0.525F, -0.1F).multiply(m).rotateY(f * 0.5F).rotateX(-f * 0.7F);
+            return player.getCameraPosVec(tickProgress).add(vec3d);
         } else {
-            float g = MathHelper.lerp(tickDelta, player.prevBodyYaw, player.bodyYaw) * (float) (Math.PI / 180.0);
-            double d = (double)MathHelper.sin(g);
-            double e = (double)MathHelper.cos(g);
+            float g = MathHelper.lerp(tickProgress, player.lastBodyYaw, player.bodyYaw) * (float) (Math.PI / 180.0);
+            double d = MathHelper.sin(g);
+            double e = MathHelper.cos(g);
             float h = player.getScale();
-            double j = (double)i * 0.35 * (double)h;
-            double k = 0.8 * (double)h;
+            double j = i * 0.35 * h;
+            double k = 0.8 * h;
             float l = player.isInSneakingPose() ? -0.1875F : 0.0F;
-            return player.getCameraPosVec(tickDelta).add(-e * j - d * k, (double)l - 0.45 * (double)h, -d * j + e * k);
+            return player.getCameraPosVec(tickProgress).add(-e * j - d * k, l - 0.45 * h, -d * j + e * k);
         }
     }
 
-    private static float percentage(int value, int max) {
-        return (float)value / (float)max;
+    private static float percentage(int value, int denominator) {
+        return (float)value / denominator;
     }
 
     private static void vertex(VertexConsumer buffer, MatrixStack.Entry matrix, int light, float x, int y, int u, int v) {
-        buffer.vertex(matrix, x - 0.5F, (float)y - 0.5F, 0.0F)
+        buffer.vertex(matrix, x - 0.5F, y - 0.5F, 0.0F)
                 .color(Colors.WHITE)
-                .texture((float)u, (float)v)
+                .texture(u, v)
                 .overlay(OverlayTexture.DEFAULT_UV)
                 .light(light)
                 .normal(matrix, 0.0F, 1.0F, 0.0F);
@@ -110,8 +104,26 @@ public class HookEntityRenderer extends EntityRenderer<HookEntity> {
         buffer.vertex(matrices, f, g, h).color(Colors.BLACK).normal(matrices, i, j, k);
     }
 
-    @Override//Actually not used in FishingBobberEntityRenderer/HookEntityRenderer
-    public Identifier getTexture(HookEntity hookEntity) {
-        return DEFAULT;
+    public FishingBobberEntityState createRenderState() {
+        return new FishingBobberEntityState();
     }
+
+    public void updateRenderState(HookEntity hookEntity, FishingBobberEntityState state, float f) {
+        super.updateRenderState(hookEntity, state, f);
+        PlayerEntity playerEntity = hookEntity.getPlayerOwner();
+        if (playerEntity == null) {
+            state.pos = Vec3d.ZERO;
+        } else {
+            float g = playerEntity.getHandSwingProgress(f);
+            float h = MathHelper.sin(MathHelper.sqrt(g) * (float) Math.PI);
+            Vec3d vec3d = this.getHandPos(playerEntity, h, f);
+            Vec3d vec3d2 = hookEntity.getLerpedPos(f).add(0.0, 0.25, 0.0);
+            state.pos = vec3d.subtract(vec3d2);
+        }
+    }
+
+    protected boolean canBeCulled(HookEntity hookEntity) {
+        return false;
+    }
+
 }

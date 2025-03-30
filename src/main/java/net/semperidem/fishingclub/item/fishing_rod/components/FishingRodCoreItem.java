@@ -7,15 +7,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -42,15 +42,15 @@ public class FishingRodCoreItem extends FishingRodItem {
 
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (world.isClient) {
-            return TypedActionResult.success(user.getStackInHand(hand));
+            return ActionResult.SUCCESS;
         }
         if (debug && user.isSneaking()) {
 
             //user.openHandledScreen(new MemberScreenHandlerFactory());
             user.openHandledScreen(new FishingScreenHandlerFactory(SpecimenData.init(), user.getMainHandStack().get(Components.ROD_CONFIGURATION)));
-            return TypedActionResult.success(user.getStackInHand(hand));
+            return ActionResult.SUCCESS;
         }
 
         ItemStack fishingRod = user.getStackInHand(hand);
@@ -61,7 +61,7 @@ public class FishingRodCoreItem extends FishingRodItem {
         boolean canCast = fishingRod.getOrDefault(Components.ROD_CONFIGURATION, RodConfiguration.getDefault()).attributes().canCast();
         if (!canCast) {
             user.sendMessage(Text.of("Can't use without line"), true);
-            return TypedActionResult.fail(fishingRod);
+            return ActionResult.FAIL;
         }
 
         if (Card.of(user).isMember()) {
@@ -70,24 +70,27 @@ public class FishingRodCoreItem extends FishingRodItem {
 
         if (user.fishHook != null) {
             this.reelRod(world, user, fishingRod);
-            return TypedActionResult.success(fishingRod, world.isClient());
+            return ActionResult.SUCCESS;
         }
         if (hasNoFishingRod(user)) {
-            return TypedActionResult.fail(fishingRod);
+            return ActionResult.FAIL;
         }
 
         if (Card.of(user).knowsTradeSecret(TradeSecrets.BOBBER_THROW_CHARGE)) {
-            user.setCurrentHand(hand); // Sets hand as "active"
-            return TypedActionResult.consume(fishingRod);
+            user.setCurrentHand(hand); // Sets hand as ctive"
+            return ActionResult.CONSUME;
         }
 
         this.castHook(world, user, fishingRod);
-        return TypedActionResult.success(fishingRod, world.isClient());
+        return ActionResult.SUCCESS;
     }
 
+
+
     @Override
-    public void onStoppedUsing(ItemStack fishingRod, World world, LivingEntity user, int remainingUseTicks) {
+    public boolean onStoppedUsing(ItemStack fishingRod, World world, LivingEntity user, int remainingUseTicks) {
         this.castHook(world, (PlayerEntity) user, fishingRod);
+        return false;
     }
 
     private void updateClientInventory(ServerPlayerEntity user) {

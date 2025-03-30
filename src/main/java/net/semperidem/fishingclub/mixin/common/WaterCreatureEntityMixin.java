@@ -65,9 +65,6 @@ public class WaterCreatureEntityMixin extends PathAwareEntity {
             Random random,
             CallbackInfoReturnable<Boolean> cir
     ) {
-        if (type == EntityType.DOLPHIN) {
-            return;
-        }
 
         if (ChunkQuality.isAboveMinimumQuality(Species.Library.fromName(type.getUntranslatedName()), world, pos)) {
             return;

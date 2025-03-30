@@ -255,7 +255,6 @@ public class MemberBuyScreen extends MemberSubScreen {
             count *= Keybindings.MULTIPLY_CART_ACTION_2.isPressed() ? 4 : 1;
             return count;
         }
-        @Override
         protected int getContentsHeight() {
             return cartItems.size() * OfferGrid.Offer.SIZE;
         }
@@ -290,23 +289,22 @@ public class MemberBuyScreen extends MemberSubScreen {
             return total;
         }
 
-        @Override
         protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             int index = 0;
             for (OfferGrid.Offer offer : cartItems.keySet()) {
                 CART_ITEM_TEXTURE.render(context, getX(), getY() + index * OfferGrid.Offer.SIZE);
                 ItemStack stackToRender = offer.stockEntry.item.getDefaultStack();
                 stackToRender.setCount(cartItems.get(offer));
-                context.drawItemInSlot(
-                        textRenderer,
-                        stackToRender,
-                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
-                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
-                context.drawItemInSlot(
-                        textRenderer,
-                        stackToRender,
-                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
-                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
+//                context.drawItemInSlot(
+//                        textRenderer,
+//                        stackToRender,
+//                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
+//                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
+//                context.drawItemInSlot(
+//                        textRenderer,
+//                        stackToRender,
+//                        getX() + ((CART_ITEM_TEXTURE.renderWidth - OfferGrid.Offer.SIZE) / 2),
+//                        (int) (getY() + index * OfferGrid.Offer.SIZE - getScrollY()));
                 index++;
                 //next add to components
             }
@@ -329,7 +327,7 @@ public class MemberBuyScreen extends MemberSubScreen {
                 this.renderContents(context, mouseX, mouseY, delta);
                 context.getMatrices().pop();
                 context.disableScissor();
-                this.renderOverlay(context);
+//                this.renderOverlay(context);
             }
         }
 
@@ -409,7 +407,6 @@ public class MemberBuyScreen extends MemberSubScreen {
 
 
 
-        @Override
         protected int getContentsHeight() {
             return getRows() * Offer.SIZE;
         }
@@ -446,7 +443,7 @@ public class MemberBuyScreen extends MemberSubScreen {
                 this.renderContents(drawContext, mouseX, mouseY, delta);
                 drawContext.getMatrices().pop();
                 drawContext.disableScissor();
-                this.renderOverlay(drawContext);
+//                this.renderOverlay(drawContext);
             }
         }
 
@@ -481,7 +478,6 @@ public class MemberBuyScreen extends MemberSubScreen {
         }
 
 
-        @Override
         protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             int offerY = getY();
             int rows = getRows();

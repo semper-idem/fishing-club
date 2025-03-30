@@ -4,7 +4,7 @@ import net.minecraft.entity.*;
 import java.util.HashMap;
 
 import static net.minecraft.entity.EntityType.*;
-import static net.semperidem.fishingclub.registry.EntityTypes.HOOK_ENTITY;
+import static net.semperidem.fishingclub.registry.EntityTypes.HOOK;
 
 public class EntityWeights {
     private static final HashMap<EntityType<?>, Integer> ENTITY_TYPE_TO_MAGNITUDE = new HashMap<>();
@@ -22,8 +22,8 @@ public class EntityWeights {
         ENTITY_TYPE_TO_MAGNITUDE.put(BAT, 3);
         ENTITY_TYPE_TO_MAGNITUDE.put(BEE, 3);
         ENTITY_TYPE_TO_MAGNITUDE.put(BLAZE, 1);
-        ENTITY_TYPE_TO_MAGNITUDE.put(BOAT, 1);
-        ENTITY_TYPE_TO_MAGNITUDE.put(CHEST_BOAT, 1);
+//        ENTITY_TYPE_TO_MAGNITUDE.put(BOAT, 1);
+//        ENTITY_TYPE_TO_MAGNITUDE.put(CHEST_BOAT, 1);
         ENTITY_TYPE_TO_MAGNITUDE.put(CAT, 2);
         ENTITY_TYPE_TO_MAGNITUDE.put(CHICKEN, 2);
         ENTITY_TYPE_TO_MAGNITUDE.put(COW, -1);
@@ -71,6 +71,6 @@ public class EntityWeights {
         ENTITY_TYPE_TO_MAGNITUDE.put(ZOGLIN, -2);
         ENTITY_TYPE_TO_MAGNITUDE.put(ZOMBIE_HORSE, -1);
         ENTITY_TYPE_TO_MAGNITUDE.put(FISHING_BOBBER, 3);
-        ENTITY_TYPE_TO_MAGNITUDE.put(HOOK_ENTITY, 3);
+        ENTITY_TYPE_TO_MAGNITUDE.put(HOOK, 3);
     }
 }

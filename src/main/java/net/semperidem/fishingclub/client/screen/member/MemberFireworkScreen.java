@@ -484,7 +484,6 @@ public class MemberFireworkScreen extends MemberSubScreen {
             return count;
         }
 
-        @Override
         protected int getContentsHeight() {
             return entries.size() * ENTRY_HEIGHT;
         }
@@ -519,7 +518,6 @@ public class MemberFireworkScreen extends MemberSubScreen {
             return total;
         }
 
-        @Override
         protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             int index = 0;
             for (Entry entry : entries) {
@@ -529,10 +527,10 @@ public class MemberFireworkScreen extends MemberSubScreen {
                         stackToRender,
                         getX() + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
                         (int) (getY() + index * 16 - getScrollY()));
-                context.drawItemInSlot(textRenderer,
-                        stackToRender,
-                        getX() + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
-                        (int) (getY() + index * 16  - getScrollY()));
+//                context.drawItemInSlot(textRenderer,
+//                        stackToRender,
+//                        getX() + ((CART_ITEM_TEXTURE.renderWidth - 16) / 2),
+//                        (int) (getY() + index * 16  - getScrollY()));
                 index++;
                 //next add to components
             }
@@ -555,7 +553,7 @@ public class MemberFireworkScreen extends MemberSubScreen {
                 this.renderContents(context, mouseX, mouseY, delta);
                 context.getMatrices().pop();
                 context.disableScissor();
-                this.renderOverlay(context);
+//                this.renderOverlay(context);
             }
         }
         private Entry offerAtMouse(double mouseX, double mouseY) {
@@ -620,28 +618,28 @@ public class MemberFireworkScreen extends MemberSubScreen {
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (this.active && this.visible) {
-                if (this.isValidClickButton(button)) {
-                    boolean bl = this.clicked(mouseX, mouseY);
-                    if (bl) {
-                        int predictedX = (int) ((mouseX - getX()) / (COLOR_SIZE + 2));
-                        int predictedY = (int) ((mouseY - getY() - TEXT_LINE_HEIGHT) / (COLOR_SIZE + 2));
-                        int predictedIndex = predictedX + predictedY * 4;
-                        if (predictedIndex >= 0 && predictedIndex < DyeColor.values().length) {
-                            DyeColor pickedColor = DyeColor.byId(predictedIndex);
-                            if (colorsPicked.contains(pickedColor.getFireworkColor())) {
-                                colorsPicked.remove(pickedColor.getFireworkColor());
-                                return true;
-                            }
-                            if (colorsPicked.size() >= 8) {
-                                colorsPicked.remove(0);
-                            }
-                            colorsPicked.add(pickedColor.getFireworkColor());
-                            return true;
-                        }
-                    }
-                }
-            }
+//            if (this.active && this.visible) {
+//                if (this.isValidClickButton(button)) {
+//                    boolean bl = this.clicked(mouseX, mouseY);
+//                    if (bl) {
+//                        int predictedX = (int) ((mouseX - getX()) / (COLOR_SIZE + 2));
+//                        int predictedY = (int) ((mouseY - getY() - TEXT_LINE_HEIGHT) / (COLOR_SIZE + 2));
+//                        int predictedIndex = predictedX + predictedY * 4;
+//                        if (predictedIndex >= 0 && predictedIndex < DyeColor.values().length) {
+//                            DyeColor pickedColor = DyeColor.byId(predictedIndex);
+//                            if (colorsPicked.contains(pickedColor.getFireworkColor())) {
+//                                colorsPicked.remove(pickedColor.getFireworkColor());
+//                                return true;
+//                            }
+//                            if (colorsPicked.size() >= 8) {
+//                                colorsPicked.remove(0);
+//                            }
+//                            colorsPicked.add(pickedColor.getFireworkColor());
+//                            return true;
+//                        }
+//                    }
+//                }
+//            }
             return false;
         }
 

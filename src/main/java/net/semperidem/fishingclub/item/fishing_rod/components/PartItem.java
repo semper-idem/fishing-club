@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.item.fishing_rod.components;
 
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -7,6 +8,7 @@ import net.minecraft.text.Text;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class PartItem extends Item {
     int weightClass = 6;
@@ -20,7 +22,7 @@ public abstract class PartItem extends Item {
         super(settings);
     }
 
-    @Override
+
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.of("Durability " + this.getRatingText(this.getDurabilityRating(stack.getMaxDamage()))));
         if (this.fishQuality != 0) {

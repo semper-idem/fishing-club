@@ -126,7 +126,7 @@ public class LinkingManager extends DataManager {
     //TODO review messages
     private void messageRequestSummon(PlayerEntity target) {
         target.sendMessage(Text.of("[Fishing Club] Your fishing friend:" + trackedFor.holder().getDisplayName().getString() + " send you summon request, You have 30s to accept"), false);
-        target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fishingclub summon_accept"))), false);
+        target.sendMessage(MutableText.of(new PlainTextContent.Literal("Accept?")).setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand("/fishingclub summon_accept"))), false);
 
     }
 
@@ -156,8 +156,8 @@ public class LinkingManager extends DataManager {
             return;
         }
         linkedFishers = new ArrayList<>();
-        NbtList linkedFishersNbt = nbtCompound.getList(TAG, NbtElement.STRING_TYPE);
-        linkedFishersNbt.forEach(nbtElement -> linkedFishers.add(UUID.fromString(nbtElement.asString())));
+        NbtList linkedFishersNbt = nbtCompound.getListOrEmpty(TAG);
+        linkedFishersNbt.forEach(nbtElement -> linkedFishers.add(UUID.fromString(String.valueOf(nbtElement))));
     }
 
     @Override

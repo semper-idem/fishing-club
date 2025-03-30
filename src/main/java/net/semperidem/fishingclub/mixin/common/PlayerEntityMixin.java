@@ -48,23 +48,4 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         super(entityType, world);
     }
 
-    @Shadow
-    public Iterable<ItemStack> getArmorItems() {
-        return null;
-    }
-
-    @Shadow
-    public ItemStack getEquippedStack(EquipmentSlot slot) {
-        return null;
-    }
-
-    @Shadow
-    public void equipStack(EquipmentSlot slot, ItemStack stack) {
-    }
-
-    @Shadow
-    public Arm getMainArm() {
-        return null;
-    }
-
 }

@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -48,14 +49,15 @@ public class NutritiousKelpBlock extends AbstractPlantStemBlock implements Fluid
 		return !state.isOf(net.minecraft.block.Blocks.MAGMA_BLOCK) && !state.isOf(net.minecraft.block.Blocks.KELP) && !state.isOf(Blocks.ENERGY_DENSE_KELP);
 	}
 
+
 	@Override
-	public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-		return false;
+	public boolean canFillWithFluid(@Nullable LivingEntity filler, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+		return true;
 	}
 
 	@Override
 	public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
-		return false;
+		return true;
 	}
 
 	@Override

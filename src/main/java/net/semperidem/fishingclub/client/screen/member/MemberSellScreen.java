@@ -209,7 +209,6 @@ public class MemberSellScreen extends MemberSubScreen{
             return super.mouseClicked(mouseX, mouseY, button);
         }
 
-        @Override
         protected int getContentsHeight() {
             return Math.max(1, getRows()) * TILE_SIZE;
         }
@@ -218,7 +217,6 @@ public class MemberSellScreen extends MemberSubScreen{
             return (int) Math.ceil((double) entries.size() / SLOTS_IN_ROW);
         }
 
-        @Override
         protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
             if (entries.isEmpty()) {
                 context.drawCenteredTextWithShadow(textRenderer, NO_FISH_TEXT, noFishTextX ,noFishTextY, BEIGE_TEXT_COLOR);
@@ -261,7 +259,7 @@ public class MemberSellScreen extends MemberSubScreen{
                 this.renderContents(context, mouseX, mouseY, delta);
                 context.getMatrices().pop();
                 context.disableScissor();
-                this.renderOverlay(context);
+//                this.renderOverlay(context);
             }
         }
 
@@ -277,7 +275,7 @@ public class MemberSellScreen extends MemberSubScreen{
 
             public void render(DrawContext context, int x, int y){
                 OFFER_TEXTURE.render(context, x, y);
-                context.drawItemInSlot(textRenderer, itemStack, x, y);
+//                context.drawItemInSlot(textRenderer, itemStack, x, y);
                 if (isSelected) {
                     SELECTION_TEXTURE.render(context, x, y);
                 }

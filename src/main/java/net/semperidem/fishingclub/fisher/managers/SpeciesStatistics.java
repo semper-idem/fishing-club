@@ -16,13 +16,13 @@ public class SpeciesStatistics {
         this.name = name;
     }
     SpeciesStatistics(NbtCompound nbt) {
-        this.name = nbt.getString(NAME);
-        this.count = nbt.getInt(COUNT);
-        this.topGradeCount = nbt.getInt(TOP_GRADE_COUNT);
-        this.bestLength = nbt.getFloat(BEST_LENGTH);
-        this.worstLength = nbt.getFloat(WORSE_LENGTH);
-        this.bestWeight = nbt.getFloat(BEST_WEIGHT);
-        this.worstWeight = nbt.getFloat(WORST_WEIGHT);
+        this.name = nbt.getString(NAME, "");
+        this.count = nbt.getInt(COUNT, 1);
+        this.topGradeCount = nbt.getInt(TOP_GRADE_COUNT, 0);
+        this.bestLength = nbt.getFloat(BEST_LENGTH, 0);
+        this.worstLength = nbt.getFloat(WORSE_LENGTH, 0);
+        this.bestWeight = nbt.getFloat(BEST_WEIGHT, 0);
+        this.worstWeight = nbt.getFloat(WORST_WEIGHT, 0);
     }
 
     void record(SpecimenData fish) {

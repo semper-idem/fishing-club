@@ -34,12 +34,12 @@ public class StatusEffects {
         SLOW_FISH_BUFF = registerStatusEffect(identifier("slow_fish_buff"), new DecreaseFishSpeedStatusEffect());
         BOBBER_BUFF = registerStatusEffect(identifier("bobber_buff"), new IncreaseBobberSizeStatusEffect());
         MOISTURIZED = registerStatusEffect(identifier("moisturized"), new MoisturizedStatusEffect()
-            .addAttributeModifier(EntityAttributes.GENERIC_LUCK, Identifier.ofVanilla("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
+            .addAttributeModifier(EntityAttributes.LUCK, Identifier.ofVanilla("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
         );
 
-        FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 14400, 1)));
-        LONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("long_fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 28800, 1)));
-        STRONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("strong_fishing_juice"), new Potion(new StatusEffectInstance(FREQUENCY_BUFF, 14400, 3)));
+        FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("fishing_juice"), new Potion("fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 14400, 1)));
+        LONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("long_fishing_juice"), new Potion("long_fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 28800, 1)));
+        STRONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("strong_fishing_juice"), new Potion("string_fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 14400, 3)));
 
     }
 

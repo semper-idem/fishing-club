@@ -1,18 +1,16 @@
 package net.semperidem.fishingclub.fish.species.butterfish;
 
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
-public class ButterfishEntityModel <T extends Entity> extends SinglePartEntityModel<T> {
+public class ButterfishEntityModel extends EntityModel<ButterfishEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart tailFin;
 
 	public ButterfishEntityModel(ModelPart root) {
-		this.root = root;
+        super(root);
 		this.tailFin = root.getChild(EntityModelPartNames.BODY).getChild((EntityModelPartNames.TAIL_FIN));
 	}
 
@@ -25,13 +23,13 @@ public class ButterfishEntityModel <T extends Entity> extends SinglePartEntityMo
 			ModelPartBuilder.create()
 				.uv(0, 0).cuboid(-2.0F, -3.0F, -2.0F, 4.0F, 2.0F, 6.0F)
 				.uv(7, 5).cuboid(0.0F, -4.0F, 1.0F, 0.001F, 1.0F, 2.0F),
-			ModelTransform.pivot(0.0F, 24.0F, 0.0F)
+			ModelTransform.origin(0.0F, 24.0F, 0.0F)
 		);
 
 		body.addChild(
 			EntityModelPartNames.TAIL_FIN,
 			ModelPartBuilder.create().uv(8, 10).cuboid(0.0F, -4.0F, 4.0F, 0.001F, 4.0F, 2.0F),
-			ModelTransform.pivot(0, 0, 0)
+			ModelTransform.origin(0, 0, 0)
 		);
 
 		body.addChild(
@@ -48,18 +46,13 @@ public class ButterfishEntityModel <T extends Entity> extends SinglePartEntityMo
 		return TexturedModelData.of(modelData, 32, 32);
 	}
 
-	@Override
-	public ModelPart getPart() {
-		return this.root;
-	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+	public void setAngles(ButterfishEntityRenderState state) {
 		float f = 1.0F;
-		if (!entity.isTouchingWater()) {
+		if (!state.touchingWater) {
 			f = 1.5F;
 		}
 
-		this.tailFin.yaw = -f * 0.45F * MathHelper.sin(0.6F * animationProgress);
+		this.tailFin.yaw = -f * 0.45F * MathHelper.sin(0.6F * state.age);
 	}
 }

@@ -11,9 +11,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
@@ -104,7 +104,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     public HookEntity(PlayerEntity owner, World world, ItemStack fishingRod) {
-        this(EntityTypes.HOOK_ENTITY, world);
+        this(EntityTypes.HOOK, world);
         this.setOwner(owner);
         this.init(fishingRod);
     }
@@ -171,7 +171,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (this.hookPartItem.getDamage() == 0) {
             return;
         }
-        this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
+        this.hookedEntity.damage((ServerWorld) this.hookedEntity.getWorld(), this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
     }
 
     @Override
@@ -239,8 +239,8 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         this.setVelocity(castAngle);
         this.setYaw((float) (MathHelper.atan2(castAngle.x, castAngle.z) * 57.3));
         this.setPitch((float) (MathHelper.atan2(castAngle.y, castAngle.horizontalLength()) * 57.3));
-        this.prevYaw = this.getYaw();
-        this.prevPitch = this.getPitch();
+        this.lastYaw = this.getYaw();
+        this.lastPitch = this.getPitch();
     }
 
     @Override
@@ -281,7 +281,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         }
 
         if (this.hookPartItem.getDamage() > 0) {
-            entityHitResult.getEntity().damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
+            entityHitResult.getEntity().damage((ServerWorld) getWorld(), this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getDamage());
         }
     }
 
@@ -705,7 +705,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
     private void pullEntity() {
         if (this.hookPartItem != null && this.hookPartItem.getReelDamage() > 0) {
-            this.hookedEntity.damage(this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getReelDamage());
+            this.hookedEntity.damage((ServerWorld) getWorld(),  this.getDamageSources().playerAttack(this.playerOwner), this.hookPartItem.getReelDamage());
         }
         if (this.hookPartItem != null && this.hookPartItem.isSharp()) {
             return;
@@ -722,7 +722,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         int reactionBonus = getReactionBonus();
         if (reactionBonus > 0) {
             this.card.grantExperience(reactionBonus);
-            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " bonus exp"));
+            this.playerOwner.sendMessage(Text.of("[Quick Hands Bonus] +" + reactionBonus + " bonus exp"), true);
         }
         if (this.caughtFish == null) {
             this.reelJunk();
@@ -758,14 +758,14 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         if (!(this.playerOwner instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }
-        LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+        LootWorldContext lootWorldContext = new LootWorldContext.Builder(serverWorld)
                 .add(LootContextParameters.ORIGIN, serverPlayer.getPos())
                 .add(LootContextParameters.TOOL, this.fishingRod)
                 .add(LootContextParameters.THIS_ENTITY, serverPlayer)
                 .luck(0.5f)
                 .build(LootContextTypes.FISHING);
         LootTable lootTable = serverWorld.getServer().getReloadableRegistries().getLootTable(LootTables.JUNK);
-        FishUtil.giveReward(serverPlayer, lootTable.generateLoot(lootContextParameterSet));
+        FishUtil.giveReward(serverPlayer, lootTable.generateLoot(lootWorldContext));
     }
 
     private void reelWater() {

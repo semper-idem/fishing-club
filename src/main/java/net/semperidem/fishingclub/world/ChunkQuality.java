@@ -129,7 +129,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		}
 
 		this.syncTick = 0;
-		this.chunk.setNeedsSaving(true);
+		this.chunk.markNeedsSaving();
 
 		if (this.needsRecalculation) {
 
@@ -172,9 +172,9 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 
 	@Override
 	public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-		this.base = tag.getDouble(BASE_KEY);
-		this.ceiling = tag.getDouble(CEILING_KEY);
-		this.current = tag.getDouble(CURRENT_KEY);
+		this.base = tag.getDouble(BASE_KEY, 0);
+		this.ceiling = tag.getDouble(CEILING_KEY, 0);
+		this.current = tag.getDouble(CURRENT_KEY, 0);
 	}
 
 	@Override

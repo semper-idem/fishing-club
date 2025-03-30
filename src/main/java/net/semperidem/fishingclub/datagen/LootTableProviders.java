@@ -1,7 +1,7 @@
 package net.semperidem.fishingclub.datagen;
 
 import net.minecraft.data.DataOutput;
-import net.minecraft.data.server.loottable.LootTableProvider;
+import net.minecraft.data.loottable.LootTableProvider;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.RegistryWrapper;
 import net.semperidem.fishingclub.registry.LootTables;

@@ -3,6 +3,7 @@ package net.semperidem.fishingclub.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 public class Texture {
@@ -34,6 +35,7 @@ public class Texture {
 
     public void render(DrawContext context, int x, int y, int segmentX, int segmentY) {
         context.drawTexture(
+                RenderLayer::getGuiTextured,
                 identifier,
                 x, y,
                 ((float) renderWidth / segmentsX) * segmentX, ((float) renderHeight / segmentsY) * segmentY,
@@ -45,6 +47,7 @@ public class Texture {
     public void render(DrawContext drawContext, int x, int y, int segmentX, int segmentY,  int renderWidth, int renderHeight) {
         setTexture(identifier);
         drawContext.drawTexture(
+                RenderLayer::getGuiTextured,
                 identifier,
                 x, y,
                 segmentX, segmentY,
@@ -52,6 +55,7 @@ public class Texture {
                 textureWidth, textureHeight
         );
         drawContext.drawTexture(
+                RenderLayer::getGuiTextured,
                 identifier,
                 (int) (x + (renderWidth / 2f)), y,
                 segmentX + textureWidth - (renderWidth / 2f), segmentY,
@@ -59,6 +63,7 @@ public class Texture {
                 textureWidth, textureHeight
         );
         drawContext.drawTexture(
+                RenderLayer::getGuiTextured,
                 identifier,
                 x, (int) (y + (renderHeight / 2f)),
                 segmentX, segmentY + (renderHeight / 2f),
@@ -66,6 +71,7 @@ public class Texture {
                 textureWidth, textureHeight
         );
         drawContext.drawTexture(
+                RenderLayer::getGuiTextured,
                 identifier,
                 (int) (x + (renderWidth / 2f)), (int) (y + (renderHeight / 2f)),
                 segmentX + textureWidth - (renderWidth / 2f), segmentY + (renderHeight / 2f),
@@ -75,8 +81,6 @@ public class Texture {
     }
 
     public static void setTexture(Identifier texture){
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, texture);
     }
 }

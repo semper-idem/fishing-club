@@ -31,7 +31,7 @@ public class EffectUtils {
         fishermanEntity,
         serverWorld
             .getRegistryManager()
-            .get(RegistryKeys.SOUND_EVENT)
+            .getOrThrow(RegistryKeys.SOUND_EVENT)
             .getEntry(SoundEvents.ITEM_BUCKET_FILL_FISH),
         SoundCategory.PLAYERS,
         1f,

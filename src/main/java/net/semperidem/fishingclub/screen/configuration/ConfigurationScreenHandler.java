@@ -29,7 +29,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
         super(ScreenHandlers.CONFIGURATION_SCREEN, syncId);
 
         this.playerInventory = playerInventory;
-        this.core = playerInventory.getMainHandStack();
+        this.core = playerInventory.getMainStacks().getFirst();
         this.configuration = RodConfiguration.of(this.core);
 
         this.addPlayerInventorySlots();
@@ -39,11 +39,11 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     private void addRodInventorySlots() {
 
         RodInventory rodInventory = this.configuration.inventory(this.playerInventory.player);
-        addPartSlot(rodInventory,41, 64, Items.REEL_WOOD);
-        addPartSlot(rodInventory,147, 84, Items.LINE_SPIDER);
-        addPartSlot(rodInventory,84, 115, Items.BOBBER_PLANT_SLIME);
-        addPartSlot(rodInventory,64, 115, Items.HOOK_IRON);
-        addPartSlot(rodInventory,44, 115, Items.BAIT_ROTTEN_FLESH);
+        addPartSlot(rodInventory,41, 64, (PartItem) Items.REEL_WOOD);
+        addPartSlot(rodInventory,147, 84, (PartItem) Items.LINE_SPIDER);
+        addPartSlot(rodInventory,84, 115, (PartItem) Items.BOBBER_PLANT_SLIME);
+        addPartSlot(rodInventory,64, 115, (PartItem) Items.HOOK_IRON);
+        addPartSlot(rodInventory,44, 115, (PartItem) Items.BAIT_ROTTEN_FLESH);
     }
 
     private void addPartSlot(RodInventory rodInventory, int x, int y, PartItem boundItem){

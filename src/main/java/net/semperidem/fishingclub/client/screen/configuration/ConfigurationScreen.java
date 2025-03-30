@@ -49,13 +49,13 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
             context.drawTextWithShadow(textRenderer, configurationEntry, 0, textY, 0xFFFFFF);
             textY += 12;
         }
-        RenderSystem.enableBlend();
-        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 82, 182, 22);
-        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 62, 182, 22);
-        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 42, 182, 22);
-        RenderSystem.disableBlend();
-        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 22, 182, 22);
-        RenderSystem.enableBlend();
+//        RenderSystem.enableBlend();
+//        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 82, 182, 22);
+//        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 62, 182, 22);
+//        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 42, 182, 22);
+//        RenderSystem.disableBlend();
+//        context.drawGuiTexture(hotbar, middleX - 91, context.getScaledWindowHeight() - 22, 182, 22);
+//        RenderSystem.enableBlend();
         matrixStack.translate(this.x, this.y, 200);
         for(int i = 0; i < RodInventory.SIZE; i++) {
           Slot slot = this.handler.slots.get(i + 36);
@@ -77,7 +77,7 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(45));
         matrixStack.scale(scale,scale,1);
         float shadow = 0.25f;
-        context.setShaderColor(shadow,shadow,shadow, 1f);
+//        context.setShaderColor(shadow,shadow,shadow, 1f);
         matrixStack.push();
         matrixStack.translate(0, shadow, 0);
         context.drawItem(stackInHand, 0, 0);
@@ -90,7 +90,7 @@ public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandle
         matrixStack.translate(shadow, 0, 0);
         context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
-        context.setShaderColor(1,1,1, 1f);
+//        context.setShaderColor(1,1,1, 1f);
         context.drawItem(stackInHand, 0, 0);
         matrixStack.pop();
     }

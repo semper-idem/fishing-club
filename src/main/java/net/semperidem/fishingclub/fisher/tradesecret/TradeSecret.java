@@ -203,7 +203,11 @@ public class TradeSecret {
         }
 
         public static Instance fromNbt(NbtCompound nbtCompound) {//todo handle orElse
-            return new Instance(TradeSecrets.fromName(nbtCompound.getString("name")).orElseThrow(), nbtCompound.getInt("level"), nbtCompound.getLong("nextUseTime"));
+            return new Instance(TradeSecrets.fromName(
+                    nbtCompound.getString("name", "")).orElseThrow(),
+                    nbtCompound.getInt("level", 0),
+                    nbtCompound.getLong("nextUseTime", 0)
+            );
         }
 
         @Override

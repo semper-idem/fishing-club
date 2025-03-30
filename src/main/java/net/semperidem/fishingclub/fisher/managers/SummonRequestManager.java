@@ -48,13 +48,11 @@ public class SummonRequestManager extends DataManager {
 
     private static void teleport(ServerPlayerEntity source, ServerPlayerEntity target) {
         source.teleport(
-                target.getServerWorld(),
                 target.getX(),
                 target.getY(),
                 target.getZ(),
-                target.getYaw(),
-                target.getPitch()
-        );
+                true
+                );
     }
 
     @Override
@@ -62,9 +60,9 @@ public class SummonRequestManager extends DataManager {
         if (!nbtCompound.contains(TAG)) {
             return;
         }
-        NbtCompound summonTag = nbtCompound.getCompound(TAG);
-        targetUUID = summonTag.contains(TARGET_TAG) ? summonTag.getString(TARGET_TAG) : "";
-        requestTick = summonTag.contains(REQUEST_TICK_TAG) ? summonTag.getLong(REQUEST_TICK_TAG) : 0;
+        NbtCompound summonTag = nbtCompound.getCompoundOrEmpty(TAG);
+        targetUUID = summonTag.getString(TARGET_TAG, "");
+        requestTick = summonTag.getLong(REQUEST_TICK_TAG, 0);
     }
 
     @Override

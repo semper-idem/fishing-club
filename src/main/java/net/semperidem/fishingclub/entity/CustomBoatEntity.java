@@ -4,19 +4,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.Items;
 import net.minecraft.world.World;
 
 public class CustomBoatEntity extends BoatEntity {
 
 	public CustomBoatEntity(EntityType<CustomBoatEntity> entityType, World world) {
-		super(entityType, world);
+		super(entityType, world, () -> Items.ACACIA_BOAT);
 	}
 
-
-	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return false;
-	}
 
 	@Override
 	public void pushAwayFrom(Entity entity) {

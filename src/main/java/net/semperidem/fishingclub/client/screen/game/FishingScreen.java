@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +22,8 @@ import net.semperidem.fishingclub.screen.fishing.FishingScreenHandler;
 
 public class FishingScreen extends HandledScreen<FishingScreenHandler> implements ScreenHandlerProvider<FishingScreenHandler> {
     public final FishingController controller;
-    private static final Identifier ATLAS = FishingClub.identifier("textures/gui/fishing_game.png");
+    private static final Identifier ALTAS = FishingClub.identifier("textures/gui/fishing_game.png");
+
 
     private final float startingPitch;
     private final float startingYaw;
@@ -155,11 +157,11 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(ATLAS, this.x, this.y, 0, 0, 182, 50, 182, 120);
+        context.drawTexture(RenderLayer::getGuiTextured, ALTAS, this.x, this.y, 0, 0, 182, 50, 182, 120);
     }
 
     public void renderFront(DrawContext context) {
-        context.drawTexture(ATLAS, this.x, this.y + 38, 0, 50, 182, 12, 182, 120);
+        context.drawTexture(RenderLayer::getGuiTextured, ALTAS, this.x, this.y + 38, 0, 50, 182, 12, 182, 120);
     }
 
 
@@ -175,7 +177,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         context.fill(bobberCenter - bobberOffset, this.y + 38, bobberCenter + bobberOffset, this.y + 38 + 14, 0x77d9caca);
         //Fish
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 (int) (this.x - 6 + 176 * controller.getFishPosX()),
                 (int) (this.y + 38 - 20 * controller.getFishPosY()),
                 70,
@@ -189,7 +191,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         //Progress
         float progress = this.controller.getProgress();
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 this.x + 3,
                 this.y + 3,
                 0,
@@ -235,7 +237,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
             int popupY = timeSinceStart > 6 ? (int) (6 + (timeSinceStart * 0.2) % 2) : timeSinceStart;
             if (timeSinceStart < 50) {
                 context.drawTexture(
-                        ATLAS,
+                        RenderLayer::getGuiTextured, ALTAS,
                         currentTreasureX + 3,
                         this.y + 41 - popupY,
                         33,
@@ -247,7 +249,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
                 );
             }
             context.drawTexture(
-                    ATLAS,
+                    RenderLayer::getGuiTextured, ALTAS,
                     currentTreasureX,
                     this.y + 41,
                     33,
@@ -272,7 +274,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         int bobberU = isSuccessful ? 12 : 0;
         int bobberV = isPulling ? 9 : 0;
        context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 bobberCenter - bobberOffset,
                 this.y + 38,
                 46 + bobberU,
@@ -284,7 +286,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         );
         //right
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 bobberCenter + bobberOffset - 3,
                 this.y + 38,
                 55 + bobberU,
@@ -305,7 +307,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         context.enableScissor(this.x - 6 + 3, this.y + 38, this.x - 6 + 174, this.y + 38 + 9);
         //Treasure (again)
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 currentTreasureX,
                 this.y + 41,
                 33,
@@ -319,7 +321,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
 
         //Treasure widget bg
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 currentTreasureX - 3,
                 this.y + 41 - 50,
                 0,
@@ -332,7 +334,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         //Treasure progress
         double treasureProgress = this.controller.getTreasureProgress();//next line replace cast to float with cast to int for stable progress
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 currentTreasureX + 4,
                 (int) (this.y + 41 - 35 + 26 * (1 - treasureProgress)),
                 17,
@@ -345,7 +347,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
 
         int buttonU = Math.sin(tick) > 0 ? 0 : 10;
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 currentTreasureX - 7,
                 this.y + 41 - 11,
                 20,
@@ -364,7 +366,7 @@ public class FishingScreen extends HandledScreen<FishingScreenHandler> implement
         int treasureResultU = this.controller.getTreasureProgress() >= 1 ? 0 : 8;
 
         context.drawTexture(
-                ATLAS,
+                RenderLayer::getGuiTextured, ALTAS,
                 currentTreasureX - 1,
                 (int) (this.y + 41 - 46 + (this.tick * 0.2f % 2)),
                 20,

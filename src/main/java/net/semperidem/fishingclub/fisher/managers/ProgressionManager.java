@@ -244,17 +244,17 @@ public class ProgressionManager extends DataManager {
         if (!fishingCardNbt.contains(TAG)) {
             return;
         }
-        NbtCompound progressionNbt = fishingCardNbt.getCompound(TAG);
-        this.level = progressionNbt.getInt(LEVEL_TAG);
-        this.exp = progressionNbt.getInt(EXP_TAG);
-        this.admirationPoints = progressionNbt.getInt(ADMIRATION_POINTS_TAG);
-        this.resetCount = progressionNbt.getInt(RESET_COUNT);
+        NbtCompound progressionNbt = fishingCardNbt.getCompoundOrEmpty(TAG);
+        this.level = progressionNbt.getInt(LEVEL_TAG, 1);
+        this.exp = progressionNbt.getInt(EXP_TAG, 0);
+        this.admirationPoints = progressionNbt.getInt(ADMIRATION_POINTS_TAG, 0);
+        this.resetCount = progressionNbt.getInt(RESET_COUNT, 0);
         this.readKnownTradeSecrets(progressionNbt);
     }
 
     private void readKnownTradeSecrets(NbtCompound progressionNbt) {
         this.knownTradeSecrets.clear();
-        progressionNbt.getList(TRADE_SECRETS_TAG, NbtElement.COMPOUND_TYPE).forEach(
+        progressionNbt.getListOrEmpty(TRADE_SECRETS_TAG).forEach(
                 element -> {
                     TradeSecret.Instance instance = TradeSecret.Instance.fromNbt((NbtCompound) element);
                     this.knownTradeSecrets.put(instance.name(), instance);

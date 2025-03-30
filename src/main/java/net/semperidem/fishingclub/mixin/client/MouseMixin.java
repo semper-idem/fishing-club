@@ -19,7 +19,7 @@ public class MouseMixin {
 
     @Shadow @Final private MinecraftClient client;
 
-    @Inject(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
+    //@Inject(method = "onMouseScroll", at = @At(value = "INVOKE", target = ""), cancellable = true)
     private void onScroll(long window, double horizontal, double vertical, CallbackInfo ci){
         PlayerEntity player = this.client.player;
         if (player == null) {
