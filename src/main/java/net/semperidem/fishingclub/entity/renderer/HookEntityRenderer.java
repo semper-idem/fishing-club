@@ -10,8 +10,6 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.state.FishingBobberEntityState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -56,7 +54,7 @@ public class HookEntityRenderer extends EntityRenderer<HookEntity, FishingBobber
 	  }
 
     public static Arm getArmHoldingRod(PlayerEntity player) {
-        return player.getMainHandStack().isIn(Tags.ROD_CORE) ? player.getMainArm() : player.getMainArm().getOpposite();
+        return player.getMainHandStack().isIn(Tags.CORE) ? player.getMainArm() : player.getMainArm().getOpposite();
     }
 
     private Vec3d getHandPos(PlayerEntity player, float f, float tickProgress) {

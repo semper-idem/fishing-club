@@ -59,7 +59,7 @@ public class CardScreenHandler extends ScreenHandler {
     }
 
     private void addCardInventory() {
-        this.addSlot(new TagSlot(Tags.ROD_CORE, Tab.STATS, card, 0, 148, 19));
+        this.addSlot(new TagSlot(Tags.CORE, Tab.STATS, card, 0, 148, 19));
         this.addSlot(new TagSlot(Tags.CONTAINER, Tab.STATS, card, 1, 148, 38));
         this.addSlot(new TagSlot(ItemTags.BOATS, Tab.STATS, card, 2, 148, 57));
         this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 3, 129, 19));

@@ -97,7 +97,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
 
-        return this.core.isIn(Tags.ROD_CORE);
+        return this.core.isIn(Tags.CORE);
     }
 
     @Override

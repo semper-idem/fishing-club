@@ -1,5 +1,5 @@
 {
-    "parent": "fishingclub:item/core",
+    "parent": "minecraft:item/handheld_rod",
     "textures": {
         "layer0": "fishingclub:item/core_bamboo"
     }

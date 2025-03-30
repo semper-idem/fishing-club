@@ -124,7 +124,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     }
 
     public void init(ItemStack fishingRod) {
-        if (!fishingRod.isIn(Tags.ROD_CORE)) {
+        if (!fishingRod.isIn(Tags.CORE)) {
             this.discard();
             return;
         }

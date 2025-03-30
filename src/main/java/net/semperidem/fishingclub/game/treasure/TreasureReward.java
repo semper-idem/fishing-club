@@ -1,11 +1,9 @@
 package net.semperidem.fishingclub.game.treasure;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.LocalRandom;
 import net.semperidem.fishingclub.item.FishCoinBundleItem;
@@ -34,7 +32,7 @@ public class TreasureReward {
 
     ItemStack roll(PlayerEntity playerEntity){
         ItemStack rewardStack = item.getDefaultStack();
-        if (rewardStack.isIn(Tags.ROD_CORE)) {
+        if (rewardStack.isIn(Tags.CORE)) {
             return Items.CORE_COPPER.getDefaultStack();
         }
 

@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -49,7 +48,7 @@ public abstract class InventoryScreenMixin extends RecipeBookScreen<PlayerScreen
     )
     private void fishing_club$addFishingCardButton(CallbackInfo ci){
         this.fishingCardButton = new TexturedButtonWidget(this.x + 126, this.height / 2 - 22, 20, 18, BUTTON_TEXTURES, button -> {
-            if (client != null && client.player != null && client.player.getMainHandStack().isIn(Tags.ROD_CORE)) {
+            if (client != null && client.player != null && client.player.getMainHandStack().isIn(Tags.CORE)) {
                 ClientPlayNetworking.send(new ConfigurationPayload());
                 return;
             }

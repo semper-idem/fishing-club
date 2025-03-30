@@ -47,7 +47,7 @@ public abstract class LivingEntityMixin extends Entity{
         if (!((LivingEntity)(Object)this instanceof PlayerEntity player)) {
             return;
         }
-        if (!activeStack.isIn(Tags.ROD_CORE)) {
+        if (!activeStack.isIn(Tags.CORE)) {
             return;
         }
         int currentPower = FishingRodCoreItem.getChargePower(getItemUseTime());

@@ -172,7 +172,7 @@ public class Items {
 
 
     public static RegistryKey<Item> keyOf(String id) {
-        return RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla(id));
+        return RegistryKey.of(RegistryKeys.ITEM, FishingClub.identifier(id));
     }
 
     private static Item register(String id, Function<Item.Settings, Item> factory, Item.Settings settings) {
