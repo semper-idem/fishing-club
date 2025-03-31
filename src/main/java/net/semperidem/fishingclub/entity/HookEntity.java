@@ -797,7 +797,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
 
 
     @Override
-    public Card getFishingCard() {
+    public Card getCard() {
         return Card.of(this.playerOwner);
     }
 

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.entity;
 
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
@@ -11,8 +12,8 @@ public interface IHookEntity {
         return Random.create();
     }
 
-    default Card getFishingCard() {
-        return Card.DEFAULT;
+    default Card getCard() {
+        return null;
     }
 
     default int maxWeight() {
@@ -25,6 +26,10 @@ public interface IHookEntity {
 
     default float getCircumstanceQuality() {
         return 0.5f;
+    }
+
+    default ChunkPos getChunkPos(){
+        return new ChunkPos(0,0);
     }
 
     default int getWaitTime() {

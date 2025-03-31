@@ -75,7 +75,7 @@ public abstract class ServerWorldMixin extends World implements DerekServerWorld
         }
 
         int fishCount = (int) ((Math.abs(random.nextGaussian()) + 0.5) * power);
-        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity);
+        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity, explosionPos);
         for(int i = 0; i < fishCount; i++) {
             FishUtil.fishOnHook(fee).ifPresent(specimenData -> FishUtil.fishCaughtAt(
                     causingEntity,

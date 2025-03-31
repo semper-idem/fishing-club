@@ -10,10 +10,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
@@ -31,12 +31,11 @@ import java.util.*;
 
 public final class Card extends CardInventory implements EntityComponentInitializer, AutoSyncedComponent {
     public static final ComponentKey<Card> CARD = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
-    public static final Card DEFAULT = new Card();
-    private PlayerEntity holder;
+    private final PlayerEntity holder;
     private final CardProgression progression;
     private final CardHistory history;
     private final CardLinking linking;
-    private CheckedRandom random;
+    private final CheckedRandom random;
 
     private final StatusEffectHelper statusEffectHelper;//todo its prob util class, verify
 
@@ -44,16 +43,11 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return CARD.get(playerEntity);
     }
 
-
-    public Card() {
+    public Card(PlayerEntity playerEntity) {
         this.progression = new CardProgression(this);
         this.history = new CardHistory(this);
         this.linking = new CardLinking(this);
         this.statusEffectHelper = new StatusEffectHelper(this);
-    }
-
-    public Card(PlayerEntity playerEntity) {
-        this();
         this.holder = playerEntity;
         this.random = new CheckedRandom(holder.getUuid().getLeastSignificantBits());
     }
@@ -196,12 +190,8 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return this.progression.getExpProgress();
     }
 
-    public PlayerEntity unsafeHolder() {
-        return this.holder;
-    }
-
     public PlayerEntity owner(){
-        return Objects.requireNonNull(this.holder, "Card holder did not load correctly");
+        return Objects.requireNonNull(this.holder, "Card owner did not load correctly");
     }
 
     public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> sharedWith){
@@ -220,9 +210,9 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
     }
 
-    public int minQuality(IHookEntity caughtWith){
+    public int minQuality(ChunkPos chunkPos){
         int minQuality = 1;
-        minQuality += history.minQualityIncrement(caughtWith, progression);
+        minQuality += history.minQualityIncrement(chunkPos, progression);
         minQuality += statusEffectHelper.minQualityIncrement();
         return Math.min(5, minQuality);
     }

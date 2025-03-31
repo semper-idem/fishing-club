@@ -200,13 +200,13 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return;
         }
 
-        this.fishStack = FishUtil.getStackFromFish(fishRecord);
+        this.fishStack = fishRecord.asItemStack();
         this.fishEntity = fishRecord.species().getEntityType().create(this.world, SpawnReason.BUCKET);
         if (this.fishEntity == null) {
             return;
         }
         if (fishEntity instanceof TropicalFishEntity) {
-           fishEntity.getDataTracker().set(TropicalFishAccessor.getVariant(),TropicalFishEntity.COMMON_VARIANTS.get(fishRecord.subspecies()).getId());
+           fishEntity.getDataTracker().set(TropicalFishAccessor.getVariant(),TropicalFishEntity.COMMON_VARIANTS.get(fishRecord.variant()).getId());
         }
         this.fishEntity.setPosition(this.pos.getX(), this.pos.getY(), this.pos.getZ());
         SpecimenComponent.of(this.fishEntity).set(fishRecord);

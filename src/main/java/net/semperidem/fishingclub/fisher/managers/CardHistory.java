@@ -7,6 +7,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.semperidem.fishingclub.entity.IHookEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
@@ -103,14 +104,10 @@ public class CardHistory extends CardData {
         return getCurrentTime() + DAY_LENGTH > firstCatchOfTheDay;
     }
 
-    public boolean isFirstCatchInChunk(IHookEntity caughtWith) {
+    public boolean isFirstCatchInChunk(ChunkPos chunkPos) {
         if (!this.card.knowsTradeSecret(TradeSecrets.CHANGE_OF_SCENERY)) {
             return false;
         }
-        if (!(caughtWith instanceof Entity caughtWithEntity)) {
-            return false;
-        }
-        ChunkPos chunkPos = caughtWithEntity.getChunkPos();
         boolean firstCatchInChunk = usedChunks.stream().noneMatch(usedChunk -> usedChunk.matches(chunkPos));
         if (!firstCatchInChunk) {
             return false;
@@ -121,9 +118,9 @@ public class CardHistory extends CardData {
         return true;
     }
 
-    public int minQualityIncrement(IHookEntity caughtWith, CardProgression progressionManager) {
+    public int minQualityIncrement(ChunkPos chunkPos, CardProgression progressionManager) {
         int minGrade = 0;
-        if (isFirstCatchInChunk(caughtWith)) {
+        if (isFirstCatchInChunk(chunkPos)) {
             minGrade++;
         }
         if (isFirstCatchOfTheDay() && progressionManager.knowsTradeSecret(TradeSecrets.FIRST_CATCH)) {

@@ -46,7 +46,7 @@ public class WaterCreatureEntityMixin extends PathAwareEntity {
         if (fishComponent == null) {
             return ActionResult.PASS;
         }
-        if (fishingNetItem.insertStack(stackInHand, FishUtil.getStackFromFish(fishComponent.get()), player)) {
+        if (fishingNetItem.insertStack(stackInHand, fishComponent.get().asItemStack(), player)) {
             this.discard();
         }
         return ActionResult.SUCCESS;

@@ -172,7 +172,7 @@ public abstract class ItemEntityMixin extends Entity{
         if (entityType.getUntranslatedName().equals("tropical_fish")) {
             NbtCompound nbtCompound = new NbtCompound();
             fishEntity.writeCustomDataToNbt(nbtCompound);
-            nbtCompound.putInt("Variant", TropicalFishEntity.COMMON_VARIANTS.get(this.fish.subspecies()).getId());
+            nbtCompound.putInt("Variant", TropicalFishEntity.COMMON_VARIANTS.get(this.fish.variant()).getId());
             fishEntity.readCustomDataFromNbt(nbtCompound);
         }
         SpecimenComponent.of(fishEntity).set(this.fish);

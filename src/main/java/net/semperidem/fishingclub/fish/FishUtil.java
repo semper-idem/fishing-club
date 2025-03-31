@@ -26,12 +26,7 @@ import java.util.Optional;
 import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
-
-    public static ItemStack getStackFromFish(SpecimenData fish){
-        return getStackFromFish(fish, Card.DEFAULT).getFirst();
-    }
-
-    public static List<ItemStack> getStackFromFish(SpecimenData fish, Card card){
+    public static List<ItemStack> getFishingReward(SpecimenData fish, Card card){
         ArrayList<ItemStack> caughtFishStacks = new ArrayList<>();
         int count = getRewardMultiplier(card);
         ItemStack fishReward = fish.asItemStack();
@@ -40,7 +35,7 @@ public class FishUtil {
             return caughtFishStacks;
         }
         for(int i = count - 1; i > 0; i--) {
-            caughtFishStacks.add(fish.sibling(card.owner()).asItemStack());
+            caughtFishStacks.add(fish.sibling().asItemStack());
         }
         return caughtFishStacks;
     }
@@ -62,7 +57,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     public static ItemStack fishCaught(PlayerEntity player, SpecimenData fish){
         Card card = Card.of(player);
         card.fishCaught(fish);
-        List<ItemStack> fishCaughtStacks = getStackFromFish(fish, card);
+        List<ItemStack> fishCaughtStacks = getFishingReward(fish, card);
         ItemStack fishStack = fishCaughtStacks.getFirst().copy();
         for(ItemStack fishCaughtStack : fishCaughtStacks) {
             ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
@@ -79,7 +74,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         Card card = Card.of(player);
         card.fishCaught(fish);
         CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.EXPLOSION);
-        throwRandomly(player.getWorld(), caughtAt, getStackFromFish(fish));
+        throwRandomly(player.getWorld(), caughtAt, fish.asItemStack());
     }
 
     public static void giveReward(ServerPlayerEntity player, List<ItemStack> treasureReward){
@@ -110,7 +105,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
 
     private static int getRewardMultiplier(Card card){
         int rewardMultiplier = 1;
-        if (card.unsafeHolder() == null) {
+        if (card.owner() == null) {
             return 1;
         }
         int luck = (int) card.owner().getLuck();
@@ -137,21 +132,27 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         return itemStack.isIn(Tags.FISH_ITEM) || itemStack.get(Components.SPECIMEN) != null;
     }
 
-    public static Optional<SpecimenData> fishOnHook(IHookEntity iHookEntity) {
+    private static float getJunkChance(IHookEntity hookEntity) {
         float luck = 0.5f;
-        if (iHookEntity.getFishingCard().owner() instanceof PlayerEntity playerEntity) {
-            luck *= (1 + playerEntity.getLuck());
-            if (iHookEntity.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
-                luck++;
-            }
-            luck *= (float) MathHelper.clamp((playerEntity.getBlockY() + 128) / 192f, 0, 1.5);
+        Card card = hookEntity.getCard();
+        if (card == null) {
+            return 0.025f;
         }
-        PlayerEntity holder = iHookEntity.getFishingCard().owner();
-        int curseOfClutterLevel = Enchantments.getEnchantmentLevel(holder, holder.getEquippedStack(EquipmentSlot.MAINHAND), Enchantments.CURSE_OF_CLUTTER);
-        if (Math.random() < 0.05 * (1 + curseOfClutterLevel * 3)  / luck) {
+        PlayerEntity owner = card.owner();
+        luck *= (1 + owner.getLuck());
+        if (card.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
+            luck++;
+        }
+        luck *= (float) MathHelper.clamp((owner.getBlockY() + 128) / 192f, 0, 1.5);
+        int curseOfClutterLevel = Enchantments.getEnchantmentLevel(owner, owner.getEquippedStack(EquipmentSlot.MAINHAND), Enchantments.CURSE_OF_CLUTTER);
+        return (float) (0.05 * (1 + curseOfClutterLevel * 3) / luck);
+    }
+
+    public static Optional<SpecimenData> fishOnHook(IHookEntity hookEntity) {
+       if (Math.random() < getJunkChance(hookEntity)) {
            return Optional.empty();
         }
-        return SpecimenData.init(iHookEntity);
+        return SpecimenData.init(hookEntity);
     }
 
     public static int getTemperature (World world, BlockPos pos) {
