@@ -11,14 +11,12 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.item.*;
 import net.semperidem.fishingclub.item.fishing_rod.components.*;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static net.minecraft.block.ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE;
@@ -197,12 +195,12 @@ public class Items {
         DOUBLE_FISHING_NET = register(
                 "double_fishing_net",
                 settings -> new FishingNetItem(settings, 4),
-                new Item.Settings().maxCount(1).component(Components.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT)
+                new Item.Settings().maxCount(1).component(Components.NET_CONTENT, NetContentComponent.DEFAULT)
         );
         FISHING_NET = register(
                 "fishing_net",
                 settings -> new FishingNetItem(settings, 2),
-                new Item.Settings().maxCount(1).component(Components.FISHING_NET_CONTENT, FishingNetContentComponent.DEFAULT)
+                new Item.Settings().maxCount(1).component(Components.NET_CONTENT, NetContentComponent.DEFAULT)
         );
         FISH_COIN_BUNDLE = register(
                 "fish_coin_bundle",

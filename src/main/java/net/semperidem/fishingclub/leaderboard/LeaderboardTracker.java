@@ -11,16 +11,15 @@ import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
+import net.semperidem.fishingclub.registry.Components;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 
-public class LeaderboardTracker implements ScoreboardComponentInitializer, Component {
-    private static final String LEADERBOARD_TRACKER_KEY = "leaderboard_tracker";
-    public static final ComponentKey<LeaderboardTracker> LEADERBOARD_TRACKER = ComponentRegistry.getOrCreate(FishingClub.identifier(LEADERBOARD_TRACKER_KEY), LeaderboardTracker.class);
-    private Scoreboard scoreboard;
+public class LeaderboardTracker implements Component {
+    public static final String TAG_KEY = "leaderboard";
+    private final Scoreboard scoreboard;
 
     private static final float DISCOUNT_PER_TITLE = 0.1f;
     public final Leaderboard<SpecimenData> bestWeight;
@@ -30,18 +29,14 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     public final Leaderboard<Card> highestCredit;
     public final Leaderboard<Card> highestLevel;
 
-    public LeaderboardTracker(Scoreboard scoreboard, MinecraftServer server) {
-        this();
+    public LeaderboardTracker(Scoreboard scoreboard) {
         this.scoreboard = scoreboard;
-    }
-
-    public LeaderboardTracker() {
-        bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, SpecimenData::weight);
-        worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, SpecimenData::weight);
-        bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, SpecimenData::length);
-        worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, SpecimenData::length);
-        highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
-        highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
+        this.bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, SpecimenData::weight);
+        this.worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, SpecimenData::weight);
+        this.bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, SpecimenData::length);
+        this.worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, SpecimenData::length);
+        this.highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
+        this.highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
     }
 
     public float getDiscount(PlayerEntity player) {
@@ -98,14 +93,11 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
     private static final long WEEKLY = DAILY * 7;//TODO IMPLEMENT TIMED LEADERBOARDS
 
     public static LeaderboardTracker of(Scoreboard scoreboard) {
-        return LEADERBOARD_TRACKER.get(scoreboard);
+        return Components.LEADERBOARD_TRACKER.get(scoreboard);
     }
 
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        if (scoreboard == null) {
-            return;
-        }
         Leaderboard.readNbt(tag, bestWeight);
         Leaderboard.readNbt(tag, worstWeight);
         Leaderboard.readNbt(tag, bestLength);
@@ -116,10 +108,6 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
 
     @Override
     public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        if (scoreboard == null) {
-            return;
-        }
-
         Leaderboard.writeNbt(tag, bestWeight);
         Leaderboard.writeNbt(tag, worstWeight);
         Leaderboard.writeNbt(tag, bestLength);
@@ -127,10 +115,4 @@ public class LeaderboardTracker implements ScoreboardComponentInitializer, Compo
         Leaderboard.writeNbt(tag, highestCredit);
         Leaderboard.writeNbt(tag, highestLevel);
     }
-
-    @Override
-    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-            registry.registerScoreboardComponent(LEADERBOARD_TRACKER, LeaderboardTracker::new);
-    }
-
 }

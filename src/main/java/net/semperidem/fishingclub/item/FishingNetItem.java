@@ -52,20 +52,20 @@ public class FishingNetItem extends BundleItem {
     }
 
     public boolean canInsert(ItemStack fishingNetStack, ItemStack fishStack) {
-        if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
+        if (!(getContent(fishingNetStack) instanceof NetContentComponent netContentComponent)) {
             return false;
         }
         if (!FishUtil.isFish(fishStack)) {
             return false;
         }
 
-        return new FishingNetContentComponent.Builder(fishingNetContentComponent).getMaxAllowed(fishStack) > 0;
+        return new NetContentComponent.Builder(netContentComponent).getMaxAllowed(fishStack) > 0;
     }
 
 
     public boolean insertStack(ItemStack fishingNetStack, ItemStack fishStack, PlayerEntity player) {
 
-        if (!(getContent(fishingNetStack) instanceof FishingNetContentComponent fishingNetContentComponent)) {
+        if (!(getContent(fishingNetStack) instanceof NetContentComponent netContentComponent)) {
             return false;
         }
 
@@ -73,12 +73,12 @@ public class FishingNetItem extends BundleItem {
             return false;
         }
 
-        FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(fishingNetContentComponent);
+        NetContentComponent.Builder builder = new NetContentComponent.Builder(netContentComponent);
         if (builder.add(fishStack) == 0) {
             return false;
         }
 
-        setContent(fishingNetStack, builder.build(fishingNetContentComponent.stackCount()));
+        setContent(fishingNetStack, builder.build(netContentComponent.stackCount()));
         this.playInsertSound(player);
         return true;
 
@@ -89,12 +89,12 @@ public class FishingNetItem extends BundleItem {
         if (clickType != ClickType.RIGHT) {
             return false;
         } else {
-            FishingNetContentComponent bundleContentsComponent = getContent(stack);
+            NetContentComponent bundleContentsComponent = getContent(stack);
             if (bundleContentsComponent == null) {
                 return false;
             } else {
                 ItemStack itemStack = slot.getStack();
-                FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(bundleContentsComponent);
+                NetContentComponent.Builder builder = new NetContentComponent.Builder(bundleContentsComponent);
                 if (itemStack.isEmpty()) {
                     ItemStack itemStack2 = builder.removeFirst();
                     if (itemStack2 != null) {
@@ -116,22 +116,22 @@ public class FishingNetItem extends BundleItem {
     }
 
 
-    public FishingNetContentComponent getContent(ItemStack stack) {
-        return FishingNetContentComponent.of(stack);
+    public NetContentComponent getContent(ItemStack stack) {
+        return NetContentComponent.of(stack);
     }
 
-    public void setContent(ItemStack stack, FishingNetContentComponent bundleContentsComponent) {
-        stack.set(Components.FISHING_NET_CONTENT, bundleContentsComponent);
+    public void setContent(ItemStack stack, NetContentComponent bundleContentsComponent) {
+        stack.set(Components.NET_CONTENT, bundleContentsComponent);
     }
 
     @Override
     public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
         if (clickType == ClickType.RIGHT && slot.canTakePartial(player)) {
-            FishingNetContentComponent bundleContentsComponent = getContent(stack);
+            NetContentComponent bundleContentsComponent = getContent(stack);
             if (bundleContentsComponent == null) {
                 return false;
             } else {
-                FishingNetContentComponent.Builder builder = new FishingNetContentComponent.Builder(bundleContentsComponent);
+                NetContentComponent.Builder builder = new NetContentComponent.Builder(bundleContentsComponent);
                 if (otherStack.isEmpty()) {
                     ItemStack itemStack = builder.removeFirst();
                     if (itemStack != null) {
@@ -170,18 +170,18 @@ public class FishingNetItem extends BundleItem {
 
     @Override
     public boolean isItemBarVisible(ItemStack stack) {
-        FishingNetContentComponent fishingNetContent = getContent(stack);
+        NetContentComponent fishingNetContent = getContent(stack);
         return fishingNetContent.getOccupancy().compareTo(Fraction.ZERO) > 0;
     }
 
     @Override
     public int getItemBarStep(ItemStack stack) {
-        FishingNetContentComponent fishingNetContent = getContent(stack);
+        NetContentComponent fishingNetContent = getContent(stack);
         return Math.min(1 + MathHelper.multiplyFraction(fishingNetContent.getOccupancy(), 12), 13);
     }
 
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
-        FishingNetContentComponent fishingNetContent = getContent(stack);
+        NetContentComponent fishingNetContent = getContent(stack);
         if (fishingNetContent != null) {
             int i = MathHelper.multiplyFraction(fishingNetContent.getOccupancy(), fishingNetContent.stackCount() * 64);
             tooltip.add(Text.translatable("item.minecraft.bundle.fullness", i, fishingNetContent.stackCount() * 64).formatted(Formatting.GRAY));

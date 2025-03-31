@@ -18,22 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record FishingNetContentComponent(
+public record NetContentComponent(
   List<ItemStack> stacks,
   Fraction occupancy,
   Integer stackCount
 ) implements TooltipData {
 
-    public static final FishingNetContentComponent DEFAULT = new FishingNetContentComponent(List.of(), Fraction.ZERO, 1);
-    public static final Codec<FishingNetContentComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(FishingNetContentComponent::stacks),
+    public static final NetContentComponent DEFAULT = new NetContentComponent(List.of(), Fraction.ZERO, 1);
+    public static final Codec<NetContentComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        ItemStack.CODEC.listOf().fieldOf("stacks").forGetter(NetContentComponent::stacks),
       Codec.INT.fieldOf("occupancy").forGetter(o -> o.occupancy.getNumerator()),
       Codec.INT.fieldOf("occupancy").forGetter(o -> o.occupancy.getDenominator()),
-        Codec.INT.fieldOf("stackCount").forGetter(FishingNetContentComponent::stackCount)
-      ).apply(instance, FishingNetContentComponent::new)
+        Codec.INT.fieldOf("stackCount").forGetter(NetContentComponent::stackCount)
+      ).apply(instance, NetContentComponent::new)
     );
 
-    public static FishingNetContentComponent of(ItemStack fishingNet) {
+    public static NetContentComponent of(ItemStack fishingNet) {
 
         int stackCount = 1;
 
@@ -41,21 +41,21 @@ public record FishingNetContentComponent(
             stackCount = fishingNetItem.stackCount;
         }
 
-        FishingNetContentComponent component = fishingNet.getOrDefault(Components.FISHING_NET_CONTENT, DEFAULT);
-        return new FishingNetContentComponent(component.stacks, stackCount);
+        NetContentComponent component = fishingNet.getOrDefault(Components.NET_CONTENT, DEFAULT);
+        return new NetContentComponent(component.stacks, stackCount);
     }
 
-    public FishingNetContentComponent(List<ItemStack> stacks, int numerator, int denominator, Integer size) {
+    public NetContentComponent(List<ItemStack> stacks, int numerator, int denominator, Integer size) {
 
         this(stacks, Fraction.getFraction(numerator, denominator), size);
     }
 
-    public FishingNetContentComponent(List<ItemStack> stacks, Integer size) {
+    public NetContentComponent(List<ItemStack> stacks, Integer size) {
 
         this(stacks, calculateOccupancy(stacks, size), size);
     }
 
-    public static final PacketCodec<RegistryByteBuf, FishingNetContentComponent> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
+    public static final PacketCodec<RegistryByteBuf, NetContentComponent> PACKET_CODEC = PacketCodecs.registryCodec(CODEC);
 
 
     private static Fraction calculateOccupancy(List<ItemStack> stacks, int stackCount) {
@@ -109,7 +109,7 @@ public record FishingNetContentComponent(
             return true;
         }
 
-        if (!(o instanceof FishingNetContentComponent component)) {
+        if (!(o instanceof NetContentComponent component)) {
             return false;
         }
 
@@ -141,7 +141,7 @@ public record FishingNetContentComponent(
         private Fraction occupancy;
         private final int stackCount;
 
-        public Builder(FishingNetContentComponent base) {
+        public Builder(NetContentComponent base) {
 
             this.stacks = new ArrayList<>(base.stacks);
             this.occupancy = base.occupancy;
@@ -167,7 +167,7 @@ public record FishingNetContentComponent(
 
         public final int getMaxAllowed(ItemStack stack) {
 
-            return Math.max(Fraction.ONE.subtract(this.occupancy).divideBy(FishingNetContentComponent.getOccupancy(stack, stackCount)).intValue(), 0);
+            return Math.max(Fraction.ONE.subtract(this.occupancy).divideBy(NetContentComponent.getOccupancy(stack, stackCount)).intValue(), 0);
         }
 
         public int add(ItemStack stack) {
@@ -179,7 +179,7 @@ public record FishingNetContentComponent(
             if (i == 0) {
                 return 0;
             }
-            this.occupancy = this.occupancy.add(FishingNetContentComponent.getOccupancy(stack, stackCount).multiplyBy(Fraction.getFraction(i, 1)));
+            this.occupancy = this.occupancy.add(NetContentComponent.getOccupancy(stack, stackCount).multiplyBy(Fraction.getFraction(i, 1)));
             int j = this.addInternal(stack);
             if (j == -1) {
                 this.stacks.addFirst(stack.split(i));
@@ -207,13 +207,13 @@ public record FishingNetContentComponent(
             }
 
             ItemStack itemStack = this.stacks.removeFirst().copy();
-            this.occupancy = this.occupancy.subtract(FishingNetContentComponent.getOccupancy(itemStack, stackCount).multiplyBy(Fraction.getFraction(itemStack.getCount(), 1)));
+            this.occupancy = this.occupancy.subtract(NetContentComponent.getOccupancy(itemStack, stackCount).multiplyBy(Fraction.getFraction(itemStack.getCount(), 1)));
             return itemStack;
         }
 
-        public FishingNetContentComponent build(int stackCount) {
+        public NetContentComponent build(int stackCount) {
 
-            return new FishingNetContentComponent(List.copyOf(this.stacks), this.occupancy, stackCount);
+            return new NetContentComponent(List.copyOf(this.stacks), this.occupancy, stackCount);
         }
 
     }

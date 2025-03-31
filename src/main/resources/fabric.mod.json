@@ -22,10 +22,7 @@
       "net.semperidem.fishingclub.FishingClub"
     ],
     "cardinal-components": [
-      "net.semperidem.fishingclub.registry.Components",
-      "net.semperidem.fishingclub.fisher.FishingKing",
-      "net.semperidem.fishingclub.leaderboard.LeaderboardTracker",
-      "net.semperidem.fishingclub.world.ChunkQuality"
+      "net.semperidem.fishingclub.registry.Components"
     ]
   },
   "depends": {
@@ -39,8 +36,8 @@
       "fishingclub:specimen",
       "fishingclub:specimen_displayed",
       "fishingclub:fishing_king",
-      "fishingclub:leaderboard_tracker",
-      "fishingclub:chunk_quality"
+      "fishingclub:leaderboard",
+      "fishingclub:water_quality"
     ]
   },
   "mixins": [

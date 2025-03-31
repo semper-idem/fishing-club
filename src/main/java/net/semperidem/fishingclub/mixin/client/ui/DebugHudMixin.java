@@ -26,7 +26,7 @@ public class DebugHudMixin {
 		ChunkQuality.CHUNK_QUALITY.maybeGet(client.player.getWorld().getChunk(client.player.getBlockPos())).ifPresent(chunk -> {
 
 			List<String> original = new ArrayList<>();
-			original.add("chunk_quality");
+			original.add("water_quality");
 			original.add("value: " + String.format("%.4f",chunk.getValue()));
 			original.add("base: " + String.format("%.4f", chunk.getBase()));
 			original.add("ceiling: " + String.format( "%.4f", chunk.getCeiling()));

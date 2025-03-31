@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.fisher;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ScoreHolder;
@@ -14,20 +13,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Box;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fisher.level_reward.LevelUpEffect;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.registry.StatusEffects;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
 
 import java.util.UUID;
 
-public final class FishingKing implements ScoreboardComponentInitializer, AutoSyncedComponent {
-    private static final String FISHING_KING_KEY = "fishing_king";
-    public static final ComponentKey<FishingKing> FISHING_KING = ComponentRegistry.getOrCreate(FishingClub.identifier(FISHING_KING_KEY), FishingKing.class);
+public final class FishingKing implements  AutoSyncedComponent {
+    public static final String TAG_KEY = "fishing_king";
 
     private static final String UUID_KEY = "uuid";
     private static final String IS_CLAIMED = "is_claimed";
@@ -55,18 +49,17 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
 
 
     public static FishingKing of(Scoreboard scoreboard) {
-        return FISHING_KING.get(scoreboard);
+        return Components.FISHING_KING.get(scoreboard);
     }
 
 
     public FishingKing(Scoreboard scoreboard, MinecraftServer server) {
-        this();
         this.scoreboard = scoreboard;
         if (server == null) {
             return;
         }
         this.serverWorld = server.getOverworld();
-        if ((this.objective = scoreboard.getNullableObjective(FISHING_KING_KEY)) != null) {
+        if ((this.objective = scoreboard.getNullableObjective(TAG_KEY)) != null) {
             return;
         }
 //        this.objective = scoreboard.addObjective(
@@ -101,13 +94,6 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
         tag.putString(UUID_KEY, String.valueOf(this.uuid));
         tag.putString(NAME_KEY, this.name);
     }
-
-    @Override
-    public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerScoreboardComponent(FISHING_KING, FishingKing::new);
-    }
-
-    public FishingKing() {}//For entrypoint requirement
 
     public UUID getUuid(){
         return this.uuid;
@@ -144,7 +130,7 @@ public final class FishingKing implements ScoreboardComponentInitializer, AutoSy
 
         LevelUpEffect.RARE_EFFECT.execute(claimedBy.getServerWorld(), claimedBy.getX(), claimedBy.getY(), claimedBy.getZ());//todo add unique effect
         this.serverWorld.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessageToClient(Text.literal(this.name).append(CLAIM_TEXT), true));
-        FISHING_KING.sync(this.scoreboard);
+        Components.FISHING_KING.sync(this.scoreboard);
     }
 
     public long getCurrentReign(){

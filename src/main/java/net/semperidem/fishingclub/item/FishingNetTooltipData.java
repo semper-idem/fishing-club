@@ -3,12 +3,12 @@ package net.semperidem.fishingclub.item;
 
 import net.minecraft.item.tooltip.TooltipData;
 
-public record FishingNetTooltipData(FishingNetContentComponent contents) implements TooltipData {
-    public FishingNetTooltipData(FishingNetContentComponent contents) {
+public record FishingNetTooltipData(NetContentComponent contents) implements TooltipData {
+    public FishingNetTooltipData(NetContentComponent contents) {
         this.contents = contents;
     }
 
-    public FishingNetContentComponent contents() {
+    public NetContentComponent contents() {
         return this.contents;
     }
 }

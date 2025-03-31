@@ -10,13 +10,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.Species;
 import net.semperidem.fishingclub.registry.Blocks;
+import net.semperidem.fishingclub.registry.Components;
 import org.ladysnake.cca.api.v3.chunk.ChunkComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.chunk.ChunkComponentInitializer;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
@@ -25,13 +22,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ChunkQuality implements ChunkComponentInitializer, ServerTickingComponent, AutoSyncedComponent {
-	private static final String CHUNK_QUALITY_KEY = "chunk_quality";
+public class ChunkQuality implements ServerTickingComponent, AutoSyncedComponent {
+	public static final String TAG_KEY = "water_quality";
 	private static final String BASE_KEY = "base";
 	private static final String CEILING_KEY = "ceiling";
 	private static final String CURRENT_KEY = "current";
 
-	public static final ComponentKey<ChunkQuality> CHUNK_QUALITY = ComponentRegistry.getOrCreate(FishingClub.identifier(CHUNK_QUALITY_KEY), ChunkQuality.class);
 
 	private final HashMap<FloraInfluence, Integer> floraToCount = new HashMap<>();
 
@@ -48,8 +44,6 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 	double current;
 	Chunk chunk;
 
-	public ChunkQuality(){}
-
 	public ChunkQuality(Chunk chunk) {
 		this.chunk = chunk;
 	}
@@ -65,7 +59,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		if (chunk == null) {
 			return;
 		}
-		CHUNK_QUALITY.sync(chunk);
+		Components.CHUNK_QUALITY.sync(chunk);
 	}
 
 	private double getFloraValue() {
@@ -139,7 +133,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 		if (chunk == null) {
 			return;
 		}
-		CHUNK_QUALITY.sync(chunk);
+		Components.CHUNK_QUALITY.sync(chunk);
 	}
 
 
@@ -165,10 +159,6 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 	public double getValue() {
 		return this.current;
 	}
-	@Override
-	public void registerChunkComponentFactories(ChunkComponentFactoryRegistry registry) {
-		registry.register(CHUNK_QUALITY, ChunkQuality::new);
-	}
 
 	@Override
 	public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
@@ -185,7 +175,7 @@ public class ChunkQuality implements ChunkComponentInitializer, ServerTickingCom
 	}
 
 	public static boolean isAboveMinimumQuality(Species<?> species, WorldAccess world, BlockPos pos) {
-		return CHUNK_QUALITY.get(world.getChunk(pos)).getValue() >= Math.log(species.rarity()) * 0.5;
+		return Components.CHUNK_QUALITY.get(world.getChunk(pos)).getValue() >= Math.log(species.rarity()) * 0.5;
 	}
 
 	public enum PlayerInfluence {
