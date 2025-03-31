@@ -7,12 +7,12 @@ import net.semperidem.fishingclub.fisher.Card;
 
 import java.util.Objects;
 
-public class SummonRequestManager extends DataManager {
+public class SummonRequest extends CardData {
     private static final int REQUEST_VALID_TIME = 600;
     public String targetUUID = "";
     public long requestTick = 0L;
 
-    public SummonRequestManager(Card requestFor){
+    public SummonRequest(Card requestFor){
         super(requestFor);
     }
 

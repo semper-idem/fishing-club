@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ProgressionManager extends DataManager {
+public class CardProgression extends CardData {
     private static final int BASE_EXP = 50;
     private static final float EXP_EXPONENT = 1.25f;
     private static final float PLAYER_EXP_RATIO = 0.1f;
@@ -35,7 +35,7 @@ public class ProgressionManager extends DataManager {
 
     private final HashMap<String, TradeSecret.Instance> knownTradeSecrets = new HashMap<>();
 
-    public ProgressionManager(Card trackedFor) {
+    public CardProgression(Card trackedFor) {
         super(trackedFor);
     }
 

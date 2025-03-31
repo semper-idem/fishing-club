@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.fisher.managers;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class HistoryManager extends DataManager {
+public class CardHistory extends CardData {
     private static final long DAY_LENGTH = 24000;
     private static final float DAYS_SINCE_LAST_FISH_PERIOD = 4;
 
@@ -30,10 +29,10 @@ public class HistoryManager extends DataManager {
     private long firstCatchOfTheDay = 0;
     private ItemStack lastUsedBait = ItemStack.EMPTY;
     private final ArrayList<ItemStack> unclaimedRewards = new ArrayList<>();
-    private final HashMap<String, SpeciesStatistics> fishAtlas = new HashMap<>();
+    private final HashMap<String, AtlasEntry> fishAtlas = new HashMap<>();
     private final HashSet<Integer> heardMessageIndexSet = new HashSet<>();
 
-    public HistoryManager(Card trackedFor) {
+    public CardHistory(Card trackedFor) {
         super(trackedFor);
     }
 
@@ -50,7 +49,7 @@ public class HistoryManager extends DataManager {
         return !this.heardMessageIndexSet.isEmpty();
     }
 
-    public HashMap<String, SpeciesStatistics> getFishAtlas() {
+    public HashMap<String, AtlasEntry> getFishAtlas() {
         return fishAtlas;
     }
 
@@ -73,12 +72,12 @@ public class HistoryManager extends DataManager {
 
     private void recordFishCaught(SpecimenData fish) {
         String speciesName = fish.species().name();
-        SpeciesStatistics speciesStatistics = new SpeciesStatistics(speciesName);
+        AtlasEntry atlasEntry = new AtlasEntry(speciesName);
         if (fishAtlas.containsKey(speciesName)) {
-            speciesStatistics = fishAtlas.get(speciesName);
+            atlasEntry = fishAtlas.get(speciesName);
         }
-        speciesStatistics.record(fish);
-        fishAtlas.put(speciesName, speciesStatistics);
+        atlasEntry.record(fish);
+        fishAtlas.put(speciesName, atlasEntry);
     }
 
     public void fishCaught(SpecimenData fish) {
@@ -122,7 +121,7 @@ public class HistoryManager extends DataManager {
         return true;
     }
 
-    public int minQualityIncrement(IHookEntity caughtWith, ProgressionManager progressionManager) {
+    public int minQualityIncrement(IHookEntity caughtWith, CardProgression progressionManager) {
         int minGrade = 0;
         if (isFirstCatchInChunk(caughtWith)) {
             minGrade++;
@@ -160,7 +159,7 @@ public class HistoryManager extends DataManager {
         unclaimedRewardsTag.forEach(rewardTag -> unclaimedRewards.add(ItemStack.fromNbt(wrapperLookup, rewardTag).orElse(ItemStack.EMPTY)));
         NbtList fishAtlasTag = historyTag.getListOrEmpty(FISH_ATLAS_TAG);
         fishAtlasTag.forEach(speciesTag -> {
-            SpeciesStatistics stat = new SpeciesStatistics((NbtCompound) speciesTag);
+            AtlasEntry stat = new AtlasEntry((NbtCompound) speciesTag);
             fishAtlas.put(stat.getName(), stat);
         });
     }
@@ -180,7 +179,7 @@ public class HistoryManager extends DataManager {
         unclaimedRewards.forEach(reward -> unclaimedRewardsTag.add(reward.toNbt(wrapperLookup)));
         historyTag.put(UNCLAIMED_REWARDS_TAG, unclaimedRewardsTag);
         NbtList fishAtlasTag = new NbtList();
-        fishAtlas.forEach((s, speciesStatistics) -> fishAtlasTag.add(speciesStatistics.toNbt()));
+        fishAtlas.forEach((s, atlasEntry) -> fishAtlasTag.add(atlasEntry.toNbt()));
         historyTag.put(FISH_ATLAS_TAG, fishAtlasTag);
         nbtCompound.put(TAG, historyTag);
     }

@@ -3,7 +3,8 @@ package net.semperidem.fishingclub.fisher.managers;
 import net.minecraft.nbt.NbtCompound;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 
-public class SpeciesStatistics {
+//Refactor into CardAtlas
+public class AtlasEntry {
     private final String name;
     private int count;
     private int topGradeCount;
@@ -12,10 +13,10 @@ public class SpeciesStatistics {
     private float bestWeight = 0;
     private float worstWeight;
 
-    SpeciesStatistics(String name) {
+    AtlasEntry(String name) {
         this.name = name;
     }
-    SpeciesStatistics(NbtCompound nbt) {
+    AtlasEntry(NbtCompound nbt) {
         this.name = nbt.getString(NAME, "");
         this.count = nbt.getInt(COUNT, 1);
         this.topGradeCount = nbt.getInt(TOP_GRADE_COUNT, 0);

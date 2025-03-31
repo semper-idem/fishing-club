@@ -5,7 +5,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.RegistryWrapper;
@@ -20,13 +19,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class LinkingManager extends DataManager {
+public class CardLinking extends CardData {
     private static final float SHARED_EFFECT_DURATION = 0.75f;
     private static final int MIN_LENGTH_TO_SHARE = 200;
 
     private ArrayList<UUID> linkedFishers = new ArrayList<>();
 
-    public LinkingManager(Card trackedFor) {
+    public CardLinking(Card trackedFor) {
         super(trackedFor);
     }
 

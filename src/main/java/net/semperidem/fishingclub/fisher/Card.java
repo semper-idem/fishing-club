@@ -33,10 +33,10 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     public static final ComponentKey<Card> CARD = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
     public static final Card DEFAULT = new Card();
     private PlayerEntity holder;
-    private final ProgressionManager progressionManager;
-    private final SummonRequestManager summonRequestManager;
-    private final HistoryManager historyManager;
-    private final LinkingManager linkingManager;
+    private final CardProgression progression;
+    private final SummonRequest summonRequest;
+    private final CardHistory history;
+    private final CardLinking linking;
     private CheckedRandom random;
 
     private final StatusEffectHelper statusEffectHelper;//todo its prob util class, verify
@@ -47,10 +47,10 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
 
     public Card() {
-        this.progressionManager = new ProgressionManager(this);
-        this.summonRequestManager = new SummonRequestManager(this);
-        this.historyManager = new HistoryManager(this);
-        this.linkingManager = new LinkingManager(this);
+        this.progression = new CardProgression(this);
+        this.summonRequest = new SummonRequest(this);
+        this.history = new CardHistory(this);
+        this.linking = new CardLinking(this);
         this.statusEffectHelper = new StatusEffectHelper(this);
     }
 
@@ -68,20 +68,9 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return holder.getWorld().isClient();
     }
 
-    private void syncHolder() {
-        CARD.sync(this.holder,
-                (buf, recipient) -> {
-                    NbtCompound tag = new NbtCompound();
-                    writeNbt(tag, buf.getRegistryManager());
-                    buf.writeNbt(tag);
-                },
-                player -> holder == player
-        );
-    }
-
     public void sell() {
         super.sell();
-        syncHolder();
+        sync();
     }
     @Override
     public void setSharedBait(ItemStack baitToShare) {
@@ -90,19 +79,19 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     @Override
     public void readFromNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        progressionManager.readNbt(fishingCardNbt, wrapperLookup);
-        historyManager.readNbt(fishingCardNbt, wrapperLookup);
-        summonRequestManager.readNbt(fishingCardNbt, wrapperLookup);
-        linkingManager.readNbt(fishingCardNbt, wrapperLookup);
+        progression.readNbt(fishingCardNbt, wrapperLookup);
+        history.readNbt(fishingCardNbt, wrapperLookup);
+        summonRequest.readNbt(fishingCardNbt, wrapperLookup);
+        linking.readNbt(fishingCardNbt, wrapperLookup);
         readNbt(fishingCardNbt, wrapperLookup);
     }
 
     @Override
     public void writeToNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup registryLookup) {
-        progressionManager.writeNbt(fishingCardNbt, registryLookup);
-        historyManager.writeNbt(fishingCardNbt, registryLookup);
-        summonRequestManager.writeNbt(fishingCardNbt, registryLookup);
-        linkingManager.writeNbt(fishingCardNbt, registryLookup);
+        progression.writeNbt(fishingCardNbt, registryLookup);
+        history.writeNbt(fishingCardNbt, registryLookup);
+        summonRequest.writeNbt(fishingCardNbt, registryLookup);
+        linking.writeNbt(fishingCardNbt, registryLookup);
         writeNbt(fishingCardNbt, registryLookup);
     }
 
@@ -113,13 +102,10 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         buf.writeNbt(tag);
     }
 
-    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient, DataManager source) {
+
+    public void writeSyncPacket(RegistryByteBuf buf) {
         NbtCompound tag = new NbtCompound();
-        if (source == null) {
-            this.writeNbt(tag, buf.getRegistryManager());
-        } else {
-            source.writeNbt(tag, buf.getRegistryManager());
-        }
+        this.writeNbt(tag, buf.getRegistryManager());
         buf.writeNbt(tag);
     }
 
@@ -129,19 +115,19 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     public String getIssuedDate() {
-        return this.historyManager.getIssuedDate();
+        return this.history.getIssuedDate();
     }
 
     public void addUnclaimedReward(ItemStack rewardStack) {
-        historyManager.addUnclaimedReward(rewardStack);
+        history.addUnclaimedReward(rewardStack);
     }
 
     public void claimReward(ItemStack rewardStack) {
-        historyManager.claimReward(rewardStack);
+        history.claimReward(rewardStack);
     }
 
     public ArrayList<ItemStack> getUnclaimedRewards() {
-        return historyManager.getUnclaimedRewards();
+        return history.getUnclaimedRewards();
     }
 
     public void resetCooldown(){
@@ -149,69 +135,69 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     public Collection<TradeSecret.Instance> tradeSecrets() {
-        return this.progressionManager.tradeSecrets();
+        return this.progression.tradeSecrets();
     }
 
     public boolean hasRequiredPerk(TradeSecret perk){
-        return progressionManager.hasRequiredSecrets(perk);
+        return progression.hasRequiredSecrets(perk);
     }
 
     public void setLevel(int level) {
-        progressionManager.setLevel(level);
+        progression.setLevel(level);
     }
 
     public void addSkillPoints(int amount){
-        progressionManager.addPerkPoints(amount);
+        progression.addPerkPoints(amount);
     }
 
     public void resetPerks(){
         if (canResetPerks()) {
-            progressionManager.resetPerks();
+            progression.resetPerks();
         }
     }
 
     public boolean canResetPerks() {
-        return getResetCost() <= getCredit() && !progressionManager.getKnownTradeSecrets().isEmpty();
+        return getResetCost() <= getCredit() && !progression.getKnownTradeSecrets().isEmpty();
     }
 
     public int getResetCost() {
-        return progressionManager.getResetCost();
+        return progression.getResetCost();
     }
     public int getPerkPoints(){
-        return this.progressionManager.getAdmirationPoints();
+        return this.progression.getAdmirationPoints();
     }
 
     public boolean hasPerkPoints(){
-        return this.progressionManager.hasAdmirationPoints();
+        return this.progression.hasAdmirationPoints();
     }
 
     public void useTradeSecret(TradeSecret tradeSecret, @Nullable Entity target) {
-        progressionManager.useTradeSecret(tradeSecret.name(), target);
+        progression.useTradeSecret(tradeSecret.name(), target);
     }
 
     public void useTradeSecret(String tradeSecret, @Nullable Entity target){
-        progressionManager.useTradeSecret(tradeSecret, target);
+        progression.useTradeSecret(tradeSecret, target);
     }
 
     public int nextLevelXP(){
-        return progressionManager.nextLevelXP();
+        return progression.nextLevelXP();
     }
 
 
     public void grantExperience(double gainedXP){
-        progressionManager.grantExperience(gainedXP);
+        progression.grantExperience(gainedXP);
     }
 
     public int getLevel() {
-        return progressionManager.getLevel();
+        return progression.getLevel();
     }
 
     public int getExp() {
-        return progressionManager.getExp();
+        return progression.getExp();
     }
 
     public float getExpProgress() {
-        return this.progressionManager.getExpProgress();
+        return this.progression.getExpProgress();
     }
 
     public PlayerEntity unsafeHolder() {
@@ -223,15 +209,15 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> sharedWith){
-        linkingManager.shareStatusEffect(sei, source, sharedWith);
+        linking.shareStatusEffect(sei, source, sharedWith);
     }
 
     public void setSummonRequest(ServerPlayerEntity target){
-        summonRequestManager.set(target);
+        summonRequest.set(target);
     }
 
     public void acceptSummonRequest(){
-        summonRequestManager.execute();//todo put cooldown on summon
+        summonRequest.execute();//todo put cooldown on summon
     }
 
     public boolean isFishingFromBoat(){
@@ -240,15 +226,15 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     public int minQuality(IHookEntity caughtWith){
         int minQuality = 1;
-        minQuality += historyManager.minQualityIncrement(caughtWith, progressionManager);
+        minQuality += history.minQualityIncrement(caughtWith, progression);
         minQuality += statusEffectHelper.minQualityIncrement();
         return Math.min(5, minQuality);
     }
 
     public void fishCaught(SpecimenData fish){
 
-        this.progressionManager.grantExperience(fish.experience(this.statusEffectHelper.getExpMultiplier()));
-        this.historyManager.fishCaught(fish);
+        this.progression.grantExperience(fish.experience(this.statusEffectHelper.getExpMultiplier()));
+        this.history.fishCaught(fish);
         this.statusEffectHelper.fishCaught(fish);
 
         LeaderboardTracker tracker = LeaderboardTracker.of(holder.getScoreboard());
@@ -256,36 +242,36 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         tracker.record(holder, this, tracker.highestLevel);
     }
 
-    public HashMap<String, SpeciesStatistics> getFishAtlas() {
-        return historyManager.getFishAtlas();
+    public HashMap<String, AtlasEntry> getFishAtlas() {
+        return history.getFishAtlas();
     }
 
     public void learnTradeSecret(String tradeSecretName) {
-        this.progressionManager.learnTradeSecret(tradeSecretName);
+        this.progression.learnTradeSecret(tradeSecretName);
     }
 
     public int tradeSecretLevel(TradeSecret tradeSecret) {
-        return this.progressionManager.tradeSecretLevel(tradeSecret);
+        return this.progression.tradeSecretLevel(tradeSecret);
     }
 
     public float tradeSecretValue(TradeSecret tradeSecret) {
-        return this.progressionManager.tradeSecretValue(tradeSecret);
+        return this.progression.tradeSecretValue(tradeSecret);
     }
 
     public boolean knowsTradeSecret(TradeSecret tradeSecret){
-        return progressionManager.knowsTradeSecret(tradeSecret);
+        return progression.knowsTradeSecret(tradeSecret);
     }
 
     public boolean knowsTradeSecret(TradeSecret tradeSecret, int level) {
-        return progressionManager.knowsTradeSecret(tradeSecret, level);
+        return progression.knowsTradeSecret(tradeSecret, level);
     }
 
     public boolean canUnlockPerk(TradeSecret perk){
-        return progressionManager.canLearnSecret(perk);
+        return progression.canLearnSecret(perk);
     }
 
     public void linkTarget(Entity target){
-        linkingManager.linkTarget(target);
+        linking.linkTarget(target);
     }
 
     public boolean addCredit(int credit) {
@@ -295,20 +281,23 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         this.credit += credit;
         LeaderboardTracker tracker = LeaderboardTracker.of(this.holder().getWorld().getScoreboard());
         tracker.record(holder, this, tracker.highestCredit);
-        CARD.sync(this.holder, ((buf, recipient) -> writeSyncPacket(buf, recipient, null)));
         return true;
     }
 
+    private void sync() {
+        CARD.sync(this.holder, (buf, recipient) -> writeSyncPacket(buf));
+    }
+
     public void unlockAllSecret() {
-        this.progressionManager.unlockAllSecrets();
+        this.progression.unlockAllSecrets();
     }
 
     public void requestSummon(){
-        linkingManager.requestSummon();
+        linking.requestSummon();
     }
 
     public boolean isMember() {
-        return this.historyManager.isMember();
+        return this.history.isMember();
     }
     @Override
     public String toString() {
@@ -320,6 +309,9 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         registry.registerForPlayers(CARD, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
 
     }
+    private Card get() {
+        return this;
+    }
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
@@ -328,7 +320,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     //Message in bottle
     public void hearMessage() {
-        this.historyManager.hearMessage();
+        this.history.hearMessage();
     }
-
 }

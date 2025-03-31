@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenDescription;
 import net.semperidem.fishingclub.fisher.Card;
-import net.semperidem.fishingclub.fisher.managers.ProgressionManager;
+import net.semperidem.fishingclub.fisher.managers.CardProgression;
 import net.semperidem.fishingclub.network.payload.FishingInputKeyboardPayload;
 import net.semperidem.fishingclub.screen.fishing_post.FishingPostScreenHandler;
 
@@ -108,7 +108,7 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
         int currentExp = this.card.getExp();
         this.fishExp = this.handler.exp();
         this.initialLevel = currentExp < fishExp ? this.card.getLevel() - 1 : this.card.getLevel();
-        this.initialExp = currentExp < fishExp ? ProgressionManager.levelExp(this.initialLevel) + (this.card.getExp() - fishExp) : this.card.getExp() - fishExp;
+        this.initialExp = currentExp < fishExp ? CardProgression.levelExp(this.initialLevel) + (this.card.getExp() - fishExp) : this.card.getExp() - fishExp;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
 
     private int getExpForTick() {
         int currentExp = (int) (this.initialExp + this.fishExp * ((EXP_ANIMATION_LENGTH - this.expAnimationTick) * 1f / EXP_ANIMATION_LENGTH));
-        int currentLevelUpExp = ProgressionManager.levelExp(this.initialLevel);
+        int currentLevelUpExp = CardProgression.levelExp(this.initialLevel);
         if (currentExp > currentLevelUpExp) {
             return currentExp - currentLevelUpExp;
         }
@@ -142,7 +142,7 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
 
     private int getLevelForTick() {
         int currentExp = this.initialExp + this.fishExp * ((EXP_ANIMATION_LENGTH - this.expAnimationTick) / EXP_ANIMATION_LENGTH);
-        int currentLevelUpExp = ProgressionManager.levelExp(this.initialLevel);
+        int currentLevelUpExp = CardProgression.levelExp(this.initialLevel);
         if (currentExp > currentLevelUpExp) {
             return this.card.getLevel();
         }
@@ -220,7 +220,7 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
     }
 
     private void renderExpBar(DrawContext context) {
-        int barLength = (int) (((float) getExpForTick() / ProgressionManager.levelExp(this.getLevelForTick())) * 183.0F);
+        int barLength = (int) (((float) getExpForTick() / CardProgression.levelExp(this.getLevelForTick())) * 183.0F);
         context.drawGuiTexture(RenderLayer::getGuiTextured, EXPERIENCE_BAR_BACKGROUND_TEXTURE, 182, 5, 0, 0, this.expX, this.expY, 182, 5);
         if (barLength > 0) {
             RenderSystem.setShaderColor(1, 0.5f, 0, 1);
@@ -233,7 +233,7 @@ public class FishingPostScreen extends HandledScreen<FishingPostScreenHandler> i
     private void renderExpInfo(DrawContext context) {
         int level = this.getLevelForTick();
         drawTextOutline(this.textRenderer, context, toOrderedText(this.textRenderer, Text.of("Level: " + level)), this.expX + 8, this.expY - 23, 8453920, 0);
-        drawTextOutline(this.textRenderer, context,toOrderedText(this.textRenderer, Text.of(this.getExpForTick() + " / " + ProgressionManager.levelExp(level))), this.expX + 8, this.expY - 10, 8453920, 0);
+        drawTextOutline(this.textRenderer, context,toOrderedText(this.textRenderer, Text.of(this.getExpForTick() + " / " + CardProgression.levelExp(level))), this.expX + 8, this.expY - 10, 8453920, 0);
         OrderedText expText = toOrderedText(this.textRenderer, Text.of("Exp: " + fishExp));
         drawTextOutline(this.textRenderer, context,expText, this.expX + 178 - this.textRenderer.getWidth(expText), this.expY - 10, 8453920, 0);
     }

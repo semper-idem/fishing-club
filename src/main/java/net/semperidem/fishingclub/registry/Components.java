@@ -27,8 +27,8 @@ public class Components {
     public static ComponentType<UUID> CAUGHT_BY;
     public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
 
-    public static void registerRodConfigurationEarly() {
-                ROD_CONFIGURATION =
+    public static void register() {
+        ROD_CONFIGURATION =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
                         FishingClub.identifier("rod_configuration"),
@@ -37,9 +37,6 @@ public class Components {
                                 .packetCodec(RodConfiguration.PACKET_CODEC)
                                 .cache()
                                 .build());
-    }
-
-    public static void register() {
         EXPIRATION_TIME =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
