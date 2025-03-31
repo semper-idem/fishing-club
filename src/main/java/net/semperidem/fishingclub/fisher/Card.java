@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
@@ -31,13 +30,11 @@ import java.util.*;
 
 public final class Card extends CardInventory implements EntityComponentInitializer, AutoSyncedComponent {
     public static final ComponentKey<Card> CARD = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
-    private final PlayerEntity holder;
+    private final PlayerEntity owner;
     private final CardProgression progression;
     private final CardHistory history;
     private final CardLinking linking;
     private final CheckedRandom random;
-
-    private final StatusEffectHelper statusEffectHelper;//todo its prob util class, verify
 
     public static Card of(PlayerEntity playerEntity) {
         return CARD.get(playerEntity);
@@ -47,17 +44,12 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         this.progression = new CardProgression(this);
         this.history = new CardHistory(this);
         this.linking = new CardLinking(this);
-        this.statusEffectHelper = new StatusEffectHelper(this);
-        this.holder = playerEntity;
-        this.random = new CheckedRandom(holder.getUuid().getLeastSignificantBits());
+        this.owner = playerEntity;
+        this.random = new CheckedRandom(owner.getUuid().getLeastSignificantBits());
     }
 
     public Random getRandom() {
         return this.random;
-    }
-
-    public boolean isClient() {
-        return holder.getWorld().isClient();
     }
 
     public void sell() {
@@ -83,13 +75,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         history.writeNbt(fishingCardNbt, registryLookup);
         linking.writeNbt(fishingCardNbt, registryLookup);
         writeNbt(fishingCardNbt, registryLookup);
-    }
-
-    @Override
-    public void writeSyncPacket(RegistryByteBuf buf, ServerPlayerEntity recipient) {
-        NbtCompound tag = new NbtCompound();
-        this.writeToNbt(tag, buf.getRegistryManager());
-        buf.writeNbt(tag);
     }
 
 
@@ -191,7 +176,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     public PlayerEntity owner(){
-        return Objects.requireNonNull(this.holder, "Card owner did not load correctly");
+        return Objects.requireNonNull(this.owner, "Card owner did not load correctly");
     }
 
     public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> sharedWith){
@@ -206,26 +191,24 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         linking.execute();//todo put cooldown on summon
     }
 
-    public boolean isFishingFromBoat(){
-        return holder.getVehicle() != null && holder.getVehicle() instanceof BoatEntity;
-    }
-
     public int minQuality(ChunkPos chunkPos){
         int minQuality = 1;
         minQuality += history.minQualityIncrement(chunkPos, progression);
-        minQuality += statusEffectHelper.minQualityIncrement();
+        minQuality += StatusEffectHelper.minQualityIncrement(owner);
         return Math.min(5, minQuality);
     }
 
     public void fishCaught(SpecimenData fish){
+        this.progression.grantExperience(fish.experience(StatusEffectHelper.getExpMultiplier(owner)));
 
-        this.progression.grantExperience(fish.experience(this.statusEffectHelper.getExpMultiplier()));
         this.history.fishCaught(fish);
-        this.statusEffectHelper.fishCaught(fish);
 
-        LeaderboardTracker tracker = LeaderboardTracker.of(holder.getScoreboard());
-        tracker.record(holder, fish);
-        tracker.record(holder, this, tracker.highestLevel);
+        StatusEffectHelper.triggerQualityCelebration(this, fish);
+        StatusEffectHelper.triggerPassiveXP(this);
+
+        LeaderboardTracker tracker = LeaderboardTracker.of(owner.getScoreboard());
+        tracker.record(owner, fish);
+        tracker.record(owner, this, tracker.highestLevel);
     }
 
     public HashMap<String, AtlasEntry> getFishAtlas() {
@@ -260,18 +243,17 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         linking.linkTarget(target);
     }
 
-    public boolean addCredit(int credit) {
+    public void addCredit(int credit) {
         if (this.credit + credit < 0) {
-            return false;
+            return;
         }
         this.credit += credit;
         LeaderboardTracker tracker = LeaderboardTracker.of(this.owner().getWorld().getScoreboard());
-        tracker.record(holder, this, tracker.highestCredit);
-        return true;
+        tracker.record(owner, this, tracker.highestCredit);
     }
 
     private void sync() {
-        CARD.sync(this.holder, (buf, recipient) -> writeSyncPacket(buf));
+        CARD.sync(this.owner, (buf, recipient) -> writeSyncPacket(buf));
     }
 
     public void unlockAllSecret() {
@@ -301,7 +283,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
-        return player == this.holder;
+        return player == this.owner;
     }
 
     //Message in bottle

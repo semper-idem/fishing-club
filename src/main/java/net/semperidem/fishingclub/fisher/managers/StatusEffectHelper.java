@@ -4,43 +4,27 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.registry.StatusEffects;
 import net.semperidem.fishingclub.status_effects.IncreaseFishingExpStatusEffect;
 
-//TODO Refactor into utils?
-public class StatusEffectHelper {
+import java.util.Optional;
+
+public abstract class StatusEffectHelper {
     private static final float QUALITY_BUFF_SUCCESS_CHANCE = 0.25f;
     private static final int FISH_GRADE_FOR_QUALITY_BUFF_TRIGGER = 4;
     private static final int SPREAD_EFFECT_RANGE = 4;
-    private static final int PROLONG_EFFECT_LENGTH = 200;
+    private static final int PASSIVE_XP_EFFECT_LENGTH = 600;
+    private static final int PASSIVE_XP_EFFECT_MAX_LENGTH = 6000;
 
-    Card trackedFor;
-
-    public StatusEffectHelper(Card trackedFor) {
-        this.trackedFor = trackedFor;
-    }
-
-    public int minQualityIncrement() {
-        int minGrade = 0;
-        if (this.trackedFor.owner() == null) {
-            return minGrade;
-        }
-        if (this.trackedFor.owner().hasStatusEffect(StatusEffects.QUALITY_BUFF) && Math.random() > QUALITY_BUFF_SUCCESS_CHANCE) {
-            minGrade++;
-        }
-        return minGrade;
-    }
-
-    public void fishCaught(SpecimenData fish) {
-        this.celebrateFishQuality(fish);
-        this.stackPassiveExp();
-    }
-
-    public float getExpMultiplier() {
-        return  getExpMultiplier(this.trackedFor.owner());
+    public static int minQualityIncrement(PlayerEntity player) {
+        return Optional.ofNullable(player.getStatusEffect(StatusEffects.QUALITY_BUFF))
+                .map(StatusEffectInstance::getAmplifier)
+                .filter(amplifier -> QUALITY_BUFF_SUCCESS_CHANCE * amplifier > Math.random())
+                .orElse(0);
     }
 
     public static float getExpMultiplier(PlayerEntity player) {
@@ -52,8 +36,8 @@ public class StatusEffectHelper {
         return multiplier;
     }
 
-    public void celebrateFishQuality(SpecimenData fish) {
-        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
+    public static void triggerQualityCelebration(Card card, SpecimenData fish) {
+        if (!card.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
             return;
         }
 
@@ -61,30 +45,41 @@ public class StatusEffectHelper {
             return;
         }
 
-        this.trackedFor.useTradeSecret(TradeSecrets.QUALITY_CELEBRATION, null);
+        card.useTradeSecret(TradeSecrets.QUALITY_CELEBRATION, null);
     }
 
-    public void stackPassiveExp() {
-        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
+    public static void triggerPassiveXP(Card card) {
+        if (!card.knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
             return;
         }
-        final int maxAmplifier = (int) this.trackedFor.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
-        this.trackedFor.owner().getEntityWorld()
-                .getOtherEntities(this.trackedFor.owner(), new Box(this.trackedFor.owner().getBlockPos()).expand(4))
+        final int maxAmplifier = (int) card.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
+        PlayerEntity owner = card.owner();
+        owner.getEntityWorld()
+                .getOtherEntities(owner, new Box(owner.getBlockPos()).expand(SPREAD_EFFECT_RANGE))
                 .stream()
                 .filter(ServerPlayerEntity.class::isInstance)
-                .map(entity -> Card.of((PlayerEntity)entity))
-                .forEach(card -> {
+                .map(entity -> (ServerPlayerEntity)entity)
+                .forEach(player -> {
                     int nextAmplifier = 0;
-                    int nextDuration = 600;
+                    int nextDuration = PASSIVE_XP_EFFECT_LENGTH;
 
-                    StatusEffectInstance currentExpBuff = card.owner().getStatusEffect(StatusEffects.EXP_BUFF);
-                    if (currentExpBuff != null && currentExpBuff.getAmplifier() >= maxAmplifier) {
+                    StatusEffectInstance currentExpBuff = player.getStatusEffect(StatusEffects.EXP_BUFF);
+                    if (currentExpBuff != null && currentExpBuff.getAmplifier() <= maxAmplifier) {
                         nextAmplifier = Math.min(maxAmplifier, currentExpBuff.getAmplifier() + 1);
                         nextDuration += currentExpBuff.getDuration();
                     }
 
-                    card.owner().addStatusEffect(new StatusEffectInstance(StatusEffects.EXP_BUFF, nextAmplifier, Math.min(6000, nextDuration)));
+                    player.addStatusEffect(
+                            new StatusEffectInstance(
+                                    StatusEffects.EXP_BUFF,
+                                    nextAmplifier,
+                                    MathHelper.clamp(
+                                            nextDuration,
+                                            PASSIVE_XP_EFFECT_LENGTH,
+                                            PASSIVE_XP_EFFECT_MAX_LENGTH
+                                    )
+                            )
+                    );
                 });
     }
 }
