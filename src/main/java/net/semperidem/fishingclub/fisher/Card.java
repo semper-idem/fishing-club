@@ -12,24 +12,18 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
+import net.semperidem.fishingclub.registry.Components;
 import org.jetbrains.annotations.Nullable;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
-import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
-import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 
 import java.util.*;
 
 
-public final class Card extends CardInventory implements EntityComponentInitializer, AutoSyncedComponent {
-    public static final ComponentKey<Card> CARD = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
+public final class Card extends CardInventory implements AutoSyncedComponent{
     private final PlayerEntity owner;
     private final CardProgression progression;
     private final CardHistory history;
@@ -37,7 +31,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     private final CheckedRandom random;
 
     public static Card of(PlayerEntity playerEntity) {
-        return CARD.get(playerEntity);
+        return Components.CARD_COMPONENT.get(playerEntity);
     }
 
     public Card(PlayerEntity playerEntity) {
@@ -211,6 +205,15 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         tracker.record(owner, this, tracker.highestLevel);
     }
 
+    public boolean isKing() {
+        UUID kingUUID = FishingKing.of(owner.getScoreboard()).getUuid();
+        if (kingUUID == null) {
+            return true;
+        }
+        return kingUUID.equals(owner.getUuid());
+    }
+
+
     public HashMap<String, AtlasEntry> getFishAtlas() {
         return history.getFishAtlas();
     }
@@ -253,7 +256,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     private void sync() {
-        CARD.sync(this.owner, (buf, recipient) -> writeSyncPacket(buf));
+        Components.CARD_COMPONENT.sync(this.owner, (buf, recipient) -> writeSyncPacket(buf));
     }
 
     public void unlockAllSecret() {
@@ -272,11 +275,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return "level: " + this.getLevel() +"   exp: " + this.getExp() + "/" + this.nextLevelXP();
     }
 
-    @Override
-    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(CARD, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
-
-    }
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {

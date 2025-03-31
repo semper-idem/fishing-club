@@ -12,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
@@ -75,7 +76,7 @@ public abstract class ServerWorldMixin extends World implements DerekServerWorld
         }
 
         int fishCount = (int) ((Math.abs(random.nextGaussian()) + 0.5) * power);
-        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity, explosionPos);
+        FishingExplosionEntity fee = new FishingExplosionEntity(causingEntity);
         for(int i = 0; i < fishCount; i++) {
             FishUtil.fishOnHook(fee).ifPresent(specimenData -> FishUtil.fishCaughtAt(
                     causingEntity,

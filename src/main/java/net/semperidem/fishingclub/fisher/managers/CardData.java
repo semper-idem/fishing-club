@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.semperidem.fishingclub.fisher.Card;
 
-import static net.semperidem.fishingclub.fisher.Card.CARD;
+import static net.semperidem.fishingclub.registry.Components.CARD_COMPONENT;
 
 public abstract class CardData {
     Card card;
@@ -14,7 +14,7 @@ public abstract class CardData {
     }
 
     void sync() {
-        CARD.sync(card.owner(), (buf, recipient) -> this.writeSyncPacket(buf));
+        CARD_COMPONENT.sync(card.owner(), (buf, recipient) -> this.writeSyncPacket(buf));
     }
 
     void writeSyncPacket(RegistryByteBuf buf){

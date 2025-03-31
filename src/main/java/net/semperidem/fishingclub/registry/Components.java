@@ -5,6 +5,7 @@ import net.minecraft.util.Uuids;
 import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
+import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.FishingNetContentComponent;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
 import net.minecraft.component.ComponentType;
@@ -12,10 +13,15 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.dynamic.Codecs;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
+import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
+import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 
 import java.util.UUID;
 
-public class Components {
+public class Components implements EntityComponentInitializer {
     public static ComponentType<RodConfiguration> ROD_CONFIGURATION;
     public static ComponentType<Integer> LINE_LENGTH;
     public static ComponentType<Integer> EXPIRATION_TIME;
@@ -26,6 +32,7 @@ public class Components {
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
     public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
+    public static ComponentKey<Card> CARD_COMPONENT = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
 
     public static void register() {
         ROD_CONFIGURATION =
@@ -117,5 +124,10 @@ public class Components {
               .codec(FishingNetContentComponent.CODEC)
               .packetCodec(FishingNetContentComponent.PACKET_CODEC)
               .build());
+    }
+
+    @Override
+    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+            registry.registerForPlayers(Components.CARD_COMPONENT, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 }

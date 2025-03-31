@@ -124,9 +124,12 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
     class StatsTab extends Tab{
         Text level;
+        Text issuedText;
         Text issuedDate;
         float xpProgress;
         Text playerName;
+        Text title;
+        boolean isKing;
 
         StatsTab() {
             super(CardScreenHandler.Tab.STATS);
@@ -138,7 +141,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             level = Text.of(String.valueOf(card.getLevel()));
             xpProgress = card.getExpProgress();
             playerName = card.owner().getName();
+            issuedText = Text.of("Issued:");//todo lang
             issuedDate = Text.of(card.getIssuedDate());
+            title = Text.of("Master");//todo get dynamic and lang
+            isKing = card.isKing();
             addDrawableChild(
                     new SellButtonWidget(
                             x + 118,
@@ -166,12 +172,15 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
         }
         @Override
         void render(DrawContext context, int mouseX, int mouseY) {
+
             draw(context, x + 32, y + 9, 178, 0, (int) (135 * xpProgress), 5);
             drawText(context, playerName, x + 33, y + 18, textColor, 0.75f);
 
-            drawText(context, Text.of("Master"), x + 33, y + 25, 0x8c1991, 0.5f);
-
-            drawText(context, Text.of("Issued:"), x + 11, y + 64, textColor, 0.5f);
+            if (isKing) {
+                draw(context, (int) (x + 34 + textRenderer.getWidth(playerName) * 0.75f), y + 17, 178, 68, 10, 6);
+            }
+            drawText(context, title, x + 33, y + 25, 0x8c1991, 0.5f);
+            drawText(context, issuedText, x + 11, y + 64, textColor, 0.5f);
             drawText(context, issuedDate, x + 11, y + 69, textColor, 0.75f);
 
             drawText(context, level, x + 96, y + 9, 0);
