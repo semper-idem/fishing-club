@@ -1,7 +1,6 @@
 package net.semperidem.fishingclub.mixin.common;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 @Mixin(BucketItem.class)
 public class BucketItemMixin {
@@ -21,6 +19,6 @@ public class BucketItemMixin {
 		if (cir.getReturnValue()) {
 			return;
 		}
-		CHUNK_QUALITY.get(world.getChunk(pos)).influence(ChunkQuality.PlayerInfluence.FLUID);
+		ChunkQuality.influence(user, ChunkQuality.PlayerInfluence.FLUID);
 	}
 }

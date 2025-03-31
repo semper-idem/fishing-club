@@ -2,6 +2,7 @@ package net.semperidem.fishingclub.mixin.client.ui;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.DebugHud;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.world.ChunkQuality;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,10 +24,10 @@ public class DebugHudMixin {
 	)
 	public void getRightText(CallbackInfoReturnable<List<String>> cir) {
 		assert client.player != null;
-		ChunkQuality.CHUNK_QUALITY.maybeGet(client.player.getWorld().getChunk(client.player.getBlockPos())).ifPresent(chunk -> {
+		Components.CHUNK_QUALITY.maybeGet(client.player.getWorld().getChunk(client.player.getBlockPos())).ifPresent(chunk -> {
 
 			List<String> original = new ArrayList<>();
-			original.add("water_quality");
+			original.add(ChunkQuality.TAG_KEY);
 			original.add("value: " + String.format("%.4f",chunk.getValue()));
 			original.add("base: " + String.format("%.4f", chunk.getBase()));
 			original.add("ceiling: " + String.format( "%.4f", chunk.getCeiling()));

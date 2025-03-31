@@ -1,6 +1,8 @@
 package net.semperidem.fishingclub.world;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
@@ -30,7 +32,6 @@ public class ChunkQuality implements ServerTickingComponent, AutoSyncedComponent
 
 
 	private final HashMap<FloraInfluence, Integer> floraToCount = new HashMap<>();
-
 	private static final int regenInterval = 20;
  	private static final int syncInterval = 20 * 600;
 	private static final double BASE_REGEN = 0.0001D;
@@ -142,6 +143,10 @@ public class ChunkQuality implements ServerTickingComponent, AutoSyncedComponent
 	public void serverTick() {
 		this.tickRegen();
 		this.tickSync();
+	}
+
+	public static void influence(LivingEntity entity, PlayerInfluence influence) {
+		Components.CHUNK_QUALITY.get(entity.getWorld().getChunk(entity.getBlockPos())).influence(influence);
 	}
 
 	public void influence(PlayerInfluence influence) {

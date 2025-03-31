@@ -12,9 +12,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.semperidem.fishingclub.registry.Components;
 import net.semperidem.fishingclub.world.ChunkQuality;
 
-import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public abstract class AbstractFishEntity extends FishEntity {
 
@@ -24,7 +24,7 @@ public abstract class AbstractFishEntity extends FishEntity {
 
     @Override
     protected void onRemoval(ServerWorld world, RemovalReason reason) {
-        CHUNK_QUALITY.get(world.getChunk(this.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+        ChunkQuality.influence(this, ChunkQuality.PlayerInfluence.FISH_CAUGHT);
         super.onRemoval(world, reason);
     }
 

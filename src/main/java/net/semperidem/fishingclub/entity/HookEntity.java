@@ -44,8 +44,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static net.semperidem.fishingclub.registry.Enchantments.*;
-import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
-
 
 public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private static final int BASE_WAIT = 600;
@@ -809,7 +807,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     @Override
     public float getCircumstanceQuality() {
         float circumstanceQuality = 0.5f;
-        circumstanceQuality += CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos())).map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
+        circumstanceQuality += Components.CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos())).map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
         circumstanceQuality += (this.getWaitTime() / 1200f);
         if (this.getWorld().isRaining()) {
             circumstanceQuality += (float) (0.25 * (1 + this.card.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)));

@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.mixin.common;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 @Mixin(FluidBlock.class)
 public class FluidBlockMixin {
@@ -23,6 +21,6 @@ public class FluidBlockMixin {
 		if (cir.getReturnValue().isEmpty()) {
 			return;
 		}
-		CHUNK_QUALITY.get(world.getChunk(pos)).influence(ChunkQuality.PlayerInfluence.FLUID);
+		ChunkQuality.influence(drainer, ChunkQuality.PlayerInfluence.FLUID);
 	}
 }

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static net.semperidem.fishingclub.world.ChunkQuality.CHUNK_QUALITY;
 
 public class FishUtil {
     public static List<ItemStack> getFishingReward(SpecimenData fish, Card card){
@@ -61,7 +60,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         ItemStack fishStack = fishCaughtStacks.getFirst().copy();
         for(ItemStack fishCaughtStack : fishCaughtStacks) {
             ItemStack fishingNetStack = getFishingNet(player, fishCaughtStack);
-            CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.FISH_CAUGHT);
+            ChunkQuality.influence(player, ChunkQuality.PlayerInfluence.FISH_CAUGHT);
             if (!fishingNetStack.isEmpty() && ((FishingNetItem)Items.FISHING_NET).insertStack(fishingNetStack, fishCaughtStack, player)) {
                 continue;
             }
@@ -73,7 +72,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
     public static void fishCaughtAt(ServerPlayerEntity player, SpecimenData fish, BlockPos caughtAt) {
         Card card = Card.of(player);
         card.fishCaught(fish);
-        CHUNK_QUALITY.get(player.getWorld().getChunk(player.getBlockPos())).influence(ChunkQuality.PlayerInfluence.EXPLOSION);
+        ChunkQuality.influence(player, ChunkQuality.PlayerInfluence.EXPLOSION);
         throwRandomly(player.getWorld(), caughtAt, fish.asItemStack());
     }
 
