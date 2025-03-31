@@ -30,7 +30,7 @@ public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
 
         int totalValue = 0;
         for(ItemStack fishStack : payload.fish()) {
-            totalValue += fishStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
+            totalValue += fishStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value();
             fishStack.setCount(0);
         }
         Card card = Card.of(context.player());

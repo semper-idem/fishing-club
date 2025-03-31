@@ -3,7 +3,6 @@ package net.semperidem.fishingclub.fisher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
@@ -36,7 +35,7 @@ public class CardInventory implements Inventory{
             if (!inventoryStack.isIn(Tags.FISH_ITEM)) {
                 continue;
             }
-            credit += (inventoryStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value() * inventoryStack.getCount());
+            credit += (inventoryStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value() * inventoryStack.getCount());
             inventoryStack.setCount(0);
             return;
         }

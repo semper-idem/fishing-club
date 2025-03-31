@@ -176,7 +176,7 @@ public class TradeSecret {
             }
             ItemStack heldItem = player.getMainHandStack();
 
-            if (heldItem.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).quality() < 4) {
+            if (heldItem.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).quality() < 4) {
                 player.sendMessage(Text.of("Sacrifice must be made, high quality fish is required"));
                 return false;
             }

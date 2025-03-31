@@ -60,7 +60,7 @@ public abstract class ItemEntityMixin extends Entity{
             return;
         }
 
-        this.fish = stack.get(Components.SPECIMEN);
+        this.fish = stack.get(Components.SPECIMEN_DATA);
 
         if (fish != null && fish.quality() >= 4) {
             summonerUUID = fish.caughtByUUID();

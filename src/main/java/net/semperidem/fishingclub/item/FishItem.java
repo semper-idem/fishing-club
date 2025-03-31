@@ -34,7 +34,7 @@ public class FishItem extends Item {
         if (!user.isSneaking()) {
             return super.use(world, user, hand);
         }
-        boolean canCast = user.getMainHandStack().getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).quality() >= 4;
+        boolean canCast = user.getMainHandStack().getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).quality() >= 4;
         if (!canCast) {
             return super.use(world, user, hand);
         }

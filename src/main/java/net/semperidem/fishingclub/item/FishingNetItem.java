@@ -44,7 +44,7 @@ public class FishingNetItem extends BundleItem {
             return ActionResult.PASS;
 
         }
-        ItemStack fishStack = SpecimenComponent.of(waterCreatureEntity).get().asItemStack();
+        ItemStack fishStack = SpecimenComponent.of(waterCreatureEntity).getOrDefault().asItemStack();
         if (fishingNetItem.insertStack(stackInHand, fishStack, user)) {
             entity.discard();
         }

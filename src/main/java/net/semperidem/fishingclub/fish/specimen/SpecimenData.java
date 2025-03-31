@@ -360,7 +360,7 @@ public record SpecimenData(
 
     public ItemStack asItemStack() {
         ItemStack fishItemStack = species().item().getDefaultStack();
-        fishItemStack.set(Components.SPECIMEN, this);
+        fishItemStack.set(Components.SPECIMEN_DATA, this);
         Text label = Text.of((!this.isAlive ? "Raw " : "") + this.label);
         if (this.species == Species.Library.TROPICAL_FISH) {
 

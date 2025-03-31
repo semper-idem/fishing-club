@@ -1,10 +1,12 @@
 package net.semperidem.fishingclub.registry;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.util.Uuids;
-import net.semperidem.fishingclub.FishingClub;
+import net.semperidem.fishingclub.entity.FishDisplayBlockEntity;
 import net.semperidem.fishingclub.fish.specimen.SpecimenComponent;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
+import net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.item.FishingNetContentComponent;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
@@ -13,6 +15,8 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.dynamic.Codecs;
+import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
@@ -21,24 +25,41 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 
 import java.util.UUID;
 
-public class Components implements EntityComponentInitializer {
+import static net.semperidem.fishingclub.FishingClub.identifier;
+
+public class Components implements EntityComponentInitializer, BlockComponentInitializer {
     public static ComponentType<RodConfiguration> ROD_CONFIGURATION;
     public static ComponentType<Integer> LINE_LENGTH;
     public static ComponentType<Integer> EXPIRATION_TIME;
     public static ComponentType<Float> CAST_POWER;
     public static ComponentType<Integer> TIER;
-    public static ComponentType<SpecimenData> SPECIMEN;
+    public static ComponentType<SpecimenData> SPECIMEN_DATA;
     public static ComponentType<Long> CREATION_TICK;
     public static ComponentType<Integer> COIN;
     public static ComponentType<UUID> CAUGHT_BY;
     public static ComponentType<FishingNetContentComponent> FISHING_NET_CONTENT;
-    public static ComponentKey<Card> CARD_COMPONENT = ComponentRegistry.getOrCreate(FishingClub.identifier("card"), Card.class);
+
+    public static final ComponentKey<Card> CARD = ComponentRegistry
+            .getOrCreate(
+                    identifier("card"),
+                    Card.class
+            );
+    public static final ComponentKey<SpecimenComponent> SPECIMEN = ComponentRegistry
+            .getOrCreate(
+                    identifier(SpecimenComponent.TAG_KEY),
+                    SpecimenComponent.class
+            );
+    public static final ComponentKey<SpecimenDisplayComponent> SPECIMEN_DISPLAY = ComponentRegistry
+            .getOrCreate(
+                    identifier(SpecimenComponent.TAG_KEY + "_displayed"),
+                    SpecimenDisplayComponent.class
+            );
 
     public static void register() {
         ROD_CONFIGURATION =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("rod_configuration"),
+                        identifier("rod_configuration"),
                         ComponentType.<RodConfiguration>builder()
                                 .codec(RodConfiguration.CODEC)
                                 .packetCodec(RodConfiguration.PACKET_CODEC)
@@ -47,7 +68,7 @@ public class Components implements EntityComponentInitializer {
         EXPIRATION_TIME =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("expiration_time"),
+                        identifier("expiration_time"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -57,7 +78,7 @@ public class Components implements EntityComponentInitializer {
         LINE_LENGTH =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("line_length"),
+                        identifier("line_length"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -67,7 +88,7 @@ public class Components implements EntityComponentInitializer {
         CAST_POWER =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("cast_power"),
+                        identifier("cast_power"),
                         ComponentType.<Float>builder()
                                 .codec(Codecs.POSITIVE_FLOAT)
                                 .packetCodec(PacketCodecs.FLOAT)
@@ -76,15 +97,15 @@ public class Components implements EntityComponentInitializer {
         TIER =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("tier"),
+                        identifier("tier"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
                                 .build());
-        SPECIMEN =
+        SPECIMEN_DATA =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier(SpecimenComponent.KEY),
+                        identifier(SpecimenComponent.TAG_KEY),
                         ComponentType.<SpecimenData>builder()
                                 .codec(SpecimenData.CODEC)
                                 .packetCodec(SpecimenData.PACKET_CODEC)
@@ -92,7 +113,7 @@ public class Components implements EntityComponentInitializer {
         CREATION_TICK =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("creation_tick"),
+                        identifier("creation_tick"),
                         ComponentType.<Long>builder()
                                 .codec(Codec.LONG)
                                 .packetCodec(PacketCodecs.VAR_LONG)
@@ -102,7 +123,7 @@ public class Components implements EntityComponentInitializer {
         COIN =
                 Registry.register(
                         Registries.DATA_COMPONENT_TYPE,
-                        FishingClub.identifier("coin"),
+                        identifier("coin"),
                         ComponentType.<Integer>builder()
                                 .codec(Codecs.NON_NEGATIVE_INT)
                                 .packetCodec(PacketCodecs.VAR_INT)
@@ -110,7 +131,7 @@ public class Components implements EntityComponentInitializer {
         CAUGHT_BY =
           Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            FishingClub.identifier("caught_by"),
+            identifier("caught_by"),
             ComponentType.<UUID>builder()
               .codec(Uuids.CODEC)
               .packetCodec(Uuids.PACKET_CODEC)
@@ -119,7 +140,7 @@ public class Components implements EntityComponentInitializer {
         FISHING_NET_CONTENT =
           Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            FishingClub.identifier("fishing_net_content"),
+            identifier("fishing_net_content"),
             ComponentType.<FishingNetContentComponent>builder()
               .codec(FishingNetContentComponent.CODEC)
               .packetCodec(FishingNetContentComponent.PACKET_CODEC)
@@ -128,6 +149,12 @@ public class Components implements EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-            registry.registerForPlayers(Components.CARD_COMPONENT, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
+            registry.registerForPlayers(Components.CARD, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
+            registry.registerFor(WaterCreatureEntity.class, SPECIMEN, SpecimenComponent::new);
+    }
+
+    @Override
+    public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
+        registry.registerFor(FishDisplayBlockEntity.class, SPECIMEN_DISPLAY, SpecimenDisplayComponent::new);
     }
 }

@@ -173,7 +173,7 @@ public class MemberSellScreen extends MemberSubScreen{
         public int getTotalAvailable() {
             int total = 0;
             for(GridEntry entry : entries) {
-                    total += entry.itemStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value();
             }
             return total;
         }
@@ -182,7 +182,7 @@ public class MemberSellScreen extends MemberSubScreen{
             int total = 0;
             for(GridEntry entry : entries) {
                 if (entry.isSelected) {
-                    total += entry.itemStack.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value();
+                    total += entry.itemStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value();
                 }
             }
             return total;

@@ -28,7 +28,7 @@ public class InstantSellSlot extends UnlockableSlot {
             return;
         }
         float sellRatio = parent.card.tradeSecretValue(TradeSecrets.INSTANT_FISH_CREDIT);
-        parent.card.addCredit((int) (this.getStack().getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT).value() * sellRatio * this.getStack().getCount()));
+        parent.card.addCredit((int) (this.getStack().getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value() * sellRatio * this.getStack().getCount()));
         this.getStack().setCount(0);
         if (this.parent.isClient && MinecraftClient.getInstance().currentScreen instanceof OldFishingCardScreen cardScreen) {
             cardScreen.instantSellSlotButton.visible = true;

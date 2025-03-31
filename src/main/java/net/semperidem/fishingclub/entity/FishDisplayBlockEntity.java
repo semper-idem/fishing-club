@@ -58,15 +58,11 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         SpecimenDisplayComponent displayFishComponent = SpecimenDisplayComponent.of(this);
-        if (displayFishComponent.get() != null) {
+        if (!displayFishComponent.isEmpty()) {
             return false;
         }
 
-        SpecimenData fishRecord = stackInHand.getOrDefault(Components.SPECIMEN, SpecimenData.DEFAULT);
-        if (fishRecord.isEqual(SpecimenData.DEFAULT)) {
-            return false;
-        }
-
+        SpecimenData fishRecord = stackInHand.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT);
         displayFishComponent.set(fishRecord);
         this.markDirty();
         if (!player.isCreative()) {
@@ -90,7 +86,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         }
 
         this.stopPlaying();
-        SpecimenDisplayComponent.of(this).set(null);
+        SpecimenDisplayComponent.of(this).empty();
         return true;
     }
 
@@ -100,8 +96,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
             return;
         }
 
-        SpecimenDisplayComponent displayFishComponent = SpecimenDisplayComponent.of(this);
-        if (displayFishComponent.get() == null) {
+        if (SpecimenDisplayComponent.of(this).isEmpty()) {
             return;
         }
 
@@ -186,11 +181,12 @@ public class FishDisplayBlockEntity extends BlockEntity {
         fishDisplayBlockEntity.tickPlaying();
     }
 
+    //TODO REFACTOR THIS IS WEIRD
     private void tickDisplayedFish() {
 
-        SpecimenData fishRecord = SpecimenDisplayComponent.of(this).get();
+        SpecimenDisplayComponent displayComponent = SpecimenDisplayComponent.of(this);
 
-        if (fishRecord == null) {
+        if (displayComponent.isEmpty()) {
             this.fishEntity = null;
             this.fishStack = null;
             this.fishSong = null;
@@ -199,7 +195,7 @@ public class FishDisplayBlockEntity extends BlockEntity {
         if (this.fishEntity != null) {
             return;
         }
-
+        SpecimenData fishRecord = displayComponent.getOrDefault();
         this.fishStack = fishRecord.asItemStack();
         this.fishEntity = fishRecord.species().getEntityType().create(this.world, SpawnReason.BUCKET);
         if (this.fishEntity == null) {

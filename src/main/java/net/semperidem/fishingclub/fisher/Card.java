@@ -31,7 +31,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
     private final CheckedRandom random;
 
     public static Card of(PlayerEntity playerEntity) {
-        return Components.CARD_COMPONENT.get(playerEntity);
+        return Components.CARD.get(playerEntity);
     }
 
     public Card(PlayerEntity playerEntity) {
@@ -256,7 +256,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
     }
 
     private void sync() {
-        Components.CARD_COMPONENT.sync(this.owner, (buf, recipient) -> writeSyncPacket(buf));
+        Components.CARD.sync(this.owner, (buf, recipient) -> writeSyncPacket(buf));
     }
 
     public void unlockAllSecret() {

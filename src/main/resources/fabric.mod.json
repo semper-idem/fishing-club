@@ -23,8 +23,6 @@
     ],
     "cardinal-components": [
       "net.semperidem.fishingclub.registry.Components",
-      "net.semperidem.fishingclub.fish.specimen.SpecimenComponent",
-      "net.semperidem.fishingclub.fish.specimen.SpecimenDisplayComponent",
       "net.semperidem.fishingclub.fisher.FishingKing",
       "net.semperidem.fishingclub.leaderboard.LeaderboardTracker",
       "net.semperidem.fishingclub.world.ChunkQuality"
@@ -38,8 +36,8 @@
   "custom": {
     "cardinal-components": [
       "fishingclub:card",
-      "fishingclub:specimen_component",
-      "fishingclub:specimen_display_component",
+      "fishingclub:specimen",
+      "fishingclub:specimen_displayed",
       "fishingclub:fishing_king",
       "fishingclub:leaderboard_tracker",
       "fishingclub:chunk_quality"
