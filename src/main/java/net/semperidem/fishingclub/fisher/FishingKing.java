@@ -44,7 +44,6 @@ public final class FishingKing implements AutoSyncedComponent {
 
     private int refreshTick = 0;
 
-    //Serialized
     private UUID uuid;
     private String name = "";
     private int price = MIN_PRICE;
@@ -145,10 +144,10 @@ public final class FishingKing implements AutoSyncedComponent {
             return;
         }
         this.refreshTick = REFRESH_TICK_RATE;
-        applyAura(playerEntity);
+        tickMightyPresence(playerEntity);
     }
 
-    private void applyAura(ServerPlayerEntity kingEntity) {
+    private void tickMightyPresence(ServerPlayerEntity kingEntity) {
         kingEntity.getServerWorld()
                 .getOtherEntities(kingEntity, new Box(kingEntity.getBlockPos()).expand(5))
                 .stream()
