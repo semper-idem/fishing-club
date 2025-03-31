@@ -6,10 +6,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
+import net.semperidem.fishingclub.network.payload.RodConfigurationPayload;
 import org.jetbrains.annotations.Nullable;
 
-public class ConfigurationScreenHandlerFactory implements ExtendedScreenHandlerFactory<ConfigurationPayload> {
+public class RodConfigurationScreenHandlerFactory implements ExtendedScreenHandlerFactory<RodConfigurationPayload> {
     @Override
     public Text getDisplayName() {
         return Text.literal("Configuration");
@@ -18,11 +18,11 @@ public class ConfigurationScreenHandlerFactory implements ExtendedScreenHandlerF
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new ConfigurationScreenHandler(syncId, inv, new ConfigurationPayload());
+        return new RodConfigurationScreenHandler(syncId, inv, new RodConfigurationPayload());
     }
 
     @Override
-    public ConfigurationPayload getScreenOpeningData(ServerPlayerEntity player) {
-        return new ConfigurationPayload();
+    public RodConfigurationPayload getScreenOpeningData(ServerPlayerEntity player) {
+        return new RodConfigurationPayload();
     }
 }

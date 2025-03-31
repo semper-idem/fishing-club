@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
+import net.semperidem.fishingclub.network.payload.RodConfigurationPayload;
 import net.semperidem.fishingclub.network.payload.CardPayload;
 import net.semperidem.fishingclub.registry.Tags;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,7 +49,7 @@ public abstract class InventoryScreenMixin extends RecipeBookScreen<PlayerScreen
     private void fishing_club$addFishingCardButton(CallbackInfo ci){
         this.fishingCardButton = new TexturedButtonWidget(this.x + 126, this.height / 2 - 22, 20, 18, BUTTON_TEXTURES, button -> {
             if (client != null && client.player != null && client.player.getMainHandStack().isIn(Tags.CORE)) {
-                ClientPlayNetworking.send(new ConfigurationPayload());
+                ClientPlayNetworking.send(new RodConfigurationPayload());
                 return;
             }
             ClientPlayNetworking.send(new CardPayload());

@@ -321,6 +321,11 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     }
 
+    @Override
+    public boolean shouldSyncWith(ServerPlayerEntity player) {
+        return player == this.holder;
+    }
+
     //Message in bottle
     public void hearMessage() {
         this.historyManager.hearMessage();

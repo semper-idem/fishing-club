@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.configuration;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -12,11 +11,11 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-import net.semperidem.fishingclub.screen.configuration.ConfigurationScreenHandler;
+import net.semperidem.fishingclub.screen.configuration.RodConfigurationScreenHandler;
 import net.semperidem.fishingclub.screen.configuration.RodInventory;
 
-public class ConfigurationScreen extends HandledScreen<ConfigurationScreenHandler> implements ScreenHandlerProvider<ConfigurationScreenHandler> {
-    public ConfigurationScreen(ConfigurationScreenHandler handler, PlayerInventory inventory, Text title) {
+public class RodConfigurationScreen extends HandledScreen<RodConfigurationScreenHandler> implements ScreenHandlerProvider<RodConfigurationScreenHandler> {
+    public RodConfigurationScreen(RodConfigurationScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 

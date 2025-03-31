@@ -7,7 +7,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.item.fishing_rod.components.PartItem;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.network.payload.ConfigurationPayload;
+import net.semperidem.fishingclub.network.payload.RodConfigurationPayload;
 import net.semperidem.fishingclub.registry.Items;
 import net.semperidem.fishingclub.registry.ScreenHandlers;
 import net.semperidem.fishingclub.registry.Tags;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 import static net.semperidem.fishingclub.registry.Components.*;
 
-public class ConfigurationScreenHandler extends ScreenHandler {
+public class RodConfigurationScreenHandler extends ScreenHandler {
     private final static int SLOTS_PER_ROW = 9;
     private final static int SLOT_SIZE = 20;
     final PlayerInventory playerInventory;
@@ -24,7 +24,7 @@ public class ConfigurationScreenHandler extends ScreenHandler {
     ItemStack core;
     private int rodSlot = 0;
 
-    public ConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, ConfigurationPayload payload) {
+    public RodConfigurationScreenHandler(int syncId, PlayerInventory playerInventory, RodConfigurationPayload payload) {
 
         super(ScreenHandlers.CONFIGURATION_SCREEN, syncId);
 

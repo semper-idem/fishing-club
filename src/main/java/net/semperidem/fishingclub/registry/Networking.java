@@ -26,7 +26,7 @@ public class Networking {
         PayloadTypeRegistry.playC2S().register(FishingInputMousePayload.ID, FishingInputMousePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(FishingInputKeyboardPayload.ID, FishingInputKeyboardPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(LearnTradeSecretPayload.ID, LearnTradeSecretPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(ConfigurationPayload.ID, ConfigurationPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(RodConfigurationPayload.ID, RodConfigurationPayload.CODEC);
     }
 
     public static void registerClient() {
@@ -51,6 +51,6 @@ public class Networking {
         ServerPlayNetworking.registerGlobalReceiver(SummonAcceptPayload.ID, SummonAcceptPayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(FishingInputMousePayload.ID, FishingInputMousePayload::consumePayload);
         ServerPlayNetworking.registerGlobalReceiver(FishingInputKeyboardPayload.ID, FishingInputKeyboardPayload::consumePayload);
-        ServerPlayNetworking.registerGlobalReceiver(ConfigurationPayload.ID, ConfigurationPayload::consumePayload);
+        ServerPlayNetworking.registerGlobalReceiver(RodConfigurationPayload.ID, RodConfigurationPayload::consumePayload);
     }
 }
