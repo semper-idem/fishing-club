@@ -34,7 +34,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     public static final Card DEFAULT = new Card();
     private PlayerEntity holder;
     private final CardProgression progression;
-    private final SummonRequest summonRequest;
     private final CardHistory history;
     private final CardLinking linking;
     private CheckedRandom random;
@@ -48,7 +47,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
 
     public Card() {
         this.progression = new CardProgression(this);
-        this.summonRequest = new SummonRequest(this);
         this.history = new CardHistory(this);
         this.linking = new CardLinking(this);
         this.statusEffectHelper = new StatusEffectHelper(this);
@@ -81,7 +79,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     public void readFromNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         progression.readNbt(fishingCardNbt, wrapperLookup);
         history.readNbt(fishingCardNbt, wrapperLookup);
-        summonRequest.readNbt(fishingCardNbt, wrapperLookup);
         linking.readNbt(fishingCardNbt, wrapperLookup);
         readNbt(fishingCardNbt, wrapperLookup);
     }
@@ -90,7 +87,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     public void writeToNbt(NbtCompound fishingCardNbt, RegistryWrapper.WrapperLookup registryLookup) {
         progression.writeNbt(fishingCardNbt, registryLookup);
         history.writeNbt(fishingCardNbt, registryLookup);
-        summonRequest.writeNbt(fishingCardNbt, registryLookup);
         linking.writeNbt(fishingCardNbt, registryLookup);
         writeNbt(fishingCardNbt, registryLookup);
     }
@@ -204,7 +200,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         return this.holder;
     }
 
-    public PlayerEntity holder(){
+    public PlayerEntity owner(){
         return Objects.requireNonNull(this.holder, "Card holder did not load correctly");
     }
 
@@ -213,11 +209,11 @@ public final class Card extends CardInventory implements EntityComponentInitiali
     }
 
     public void setSummonRequest(ServerPlayerEntity target){
-        summonRequest.set(target);
+        linking.set(target);
     }
 
     public void acceptSummonRequest(){
-        summonRequest.execute();//todo put cooldown on summon
+        linking.execute();//todo put cooldown on summon
     }
 
     public boolean isFishingFromBoat(){
@@ -279,7 +275,7 @@ public final class Card extends CardInventory implements EntityComponentInitiali
             return false;
         }
         this.credit += credit;
-        LeaderboardTracker tracker = LeaderboardTracker.of(this.holder().getWorld().getScoreboard());
+        LeaderboardTracker tracker = LeaderboardTracker.of(this.owner().getWorld().getScoreboard());
         tracker.record(holder, this, tracker.highestCredit);
         return true;
     }

@@ -40,8 +40,8 @@ public class CardHistory extends CardData {
         HashSet<Integer> unheardMessageSet = new HashSet<>(ResourceUtil.MESSAGE_IN_BOTTLE.keySet());
         unheardMessageSet.removeAll(heardMessageIndexSet);
         ArrayList<Integer> unheardMessageList = new ArrayList<>(unheardMessageSet);
-        int unheardMessageIndex = unheardMessageList.get(trackedFor.getRandom().nextInt(unheardMessageList.size()));
-        trackedFor.holder().sendMessage(Text.of(ResourceUtil.MESSAGE_IN_BOTTLE.get(unheardMessageIndex)), true);
+        int unheardMessageIndex = unheardMessageList.get(card.getRandom().nextInt(unheardMessageList.size()));
+        card.owner().sendMessage(Text.of(ResourceUtil.MESSAGE_IN_BOTTLE.get(unheardMessageIndex)), true);
         heardMessageIndexSet.add(unheardMessageIndex);
     }
 
@@ -91,8 +91,8 @@ public class CardHistory extends CardData {
             return;
         }
         this.firstCatchOfTheDay = getCurrentTime();
-        this.trackedFor.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE, null);
-        this.trackedFor.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_QUALITY, null);
+        this.card.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_CATCH_RATE, null);
+        this.card.useTradeSecret(TradeSecrets.FIRST_CATCH_BUFF_QUALITY, null);
     }
 
     public ItemStack getLastUsedBait() {
@@ -104,7 +104,7 @@ public class CardHistory extends CardData {
     }
 
     public boolean isFirstCatchInChunk(IHookEntity caughtWith) {
-        if (!this.trackedFor.knowsTradeSecret(TradeSecrets.CHANGE_OF_SCENERY)) {
+        if (!this.card.knowsTradeSecret(TradeSecrets.CHANGE_OF_SCENERY)) {
             return false;
         }
         if (!(caughtWith instanceof Entity caughtWithEntity)) {
@@ -133,10 +133,10 @@ public class CardHistory extends CardData {
     }
 
     private long getCurrentTime() {
-        if (trackedFor.holder() == null) {
+        if (card.owner() == null) {
             return 0;
         }
-        return trackedFor.holder().getWorld().getTime();
+        return card.owner().getWorld().getTime();
     }
 
     public String getIssuedDate(){

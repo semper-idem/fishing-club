@@ -8,13 +8,13 @@ import net.semperidem.fishingclub.fisher.Card;
 import static net.semperidem.fishingclub.fisher.Card.CARD;
 
 public abstract class CardData {
-    Card trackedFor;
-    public CardData(Card trackedFor) {
-        this.trackedFor = trackedFor;
+    Card card;
+    public CardData(Card card) {
+        this.card = card;
     }
 
     void sync() {
-        CARD.sync(trackedFor.holder(), (buf, recipient) -> this.writeSyncPacket(buf));
+        CARD.sync(card.owner(), (buf, recipient) -> this.writeSyncPacket(buf));
     }
 
     void writeSyncPacket(RegistryByteBuf buf){

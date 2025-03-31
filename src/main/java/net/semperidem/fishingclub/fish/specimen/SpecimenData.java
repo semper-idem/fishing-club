@@ -94,7 +94,7 @@ public record SpecimenData(
         if (card.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
             luck++;
         }
-        if (card.holder() instanceof PlayerEntity holder) {
+        if (card.owner() instanceof PlayerEntity holder) {
             luck += (int) holder.getLuck();
         }
 

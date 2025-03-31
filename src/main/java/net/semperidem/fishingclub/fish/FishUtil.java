@@ -40,7 +40,7 @@ public class FishUtil {
             return caughtFishStacks;
         }
         for(int i = count - 1; i > 0; i--) {
-            caughtFishStacks.add(fish.sibling(card.holder()).asItemStack());
+            caughtFishStacks.add(fish.sibling(card.owner()).asItemStack());
         }
         return caughtFishStacks;
     }
@@ -113,7 +113,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
         if (card.unsafeHolder() == null) {
             return 1;
         }
-        int luck = (int) card.holder().getLuck();
+        int luck = (int) card.owner().getLuck();
         if (card.knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
             luck++;
         }
@@ -139,14 +139,14 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
 
     public static Optional<SpecimenData> fishOnHook(IHookEntity iHookEntity) {
         float luck = 0.5f;
-        if (iHookEntity.getFishingCard().holder() instanceof PlayerEntity playerEntity) {
+        if (iHookEntity.getFishingCard().owner() instanceof PlayerEntity playerEntity) {
             luck *= (1 + playerEntity.getLuck());
             if (iHookEntity.getFishingCard().knowsTradeSecret(TradeSecrets.FISH_WHISPERER)) {
                 luck++;
             }
             luck *= (float) MathHelper.clamp((playerEntity.getBlockY() + 128) / 192f, 0, 1.5);
         }
-        PlayerEntity holder = iHookEntity.getFishingCard().holder();
+        PlayerEntity holder = iHookEntity.getFishingCard().owner();
         int curseOfClutterLevel = Enchantments.getEnchantmentLevel(holder, holder.getEquippedStack(EquipmentSlot.MAINHAND), Enchantments.CURSE_OF_CLUTTER);
         if (Math.random() < 0.05 * (1 + curseOfClutterLevel * 3)  / luck) {
            return Optional.empty();

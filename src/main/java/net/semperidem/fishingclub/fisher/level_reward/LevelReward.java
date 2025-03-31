@@ -61,7 +61,7 @@ public class LevelReward {
     }
 
     private void executeEffect(Card card) {
-        if (card.holder() instanceof ServerPlayerEntity serverFisher) {
+        if (card.owner() instanceof ServerPlayerEntity serverFisher) {
             ServerWorld world = serverFisher.getServerWorld();
             double x = serverFisher.getX();
             double y = serverFisher.getY();

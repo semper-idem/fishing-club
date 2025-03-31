@@ -137,7 +137,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             Card card = getScreenHandler().card;
             level = Text.of(String.valueOf(card.getLevel()));
             xpProgress = card.getExpProgress();
-            playerName = card.holder().getName();
+            playerName = card.owner().getName();
             issuedDate = Text.of(card.getIssuedDate());
             addDrawableChild(
                     new SellButtonWidget(

@@ -130,7 +130,7 @@ public class CardProgression extends CardData {
     }
 
     public void useTradeSecret(String tradeSecretName, @Nullable Entity target) {
-        if (!(this.trackedFor.holder() instanceof ServerPlayerEntity serverHolder)) {
+        if (!(this.card.owner() instanceof ServerPlayerEntity serverHolder)) {
             return;
         }
         this.knownTradeSecrets.computeIfPresent(tradeSecretName, (key, instance) -> {
@@ -158,16 +158,16 @@ public class CardProgression extends CardData {
             return;
         }
         //It was intentionally to not cast it to decimal but maybe we should
-        trackedFor.holder().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
+        card.owner().addExperience((int) Math.max(MIN_PLAYER_EXP, gainedXP * PLAYER_EXP_RATIO));
 
         this.exp += gainedXP;
         float nextLevelXP = nextLevelXP();
         while (this.exp >= nextLevelXP) {
             this.exp -= nextLevelXP;
             this.level++;
-            LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(trackedFor));
+            LevelRewardRule.getRewardForLevel(this.level).forEach(levelReward -> levelReward.grant(card));
             HashSet<Item> unlockedBaits = RecipeLocker.unlockedAt(this.level);
-            if (!unlockedBaits.isEmpty() && this.trackedFor.holder() instanceof ServerPlayerEntity serverPlayerEntity) {
+            if (!unlockedBaits.isEmpty() && this.card.owner() instanceof ServerPlayerEntity serverPlayerEntity) {
                 unlockedBaits.forEach(unlockedBait -> {
                     DefaultedList<Ingredient> ingredients = RecipeLocker.ingredients(serverPlayerEntity, unlockedBait);
                     serverPlayerEntity.sendMessage(Text.of(ingredients.toString()));//will prob return list of memory addresses TODO VALIDATE AND FIX
@@ -180,13 +180,13 @@ public class CardProgression extends CardData {
     }
 
     public void sharePassiveExp(double gainedXP) {
-        this.trackedFor
-                .holder()
+        this.card
+                .owner()
                 .getEntityWorld()
-                .getOtherEntities(null, new Box(this.trackedFor.holder().getBlockPos()).expand(4))
+                .getOtherEntities(null, new Box(this.card.owner().getBlockPos()).expand(4))
                 .stream()
                 .filter(entity -> entity instanceof ServerPlayerEntity)
-                .filter(entity -> entity != trackedFor.holder())
+                .filter(entity -> entity != card.owner())
                 .map(entity -> Card.of((PlayerEntity) entity))
                 .filter(card -> card.knowsTradeSecret(TradeSecrets.WATCH_AND_LEARN))
                 .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN) * gainedXP));
@@ -218,7 +218,7 @@ public class CardProgression extends CardData {
         if (!this.knowsTradeSecret(tradeSecret)) {
             return 0;
         }
-        if (!tradeSecret.isActive(this.trackedFor)) {
+        if (!tradeSecret.isActive(this.card)) {
             return 0;
         }
         return tradeSecret.value(this.knownTradeSecrets.get(tradeSecret.name()).level());

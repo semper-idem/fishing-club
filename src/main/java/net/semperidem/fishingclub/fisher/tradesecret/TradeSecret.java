@@ -90,7 +90,7 @@ public class TradeSecret {
     }
 
     public boolean isActive(Card card) {
-        return this.condition == null || condition.test(card.holder());
+        return this.condition == null || condition.test(card.owner());
     }
 
     public float value(int level) {
