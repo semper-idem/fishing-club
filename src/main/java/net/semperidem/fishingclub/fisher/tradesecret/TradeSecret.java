@@ -222,7 +222,7 @@ public class TradeSecret {
 
     static class Builder {
         private String name;
-        private List<TradeSecret> requirements = new ArrayList<>();
+        private final List<TradeSecret> requirements = new ArrayList<>();
         private float[] levelValues;
         private int[] costPerLevel;
         private LevelChanges levelAffects = LevelChanges.VALUE;
@@ -245,10 +245,8 @@ public class TradeSecret {
             tradeSecret.levelAffects = this.levelAffects;
             tradeSecret.costPerLevel = this.costPerLevel;
             tradeSecret.maxLevel = maxLevel();
-            if (this.requirements != null) {
-                this.requirements.forEach(parent -> parent.children.add(tradeSecret));
-                tradeSecret.requiredSecrets = this.requirements;
-            }
+            this.requirements.forEach(parent -> parent.children.add(tradeSecret));
+            tradeSecret.requiredSecrets = this.requirements;
             tradeSecret.active = this.active;
             tradeSecret.effect = this.effect;
             tradeSecret.baseDuration = this.baseDuration;

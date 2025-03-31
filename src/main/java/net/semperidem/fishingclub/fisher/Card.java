@@ -277,9 +277,6 @@ public final class Card extends CardInventory implements EntityComponentInitiali
         registry.registerForPlayers(CARD, Card::new, RespawnCopyStrategy.ALWAYS_COPY);
 
     }
-    private Card get() {
-        return this;
-    }
 
     @Override
     public boolean shouldSyncWith(ServerPlayerEntity player) {
