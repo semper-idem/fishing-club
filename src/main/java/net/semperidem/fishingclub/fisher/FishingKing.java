@@ -7,7 +7,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.number.BlankNumberFormat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -20,7 +22,7 @@ import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 import java.util.UUID;
 
-public final class FishingKing implements  AutoSyncedComponent {
+public final class FishingKing implements AutoSyncedComponent {
     public static final String TAG_KEY = "fishing_king";
 
     private static final String UUID_KEY = "uuid";
@@ -30,15 +32,16 @@ public final class FishingKing implements  AutoSyncedComponent {
     private static final String TIMESTAMP_KEY = "timestamp";
 
     private static final Text CLAIM_TEXT = Text.literal(" is new King of the Fishing Club");
+    private static final Text SCOREBOARD_TITLE = Text.literal("Fishing King");
 
     private static final int MIN_PRICE = 10000;
     private static final float PRICE_MULTIPLIER = 1.5f;
-
-    private Scoreboard scoreboard;
-    private ServerWorld serverWorld;
-    private ScoreboardObjective objective;
-
     private static final int REFRESH_TICK_RATE = 200;
+
+    private final Scoreboard scoreboard;
+    private final ServerWorld serverWorld;
+    private final ScoreboardObjective objective;
+
     private int refreshTick = 0;
 
     //Serialized
@@ -48,29 +51,24 @@ public final class FishingKing implements  AutoSyncedComponent {
     private long timestamp = 0;
 
 
+    public FishingKing(Scoreboard scoreboard, MinecraftServer server) {
+        this.scoreboard = scoreboard;
+        this.serverWorld = server.getOverworld();
+        ScoreboardObjective existingObjective = this.scoreboard.getNullableObjective(TAG_KEY);
+        this.objective = existingObjective != null ? existingObjective : this.scoreboard.addObjective(
+                TAG_KEY,
+                ScoreboardCriterion.DUMMY,
+                SCOREBOARD_TITLE,
+                ScoreboardCriterion.RenderType.INTEGER,
+                false,
+                new BlankNumberFormat()
+        );
+    }
+
     public static FishingKing of(Scoreboard scoreboard) {
         return Components.FISHING_KING.get(scoreboard);
     }
 
-
-    public FishingKing(Scoreboard scoreboard, MinecraftServer server) {
-        this.scoreboard = scoreboard;
-        if (server == null) {
-            return;
-        }
-        this.serverWorld = server.getOverworld();
-        if ((this.objective = scoreboard.getNullableObjective(TAG_KEY)) != null) {
-            return;
-        }
-//        this.objective = scoreboard.addObjective(
-//                FISHING_KING_KEY,
-//                ScoreboardCriterion.DUMMY,
-//                Text.of(FISHING_KING_KEY),
-//                ScoreboardCriterion.RenderType.INTEGER,
-//                true,
-//                StyledNumberFormat.EMPTY
-//        );
-    }
     @Override
     public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         this.price = tag.getInt(PRICE_KEY, 0);
@@ -95,17 +93,18 @@ public final class FishingKing implements  AutoSyncedComponent {
         tag.putString(NAME_KEY, this.name);
     }
 
-    public UUID getUuid(){
+    public UUID getUuid() {
         return this.uuid;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
-    public int getPrice(){
+    public int getPrice() {
         return this.price;
     }
+
     public int getPriceFor(ServerPlayerEntity claimedBy) {
         return this.price;//Will be used to calculate discount by leaderboard titles
     }
@@ -120,11 +119,10 @@ public final class FishingKing implements  AutoSyncedComponent {
             return;
         }
 
-
         card.addCredit(-amount);
         int currentReign = (int) (this.getCurrentReign() / 1200);
         this.scoreboard.getOrCreateScore(ScoreHolder.fromName(this.name), this.objective).incrementScore(currentReign);//1 for each minute
-        this.price = (int)(amount * PRICE_MULTIPLIER);
+        this.price = (int) (amount * PRICE_MULTIPLIER);
         this.uuid = claimedBy.getUuid();
         this.name = claimedBy.getNameForScoreboard();
 
@@ -133,7 +131,7 @@ public final class FishingKing implements  AutoSyncedComponent {
         Components.FISHING_KING.sync(this.scoreboard);
     }
 
-    public long getCurrentReign(){
+    public long getCurrentReign() {
         return this.serverWorld.getTime() - this.timestamp;
     }
 

@@ -18,7 +18,7 @@ import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.fisher.FishingKing;
 import net.semperidem.fishingclub.item.NetContentComponent;
 import net.semperidem.fishingclub.item.fishing_rod.components.RodConfiguration;
-import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
+import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.world.ChunkQuality;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
@@ -68,10 +68,10 @@ public class Components implements
                     identifier(ChunkQuality.TAG_KEY),
                     ChunkQuality.class
             );
-    public static final ComponentKey<LeaderboardTracker> LEADERBOARD_TRACKER = ComponentRegistry
+    public static final ComponentKey<LeaderboardManager> LEADERBOARDS = ComponentRegistry
             .getOrCreate(
-                    identifier(LeaderboardTracker.TAG_KEY),
-                    LeaderboardTracker.class
+                    identifier(LeaderboardManager.TAG_KEY),
+                    LeaderboardManager.class
             );
 
     public static ComponentType<RodConfiguration> ROD_CONFIGURATION;
@@ -191,7 +191,7 @@ public class Components implements
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
         registry.registerScoreboardComponent(FISHING_KING, FishingKing::new);
-        registry.registerScoreboardComponent(LEADERBOARD_TRACKER, (Scoreboard scoreboard, @Nullable MinecraftServer server) -> new LeaderboardTracker(scoreboard));
+        registry.registerScoreboardComponent(LEADERBOARDS, (Scoreboard scoreboard, @Nullable MinecraftServer server) -> new LeaderboardManager());
     }
 
     @Override

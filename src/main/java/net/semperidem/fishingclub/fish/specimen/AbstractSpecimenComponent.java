@@ -6,11 +6,11 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractSpecimenComponent implements AutoSyncedComponent {
-	private SpecimenData data;
-
+	private SpecimenData data;//Cant be final while using vanilla item components
 
 	public SpecimenData getOrDefault() {
 		return Optional.ofNullable(data).orElse(SpecimenData.DEFAULT);
@@ -25,7 +25,7 @@ public abstract class AbstractSpecimenComponent implements AutoSyncedComponent {
 	}
 
 	public void set(SpecimenData data) {
-		this.data = data;
+		this.data = Objects.requireNonNull(data);
 	}
 
 	@Override

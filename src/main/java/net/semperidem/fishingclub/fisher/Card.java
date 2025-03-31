@@ -15,7 +15,7 @@ import net.minecraft.util.math.random.Random;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
-import net.semperidem.fishingclub.leaderboard.LeaderboardTracker;
+import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.registry.Components;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -200,7 +200,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
         StatusEffectHelper.triggerQualityCelebration(this, fish);
         StatusEffectHelper.triggerPassiveXP(this);
 
-        LeaderboardTracker tracker = LeaderboardTracker.of(owner.getScoreboard());
+        LeaderboardManager tracker = LeaderboardManager.of(owner.getScoreboard());
         tracker.record(owner, fish);
         tracker.record(owner, this, tracker.highestLevel);
     }
@@ -251,7 +251,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
             return;
         }
         this.credit += credit;
-        LeaderboardTracker tracker = LeaderboardTracker.of(this.owner().getWorld().getScoreboard());
+        LeaderboardManager tracker = LeaderboardManager.of(this.owner().getWorld().getScoreboard());
         tracker.record(owner, this, tracker.highestCredit);
     }
 

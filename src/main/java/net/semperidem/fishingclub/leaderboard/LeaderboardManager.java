@@ -6,20 +6,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-import net.semperidem.fishingclub.FishingClub;
 import net.semperidem.fishingclub.fish.specimen.SpecimenData;
 import net.semperidem.fishingclub.fisher.Card;
 import net.semperidem.fishingclub.registry.Components;
 import org.ladysnake.cca.api.v3.component.Component;
-import org.ladysnake.cca.api.v3.component.ComponentKey;
-import org.ladysnake.cca.api.v3.component.ComponentRegistry;
-import org.ladysnake.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 
-public class LeaderboardTracker implements Component {
+public class LeaderboardManager implements Component {
     public static final String TAG_KEY = "leaderboard";
-    private final Scoreboard scoreboard;
 
     private static final float DISCOUNT_PER_TITLE = 0.1f;
     public final Leaderboard<SpecimenData> bestWeight;
@@ -29,8 +23,7 @@ public class LeaderboardTracker implements Component {
     public final Leaderboard<Card> highestCredit;
     public final Leaderboard<Card> highestLevel;
 
-    public LeaderboardTracker(Scoreboard scoreboard) {
-        this.scoreboard = scoreboard;
+    public LeaderboardManager() {
         this.bestWeight = new Leaderboard<>("weight+", Text.literal("§lHeaviest Fish"), "kg", false, SpecimenData::weight);
         this.worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, SpecimenData::weight);
         this.bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, SpecimenData::length);
@@ -92,8 +85,8 @@ public class LeaderboardTracker implements Component {
     private static final long DAILY = HOURLY * 24;
     private static final long WEEKLY = DAILY * 7;//TODO IMPLEMENT TIMED LEADERBOARDS
 
-    public static LeaderboardTracker of(Scoreboard scoreboard) {
-        return Components.LEADERBOARD_TRACKER.get(scoreboard);
+    public static LeaderboardManager of(Scoreboard scoreboard) {
+        return Components.LEADERBOARDS.get(scoreboard);
     }
 
     @Override

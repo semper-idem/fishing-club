@@ -31,7 +31,7 @@ public class SpecimenComponent extends AbstractSpecimenComponent {
 
     @Override
     public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
-        initIfEmpty();
+        initIfEmpty();//unsure about this
         super.writeToNbt(tag, registryLookup);
     }
 
