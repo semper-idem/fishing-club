@@ -190,8 +190,8 @@ public class Components implements
 
     @Override
     public void registerScoreboardComponentFactories(ScoreboardComponentFactoryRegistry registry) {
-        registry.registerScoreboardComponent(FISHING_KING, FishingKing::new);
-        registry.registerScoreboardComponent(LEADERBOARDS, (Scoreboard scoreboard, @Nullable MinecraftServer server) -> new LeaderboardManager());
+        registry.registerScoreboardComponent(FISHING_KING, (scoreboard, server) -> new FishingKing(scoreboard));
+        registry.registerScoreboardComponent(LEADERBOARDS, (scoreboard,  server) -> new LeaderboardManager());
     }
 
     @Override

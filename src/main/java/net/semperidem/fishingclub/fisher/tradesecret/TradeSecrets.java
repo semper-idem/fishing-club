@@ -27,6 +27,7 @@ public class TradeSecrets {
     public static TradeSecret FIRST_CATCH_BUFF_QUALITY;
     public static TradeSecret FIRST_CATCH_BUFF_CATCH_RATE;
     public static TradeSecret CHANGE_OF_SCENERY;
+    public static TradeSecret PLACE_IN_MY_HEART;
     public static TradeSecret INSTANT_FISH_CREDIT;
     public static TradeSecret BOMB_FISHING;
     public static TradeSecret FISHING_SCHOOL;
@@ -41,6 +42,7 @@ public class TradeSecrets {
     public static TradeSecret MAGIC_ROD_SUMMON;
     public static TradeSecret FISHER_ZEAL;
     public static TradeSecret FISHER_SENSE;
+    //TODO Chain hook
 
     public static void register() {
         BOBBER_THROW_CHARGE = TradeSecret.builder()
@@ -112,6 +114,14 @@ public class TradeSecrets {
                             },
                         72000)
                 .build();
+        /*
+         * TODO
+         * Increase xp of first catch,
+         * Add base so we prevent super unluck,
+         * Add timed xp buff status effect
+         *
+         *
+         * */
 
         FIRST_CATCH = TradeSecret.builder()
                 .name("first_catch")
@@ -136,10 +146,15 @@ public class TradeSecrets {
                 .costPerLevel(2)
                 .build();
 
+        PLACE_IN_MY_HEART = TradeSecret.builder()
+                .name("place_in_my_heart")
+                .costPerLevel(1,1,1)
+                .build();
+
         INSTANT_FISH_CREDIT = TradeSecret.builder()
                 .name("instant_fish_credit")
                 .levelValues(0.5f, 0.625f, 0.75f, 0.875f, 1f)
-                .require(FISH_WHISPERER)
+                .require(PLACE_IN_MY_HEART)
                 .costPerLevel(1, 2, 3, 4, 5)
                 .build();
 

@@ -1,5 +1,6 @@
 package net.semperidem.fishingclub.fisher;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public final class Card extends CardInventory implements AutoSyncedComponent{
@@ -280,6 +283,31 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
     public boolean shouldSyncWith(ServerPlayerEntity player) {
         return player == this.owner;
     }
+    //TODO LANG
+    private static final Map<Integer, Text> MIN_LEVEL_TO_TITLE = new ImmutableMap.Builder<Integer, Text>()
+            .put(0, Text.of("Casual"))
+            .put(10, Text.of("Novice"))
+            .put(20, Text.of("Beginner"))
+            .put(30, Text.of("Competent"))
+            .put(40, Text.of("Respected"))
+            .put(50, Text.of("Skillful"))
+            .put(100, Text.of("Expert"))
+            .put(250, Text.of("Master"))
+            .put(500, Text.of("Grandmaster"))
+            .put(1000, Text.of("Ol'stinker"))
+            .build();
+
+    public Text getTitle() {
+        return MIN_LEVEL_TO_TITLE
+                .keySet()
+                .stream()
+                .sorted((a, b) -> b - a)
+                .filter(titleLevel -> getLevel() >= titleLevel)
+                .findFirst()
+                .map(MIN_LEVEL_TO_TITLE::get)
+                .orElse(Text.empty());
+    }
+
 
     //Message in bottle
     public void hearMessage() {

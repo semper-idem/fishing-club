@@ -68,8 +68,13 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
                 SCREEN_WIDTH,
                 SCREEN_HEIGHT
         );
-        this.currentTab.render(context, mouseX, mouseY);
     }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        super.render(context, mouseX, mouseY, deltaTicks);
+        this.currentTab.render(context, mouseX, mouseY);
+     }
 
     class SecretTab extends Tab {
 
@@ -124,12 +129,14 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
     class StatsTab extends Tab{
         Text level;
+        int iLevel;
         Text issuedText;
         Text issuedDate;
         float xpProgress;
         Text playerName;
         Text title;
         boolean isKing;
+        int slotsUnlocked;
 
         StatsTab() {
             super(CardScreenHandler.Tab.STATS);
@@ -138,13 +145,15 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
         @Override
         void initTab() {
             Card card = getScreenHandler().card;
-            level = Text.of(String.valueOf(card.getLevel()));
+            iLevel = card.getLevel();
+            level = Text.of(String.valueOf(iLevel));
             xpProgress = card.getExpProgress();
             playerName = card.owner().getName();
             issuedText = Text.of("Issued:");//todo lang
             issuedDate = Text.of(card.getIssuedDate());
-            title = Text.of("Master");//todo get dynamic and lang
+            title = card.getTitle();
             isKing = card.isKing();
+            slotsUnlocked = card.tradeSecretLevel(TradeSecrets.PLACE_IN_MY_HEART);
             addDrawableChild(
                     new SellButtonWidget(
                             x + 118,
@@ -175,19 +184,22 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
             draw(context, x + 32, y + 9, 178, 0, (int) (135 * xpProgress), 5);
             drawText(context, playerName, x + 33, y + 18, textColor, 0.75f);
+            drawText(context, title, x + 33, y + 25, 0x8c1991, 0.5f);
 
             if (isKing) {
                 draw(context, (int) (x + 34 + textRenderer.getWidth(playerName) * 0.75f), y + 17, 178, 68, 10, 6);
             }
-            drawText(context, title, x + 33, y + 25, 0x8c1991, 0.5f);
+
             drawText(context, issuedText, x + 11, y + 64, textColor, 0.5f);
             drawText(context, issuedDate, x + 11, y + 69, textColor, 0.75f);
 
-            drawText(context, level, x + 96, y + 9, 0);
-            drawText(context, level, x + 98, y + 9, 0);
-            drawText(context, level, x + 97, y + 10, 0);
-            drawText(context, level, x + 97, y + 8, 0);
-            drawText(context, level, x + 97, y + 9, 8453921);
+            int levelX = (int) (x + (iLevel > 99 ? 19 : 20) - textRenderer.getWidth(level) * 0.5f);
+            int levelY = y + 27;
+            drawText(context, level, levelX - 1, levelY, 0);
+            drawText(context, level, levelX + 1, levelY, 0);
+            drawText(context, level, levelX, levelY - 1, 0);
+            drawText(context, level, levelX, levelY + 1, 0);
+            drawText(context, level, levelX, levelY, 8453921);
 
 
             int credit = getScreenHandler().card.getCredit();
@@ -196,12 +208,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             int stage = MathHelper.clamp(String.valueOf(credit).length() * 2 - 1, 0, 8);
             context.drawTexture(RenderLayer::getGuiTextured, SCALES_TEXTURE, x + 140 - creditOffset - 20,y + 60,0, stage * 16, 16,16, 16, 256);
             drawText(context, Text.of(String.valueOf(getScreenHandler().card.getCredit())), x + 140 - creditOffset, y + 66, scalesColor, 1f);
-            //Name
-            //Title
-            //Xp
-            //Credit
+
 
         }
+
 
         class SellButtonWidget extends ButtonWidget{
             int level;
@@ -215,6 +225,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             @Override
             protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
                 if (this.level == 0) {
+                    context.fill(x + 128, y + 18, x + 146, y + 36, 0xAA000000);
                     return;
                 }
                 draw(context,

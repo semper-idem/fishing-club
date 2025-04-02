@@ -59,15 +59,28 @@ public class CardScreenHandler extends ScreenHandler {
     }
 
     private void addCardInventory() {
-        this.addSlot(new TagSlot(Tags.CORE, Tab.STATS, card, 0, 148, 19));
-        this.addSlot(new TagSlot(Tags.CONTAINER, Tab.STATS, card, 1, 148, 38));
-        this.addSlot(new TagSlot(ItemTags.BOATS, Tab.STATS, card, 2, 148, 57));
+        this.addSlot(new LeveledSecretSlot(1, TradeSecrets.PLACE_IN_MY_HEART, Tags.CORE, Tab.STATS, card, 0, 148, 19));
+        this.addSlot(new LeveledSecretSlot(2, TradeSecrets.PLACE_IN_MY_HEART, Tags.CONTAINER, Tab.STATS, card, 1, 148, 38));
+        this.addSlot(new LeveledSecretSlot(3, TradeSecrets.PLACE_IN_MY_HEART, ItemTags.BOATS, Tab.STATS, card, 2, 148, 57));
         this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 3, 129, 19));
     }
 
+    class LeveledSecretSlot extends SecretSlot {
+        int requiredLevel;
+
+        public LeveledSecretSlot(int requiredLevel, TradeSecret enabledSecret, TagKey<Item> enabledTag, Tab enabledTab, Inventory inventory, int index, int x, int y) {
+            super(enabledSecret, enabledTag, enabledTab, inventory, index, x, y);
+            this.requiredLevel = requiredLevel;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return card.tradeSecretLevel(enabledSecret) >= requiredLevel && super.isEnabled();
+        }
+    }
 
     class SecretSlot extends TagSlot {
-        private final TradeSecret enabledSecret;
+        final TradeSecret enabledSecret;
 
         public SecretSlot(TradeSecret enabledSecret, TagKey<Item> enabledTag, Tab enabledTab, Inventory inventory, int index, int x, int y) {
             super(enabledTag, enabledTab, inventory, index, x, y);

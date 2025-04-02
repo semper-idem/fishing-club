@@ -39,7 +39,6 @@ public final class FishingKing implements AutoSyncedComponent {
     private static final int REFRESH_TICK_RATE = 200;
 
     private final Scoreboard scoreboard;
-    private final ServerWorld serverWorld;
     private final ScoreboardObjective objective;
 
     private int refreshTick = 0;
@@ -50,9 +49,8 @@ public final class FishingKing implements AutoSyncedComponent {
     private long timestamp = 0;
 
 
-    public FishingKing(Scoreboard scoreboard, MinecraftServer server) {
+    public FishingKing(Scoreboard scoreboard) {
         this.scoreboard = scoreboard;
-        this.serverWorld = server.getOverworld();
         ScoreboardObjective existingObjective = this.scoreboard.getNullableObjective(TAG_KEY);
         this.objective = existingObjective != null ? existingObjective : this.scoreboard.addObjective(
                 TAG_KEY,
@@ -119,19 +117,16 @@ public final class FishingKing implements AutoSyncedComponent {
         }
 
         card.addCredit(-amount);
-        int currentReign = (int) (this.getCurrentReign() / 1200);
+        ServerWorld serverWorld = claimedBy.getServerWorld();
+        int currentReign = (int) ((serverWorld.getTime() - this.timestamp) / 1200);
         this.scoreboard.getOrCreateScore(ScoreHolder.fromName(this.name), this.objective).incrementScore(currentReign);//1 for each minute
         this.price = (int) (amount * PRICE_MULTIPLIER);
         this.uuid = claimedBy.getUuid();
         this.name = claimedBy.getNameForScoreboard();
 
         LevelUpEffect.RARE_EFFECT.execute(claimedBy.getServerWorld(), claimedBy.getX(), claimedBy.getY(), claimedBy.getZ());//todo add unique effect
-        this.serverWorld.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessageToClient(Text.literal(this.name).append(CLAIM_TEXT), true));
+        serverWorld.getPlayers().forEach(serverPlayerEntity -> serverPlayerEntity.sendMessageToClient(Text.literal(this.name).append(CLAIM_TEXT), true));
         Components.FISHING_KING.sync(this.scoreboard);
-    }
-
-    public long getCurrentReign() {
-        return this.serverWorld.getTime() - this.timestamp;
     }
 
     public void tick(ServerPlayerEntity playerEntity) {
