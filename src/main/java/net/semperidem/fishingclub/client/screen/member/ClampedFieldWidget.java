@@ -57,7 +57,7 @@ public class ClampedFieldWidget extends TextFieldWidget {
     }
 
     private int getMaxAmount() {
-        return parent.getScreenHandler().getCard().getCredit();
+        return parent.getScreenHandler().getCard().getGS();
     }
 
     private void validateAmount() {

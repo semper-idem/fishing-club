@@ -16,29 +16,17 @@ public class CardInventory implements Inventory{
     public static final int SLOT_COUNT = 5;
     private static final int SHARED_BAIT_SLOT = 4;
     DefaultedList<ItemStack> inventory = DefaultedList.ofSize (SLOT_COUNT, ItemStack.EMPTY);
-    int credit = 0;
+    int goldenScales = 0;
 
     private static final String CREDIT_TAG = "credit";
     private static final String BAIT_TAG = "bait";
 
-    public int getCredit(){
-        return credit;
+    public int getGS(){
+        return goldenScales;
     }
 
-    public void setCredit(int credit) {
-        this.credit = credit;
-    }
-
-    void sell() {
-        for(int i = 0; i < SLOT_COUNT; i++) {
-            ItemStack inventoryStack = inventory.get(i);
-            if (!inventoryStack.isIn(Tags.FISH_ITEM)) {
-                continue;
-            }
-            credit += (inventoryStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value() * inventoryStack.getCount());
-            inventoryStack.setCount(0);
-            return;
-        }
+    public void setGoldenScales(int goldenScales) {
+        this.goldenScales = goldenScales;
     }
 
     public ItemStack getSharedBait(){
@@ -117,12 +105,12 @@ public class CardInventory implements Inventory{
 
     public void writeNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         Inventories.writeNbt(tag, inventory, wrapperLookup);
-        tag.putInt(CREDIT_TAG, credit);
+        tag.putInt(CREDIT_TAG, goldenScales);
     }
 
     public void readNbt(NbtCompound tag, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (tag.contains(CREDIT_TAG)) {
-            credit = tag.getInt(CREDIT_TAG, 0);
+            goldenScales = tag.getInt(CREDIT_TAG, 0);
         }
         if (tag.contains("Items")) {
             Inventories.readNbt(tag, inventory, wrapperLookup);

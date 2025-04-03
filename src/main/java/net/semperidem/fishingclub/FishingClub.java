@@ -1,6 +1,7 @@
 package net.semperidem.fishingclub;
 
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.Identifier;
 import net.semperidem.fishingclub.registry.Registry;
 import net.semperidem.fishingclub.util.Commands;
@@ -11,6 +12,7 @@ public class FishingClub implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        SharedConstants.isDevelopment = true;
         Commands.register();
         Registry.register();
         ResourceUtil.loadMessageInBottle();

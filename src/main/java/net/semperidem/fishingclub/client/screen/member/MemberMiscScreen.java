@@ -93,7 +93,7 @@ public class MemberMiscScreen extends MemberSubScreen {
                 ClientPlayNetworking.send(new TitleClaimPayload(claimAmount));
             }
         }, () -> claimField.getValidAmount() >= parent.getScreenHandler().getMinCapePrice() &&
-                parent.getScreenHandler().getCard().getCredit() > parent.getScreenHandler().getMinCapePrice());
+                parent.getScreenHandler().getCard().getGS() > parent.getScreenHandler().getMinCapePrice());
         components.add(resetPerksButton);
         components.add(claimField);
         components.add(submitClaimButton);

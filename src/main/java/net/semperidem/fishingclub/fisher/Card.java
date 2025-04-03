@@ -19,11 +19,11 @@ import net.semperidem.fishingclub.fisher.managers.*;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.leaderboard.LeaderboardManager;
 import net.semperidem.fishingclub.registry.Components;
+import net.semperidem.fishingclub.registry.Tags;
 import org.jetbrains.annotations.Nullable;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public final class Card extends CardInventory implements AutoSyncedComponent{
@@ -49,10 +49,6 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
         return this.random;
     }
 
-    public void sell() {
-        super.sell();
-        sync();
-    }
     @Override
     public void setSharedBait(ItemStack baitToShare) {
         super.setSharedBait(baitToShare);
@@ -129,7 +125,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
     }
 
     public boolean canResetPerks() {
-        return getResetCost() <= getCredit() && !progression.getKnownTradeSecrets().isEmpty();
+        return getResetCost() <= getGS() && !progression.getKnownTradeSecrets().isEmpty();
     }
 
     public int getResetCost() {
@@ -249,11 +245,26 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
         linking.linkTarget(target);
     }
 
-    public void addCredit(int credit) {
-        if (this.credit + credit < 0) {
+    public void sell() {
+        for(int i = 0; i < SLOT_COUNT; i++) {
+            ItemStack inventoryStack = inventory.get(i);
+            if (!inventoryStack.isIn(Tags.FISH_ITEM)) {
+                continue;
+            }
+            goldenScales += (inventoryStack.getOrDefault(Components.SPECIMEN_DATA, SpecimenData.DEFAULT).value() * inventoryStack.getCount());
+            inventoryStack.setCount(0);
+            break;
+        }
+        sync();
+    }
+
+    public void addGS(int amount) {
+        if (this.goldenScales + amount < 0) {
             return;
         }
-        this.credit += credit;
+        this.goldenScales += amount;
+        sync();
+
         LeaderboardManager tracker = LeaderboardManager.of(this.owner().getWorld().getScoreboard());
         tracker.record(owner, this, tracker.highestCredit);
     }

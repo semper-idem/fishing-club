@@ -22,11 +22,11 @@ public record CoinFlipPayload(int amount) implements CustomPayload {
             return;
         }
         Card card = Card.of(context.player());
-        if (payload.amount > card.getCredit()) {
+        if (payload.amount > card.getGS()) {
             return;
         }
         int resultAmount = payload.amount * Math.random() <= 0.49 ? 1 : -1;
-        card.addCredit(resultAmount);
+        card.addGS(resultAmount);
         ServerPlayNetworking.send(context.player(), new CoinFlipResultPayload(resultAmount));
         //ServerPacketSender.sendCardUpdate(player, fishingCard);
     }

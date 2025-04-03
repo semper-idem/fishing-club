@@ -115,7 +115,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            Card.of(target).addCredit(amount);
+            Card.of(target).addGS(amount);
             context.getSource().sendMessage(Text.literal("Added " + amount + " to self credit"));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));
@@ -127,7 +127,7 @@ public class Commands {
         ServerPlayerEntity target = context.getSource().getServer().getPlayerManager().getPlayer(targetName);
         if (target != null) {
             int amount = getInteger(context, "amount");
-            Card.of(target).setCredit(amount);
+            Card.of(target).setGoldenScales(amount);
             context.getSource().sendMessage(Text.literal("Set available credit of " + targetName + " to " + amount));
         } else {
             context.getSource().sendMessage(Text.literal("Player " + targetName + " not found"));

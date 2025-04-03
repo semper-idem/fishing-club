@@ -1,10 +1,8 @@
 package net.semperidem.fishingclub.item;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -37,7 +35,7 @@ public class FishCoinBundleItem extends Item {
         ItemStack bundleStack = user.getStackInHand(hand);
         int value = bundleStack.getOrDefault(Components.COIN, 1);
         if (!user.getWorld().isClient) {
-            Card.of(user).addCredit(value);
+            Card.of(user).addGS(value);
         } else {
             user.sendMessage(Text.of("Added: " + value + " fish credit"), false);
         }

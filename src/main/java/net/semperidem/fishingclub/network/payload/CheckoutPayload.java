@@ -42,10 +42,10 @@ public record CheckoutPayload(List<OrderItem> cart) implements CustomPayload {
             total += (int) itemPrice;
         }
         Card card = Card.of(context.player());
-        if (card.getCredit() < total) {
+        if (card.getGS() < total) {
             return;
         }
-        card.addCredit(-total);
+        card.addGS(-total);
         for (OrderItem item : payload.cart) {
             if (item.content().isEmpty()) {
                 continue;

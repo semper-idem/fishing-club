@@ -28,7 +28,7 @@ public class LeaderboardManager implements Component {
         this.worstWeight = new Leaderboard<>("weight-", Text.literal("§lLightest Fish"), "kg", true, SpecimenData::weight);
         this.bestLength = new Leaderboard<>("length+", Text.literal("§lLongest Fish"), "cm", false, SpecimenData::length);
         this.worstLength = new Leaderboard<>("length-", Text.literal("§lShortest Fish"), "cm", true, SpecimenData::length);
-        this.highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getCredit());
+        this.highestCredit = new Leaderboard<>("_credit+", Text.literal("§lMost Credit"), "$", false, card -> (float) card.getGS());
         this.highestLevel = new Leaderboard<>("_level+", Text.literal("§lHighest Level"), "", false, card -> (float) card.getLevel());
     }
 

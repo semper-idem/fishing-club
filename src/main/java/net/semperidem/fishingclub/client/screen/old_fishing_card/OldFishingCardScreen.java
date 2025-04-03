@@ -78,7 +78,7 @@ public class OldFishingCardScreen extends HandledScreen<OldFishingCardScreenHand
         name = MinecraftClient.getInstance().player.getName().getString();
         level = String.valueOf(handler.card.getLevel());
         exp = handler.card.getExp() + "/" + handler.card.nextLevelXP();
-        credit = String.valueOf(handler.card.getCredit());
+        credit = String.valueOf(handler.card.getGS());
         perkPoints = String.valueOf(handler.card.getPerkPoints());
     }
 

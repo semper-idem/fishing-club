@@ -52,7 +52,7 @@ public class LevelReward {
         int resultAmount = amount == null ? 1 : amount.get(fisherLevel);
         switch (rewardType) {
             case ITEM -> card.addUnclaimedReward(grantItemReward(resultAmount));
-            case CREDIT -> card.addCredit(resultAmount);
+            case CREDIT -> card.addGS(resultAmount);
             case SKILL_POINT -> card.addSkillPoints(resultAmount);
             case BOX -> card.addUnclaimedReward(grantBoxReward(fisherLevel));
             case EFFECT -> executeEffect(card);

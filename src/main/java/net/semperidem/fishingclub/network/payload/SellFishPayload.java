@@ -34,6 +34,6 @@ public record SellFishPayload(List<ItemStack> fish) implements CustomPayload {
             fishStack.setCount(0);
         }
         Card card = Card.of(context.player());
-        card.addCredit(totalValue);
+        card.addGS(totalValue);
     }
 }

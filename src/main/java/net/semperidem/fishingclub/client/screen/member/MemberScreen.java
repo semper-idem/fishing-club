@@ -9,7 +9,6 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.semperidem.fishingclub.FishingClub;
-import net.semperidem.fishingclub.client.screen.PlayerFaceIcon;
 import net.semperidem.fishingclub.client.screen.Texture;
 import net.semperidem.fishingclub.screen.member.MemberScreenHandler;
 import net.semperidem.fishingclub.util.TextUtil;
@@ -115,7 +114,7 @@ public class MemberScreen extends HandledScreen<MemberScreenHandler> implements 
     }
     @Override
     protected void handledScreenTick() {
-        this.creditValue = Text.literal(getScreenHandler().getCard().getCredit() + "$");
+        this.creditValue = Text.literal(getScreenHandler().getCard().getGS() + "$");
         currentView.handledScreenTick();
     }
 

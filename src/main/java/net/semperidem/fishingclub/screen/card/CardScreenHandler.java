@@ -60,6 +60,8 @@ public class CardScreenHandler extends ScreenHandler {
         return !this.sellSlot.hasStack();
     }
 
+
+    //TODO Add sounds on equip, un-equip and sell
     private void addCardInventory() {
         this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 0, 129, 19));
         this.addSlot(new LeveledSecretSlot(3, TradeSecrets.PLACE_IN_MY_HEART, ItemTags.BOATS, Tab.STATS, card, 1, 148, 57));

@@ -10,7 +10,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.number.BlankNumberFormat;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -111,12 +110,12 @@ public final class FishingKing implements AutoSyncedComponent {
             return;
         }
         Card card = Card.of(claimedBy);
-        int availableCredit = card.getCredit();
+        int availableCredit = card.getGS();
         if (availableCredit < this.price || amount < this.price) {
             return;
         }
 
-        card.addCredit(-amount);
+        card.addGS(-amount);
         ServerWorld serverWorld = claimedBy.getServerWorld();
         int currentReign = (int) ((serverWorld.getTime() - this.timestamp) / 1200);
         this.scoreboard.getOrCreateScore(ScoreHolder.fromName(this.name), this.objective).incrementScore(currentReign);//1 for each minute
