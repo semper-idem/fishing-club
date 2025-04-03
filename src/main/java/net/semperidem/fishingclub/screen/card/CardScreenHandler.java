@@ -11,6 +11,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.semperidem.fishingclub.fisher.Card;
+import net.semperidem.fishingclub.fisher.CardInventory;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecret;
 import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.network.payload.CardSellFishPayload;
@@ -33,14 +34,15 @@ public class CardScreenHandler extends ScreenHandler {
     private Tab currentTab;
     public final Card card;
     private final PlayerInventory inventory;
+    private static final int CARD_SLOTS = CardInventory.SLOT_COUNT - 1;
     private Slot sellSlot;
 
     public CardScreenHandler(int syncId, PlayerInventory inventory) {
         super(ScreenHandlers.CARD, syncId);
         this.card = Card.of(inventory.player);
         this.inventory = inventory;
-        addPlayerInventorySlots();
         addCardInventory();
+        addPlayerInventorySlots();
     }
 
     public void setCurrentTab(Tab tab){
@@ -59,10 +61,10 @@ public class CardScreenHandler extends ScreenHandler {
     }
 
     private void addCardInventory() {
-        this.addSlot(new LeveledSecretSlot(1, TradeSecrets.PLACE_IN_MY_HEART, Tags.CORE, Tab.STATS, card, 0, 148, 19));
-        this.addSlot(new LeveledSecretSlot(2, TradeSecrets.PLACE_IN_MY_HEART, Tags.CONTAINER, Tab.STATS, card, 1, 148, 38));
-        this.addSlot(new LeveledSecretSlot(3, TradeSecrets.PLACE_IN_MY_HEART, ItemTags.BOATS, Tab.STATS, card, 2, 148, 57));
-        this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 3, 129, 19));
+        this.sellSlot = this.addSlot(new SecretSlot(TradeSecrets.INSTANT_FISH_CREDIT, Tags.FISH_ITEM, Tab.STATS, card, 0, 129, 19));
+        this.addSlot(new LeveledSecretSlot(3, TradeSecrets.PLACE_IN_MY_HEART, ItemTags.BOATS, Tab.STATS, card, 1, 148, 57));
+        this.addSlot(new LeveledSecretSlot(2, TradeSecrets.PLACE_IN_MY_HEART, Tags.CONTAINER, Tab.STATS, card, 2, 148, 38));
+        this.addSlot(new LeveledSecretSlot(1, TradeSecrets.PLACE_IN_MY_HEART, Tags.CORE, Tab.STATS, card, 3, 148, 19));
     }
 
     class LeveledSecretSlot extends SecretSlot {
@@ -148,16 +150,31 @@ public class CardScreenHandler extends ScreenHandler {
                     HOTBAR_Y_START
             )
             );
-        }}
+        }
+    }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMove(PlayerEntity player, int slotId) {
+        Slot slot = this.slots.get(slotId);
+        if (!slot.hasStack()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack slotStack = slot.getStack();
 
-        //TODO
-        //If from player inventory - Try to fill slot or else nothing
-        //If from card inventory - try to put into player inventory or else do nothing
+        if (slotId >= CARD_SLOTS && this.insertItem(slotStack, 0, CARD_SLOTS, false)) {
+                return ItemStack.EMPTY;
+        }
+        if (slotId < CARD_SLOTS && this.insertItem(slotStack, CARD_SLOTS, this.slots.size(), true)) {
+            return ItemStack.EMPTY;
+        }
 
-        return null;
+        if (slotStack.isEmpty()) {
+            slot.setStack(ItemStack.EMPTY, slotStack);
+            return ItemStack.EMPTY;
+        }
+
+        slot.markDirty();
+        return ItemStack.EMPTY;
     }
 
     @Override

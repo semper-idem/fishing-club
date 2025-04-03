@@ -32,10 +32,6 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
     private Tab currentTab;
     private final ArrayList<Tab> tabs = new ArrayList<>();
-    private final StatsTab statsTab = new StatsTab();
-    private final SecretTab secretsTab = new SecretTab();
-    private final AtlasTab atlasTab = new AtlasTab();
-    private final LeaderboardTab leaderboardTab = new LeaderboardTab();
 
     private final Identifier playerTexture;
 
@@ -43,7 +39,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
 
     public CardScreen(CardScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.currentTab = statsTab;
+        this.currentTab = new StatsTab();
+        new SecretTab();
+        new AtlasTab();
+        new LeaderboardTab();
         this.playerTexture = ((ClientPlayerEntity)inventory.player).getSkinTextures().texture();
     }
     @Override
@@ -179,9 +178,9 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             context.drawText(textRenderer, text, (int) (x / scale), (int) (y / scale), color, false);
             context.getMatrices().pop();
         }
+
         @Override
         void render(DrawContext context, int mouseX, int mouseY) {
-
             draw(context, x + 32, y + 9, 178, 0, (int) (135 * xpProgress), 5);
             drawText(context, playerName, x + 33, y + 18, textColor, 0.75f);
             drawText(context, title, x + 33, y + 25, 0x8c1991, 0.5f);
@@ -209,7 +208,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler> implements Scre
             context.drawTexture(RenderLayer::getGuiTextured, SCALES_TEXTURE, x + 140 - creditOffset - 20,y + 60,0, stage * 16, 16,16, 16, 256);
             drawText(context, Text.of(String.valueOf(getScreenHandler().card.getCredit())), x + 140 - creditOffset, y + 66, scalesColor, 1f);
 
-
+            for(int i = 0; i < 3 - slotsUnlocked; i++) {
+                int coverY = y + 18  + i * 19 ;
+                context.fill(x + 147, coverY, x + 165, coverY + 18, 0xAA000000);
+            }
         }
 
 
