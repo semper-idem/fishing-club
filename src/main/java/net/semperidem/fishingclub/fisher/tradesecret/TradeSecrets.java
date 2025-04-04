@@ -16,13 +16,13 @@ public class TradeSecrets {
     public static TradeSecret BOBBER_THROW_CHARGE;
     public static TradeSecret FISH_WHISPERER;
     public static TradeSecret FISH_QUANTITY;
-    public static TradeSecret BOBBER_SIZE_BOAT;//todo add open water check on all boat perks
-    public static TradeSecret FISH_QUANTITY_BOAT;
-    public static TradeSecret LINE_HEALTH_BOAT;
-    public static TradeSecret TREASURE_CHANCE_BOAT;
-    public static TradeSecret CATCH_RATE_RAIN;
-    public static TradeSecret FISH_QUALITY_RAIN;
-    public static TradeSecret SUMMON_RAIN;
+    public static TradeSecret BOAT_BOBBER_SIZE;//todo add open water check on all boat perks
+    public static TradeSecret BOAT_FISH_QUANTITY;
+    public static TradeSecret BOAT_LINE_HEALTH;
+    public static TradeSecret BOAT_LUCK;
+    public static TradeSecret RAIN_CATCH_RATE;
+    public static TradeSecret RAIN_FISH_QUALITY;
+    public static TradeSecret RAIN_SUMMON;
     public static TradeSecret FIRST_CATCH;
     public static TradeSecret FIRST_CATCH_BUFF_QUALITY;
     public static TradeSecret FIRST_CATCH_BUFF_CATCH_RATE;
@@ -30,16 +30,16 @@ public class TradeSecrets {
     public static TradeSecret PLACE_IN_MY_HEART;
     public static TradeSecret INSTANT_FISH_CREDIT;
     public static TradeSecret BOMB_FISHING;
-    public static TradeSecret FISHING_SCHOOL;
-    public static TradeSecret SLOWER_FISH;
-    public static TradeSecret EXPERIENCE_BOOST;
-    public static TradeSecret LUCKY_FISHING;
-    public static TradeSecret PASSIVE_FISHING_XP_BUFF;
-    public static TradeSecret WATCH_AND_LEARN;
-    public static TradeSecret QUALITY_CELEBRATION;
-    public static TradeSecret FISHERMAN_LINK;
-    public static TradeSecret FISHERMAN_SUMMON;
-    public static TradeSecret MAGIC_ROD_SUMMON;
+    public static TradeSecret BUFF_BOBBER_SIZE;
+    public static TradeSecret BUFF_FISH_SPEED;
+    public static TradeSecret BUFF_EXP;
+    public static TradeSecret BUFF_LUCK;
+    public static TradeSecret PASSIVE_EXP;
+    public static TradeSecret SHARE_EXP;
+    public static TradeSecret SHARE_QUALITY;
+    public static TradeSecret LINK;
+    public static TradeSecret LINK_SUMMON;
+    public static TradeSecret ROD_SUMMON;
     public static TradeSecret FISHER_ZEAL;
     public static TradeSecret FISHER_SENSE;
     //TODO Chain hook
@@ -59,49 +59,48 @@ public class TradeSecrets {
                 .levelValues(0.05f, 0.1f, 0.2f)
                 .build();
 
-        LINE_HEALTH_BOAT = TradeSecret.builder()
-                .name("line_health_boat")
+        BOAT_LINE_HEALTH = TradeSecret.builder()
+                .name("boat_line_health")
                 .levelValues(2, 3, 4)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
-        BOBBER_SIZE_BOAT = TradeSecret.builder()
-                .name("bobber_size_boat")
+        BOAT_BOBBER_SIZE = TradeSecret.builder()
+                .name("boat_bobber_size")
                 .levelValues(0.05f, 0.1f, 0.2f)
-                .require(LINE_HEALTH_BOAT)
+                .require(BOAT_LINE_HEALTH)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
-        FISH_QUANTITY_BOAT = TradeSecret.builder()
-                .name("fish_quantity_boat")
+        BOAT_FISH_QUANTITY = TradeSecret.builder()
+                .name("boat_fish_quantity")
                 .levelValues(0.05f, 0.1f, 0.2f)
-                .require(BOBBER_SIZE_BOAT)
+                .require(BOAT_BOBBER_SIZE)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
-        TREASURE_CHANCE_BOAT = TradeSecret.builder()
-                .name("treasure_chance_boat")
+        BOAT_LUCK = TradeSecret.builder()
+                .name("boat_luck")
                 .levelValues(0.15f, 0.25f, 0.45f, 0.65f ,1f)
                 .costPerLevel(2, 2 ,2, 2, 3)
-                .require(FISH_QUANTITY_BOAT)
+                .require(BOAT_FISH_QUANTITY)
                 .conditional(TradeSecret.REQUIRES_BOAT)
                 .build();
 
-        CATCH_RATE_RAIN = TradeSecret.builder()
-                .name("catch_rate_rain")
+        RAIN_CATCH_RATE = TradeSecret.builder()
+                .name("rain_catch_rate")
                 .levelValues(0.25f, 0.5f, 1)
                 .costPerLevel(1,2,3)
                 .conditional(TradeSecret.REQUIRES_RAIN)
                 .build();
-        FISH_QUALITY_RAIN = TradeSecret.builder()
-                .name("fish_quality_rain")
+        RAIN_FISH_QUALITY = TradeSecret.builder()
+                .name("rain_fish_quality")
                 .levelValues(0.25f, 0.5f, 1f)
                 .costPerLevel(1,1,1)
-                .require(CATCH_RATE_RAIN)
+                .require(RAIN_CATCH_RATE)
                 .conditional(TradeSecret.REQUIRES_RAIN)
                 .build();
-        SUMMON_RAIN = TradeSecret.builder().name("rain_summon")
+        RAIN_SUMMON = TradeSecret.builder().name("rain_summon")
                 .levelCooldown(1, 0.875f, 0.75f, 0.675f, 0.5f)
                 .costPerLevel(4, 1, 1, 1, 1)
-                .require(FISH_QUALITY_RAIN)
-                .require(FISH_WHISPERER)
+                .require(RAIN_FISH_QUALITY)
                 .active(
                         (source, target) -> {
                             source.getServerWorld().setWeather(
@@ -127,15 +126,15 @@ public class TradeSecrets {
                 .name("first_catch")
                 .build();
         FIRST_CATCH_BUFF_QUALITY = TradeSecret.builder()
-                .name("quality_increase_first_catch")
+                .name("first_catch_buff_quality")
                 .active(StatusEffects.QUALITY_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2f)
                 .costPerLevel(2,1,1,1,1)
                 .require(FIRST_CATCH)
                 .build();
         FIRST_CATCH_BUFF_CATCH_RATE = TradeSecret.builder()
-                .name("frequent_catch_first_catch")
-                .active(StatusEffects.FREQUENCY_BUFF, 0, 1200)
+                .name("first_catch_buff_catch_rate")
+                .active(StatusEffects.CATCH_RATE_BUFF, 0, 1200)
                 .levelDuration(1, 1.25f, 1.5f, 1.75f, 2)
                 .costPerLevel(2, 1, 1, 1, 1)
                 .require(FIRST_CATCH_BUFF_QUALITY)
@@ -163,47 +162,48 @@ public class TradeSecrets {
                 .costPerLevel(5)
                 .build();
 
-        FISHING_SCHOOL = TradeSecret.builder()
-                .name("fishing_school")
+        BUFF_BOBBER_SIZE = TradeSecret.builder()
+                .name("buff_bobber_size")
                 .levelDuration(1, 1.5f, 2)
-                .active(StatusEffects.BOBBER_BUFF, 24000, 6000)
+                .active(StatusEffects.BOBBER, 24000, 6000)
                 .require(FISH_WHISPERER)
                 .build();
-        SLOWER_FISH = TradeSecret.builder()
-                .name("slower_fish")
+        BUFF_FISH_SPEED = TradeSecret.builder()
+                .name("buff_fish_speed")
                 .levelValues(1, 2, 4)
-                .active(StatusEffects.SLOW_FISH_BUFF, 24000, 6000)
+                .active(StatusEffects.SLOW_FISH, 24000, 6000)
                 .costPerLevel(1, 2, 4)
-                .require(FISHING_SCHOOL)
+                .require(BUFF_BOBBER_SIZE)
                 .build();
-        EXPERIENCE_BOOST = TradeSecret.builder()
-                .name("experience_boost")
+        BUFF_EXP = TradeSecret.builder()
+                .name("buff_exp")
                 .levelValues(0, 1, 4, 9)
-                .active(StatusEffects.EXP_BUFF, 24000, 6000)
+                .active(StatusEffects.EXP, 24000, 6000)
                 .costPerLevel(1,2,3,4)
-                .require(SLOWER_FISH)
+                .require(BUFF_FISH_SPEED)
                 .build();
-        LUCKY_FISHING = TradeSecret.builder()
-                .name("lucky_fishing")
+        BUFF_LUCK = TradeSecret.builder()
+                .name("buff_luck")
                 .levelValues(1, 2, 3)
                 .active(net.minecraft.entity.effect.StatusEffects.LUCK, 24000, 6000)
-                .require(EXPERIENCE_BOOST)
+                .require(BUFF_EXP)
                 .build();
 
-        WATCH_AND_LEARN = TradeSecret.builder()
-                .name("watch_and_learn")
+        SHARE_EXP = TradeSecret.builder()
+                .name("share_exp")
                 .levelValues(0.1f, 0.125f, 0.15f, 0.175f, 0.2f)
                 .build();
-        PASSIVE_FISHING_XP_BUFF = TradeSecret.builder()
-                .name("passive_fishing_xp_buff")
+        PASSIVE_EXP = TradeSecret.builder()
+                .name("passive_exp")
                 .levelValues(0, 1, 4, 9)//spread exp buff with each level up to skill value
                 .costPerLevel(1, 2, 3, 4)
-                .require(WATCH_AND_LEARN)
+                .require(SHARE_EXP)
                 .build();
 
-        MAGIC_ROD_SUMMON = TradeSecret.builder()
-                .name("magic_rod_summon")
+        ROD_SUMMON = TradeSecret.builder()
+                .name("rod_summon")
                 .levelCooldown(1, 0.75f, 0.5f, 0.25f)
+                .require(TradeSecrets.FISH_WHISPERER)
                 .active(
                         (source, target) -> {
                             ItemStack stackInHand = source.getMainHandStack();
@@ -218,8 +218,8 @@ public class TradeSecrets {
                         96000)
                 .build();
 
-        FISHERMAN_LINK = TradeSecret.builder()
-                .name("fisherman_link")
+        LINK = TradeSecret.builder()
+                .name("link")
                 .costPerLevel(1, 3, 9)
                 .require(FISH_WHISPERER)
                 .active(
@@ -230,14 +230,14 @@ public class TradeSecrets {
                         100
                 )
                 .build();
-        QUALITY_CELEBRATION = TradeSecret.builder()
-                .name("quality_celebration")
+        SHARE_QUALITY = TradeSecret.builder()
+                .name("share_quality")
                 .levelDuration(1, 1.5f, 2)
                 .active(StatusEffects.QUALITY_BUFF, 100, 1200)
-                .require(FISHERMAN_LINK)
+                .require(LINK)
                 .build();
-        FISHERMAN_SUMMON = TradeSecret.builder()
-                .name("fisherman_summon")
+        LINK_SUMMON = TradeSecret.builder()
+                .name("link_summon")
                 .levelDuration(1, 0.875f, 0.75f, 0.675f, 0.5f)
                 .costPerLevel(3, 1, 1, 1, 1)
                 .active(
@@ -247,7 +247,7 @@ public class TradeSecrets {
                             },
                         72000
                 )
-                .require(FISHERMAN_LINK)
+                .require(LINK)
                 .build();
 
         FISHER_ZEAL = TradeSecret.builder()

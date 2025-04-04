@@ -115,7 +115,7 @@ private static ItemStack getFishingNet(PlayerEntity player, ItemStack fishStack)
             rewardMultiplier++;
         }
 
-        if (Math.random() < card.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)) {
+        if (Math.random() < card.tradeSecretValue(TradeSecrets.BOAT_FISH_QUANTITY)) {
             rewardMultiplier++;
         }
 

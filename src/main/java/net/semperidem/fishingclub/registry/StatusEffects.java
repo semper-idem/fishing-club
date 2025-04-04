@@ -16,10 +16,10 @@ import static net.semperidem.fishingclub.FishingClub.identifier;
 public class StatusEffects {
     //TODO TREASURE CHANCE BUFF
     public static RegistryEntry<StatusEffect> QUALITY_BUFF;
-    public static RegistryEntry<StatusEffect> FREQUENCY_BUFF ;
-    public static RegistryEntry<StatusEffect> EXP_BUFF;
-    public static RegistryEntry<StatusEffect> SLOW_FISH_BUFF;
-    public static RegistryEntry<StatusEffect> BOBBER_BUFF;
+    public static RegistryEntry<StatusEffect> CATCH_RATE_BUFF;
+    public static RegistryEntry<StatusEffect> EXP;
+    public static RegistryEntry<StatusEffect> SLOW_FISH;
+    public static RegistryEntry<StatusEffect> BOBBER;
     public static RegistryEntry<StatusEffect> MOISTURIZED;
 
 
@@ -29,17 +29,17 @@ public class StatusEffects {
 
     public static void register(){
         QUALITY_BUFF = registerStatusEffect(identifier("quality_buff"), new IncreaseFishQualityStatusEffect());
-        FREQUENCY_BUFF = registerStatusEffect(identifier("frequency_buff"), new IncreaseCatchFrequencyStatusEffect());
-        EXP_BUFF = registerStatusEffect(identifier("exp_buff"), new IncreaseFishingExpStatusEffect());
-        SLOW_FISH_BUFF = registerStatusEffect(identifier("slow_fish_buff"), new DecreaseFishSpeedStatusEffect());
-        BOBBER_BUFF = registerStatusEffect(identifier("bobber_buff"), new IncreaseBobberSizeStatusEffect());
+        CATCH_RATE_BUFF = registerStatusEffect(identifier("frequency_buff"), new IncreaseCatchFrequencyStatusEffect());
+        EXP = registerStatusEffect(identifier("exp_buff"), new IncreaseFishingExpStatusEffect());
+        SLOW_FISH = registerStatusEffect(identifier("slow_fish_buff"), new DecreaseFishSpeedStatusEffect());
+        BOBBER = registerStatusEffect(identifier("bobber_buff"), new IncreaseBobberSizeStatusEffect());
         MOISTURIZED = registerStatusEffect(identifier("moisturized"), new MoisturizedStatusEffect()
             .addAttributeModifier(EntityAttributes.LUCK, Identifier.ofVanilla("effect.luck"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
         );
 
-        FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("fishing_juice"), new Potion("fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 14400, 1)));
-        LONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("long_fishing_juice"), new Potion("long_fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 28800, 1)));
-        STRONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("strong_fishing_juice"), new Potion("string_fishing_juice", new StatusEffectInstance(FREQUENCY_BUFF, 14400, 3)));
+        FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("fishing_juice"), new Potion("fishing_juice", new StatusEffectInstance(CATCH_RATE_BUFF, 14400, 1)));
+        LONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("long_fishing_juice"), new Potion("long_fishing_juice", new StatusEffectInstance(CATCH_RATE_BUFF, 28800, 1)));
+        STRONG_FISHING_JUICE = Registry.registerReference(Registries.POTION, FishingClub.identifier("strong_fishing_juice"), new Potion("string_fishing_juice", new StatusEffectInstance(CATCH_RATE_BUFF, 14400, 3)));
 
     }
 

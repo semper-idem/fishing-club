@@ -36,7 +36,7 @@ public class CardLinking extends CardData {
     }
 
     private int linkLimit() {
-        return this.card.tradeSecretLevel(TradeSecrets.FISHERMAN_LINK);
+        return this.card.tradeSecretLevel(TradeSecrets.LINK);
     }
 
     public void shareStatusEffect(StatusEffectInstance sei, LivingEntity source, HashSet<UUID> shared) {

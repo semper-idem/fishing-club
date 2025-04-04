@@ -5,8 +5,8 @@ import net.minecraft.util.math.MathHelper;
 import net.semperidem.fishingclub.network.payload.FishingUpdatePayload;
 import net.semperidem.fishingclub.status_effects.IncreaseBobberSizeStatusEffect;
 
-import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOBBER_SIZE_BOAT;
-import static net.semperidem.fishingclub.registry.StatusEffects.BOBBER_BUFF;
+import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.BOAT_BOBBER_SIZE;
+import static net.semperidem.fishingclub.registry.StatusEffects.BOBBER;
 
 public class BobberComponent {
     public static final float BASE_LENGTH = 0.0682f;
@@ -40,9 +40,9 @@ public class BobberComponent {
     private float calculateLength(){
         float lengthMultiplier = 1;
 
-        lengthMultiplier +=  this.parent.card.tradeSecretValue(BOBBER_SIZE_BOAT);
+        lengthMultiplier +=  this.parent.card.tradeSecretValue(BOAT_BOBBER_SIZE);
 
-        StatusEffectInstance sei = this.parent.player.getStatusEffect(BOBBER_BUFF);
+        StatusEffectInstance sei = this.parent.player.getStatusEffect(BOBBER);
         if (sei != null){
             lengthMultiplier += IncreaseBobberSizeStatusEffect.SIZE_INCREMENT * (sei.getAmplifier() + 1);
         }

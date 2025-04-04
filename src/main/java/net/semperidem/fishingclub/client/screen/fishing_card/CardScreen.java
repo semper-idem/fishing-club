@@ -1,6 +1,5 @@
 package net.semperidem.fishingclub.client.screen.fishing_card;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -26,6 +25,7 @@ import net.semperidem.fishingclub.util.TextHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class CardScreen extends HandledScreen<CardScreenHandler>
@@ -107,8 +107,8 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
         int anchorX;
         int anchorY;
 
-        static final int windowWidth = 154;
-        static final int windowHeight = 144;
+        static final int windowWidth = 176;
+        static final int windowHeight = 166;
 
         static final int tileSize = 20;
 
@@ -119,11 +119,40 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
 
         int verticalSpace = 2;
         int horizontalSpace = 8;
-        Collection<TradeSecret.Instance> unlockedTradeSecrets = new ArrayList<>();
+        HashMap<String, TradeSecret.Instance> unlockedTradeSecrets = new HashMap<>();
         Collection<TradeSecret> allTradeSecrets = TradeSecrets.all();
         int xTileCount;
         int yTileCount;
 
+
+        class TradeSecretNode {
+            TradeSecret secret;
+            TradeSecret.Instance instance;
+            int yFromParent;
+            List<TradeSecretNode> children = new ArrayList<>();
+            int tileSize = 24;
+
+            TradeSecretNode(TradeSecret secret) {
+                this.secret = secret;
+                instance = unlockedTradeSecrets.get(secret.name());
+                for(TradeSecret child : secret.getChildren()){
+                    addChild(child);
+                }
+            }
+
+            void addChild(TradeSecret secret) {
+                TradeSecretNode child = new TradeSecretNode(secret);
+                children.add(child);
+                int childCount = children.size();
+                int totalHeight = (childCount - 1) * tileSize;
+                int heightSplit = (int) (totalHeight * 0.5f);
+                for(int i = 0; i < children.size(); i++) {
+                    children.get(i).yFromParent = heightSplit - (i * tileSize);
+                }
+            }
+        }
+
+        List<TradeSecretNode> root = new ArrayList<>();
 
 
         SecretTab() {
@@ -132,7 +161,10 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
 
             int tradeSecretMaxWidth = 0;
             for(TradeSecret tradeSecret : allTradeSecrets) {
-                int tradeSecretWidth = tradeSecret.getRequiredSecrets().size();
+                if (tradeSecret.getRequiredSecret() == null) {
+                    root.add(new TradeSecretNode(tradeSecret));
+                }
+                int tradeSecretWidth = tradeSecret.generation();
                 int presentHeight = heightMap.getOrDefault(tradeSecretWidth, 0);
                 heightMap.put(tradeSecretWidth, presentHeight + 1);
                 if (tradeSecretWidth > tradeSecretMaxWidth) {
@@ -140,17 +172,17 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
                 }
             }
             int tradeSecretMaxHeight = heightMap.values().stream().sorted((a,b) -> b - a).findAny().orElse(0);
-
-            widthRange = tradeSecretMaxWidth * (tileSize + horizontalSpace);
-            heightRange = tradeSecretMaxHeight * (tileSize + verticalSpace);
+            getScreenHandler().card.tradeSecrets().forEach(tradeSecretInstance -> unlockedTradeSecrets.put(tradeSecretInstance.name(), tradeSecretInstance));
+            widthRange = (int) (tradeSecretMaxWidth * (tileSize + horizontalSpace) * 0.75f);
+            heightRange = (int) ((tradeSecretMaxHeight + 1) * (tileSize + verticalSpace) * 0.75f);
             xTileCount = 20 + widthRange / 16;
             yTileCount = 20 * heightRange / 16;
         }
 
         @Override
         boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-            anchorX = (int) MathHelper.clamp(anchorX + deltaX,  0, widthRange);
-            anchorY = (int) MathHelper.clamp(anchorY + deltaY, 0, heightRange);
+            anchorX = (int) MathHelper.clamp(anchorX - deltaX,  -20, widthRange);
+            anchorY = (int) MathHelper.clamp(anchorY - deltaY, -11, heightRange);
             return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         }
 
@@ -164,24 +196,43 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
         }
 
         @Override
+        void render(DrawContext context, int mouseX, int mouseY) {
+        }
+
+        void renderNode(DrawContext context, TradeSecretNode node, int parentX, int parentY) {
+            int nodeX = parentX + horizontalSpace + tileSize;
+            int nodeY = parentY + node.yFromParent;
+            context.drawTexture(RenderLayer::getGuiTextured, node.secret.getTexture(),
+                    nodeX,
+                    nodeY,
+                    0,0,
+                    16,16,
+                    16,16);
+            for(TradeSecretNode child : node.children) {
+                renderNode(context, child, nodeX, nodeY);
+            }
+        }
+
+        @Override
         void renderBackground(DrawContext context, int mouseX, int mouseY) {
-            int offXTiles = (int) (anchorX * 0.0625f) + 1;
-            int offYTiles = (int) (anchorY * 0.0625f) + 1;
+            int offXTiles = (int) -(anchorX * 0.0625f) + 1;
+            int offYTiles = (int) -(anchorY * 0.0625f) + 1;
             context.enableScissor(x + 4, y + 4, x + SCREEN_WIDTH - 4, y + SCREEN_HEIGHT - 4);
+
             for (int i = -offXTiles; i < 13 - offXTiles; i++) {
                 for (int j = -offYTiles; j < 13 - offYTiles; j++) {
                     context.drawTexture(RenderLayer::getGuiTextured, TRADE_SECRET_BACKGROUND,
-                            x + anchorX + i * 16,
-                            y + anchorY + j * 16,
+                            x - anchorX + i * 16,
+                            y - anchorY + j * 16,
                             0, 0, 16, 16, 16, 16);
                 }
+            }
+            for(int i = 0; i < root.size(); i++) {
+                renderNode(context, root.get(i), x - 5 - anchorX, y + 15 - anchorY + i * tileSize + verticalSpace);
             }
             context.disableScissor();
         }
 
-        @Override
-        void render(DrawContext context, int mouseX, int mouseY) {
-        }
     }
     class AtlasTab extends Tab {
 

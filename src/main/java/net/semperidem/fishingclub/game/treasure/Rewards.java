@@ -163,7 +163,7 @@ public class Rewards {
     public static boolean draw(RodConfiguration rodConfiguration, Card card) {
         float treasureChance = TREASURE_MIN_CHANCE;
         treasureChance *= (1 + rodConfiguration.attributes().treasureBonus());
-        treasureChance *= (1 + card.tradeSecretValue(TradeSecrets.TREASURE_CHANCE_BOAT));
+        treasureChance *= (1 + card.tradeSecretValue(TradeSecrets.BOAT_LUCK));
         return Math.random() < treasureChance;
     }
 }

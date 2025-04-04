@@ -99,7 +99,7 @@ public class CastScreen extends Screen {
         if (hitResult instanceof EntityHitResult entityHitResult) {
             targetUUID = entityHitResult.getEntity().getUuid();
         }
-        String tradeSecretName = usableTradeSecrets.get(selectedIndex).root().name();
+        String tradeSecretName = usableTradeSecrets.get(selectedIndex).source().name();
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             ClientPlayNetworking.send(new SpellCastWithTargetPayload(tradeSecretName, targetUUID));
             return true;
@@ -115,7 +115,7 @@ public class CastScreen extends Screen {
 
     private void renderSecret(DrawContext context, TradeSecret.Instance secret, int x, int y, int color, int backgroundColor, boolean isSelected) {
         String cooldown = getCooldownString(secret);
-        String name = secret.root().name();
+        String name = secret.source().name();
         if (isSelected) {
             name = ">" + name + "<";
         }

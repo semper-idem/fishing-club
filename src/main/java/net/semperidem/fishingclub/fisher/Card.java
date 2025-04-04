@@ -107,7 +107,7 @@ public final class Card extends CardInventory implements AutoSyncedComponent{
     }
 
     public boolean hasRequiredPerk(TradeSecret perk){
-        return progression.hasRequiredSecrets(perk);
+        return progression.hasRequiredSecret(perk);
     }
 
     public void setLevel(int level) {

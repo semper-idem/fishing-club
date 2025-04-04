@@ -30,14 +30,14 @@ public abstract class StatusEffectHelper {
     public static float getExpMultiplier(PlayerEntity player) {
         StatusEffectInstance xpBuffInstance;
         float multiplier = 1;
-        if ((xpBuffInstance = player.getStatusEffect(StatusEffects.EXP_BUFF)) != null) {
+        if ((xpBuffInstance = player.getStatusEffect(StatusEffects.EXP)) != null) {
             multiplier += IncreaseFishingExpStatusEffect.BONUS_PER_AMPLIFIER * (xpBuffInstance.getAmplifier() + 1);
         }
         return multiplier;
     }
 
     public static void triggerQualityCelebration(Card card, SpecimenData fish) {
-        if (!card.knowsTradeSecret(TradeSecrets.QUALITY_CELEBRATION)) {
+        if (!card.knowsTradeSecret(TradeSecrets.SHARE_QUALITY)) {
             return;
         }
 
@@ -45,14 +45,14 @@ public abstract class StatusEffectHelper {
             return;
         }
 
-        card.useTradeSecret(TradeSecrets.QUALITY_CELEBRATION, null);
+        card.useTradeSecret(TradeSecrets.SHARE_QUALITY, null);
     }
 
     public static void triggerPassiveXP(Card card) {
-        if (!card.knowsTradeSecret(TradeSecrets.PASSIVE_FISHING_XP_BUFF)) {
+        if (!card.knowsTradeSecret(TradeSecrets.PASSIVE_EXP)) {
             return;
         }
-        final int maxAmplifier = (int) card.tradeSecretValue(TradeSecrets.PASSIVE_FISHING_XP_BUFF);
+        final int maxAmplifier = (int) card.tradeSecretValue(TradeSecrets.PASSIVE_EXP);
         PlayerEntity owner = card.owner();
         owner.getEntityWorld()
                 .getOtherEntities(owner, new Box(owner.getBlockPos()).expand(SPREAD_EFFECT_RANGE))
@@ -63,7 +63,7 @@ public abstract class StatusEffectHelper {
                     int nextAmplifier = 0;
                     int nextDuration = PASSIVE_XP_EFFECT_LENGTH;
 
-                    StatusEffectInstance currentExpBuff = player.getStatusEffect(StatusEffects.EXP_BUFF);
+                    StatusEffectInstance currentExpBuff = player.getStatusEffect(StatusEffects.EXP);
                     if (currentExpBuff != null && currentExpBuff.getAmplifier() <= maxAmplifier) {
                         nextAmplifier = Math.min(maxAmplifier, currentExpBuff.getAmplifier() + 1);
                         nextDuration += currentExpBuff.getDuration();
@@ -71,7 +71,7 @@ public abstract class StatusEffectHelper {
 
                     player.addStatusEffect(
                             new StatusEffectInstance(
-                                    StatusEffects.EXP_BUFF,
+                                    StatusEffects.EXP,
                                     nextAmplifier,
                                     MathHelper.clamp(
                                             nextDuration,

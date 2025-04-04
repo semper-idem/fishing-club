@@ -148,10 +148,10 @@ public final class FishingKing implements AutoSyncedComponent {
                 .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .forEach(otherPlayer -> {
-                    applyStatusEffect(otherPlayer, StatusEffects.EXP_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.EXP);
                     applyStatusEffect(otherPlayer, StatusEffects.QUALITY_BUFF);
-                    applyStatusEffect(otherPlayer, StatusEffects.BOBBER_BUFF);
-                    applyStatusEffect(otherPlayer, StatusEffects.FREQUENCY_BUFF);
+                    applyStatusEffect(otherPlayer, StatusEffects.BOBBER);
+                    applyStatusEffect(otherPlayer, StatusEffects.CATCH_RATE_BUFF);
                 });
     }
 

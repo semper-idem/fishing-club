@@ -592,7 +592,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
     private void setWaitCountdown() {
         float catchRate = 1;
         if (this.getWorld().isRaining()) {
-            catchRate += RAIN_CATCH_RATE_BUFF * (1 + this.card.tradeSecretValue(TradeSecrets.CATCH_RATE_RAIN));
+            catchRate += RAIN_CATCH_RATE_BUFF * (1 + this.card.tradeSecretValue(TradeSecrets.RAIN_CATCH_RATE));
         }
         if (FishUtil.hasFishingHat(this.playerOwner)) {
             catchRate += 0.15f;
@@ -601,7 +601,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
             }
         }
 
-        StatusEffectInstance sei = this.playerOwner.getStatusEffect(StatusEffects.FREQUENCY_BUFF);
+        StatusEffectInstance sei = this.playerOwner.getStatusEffect(StatusEffects.CATCH_RATE_BUFF);
         if (sei != null) {
             catchRate += sei.getAmplifier() * 0.1f;
         }
@@ -810,7 +810,7 @@ public class HookEntity extends FishingBobberEntity implements IHookEntity {
         circumstanceQuality += Components.CHUNK_QUALITY.maybeGet(this.getWorld().getChunk(this.getBlockPos())).map(chunkQuality -> (float) chunkQuality.getValue()).orElse(0F);
         circumstanceQuality += (this.getWaitTime() / 1200f);
         if (this.getWorld().isRaining()) {
-            circumstanceQuality += (float) (0.25 * (1 + this.card.tradeSecretValue(TradeSecrets.FISH_QUANTITY_BOAT)));
+            circumstanceQuality += (float) (0.25 * (1 + this.card.tradeSecretValue(TradeSecrets.BOAT_FISH_QUANTITY)));
         }
         return circumstanceQuality;
     }

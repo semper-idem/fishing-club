@@ -84,7 +84,7 @@ public class CardProgression extends CardData {
             return;
         }
         TradeSecret tradeSecret = maybeTradeSecret.get();
-        if (!hasRequiredSecrets(tradeSecret)) {
+        if (!hasRequiredSecret(tradeSecret)) {
             return;
         }
         TradeSecret.Instance instance = this.knownTradeSecrets.computeIfAbsent(tradeSecretName, tsn -> tradeSecret.instance());
@@ -98,15 +98,15 @@ public class CardProgression extends CardData {
     }
 
 
-    public boolean hasRequiredSecrets(TradeSecret tradeSecret) {
-        return tradeSecret.getRequiredSecrets().stream().allMatch(o -> this.knowsTradeSecret(tradeSecret));
+    public boolean hasRequiredSecret(TradeSecret tradeSecret) {
+        return this.knownTradeSecrets.containsKey(tradeSecret.getRequiredSecret().name());
     }
 
     public boolean canLearnSecret(TradeSecret tradeSecret) {
         if (!hasAdmirationPoints()) {
             return false;
         }
-        if (!this.hasRequiredSecrets(tradeSecret)) {
+        if (!this.hasRequiredSecret(tradeSecret)) {
             return false;
         }
         return !this.knownTradeSecrets.containsKey(tradeSecret.name());
@@ -188,8 +188,8 @@ public class CardProgression extends CardData {
                 .filter(entity -> entity instanceof ServerPlayerEntity)
                 .filter(entity -> entity != card.owner())
                 .map(entity -> Card.of((PlayerEntity) entity))
-                .filter(card -> card.knowsTradeSecret(TradeSecrets.WATCH_AND_LEARN))
-                .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.WATCH_AND_LEARN) * gainedXP));
+                .filter(card -> card.knowsTradeSecret(TradeSecrets.SHARE_EXP))
+                .forEach(card -> card.grantExperience(card.tradeSecretValue(TradeSecrets.SHARE_EXP) * gainedXP));
     }
 
     public Collection<TradeSecret.Instance> tradeSecrets() {

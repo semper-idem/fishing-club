@@ -138,7 +138,7 @@ public class FishController {
     public void calculateSpeed() {
         float staminaPercent = getStaminaPercentage();
         speed = baseSpeed + 0.5f * staminaPercent;
-        StatusEffectInstance sei = this.parent.player.getStatusEffect(StatusEffects.SLOW_FISH_BUFF);
+        StatusEffectInstance sei = this.parent.player.getStatusEffect(StatusEffects.SLOW_FISH);
         if (sei != null) {
             speed *= 1 - ((sei.getAmplifier() + 1) * DecreaseFishSpeedStatusEffect.SLOW_AMOUNT);
         }

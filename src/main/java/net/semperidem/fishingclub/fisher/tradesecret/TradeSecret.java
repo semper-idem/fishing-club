@@ -29,8 +29,8 @@ public class TradeSecret {
     String name;
     Text label;
     Text shortDescription;
-    List<Text> longDescription;
-    List<TradeSecret> requiredSecrets;
+    List<Text> longDescription = new ArrayList<>();
+    TradeSecret parent;
     List<TradeSecret> children = new ArrayList<>();
     Identifier texture;
     int maxLevel = 1;
@@ -55,8 +55,8 @@ public class TradeSecret {
         return this.texture;
     }
 
-    public List<TradeSecret> getRequiredSecrets() {
-        return requiredSecrets;
+    public TradeSecret getRequiredSecret() {
+        return parent;
     }
 
     public Text getLabel() {
@@ -121,31 +121,35 @@ public class TradeSecret {
         VALUE, DURATION, COOLDOWN
     }
 
+    public int generation() {
+        return parent == null ? 0 : parent.generation() + 1;
+    }
+
     public static class Instance {
-        TradeSecret root;
+        TradeSecret source;
         int level;
         long nextUseTime;
 
-        private Instance(TradeSecret root, int level) {
-            this(root, level, 0);
+        private Instance(TradeSecret source, int level) {
+            this(source, level, 0);
         }
 
-        private Instance(TradeSecret root, int level, long nextUseTime) {
-            this.root = root;
+        private Instance(TradeSecret source, int level, long nextUseTime) {
+            this.source = source;
             this.level = level;
             this.nextUseTime = nextUseTime;
         }
 
         public int upgradeCost() {
-            return this.root.cost(this.level + 1);
+            return this.source.cost(this.level + 1);
         }
 
         public void upgrade() {
             this.level++;
         }
 
-        public TradeSecret root() {
-            return this.root;
+        public TradeSecret source() {
+            return this.source;
         }
 
         public int level() {
@@ -161,17 +165,17 @@ public class TradeSecret {
             if (currentTime < this.nextUseTime) {
                 return false;
             }
-            if (this.root.effect != null) {
+            if (this.source.effect != null) {
                 Utils.castEffect(player, new StatusEffectInstance(
-                                this.root.effect,
-                                (int) this.root.duration(this.level),
-                                (int) this.root.value(this.level)
+                                this.source.effect,
+                                (int) this.source.duration(this.level),
+                                (int) this.source.value(this.level)
                         ),
-                        this.root.baseCooldown > 0 ? 4 : 0
+                        this.source.baseCooldown > 0 ? 4 : 0
                 );
                 return true;
             }
-            if (this.root.active == null) {
+            if (this.source.active == null) {
                 return false;
             }
             ItemStack heldItem = player.getMainHandStack();
@@ -183,20 +187,20 @@ public class TradeSecret {
 
             heldItem.decrement(1);
             int nextCooldown = 100;
-            if (this.root.active.apply(player, entity)) {
-                nextCooldown = (int) this.root.cooldown(this.level);
+            if (this.source.active.apply(player, entity)) {
+                nextCooldown = (int) this.source.cooldown(this.level);
             }
             this.nextUseTime = currentTime + nextCooldown;
             return true;
         }
 
         public String name() {
-            return this.root.name;
+            return this.source.name;
         }
 
         public static NbtCompound toNbt(Instance instance) {
             NbtCompound tag = new NbtCompound();
-            tag.putString("name", instance.root.name);
+            tag.putString("name", instance.source.name);
             tag.putInt("level", instance.level);
             tag.putLong("nextUseTime", instance.nextUseTime);
             return tag;
@@ -222,7 +226,7 @@ public class TradeSecret {
 
     static class Builder {
         private String name;
-        private final List<TradeSecret> requirements = new ArrayList<>();
+        private TradeSecret requirement;
         private float[] levelValues;
         private int[] costPerLevel;
         private LevelChanges levelAffects = LevelChanges.VALUE;
@@ -238,15 +242,18 @@ public class TradeSecret {
 
             tradeSecret.name = this.name;
             tradeSecret.label = Text.translatable(this.name);
-            tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name);
+            tradeSecret.texture = FishingClub.identifier("textures/gui/skill/" + this.name + ".png");
             tradeSecret.shortDescription = Text.translatable(this.name + ".short_description");
             tradeSecret.longDescription = this.createLongDescriptions(tradeSecret);
             tradeSecret.levelValues = this.levelValues;
             tradeSecret.levelAffects = this.levelAffects;
             tradeSecret.costPerLevel = this.costPerLevel;
             tradeSecret.maxLevel = maxLevel();
-            this.requirements.forEach(parent -> parent.children.add(tradeSecret));
-            tradeSecret.requiredSecrets = this.requirements;
+
+            if (this.requirement != null) {
+                this.requirement.children.add(tradeSecret);
+            }
+            tradeSecret.parent = this.requirement;
             tradeSecret.active = this.active;
             tradeSecret.effect = this.effect;
             tradeSecret.baseDuration = this.baseDuration;
@@ -323,7 +330,7 @@ public class TradeSecret {
         }
 
         Builder require(TradeSecret requiredSecret) {
-            this.requirements.add(requiredSecret);
+            this.requirement = requiredSecret;
             return this;
         }
 

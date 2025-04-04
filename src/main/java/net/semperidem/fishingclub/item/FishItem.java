@@ -41,7 +41,7 @@ public class FishItem extends Item {
         List<TradeSecret.Instance> usableTradeSecrets = Card.of(user)
                 .tradeSecrets()
                 .stream()
-                .filter(tradeSecret -> tradeSecret.root().hasActive())
+                .filter(tradeSecret -> tradeSecret.source().hasActive())
                 .toList();
 
         if (usableTradeSecrets.isEmpty()) {
