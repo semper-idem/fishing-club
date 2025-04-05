@@ -26,6 +26,8 @@ import java.util.function.Predicate;
 import static net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets.*;
 
 public class TradeSecret {
+    public final static TradeSecret ROOT = new TradeSecret();
+
     String name;
     Text label;
     Text shortDescription;
@@ -43,9 +45,11 @@ public class TradeSecret {
     int baseDuration;
     Predicate<PlayerEntity> condition;
 
+
     public String name() {
         return this.name;
     }
+
 
     public List<TradeSecret> getChildren() {
         return this.children;
@@ -250,10 +254,8 @@ public class TradeSecret {
             tradeSecret.costPerLevel = this.costPerLevel;
             tradeSecret.maxLevel = maxLevel();
 
-            if (this.requirement != null) {
-                this.requirement.children.add(tradeSecret);
-            }
-            tradeSecret.parent = this.requirement;
+            tradeSecret.parent = this.requirement == null ? ROOT : this.requirement;
+            tradeSecret.parent.children.add(tradeSecret);
             tradeSecret.active = this.active;
             tradeSecret.effect = this.effect;
             tradeSecret.baseDuration = this.baseDuration;

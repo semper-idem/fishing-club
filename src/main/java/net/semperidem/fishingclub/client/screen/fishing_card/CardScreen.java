@@ -22,10 +22,7 @@ import net.semperidem.fishingclub.fisher.tradesecret.TradeSecrets;
 import net.semperidem.fishingclub.screen.card.CardScreenHandler;
 import net.semperidem.fishingclub.util.TextHelper;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class CardScreen extends HandledScreen<CardScreenHandler>
@@ -110,29 +107,32 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
         static final int windowWidth = 176;
         static final int windowHeight = 166;
 
-        static final int tileSize = 20;
+
+        static int verticalSpace = 8;
+        static int horizontalSpace = 8;
 
         static final int border = 20;
-
+        static final int tileSize = 20 + verticalSpace;
         int widthRange;
         int heightRange;
-
-        int verticalSpace = 2;
-        int horizontalSpace = 8;
         HashMap<String, TradeSecret.Instance> unlockedTradeSecrets = new HashMap<>();
         Collection<TradeSecret> allTradeSecrets = TradeSecrets.all();
         int xTileCount;
         int yTileCount;
 
 
-        class TradeSecretNode {
+        class TradeSecretNode extends ButtonWidget {
+            static final int tileSize = 20;
+
             TradeSecret secret;
             TradeSecret.Instance instance;
             int yFromParent;
             List<TradeSecretNode> children = new ArrayList<>();
-            int tileSize = 24;
 
             TradeSecretNode(TradeSecret secret) {
+                super(0,0, 20, 20, Text.empty(), selected -> {
+                    System.out.println(secret.name());
+                }, DEFAULT_NARRATION_SUPPLIER);
                 this.secret = secret;
                 instance = unlockedTradeSecrets.get(secret.name());
                 for(TradeSecret child : secret.getChildren()){
@@ -147,7 +147,7 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
                 int totalHeight = (childCount - 1) * tileSize;
                 int heightSplit = (int) (totalHeight * 0.5f);
                 for(int i = 0; i < children.size(); i++) {
-                    children.get(i).yFromParent = heightSplit - (i * tileSize);
+                    children.get(i).yFromParent = - heightSplit + (i * tileSize);
                 }
             }
         }
@@ -157,6 +157,22 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
 
         SecretTab() {
             super(CardScreenHandler.Tab.SECRET);
+        }
+
+        @Override
+        boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+            anchorX = (int) MathHelper.clamp(anchorX - deltaX,  -20, widthRange);
+            anchorY = (int) MathHelper.clamp(anchorY - deltaY, -11, heightRange);
+            return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+            return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        }
+
+        @Override
+        void initTab() {
             HashMap<Integer, Integer> heightMap = new HashMap<>();
 
             int tradeSecretMaxWidth = 0;
@@ -180,36 +196,38 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
         }
 
         @Override
-        boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-            anchorX = (int) MathHelper.clamp(anchorX - deltaX,  -20, widthRange);
-            anchorY = (int) MathHelper.clamp(anchorY - deltaY, -11, heightRange);
-            return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-        }
-
-        @Override
-        public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-            return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-        }
-
-        @Override
-        void initTab() {
-        }
-
-        @Override
         void render(DrawContext context, int mouseX, int mouseY) {
         }
+
 
         void renderNode(DrawContext context, TradeSecretNode node, int parentX, int parentY) {
             int nodeX = parentX + horizontalSpace + tileSize;
             int nodeY = parentY + node.yFromParent;
+            int lineColor = 0xFFBBBBBB;
+            int lineShadowColor = 0xFF888888;
+            draw(context, nodeX -2 , nodeY - 2, 178, 256, 20, 20);
             context.drawTexture(RenderLayer::getGuiTextured, node.secret.getTexture(),
                     nodeX,
                     nodeY,
                     0,0,
                     16,16,
                     16,16);
+            if (!node.children.isEmpty()) {
+                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
+                context.drawVerticalLine(nodeX + 25, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineShadowColor);
+                context.drawHorizontalLine(nodeX + 18, nodeX + 23, nodeY + 9, lineShadowColor);
+            }
             for(TradeSecretNode child : node.children) {
+                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize, nodeY + child.yFromParent + 9, lineShadowColor);
                 renderNode(context, child, nodeX, nodeY);
+            }
+            for(TradeSecretNode child : node.children) {
+                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize - 3, nodeY + child.yFromParent + 8, lineColor);
+            }
+            if (!node.children.isEmpty()) {
+                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
+                context.drawHorizontalLine(nodeX + 18, nodeX + 24, nodeY + 8, lineColor);
+                context.drawVerticalLine(nodeX + 24, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineColor);
             }
         }
 
