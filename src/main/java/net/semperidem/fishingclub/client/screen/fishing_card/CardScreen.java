@@ -44,6 +44,8 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
 
     private final Identifier playerTexture;
 
+    int draggedX;
+    int draggedY;
 
 
     public CardScreen(CardScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -82,7 +84,9 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         super.render(context, mouseX, mouseY, deltaTicks);
+        context.enableScissor(x, y, x + SCREEN_WIDTH, y + SCREEN_HEIGHT);
         this.currentTab.render(context, mouseX, mouseY);
+        context.disableScissor();
      }
 
     @Override
@@ -100,154 +104,201 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
         return currentTab.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return super.mouseClicked(mouseX - draggedX, mouseY - draggedY, button);
+    }
+
+    public int getScreenX() {
+        return this.x;
+    }
+
+    public int getScreenY() {
+        return this.y;
+    }
+
     class SecretTab extends Tab {
-        int anchorX;
-        int anchorY;
+       HashMap<String, TradeSecret.Instance> unlockedTradeSecrets = new HashMap<>();
+        TradeSecretNode root = new TradeSecretNode(null, TradeSecret.ROOT);
 
-        static final int windowWidth = 176;
-        static final int windowHeight = 166;
-
-
-        static int verticalSpace = 8;
-        static int horizontalSpace = 8;
-
-        static final int border = 20;
-        static final int tileSize = 20 + verticalSpace;
-        int widthRange;
-        int heightRange;
-        HashMap<String, TradeSecret.Instance> unlockedTradeSecrets = new HashMap<>();
-        Collection<TradeSecret> allTradeSecrets = TradeSecrets.all();
-        int xTileCount;
-        int yTileCount;
-
+        static final int TILE_SIZE = 20;
+        static final int PADDING = 20;
+        static final int CHILD_GAP = 4;
+        static final int PARENT_GAP = 16;
 
         class TradeSecretNode extends ButtonWidget {
-            static final int tileSize = 20;
-
+            int containerWidth = TILE_SIZE;
+            int containerHeight = TILE_SIZE;
             TradeSecret secret;
-            TradeSecret.Instance instance;
-            int yFromParent;
+
+            TradeSecretNode parent;
             List<TradeSecretNode> children = new ArrayList<>();
 
-            TradeSecretNode(TradeSecret secret) {
-                super(0,0, 20, 20, Text.empty(), selected -> {
+            TradeSecretNode(TradeSecretNode parent, TradeSecret secret) {
+                super(0,0, TILE_SIZE, TILE_SIZE, Text.empty(), selected -> {
                     System.out.println(secret.name());
                 }, DEFAULT_NARRATION_SUPPLIER);
                 this.secret = secret;
-                instance = unlockedTradeSecrets.get(secret.name());
-                for(TradeSecret child : secret.getChildren()){
-                    addChild(child);
+                this.parent = parent;
+                addChildren(secret);
+            }
+            void addChildren(TradeSecret secret) {
+                for(TradeSecret child : secret.getChildren()) {
+                    children.add(new TradeSecretNode(this, child));
                 }
             }
 
-            void addChild(TradeSecret secret) {
-                TradeSecretNode child = new TradeSecretNode(secret);
-                children.add(child);
-                int childCount = children.size();
-                int totalHeight = (childCount - 1) * tileSize;
-                int heightSplit = (int) (totalHeight * 0.5f);
-                for(int i = 0; i < children.size(); i++) {
-                    children.get(i).yFromParent = - heightSplit + (i * tileSize);
+            void init() {
+                resize();
+                reposition();
+                for(TradeSecretNode child : children) {
+                    child.addDrawable();
+                    child.init();
                 }
+            }
+
+            void addDrawable() {
+               addDrawableChild(this);
+            }
+
+            void resize() {
+                for(TradeSecretNode child : children) {
+                    child.resize();
+                    containerHeight += child.containerHeight + CHILD_GAP;
+                }
+                if (!children.isEmpty()) {
+                    containerHeight -= (TILE_SIZE + CHILD_GAP);
+                }
+                if (parent != null) {
+                    parent.containerWidth = Math.max(containerWidth + TILE_SIZE + PARENT_GAP, parent.containerWidth);
+                }
+            }
+
+            void reposition() {
+                TradeSecretNode previousChild = null;
+                for(TradeSecretNode child : children) {
+                    child.setX(previousChild == null ? getX() + TILE_SIZE + PARENT_GAP : previousChild.getX());
+                    child.setY(previousChild == null ? getY() : previousChild.getY() + previousChild.containerHeight + CHILD_GAP);
+                    child.reposition();
+                    previousChild = child;
+                }
+            }
+
+            @Override
+            protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+                if (secret == null) {
+                    return;
+                }
+                context.enableScissor(x + 4, y + 4, x + SCREEN_WIDTH - 4, y + SCREEN_HEIGHT - 4);
+
+                draw(context, draggedX + getX() , draggedY + getY(), 178, 256, width, height);
+                context.drawTexture(
+                        RenderLayer::getGuiTextured,
+                        secret.getTexture(),
+                        draggedX + getX() + 2,
+                        draggedY + getY() + 2,
+                        0, 0,
+                        16, 16,
+                        16, 16
+                );
+                context.disableScissor();
             }
         }
 
-        List<TradeSecretNode> root = new ArrayList<>();
-
-
         SecretTab() {
             super(CardScreenHandler.Tab.SECRET);
+            getScreenHandler().card.tradeSecrets().forEach(tradeSecretInstance -> unlockedTradeSecrets.put(tradeSecretInstance.name(), tradeSecretInstance));
         }
 
         @Override
         boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-            anchorX = (int) MathHelper.clamp(anchorX - deltaX,  -20, widthRange);
-            anchorY = (int) MathHelper.clamp(anchorY - deltaY, -11, heightRange);
+            draggedX = (int) MathHelper.clamp(draggedX + deltaX,  dragHorizontalMin, dragHorizontalMax);
+            draggedY = (int) MathHelper.clamp(draggedY + deltaY, dragVerticalMin, dragVerticalMax);
             return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        }
+
+
+        int dragVerticalMin = 0;
+        int dragVerticalMax = 0;
+        int dragHorizontalMin = 0;
+        int dragHorizontalMax = 0;
+
+        @Override
+        void initTab() {
+            root.setX(x + PADDING - TILE_SIZE - PARENT_GAP);
+            root.setY(y + PADDING);
+            root.init();
+            dragHorizontalMin = (int) (root.containerWidth * -0.15f);
+            dragHorizontalMax = 0;//(int) (root.containerWidth * 0.25f);
+            dragVerticalMin = (int) (-root.containerHeight + SCREEN_HEIGHT * 0.75f);//(int) (root.containerHeight * -0.5f);
+            dragVerticalMax = 0;//root.containerHeight;//(int) (root.containerHeight * 0.5f);
         }
 
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
             return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
         }
-
-        @Override
-        void initTab() {
-            HashMap<Integer, Integer> heightMap = new HashMap<>();
-
-            int tradeSecretMaxWidth = 0;
-            for(TradeSecret tradeSecret : allTradeSecrets) {
-                if (tradeSecret.getRequiredSecret() == null) {
-                    root.add(new TradeSecretNode(tradeSecret));
-                }
-                int tradeSecretWidth = tradeSecret.generation();
-                int presentHeight = heightMap.getOrDefault(tradeSecretWidth, 0);
-                heightMap.put(tradeSecretWidth, presentHeight + 1);
-                if (tradeSecretWidth > tradeSecretMaxWidth) {
-                    tradeSecretMaxWidth = tradeSecretWidth;
-                }
-            }
-            int tradeSecretMaxHeight = heightMap.values().stream().sorted((a,b) -> b - a).findAny().orElse(0);
-            getScreenHandler().card.tradeSecrets().forEach(tradeSecretInstance -> unlockedTradeSecrets.put(tradeSecretInstance.name(), tradeSecretInstance));
-            widthRange = (int) (tradeSecretMaxWidth * (tileSize + horizontalSpace) * 0.75f);
-            heightRange = (int) ((tradeSecretMaxHeight + 1) * (tileSize + verticalSpace) * 0.75f);
-            xTileCount = 20 + widthRange / 16;
-            yTileCount = 20 * heightRange / 16;
-        }
-
         @Override
         void render(DrawContext context, int mouseX, int mouseY) {
+            draw(context,
+                    x,
+                    y,
+                    0,
+                    this.type.ordinal() * TAB_TEXTURE_HEIGHT,
+                    SCREEN_WIDTH - 4,
+                    SCREEN_HEIGHT
+            );
         }
 
 
         void renderNode(DrawContext context, TradeSecretNode node, int parentX, int parentY) {
-            int nodeX = parentX + horizontalSpace + tileSize;
-            int nodeY = parentY + node.yFromParent;
-            int lineColor = 0xFFBBBBBB;
-            int lineShadowColor = 0xFF888888;
-            draw(context, nodeX -2 , nodeY - 2, 178, 256, 20, 20);
-            context.drawTexture(RenderLayer::getGuiTextured, node.secret.getTexture(),
-                    nodeX,
-                    nodeY,
-                    0,0,
-                    16,16,
-                    16,16);
-            if (!node.children.isEmpty()) {
-                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
-                context.drawVerticalLine(nodeX + 25, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineShadowColor);
-                context.drawHorizontalLine(nodeX + 18, nodeX + 23, nodeY + 9, lineShadowColor);
-            }
-            for(TradeSecretNode child : node.children) {
-                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize, nodeY + child.yFromParent + 9, lineShadowColor);
-                renderNode(context, child, nodeX, nodeY);
-            }
-            for(TradeSecretNode child : node.children) {
-                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize - 3, nodeY + child.yFromParent + 8, lineColor);
-            }
-            if (!node.children.isEmpty()) {
-                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
-                context.drawHorizontalLine(nodeX + 18, nodeX + 24, nodeY + 8, lineColor);
-                context.drawVerticalLine(nodeX + 24, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineColor);
-            }
+//            int nodeX = parentX + horizontalSpace + tileSize;
+//            int nodeY = parentY + node.yFromParent;
+//            int lineColor = 0xFFBBBBBB;
+//            int lineShadowColor = 0xFF888888;
+//            draw(context, nodeX -2 , nodeY - 2, 178, 256, 20, 20);
+//            context.drawTexture(RenderLayer::getGuiTextured, node.secret.getTexture(),
+//                    nodeX,
+//                    nodeY,
+//                    0,0,
+//                    16,16,
+//                    16,16);
+//            if (!node.children.isEmpty()) {
+//                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
+//                context.drawVerticalLine(nodeX + 25, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineShadowColor);
+//                context.drawHorizontalLine(nodeX + 18, nodeX + 23, nodeY + 9, lineShadowColor);
+//            }
+//            for(TradeSecretNode child : node.children) {
+//                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize, nodeY + child.yFromParent + 9, lineShadowColor);
+//                renderNode(context, child, nodeX, nodeY);
+//            }
+//            for(TradeSecretNode child : node.children) {
+//                context.drawHorizontalLine(nodeX + 24, nodeX + horizontalSpace + tileSize - 3, nodeY + child.yFromParent + 8, lineColor);
+//            }
+//            if (!node.children.isEmpty()) {
+//                int halfLineHeight = (int) ((node.children.size() -1 )* (tileSize) * 0.5f);
+//                context.drawHorizontalLine(nodeX + 18, nodeX + 24, nodeY + 8, lineColor);
+//                context.drawVerticalLine(nodeX + 24, nodeY - halfLineHeight + 8, nodeY + halfLineHeight + 8, lineColor);
+//            }
         }
 
         @Override
         void renderBackground(DrawContext context, int mouseX, int mouseY) {
-            int offXTiles = (int) -(anchorX * 0.0625f) + 1;
-            int offYTiles = (int) -(anchorY * 0.0625f) + 1;
+            int offXTiles = (int) (draggedX * 0.0625f) + 1;
+            int offYTiles = (int) (draggedY * 0.0625f) + 1;
             context.enableScissor(x + 4, y + 4, x + SCREEN_WIDTH - 4, y + SCREEN_HEIGHT - 4);
 
             for (int i = -offXTiles; i < 13 - offXTiles; i++) {
                 for (int j = -offYTiles; j < 13 - offYTiles; j++) {
                     context.drawTexture(RenderLayer::getGuiTextured, TRADE_SECRET_BACKGROUND,
-                            x - anchorX + i * 16,
-                            y - anchorY + j * 16,
+                            x + draggedX + i * 16,
+                            y + draggedY + j * 16,
                             0, 0, 16, 16, 16, 16);
                 }
             }
-            for(int i = 0; i < root.size(); i++) {
-                renderNode(context, root.get(i), x - 5 - anchorX, y + 15 - anchorY + i * tileSize + verticalSpace);
-            }
+//            for(int i = 0; i < root.size(); i++) {
+//                renderNode(context, root.get(i), x - 5 - draggedX, y + 15 - draggedY + i * tileSize + verticalSpace);
+//            }
             context.disableScissor();
         }
 
@@ -406,6 +457,8 @@ public class CardScreen extends HandledScreen<CardScreenHandler>
 
     abstract class Tab {
         CardScreenHandler.Tab type;
+        int tabX;
+        int tabY;
 
         Tab(CardScreenHandler.Tab type) {
             this.type = type;
